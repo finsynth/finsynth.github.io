@@ -153,7 +153,7 @@ a:hover
     width: 100%;
     height: 100%;
 
-    background: #2707eb;
+    background: #000000;
 }
 
 .preloader.preloader-hidden
@@ -515,7 +515,7 @@ a:hover
     width: 100%;
     height: 100%;
 
-    opacity: .7;
+    opacity: 0.8;
     background: #020026;
 }
 
