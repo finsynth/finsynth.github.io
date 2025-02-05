@@ -3,9 +3,11 @@ class GridBackground {
     this.container = document.querySelector('.grid-background')
     this.cellWidth = 80
     this.cellHeight = 25
-    this.init()
+    this.cells = []
+    this.resizeTimeout = null
     this.handleResize = this.handleResize.bind(this)
     window.addEventListener('resize', this.handleResize)
+    this.init()
   }
 
   init() {
@@ -13,55 +15,67 @@ class GridBackground {
   }
 
   createGrid() {
-    // Clear existing grid
-    this.container.innerHTML = ''
-
-    // Calculate number of cells needed
+    const fragment = document.createDocumentFragment()
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
     const columns = Math.ceil(windowWidth / this.cellWidth)
     const rows = Math.ceil(windowHeight / this.cellHeight)
 
-    // Create cells
+    this.cleanup()
+    this.container.innerHTML = ''
+
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < columns; col++) {
         const cell = document.createElement('div')
         cell.className = 'grid-cell'
+        cell.style.transform = `translate(${col * this.cellWidth}px, ${row * this.cellHeight}px)`
         cell.style.width = `${this.cellWidth}px`
         cell.style.height = `${this.cellHeight}px`
-        cell.style.left = `${col * this.cellWidth}px`
-        cell.style.top = `${row * this.cellHeight}px`
 
-        // Add column label (A, B, C, etc.) for first row
-        if (row === 0) {
-          cell.setAttribute('data-column', this.getColumnLabel(col))
-        }
+        const mouseenterHandler = () => cell.classList.add('grid-cell-active')
+        const transitionendHandler = () => cell.classList.remove('grid-cell-active')
 
-        // Add row number for first column
-        if (col === 0) {
-          cell.setAttribute('data-row', row + 1)
-        }
+        cell.addEventListener('mouseenter', mouseenterHandler)
+        cell.addEventListener('transitionend', transitionendHandler)
 
-        this.container.appendChild(cell)
+        this.cells.push({
+          element: cell,
+          listeners: {
+            mouseenter: mouseenterHandler,
+            transitionend: transitionendHandler
+          }
+        })
+
+        fragment.appendChild(cell)
       }
     }
+
+    this.container.appendChild(fragment)
   }
 
-  getColumnLabel(index) {
-    let label = ''
-    while (index >= 0) {
-      label = String.fromCharCode(65 + (index % 26)) + label
-      index = Math.floor(index / 26) - 1
-    }
-    return label
+  cleanup() {
+    this.cells.forEach(({ element, listeners }) => {
+      element.removeEventListener('mouseenter', listeners.mouseenter)
+      element.removeEventListener('transitionend', listeners.transitionend)
+    })
+    this.cells = []
   }
 
   handleResize() {
-    requestAnimationFrame(() => this.createGrid())
+    clearTimeout(this.resizeTimeout)
+    this.resizeTimeout = setTimeout(() => {
+      requestAnimationFrame(() => this.createGrid())
+    }, 150)
+  }
+
+  destroy() {
+    this.cleanup()
+    window.removeEventListener('resize', this.handleResize)
+    this.container.innerHTML = ''
   }
 }
 
 // Initialize grid when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new GridBackground()
+  window.gridBackground = new GridBackground()
 })

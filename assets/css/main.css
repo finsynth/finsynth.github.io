@@ -18,6 +18,7 @@ body {
   position: relative;
   z-index: 2;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+  width: 50%;
 }
 
 .logo img {
@@ -90,10 +91,18 @@ h1 {
   position: absolute;
   border: 1px solid rgba(0, 0, 0, 0.05);
   background-color: rgba(255, 255, 255, 0.5);
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   pointer-events: auto;
 }
 
 .grid-cell:hover {
-  background-color: rgba(65, 105, 225, 0.05);
+  background-color: rgba(65, 105, 225, 0.15);
+  border: 2px solid rgba(88, 121, 218, 0.3);
+}
+
+/* Add new class for fade effect */
+.grid-cell-active {
+  background-color: rgba(65, 105, 225, 0.15);
+  border: 2px solid rgba(88, 121, 218, 0.5);
+  transition: all 0.5s ease-out;
 }
