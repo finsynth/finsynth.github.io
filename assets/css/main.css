@@ -5,6 +5,7 @@
 }
 
 body {
+  display: flex;
   font-family: 'Roboto', sans-serif;
   background-color: #ffffff;
   color: #333;
@@ -15,14 +16,16 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: center;
+
   position: relative;
   height: 100%;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 0 2rem;
-  padding: 60px 40px;
+  max-width: 1400px;
+
+  margin: 0 auto 2rem 0;
+  padding: 0 max(40px, 8%);
   pointer-events: none;
 }
 
@@ -39,19 +42,20 @@ body {
 }
 
 h1 {
-  font-size: 52px;
+  font-size: clamp(32px, 4vw, 56px);
   line-height: 1.2;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: clamp(20px, 2vw, 28px);
   color: #1a1a1a;
 }
 
 .subtitle {
-  font-size: 24px;
+  font-size: clamp(16px, 2vw, 24px);
   font-weight: 300;
   color: #666;
-  margin-bottom: 40px;
+  margin-bottom: clamp(32px, 4vw, 48px);
   line-height: 1.4;
+  max-width: 600px;
 }
 
 .inquire-btn {
@@ -68,6 +72,13 @@ h1 {
 
 .inquire-btn:hover {
   background-color: #3154b3;
+}
+
+.footer {
+  align-self: flex-start;
+  padding: 0 1rem;
+  margin: 2rem 0;
+  z-index: 2;
 }
 
 .footer p {
@@ -115,11 +126,13 @@ h1 {
 
 .background-animation {
   position: fixed;
-  top: 0;
-  right: 2rem;
-  width: 60%;
-  max-width: 1200px;
-  height: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  right: max(2rem, 8%);
+  width: 50%;
+  max-width: 1000px;
+  height: auto;
+  aspect-ratio: 16/9;
   z-index: 2;
   border-radius: 12px;
   pointer-events: none;
@@ -138,21 +151,6 @@ h1 {
   z-index: 2;
 }
 
-/* Looks weird on the video */
-/* Blur background effect */
-/* .content-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(20px);
-  border-radius: 30% 70% 70% 30% ;
-  z-index: -1;
-} */
-
 .content {
   position: relative;
   max-width: 100%;
@@ -161,23 +159,24 @@ h1 {
   padding: 1rem;
 }
 
+@media (max-width: 1400px) {
+  .container {
+    padding: 48px max(32px, 5%);
+  }
+
+  .background-animation {
+    width: 45%;
+  }
+}
+
 @media (max-width: 1024px) {
   .container {
-    margin: 0 auto;
     padding: 40px 24px;
   }
 
   .background-animation {
-    width: 50%;
-    opacity: 0.7;
-  }
-
-  h1 {
-    font-size: 42px;
-  }
-
-  .subtitle {
-    font-size: 20px;
+    width: 40%;
+    opacity: 0.8;
   }
 }
 
@@ -185,28 +184,28 @@ h1 {
   .container {
     text-align: center;
     align-items: center;
+    justify-content: center;
+  }
+
+  .content-wrapper {
+    padding-top: 0;
   }
 
   .background-animation {
-    width: 100%;
-    right: 0;
-    opacity: 0.4;
-  }
-
-  h1 {
-    font-size: 36px;
+    width: 90%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    opacity: 0.3;
   }
 
   .subtitle {
-    font-size: 18px;
-    br {
-      display: none;
-    }
+    margin-left: auto;
+    margin-right: auto;
+    align-self: center;
   }
 
-  .inquire-btn {
-    padding: 10px 32px;
-    font-size: 16px;
+  .subtitle br {
+    display: none;
   }
 }
 
@@ -216,16 +215,28 @@ h1 {
   }
 
   h1 {
-    font-size: 32px;
+    font-size: 40px;
     margin-bottom: 16px;
   }
 
   .subtitle {
     font-size: 16px;
     margin-bottom: 32px;
+    color: #444;
+  }
+
+  .footer {
+    align-self: center;
   }
 
   .logo img {
     height: 24px;
   }
+}
+
+/* Add smooth transitions */
+.background-animation,
+.content-wrapper,
+.inquire-btn {
+  transition: all 0.3s ease-out;
 }
