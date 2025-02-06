@@ -1,3 +1,4 @@
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -6,31 +7,45 @@
 
 body {
   display: flex;
+  height: 100vh;
+
   font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+
   background-color: #ffffff;
   color: #333;
-  line-height: 1.6;
-  height: 100vh;
 }
 
+/* Layout */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   position: relative;
+
   height: 100%;
   width: 100%;
   max-width: 1400px;
-
   margin: 0 auto 2rem 0;
   padding: 0 max(40px, 8%);
+
   pointer-events: none;
 }
 
-.logo, .inquire-btn, .footer, a {
-  pointer-events: auto;
+.content-wrapper {
+  position: relative;
+  width: 100%;
+
+  z-index: 2;
+}
+
+.content {
+  position: relative;
+  max-width: 100%;
+
+  padding: 1rem;
+  border-radius: 12px;
 }
 
 .logo {
@@ -45,28 +60,42 @@ h1 {
   font-size: clamp(32px, 4vw, 56px);
   line-height: 1.2;
   font-weight: 500;
+
   margin-bottom: clamp(20px, 2vw, 28px);
+
   color: #1a1a1a;
 }
 
 .subtitle {
   font-size: clamp(16px, 2vw, 24px);
   font-weight: 300;
-  color: #666;
-  margin-bottom: clamp(32px, 4vw, 48px);
   line-height: 1.4;
+
   max-width: 600px;
+  margin-bottom: clamp(32px, 4vw, 48px);
+
+  color: #666;
+}
+
+/* Interactive Elements */
+.logo, .inquire-btn, .footer, a {
+  pointer-events: auto;
 }
 
 .inquire-btn {
-  background-color: #4169E1;
-  color: white;
-  border: none;
+  position: relative;
+
   padding: 12px 40px;
+  border: none;
+  border-radius: 4px;
+
   font-size: 18px;
   font-weight: 500;
-  border-radius: 4px;
+
+  background-color: #4169E1;
+  color: white;
   cursor: pointer;
+
   transition: background-color 0.3s ease;
 }
 
@@ -76,8 +105,10 @@ h1 {
 
 .footer {
   align-self: flex-start;
-  padding: 0 1rem;
+
   margin: 2rem 0;
+  padding: 0 1rem;
+
   z-index: 2;
 }
 
@@ -86,6 +117,7 @@ h1 {
   align-items: center;
 
   gap: 10px;
+
   font-size: 20px;
   color: #666;
 }
@@ -94,22 +126,50 @@ h1 {
   height: 20px;
 }
 
-/* Grid Background Styles */
+/* Background Elements */
+.background-animation {
+  position: fixed;
+  top: 50%;
+  right: max(2rem, 8%);
+  transform: translateY(-50%);
+
+  width: 50%;
+  max-width: 1000px;
+  height: auto;
+  aspect-ratio: 16/9;
+
+  border-radius: 12px;
+
+  z-index: 2;
+  pointer-events: none;
+}
+
+.background-animation video {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  border-radius: 12px;
+}
+
 .grid-background {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+
   z-index: 1;
 }
 
 .grid-cell {
   position: absolute;
+
   border: 1px solid rgba(0, 0, 0, 0.05);
   background-color: rgba(255, 255, 255, 0.5);
-  transition: all 0.2s ease;
+
   pointer-events: auto;
+  transition: all 0.2s ease;
 }
 
 .grid-cell:hover {
@@ -117,46 +177,17 @@ h1 {
   border: 2px solid rgba(88, 121, 218, 0.3);
 }
 
-/* Add new class for fade effect */
 .grid-cell-active {
   background-color: rgba(65, 105, 225, 0.15);
   border: 2px solid rgba(88, 121, 218, 0.5);
+
   transition: all 0.5s ease-out;
 }
 
-.background-animation {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  right: max(2rem, 8%);
-  width: 50%;
-  max-width: 1000px;
-  height: auto;
-  aspect-ratio: 16/9;
-  z-index: 2;
-  border-radius: 12px;
-  pointer-events: none;
-}
-
-.background-animation video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 12px;
-}
-
-.content-wrapper {
-  position: relative;
-  width: 100%;
-  z-index: 2;
-}
-
-.content {
-  position: relative;
-  max-width: 100%;
-  /* background: rgba(255, 255, 255, 0.8); */
-  border-radius: 12px;
-  padding: 1rem;
+.background-animation,
+.content-wrapper,
+.inquire-btn {
+  transition: all 0.3s ease-out;
 }
 
 @media (max-width: 1400px) {
@@ -195,12 +226,17 @@ h1 {
     width: 90%;
     right: 50%;
     transform: translate(50%, -50%);
+
     opacity: 0.3;
   }
 
   .subtitle {
     margin-left: auto;
     margin-right: auto;
+    align-self: center;
+  }
+
+  .footer {
     align-self: center;
   }
 
@@ -222,21 +258,12 @@ h1 {
   .subtitle {
     font-size: 16px;
     margin-bottom: 32px;
+
     color: #444;
   }
 
-  .footer {
-    align-self: center;
-  }
 
   .logo img {
     height: 24px;
   }
-}
-
-/* Add smooth transitions */
-.background-animation,
-.content-wrapper,
-.inquire-btn {
-  transition: all 0.3s ease-out;
 }
