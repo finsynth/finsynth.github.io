@@ -17,15 +17,17 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
-
   position: relative;
-  z-index: 2;
-
   height: 100%;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 0 2rem;
   padding: 60px 40px;
+  pointer-events: none;
+}
+
+.logo, .inquire-btn, .footer, a {
+  pointer-events: auto;
 }
 
 .logo {
@@ -35,7 +37,6 @@ body {
 .logo img {
   height: 32px;
 }
-
 
 h1 {
   font-size: 52px;
@@ -69,9 +70,6 @@ h1 {
   background-color: #3154b3;
 }
 
-.footer {
-}
-
 .footer p {
   display: flex;
   align-items: center;
@@ -92,7 +90,7 @@ h1 {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -10;
+  z-index: 1;
 }
 
 .grid-cell {
@@ -120,8 +118,9 @@ h1 {
   top: 0;
   right: 2rem;
   width: 60%;
+  max-width: 1200px;
   height: 100%;
-  z-index: -5;
+  z-index: 2;
   border-radius: 12px;
   pointer-events: none;
 }
@@ -136,6 +135,7 @@ h1 {
 .content-wrapper {
   position: relative;
   width: 100%;
+  z-index: 2;
 }
 
 /* Looks weird on the video */
@@ -156,4 +156,76 @@ h1 {
 .content {
   position: relative;
   max-width: 100%;
+  /* background: rgba(255, 255, 255, 0.8); */
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .background-animation {
+    width: 50%;
+    opacity: 0.7;
+  }
+
+  h1 {
+    font-size: 42px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    text-align: center;
+    align-items: center;
+  }
+
+  .background-animation {
+    width: 100%;
+    right: 0;
+    opacity: 0.4;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    br {
+      display: none;
+    }
+  }
+
+  .inquire-btn {
+    padding: 10px 32px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 32px 16px;
+  }
+
+  h1 {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+
+  .logo img {
+    height: 24px;
+  }
 }
