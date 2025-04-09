@@ -8,12 +8,22 @@
 body {
   display: flex;
   height: 100vh;
+  width: 100vw;
+
+  justify-content: center;
+  align-items: center;
 
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
 
   background-color: #ffffff;
   color: #333;
+}
+
+.mainContainer {
+  height: 100%;
+  width: 100%;
+  display: flex;
 }
 
 /* Layout */
@@ -37,7 +47,7 @@ body {
   position: relative;
   width: 100%;
 
-  z-index: 2;
+  z-index: 4;
 }
 
 .content {
@@ -90,7 +100,10 @@ h1 {
 }
 
 /* Interactive Elements */
-.logo, .inquire-btn, .footer, a {
+.logo,
+.inquire-btn,
+.footer,
+a {
   pointer-events: auto;
 }
 
@@ -104,7 +117,7 @@ h1 {
   font-size: 18px;
   font-weight: 500;
 
-  background-color: #4169E1;
+  background-color: #4169e1;
   color: white;
   cursor: pointer;
 
@@ -162,6 +175,10 @@ h1 {
 
   object-fit: contain;
   border-radius: 12px;
+}
+
+.bottomContainer {
+  display: none;
 }
 
 .grid-background {
@@ -224,56 +241,83 @@ h1 {
 }
 
 @media (max-width: 768px) {
+  .mainContainer {
+    height: fit-content;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .background-animation {
+    width: 90%;
+    position: static;
+    transform: none;
+    transition: none;
+  }
+
   .container {
+    position: static;
+    padding: 0;
+    margin: 0;
+    height: fit-content;
     text-align: center;
     align-items: center;
     justify-content: center;
   }
 
-  .content-wrapper {
-    padding-top: 0;
+  .content {
+    position: static;
+    padding: 0 1rem;
   }
 
-  .background-animation {
-    width: 90%;
-    right: 50%;
-    transform: translate(50%, -50%);
-
-    opacity: 0.3;
+  .content-wrapper {
+    position: static;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .subtitle {
     margin-left: auto;
     margin-right: auto;
     align-self: center;
+    margin-bottom: 0;
   }
 
   .footer {
-    align-self: center;
+    display: none;
+  }
+  .content a {
+    display: none;
   }
 
   .subtitle br {
     display: none;
   }
+
+  .bottomContainer {
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 32px 16px;
-  }
-
   h1 {
     font-size: 40px;
-    margin-bottom: 16px;
   }
 
   .subtitle {
     font-size: 16px;
-    margin-bottom: 32px;
-
     color: #444;
   }
-
 
   .logo img {
     height: 24px;
