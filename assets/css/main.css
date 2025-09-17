@@ -63,9 +63,14 @@ body {
 }
 
 .button-cta {
+  border-radius: 0.35rem;
   background-color: #4265cc;
   color: #ffffff;
   border: none;
+}
+
+.button-cta:hover {
+  background-color: #3350a4;
 }
 
 .button-link {
@@ -201,9 +206,9 @@ body {
   gap: 0.5rem;
 }
 .cta-container {
-  padding: 0.15rem;
+  padding: 0.2rem;
   border: 1px solid #4265cc;
-  border-radius: 0.25rem;
+  border-radius: 0.35rem;
 }
 
 .button-cta-link {
@@ -473,8 +478,10 @@ body {
     margin: 1r.5em 0;
     gap: 0.5rem;
   }
+
   .cta-container {
-    padding: 0.15rem;
+    padding: 0.2rem;
+    font-size: 1rem;
   }
 
   .button-cta-link {
