@@ -68,6 +68,23 @@ body {
   border: none;
 }
 
+.button-link {
+  padding: 0;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: #4265cc;
+}
+
+.button-link:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+#footer-item-a {
+  padding: 0;
+  text-decoration: underline;
+}
+
 .mainContainer {
   height: 100%;
   width: 100%;
@@ -427,8 +444,8 @@ body {
     gap: 0.75rem;
   }
 
-  .accel-logo-container{
-      padding: 0.25rem 0.5rem;
+  .accel-logo-container {
+    padding: 0.25rem 0.5rem;
   }
 
   .hero-title {
