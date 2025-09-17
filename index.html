@@ -11,12 +11,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap"
       rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
     />
-
     <!-- Primary Meta Tags -->
     <title>FinSynth AI - Financial Research Copilot</title>
     <meta name="title" content="FinSynth AI - Financial Research Copilot" />
@@ -53,36 +50,75 @@
 
   <body>
     <div class="mainContainer">
-      <div class="grid-background"></div>
-      <div class="container">
-        <div class="content-wrapper">
-          <div class="content">
-            <div class="logo">
-              <img src="assets/img/full-logo.svg" alt="FinSynth Logo" />
+      <div class="navbar">
+        <img class="navbar-logo" src="assets/img/full-logo.svg" alt="FinSynth Logo" />
+        <div class="navbar-links">
+          <button class="button button-variant-ghost">
+            <a href="https://webapp.finsynth.ai/help-center" target="_blank" rel="noopener noreferrer">Help Center</a>
+          </button>
+          <button class="button button-variant-outline">
+            <a href="https://webapp.finsynth.ai/login" target="_blank" rel="noopener noreferrer">Sign In</a>
+          </button>
+        </div>
+      </div>
+      <div class="hero">
+        <div class="hero-top"></div>
+        <div class="hero-middle">
+          <div class="excel-grid-overlay"></div>
+          <div class="hero-middle-content">
+            <div class="accel-logo-container">
+              <span>Backed by</span> <img class="accel-logo" src="assets/img/accel-logo.svg" alt="Accel Logo" />
             </div>
-            <h1>Financial Research Copilot</h1>
-            <p class="subtitle">
-              Reimagining hedge fund workflows by integrating <br />
-              deepest financial data with context-rich insights
-            </p>
-            <a href="https://forms.office.com/r/U4XhjGSNLn" target="_blank" rel="noopener noreferrer">
-              <button class="inquire-btn">Inquire</button>
-            </a>
+            <div class="hero-title">Query, update and track your financial models natively in excel</div>
+            <div class="hero-subtitle">10x your research productivity and build an edge by integrating filings</div>
+            <div class="hero-cta-container">
+              <div class="cta-container">
+                <button class="button button-cta">
+                  <a
+                    class="button-cta-link"
+                    href="https://forms.office.com/r/U4XhjGSNLn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Enquire now <img src="assets/img/arrow-right.svg" alt="Arrow Right"
+                  /></a>
+                </button>
+              </div>
+              <div class="hero-tag">Trusted by leading global hedge funds</div>
+            </div>
           </div>
         </div>
-
-        <div class="footer">Backed by <img src="assets/img/accel-logo.svg" alt="Accel Logo" /></div>
+        <div class="hero-bottom">
+          <div class="excel-grid-overlay"></div>
+          <div class="hero-bottom-video">
+            <video autoplay loop muted playsinline class="hero-bottom-video-content">
+              <source src="assets/img/addin-demo.webm" type="video/webm" />
+            </video>
+          </div>
+        </div>
       </div>
-      <div class="background-animation">
-        <video autoplay loop muted playsinline>
-          <source src="assets/img/addin-demo.webm" type="video/webm" />
-        </video>
-      </div>
-      <div class="bottomContainer">
-        <a href="https://forms.office.com/r/U4XhjGSNLn" target="_blank" rel="noopener noreferrer">
-          <button class="inquire-btn">Inquire</button>
-        </a>
-        <div>Backed by <img src="assets/img/accel-logo.svg" alt="Accel Logo" /></div>
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-content-left">
+            <img class="footer-logo" src="assets/img/full-logo-white.svg" alt="FinSynth Logo" />
+          </div>
+          <div class="footer-content-right">
+            <div class="footer-resources">
+              <div class="footer-item-header">Resources</div>
+              <div class="footer-item">Contact</div>
+            </div>
+            <div class="footer-socials">
+              <div class="footer-item-header">Social</div>
+              <div class="footer-item">LinkedIn</div>
+              <div class="footer-item">Twitter</div>
+            </div>
+            <div class="footer-legal">
+              <div class="footer-item-header">Legal</div>
+              <div class="footer-item">Privacy Policy</div>
+              <div class="footer-item">Terms of Service</div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright">FinSynth AI © 2025</div>
       </div>
     </div>
   </body>
