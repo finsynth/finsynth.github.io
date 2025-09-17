@@ -216,8 +216,7 @@ body {
 }
 
 .footer {
-  /* background-image: url('../img/footer.svg'); */
-  background-color: #4265cc;
+  background-image: url('../img/footer-bg.svg');
   background-size: cover;
   background-repeat: no-repeat;
   height: fit-content;
