@@ -43,7 +43,9 @@ class ExcelGridBackground {
     if (!heroTop) return
 
     const rect = heroTop.getBoundingClientRect()
-    const columns = Math.ceil(rect.width / this.cellWidth)+1
+    const heroContentWidth = document.querySelector('.hero-middle-content').getBoundingClientRect().width
+    const columns = Math.ceil((rect.width - heroContentWidth) / this.cellWidth)+1
+    const middleColIndex = Math.floor(columns / 2)
     const rows = 3 // Column header + 2 normal rows
 
     // Create grid container for hero-top
@@ -64,7 +66,7 @@ class ExcelGridBackground {
     gridContainer.innerHTML = ''
 
     for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < columns; col++) {
+      for (let col = 0; col < columns+1; col++) {
         const cell = document.createElement('div')
 
         cell.className = 'excel-cell'
@@ -90,9 +92,10 @@ class ExcelGridBackground {
         }
 
         // Apply positioning and sizing (other styles handled by CSS classes)
-        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth}px`
+        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth + (col > middleColIndex ? heroContentWidth-this.cellWidth : 0)}px`
         cell.style.top = `${row * this.cellHeight}px`
         cell.style.width = col === 0 ? `${this.cellWidth/4}px` : `${this.cellWidth}px`
+        cell.style.width = col === middleColIndex ? `${heroContentWidth}px` : cell.style.width
         cell.style.height = `${this.cellHeight}px`
         
         if (row === 0 && col === 0) {
@@ -101,7 +104,8 @@ class ExcelGridBackground {
         } else if (row === 0) {
           // Header cell styling
           cell.style.backgroundColor = 'rgba(246, 248, 250, 0.3)'
-        } else {
+        } 
+        else {
           // Data cell styling
           cell.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
         }
@@ -120,7 +124,9 @@ class ExcelGridBackground {
     if (!heroMiddle) return
 
     const rect = heroMiddle.getBoundingClientRect()
-    const columns = Math.ceil(rect.width / this.cellWidth)+1
+    const heroContentWidth = document.querySelector('.hero-middle-content').getBoundingClientRect().width
+    const columns = Math.ceil((rect.width - heroContentWidth) / this.cellWidth)+1
+    const middleColIndex = Math.floor(columns / 2)
     const rows = 1 // Single row
 
     // Create separate grid overlay div
@@ -142,7 +148,7 @@ class ExcelGridBackground {
     gridOverlay.innerHTML = ''
 
     for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < columns; col++) {
+      for (let col = 0; col < columns+1; col++) {
         const cell = document.createElement('div')
         cell.className = 'excel-cell'
         
@@ -155,9 +161,10 @@ class ExcelGridBackground {
         }
         
         // Apply positioning and sizing (other styles handled by CSS classes)
-        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth}px`
+        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth + (col > middleColIndex ? heroContentWidth-this.cellWidth : 0)}px`
         cell.style.top = '0px' // Always at top
         cell.style.width = col === 0 ? `${this.cellWidth/4}px` : `${this.cellWidth}px`
+        cell.style.width = col === middleColIndex ? `${heroContentWidth}px` : cell.style.width
         cell.style.height = '100%' // Full height of parent
 
         this.cells.push({ element: cell, container: gridOverlay })
@@ -174,7 +181,9 @@ class ExcelGridBackground {
     if (!heroBottom) return
 
     const rect = heroBottom.getBoundingClientRect()
-    const columns = Math.ceil(rect.width / this.cellWidth)+1
+    const heroContentWidth = document.querySelector('.hero-middle-content').getBoundingClientRect().width
+    const columns = Math.ceil((rect.width - heroContentWidth) / this.cellWidth)+1
+    const middleColIndex = Math.floor(columns / 2)
     const rows = Math.ceil(rect.height / this.cellHeight)+1
 
     // Create separate grid overlay div
@@ -196,7 +205,7 @@ class ExcelGridBackground {
     gridOverlay.innerHTML = ''
 
     for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < columns; col++) {
+      for (let col = 0; col < columns+1; col++) {
         const cell = document.createElement('div')
         cell.className = 'excel-cell'
         
@@ -218,9 +227,10 @@ class ExcelGridBackground {
           : `rgba(255, 255, 255, ${fadeOpacity})`
         
         // Apply positioning and sizing (other styles handled by CSS classes)
-        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth}px`
+        cell.style.left = col === 0 ? '0px' : `${this.cellWidth/4 + (col - 1) * this.cellWidth + (col > middleColIndex ? heroContentWidth-this.cellWidth : 0)}px`
         cell.style.top = `${row * this.cellHeight}px`
         cell.style.width = col === 0 ? `${this.cellWidth/4}px` : `${this.cellWidth}px`
+        cell.style.width = col === middleColIndex ? `${heroContentWidth}px` : cell.style.width
         cell.style.height = `${this.cellHeight}px`
         
         // Apply fade-specific styles
