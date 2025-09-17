@@ -220,7 +220,7 @@ class ExcelGridBackground {
         // Calculate transparency - linear fade from top to bottom
         const fadeProgress = row / (rows - 1) // Linear progress from 0 to 1
         const baseOpacity = 0.3 // Start with same subtle opacity as other grids
-        const minOpacity = 0.05 // Minimum opacity at bottom
+        const minOpacity = 0.0 // Minimum opacity at bottom
         const fadeOpacity = baseOpacity - (fadeProgress * (baseOpacity - minOpacity)) // Linear fade from 0.3 to 0.05
         const backgroundColor = col === 0 
           ? `rgba(246, 248, 250, ${fadeOpacity})` 
