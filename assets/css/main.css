@@ -506,13 +506,11 @@ body {
   }
 
   .footer {
-    padding: 1rem 0.5rem;
+    padding: 0.25rem 0.5rem;
   }
 
   .footer-content {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-bottom: 0.5rem;
+    display: none;
   }
 
   .footer-logo {
@@ -535,8 +533,8 @@ body {
   }
 
   .footer-copyright {
-    padding-top: 0.5rem;
-    font-size: 0.75rem;
+    padding-top: 0rem;
+    font-size: 0.5rem;
   }
 }
 
