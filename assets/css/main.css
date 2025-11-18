@@ -297,6 +297,41 @@ body {
   color: #ffffff;
 }
 
+.support-container{
+  height: 100%;
+  width: 100%;
+  padding: 1rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap:1rem;
+}
+
+.support-content{
+  display: flex;
+  flex-direction: column;
+  gap:0.5rem;
+  align-items: center;
+}
+
+.support-heading{
+  font-size: 2rem;
+  font-weight: 600;
+  color: #4265cc;
+}
+
+.support-description{
+   text-align: center;
+   text-wrap: balance;
+}
+
+.support-content button{
+  width:fit-content;
+  padding:0.25rem 0.5rem;
+}
+
+
 /* Excel-like grid styling */
 .excel-grid {
   z-index: 1;
