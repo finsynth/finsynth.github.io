@@ -178,11 +178,15 @@ body {
 }
 
 .hero-title {
-  color: #2c51be;
   font-size: 3rem;
   line-height: 1.2;
   font-weight: 600;
   text-wrap: balance;
+}
+
+.title-text-highlighted {
+  color: #2c51be;
+  text-decoration: underline;
 }
 
 .hero-subtitle {
