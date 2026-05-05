@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
   <head>
@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
     <!-- Primary Meta Tags -->
@@ -55,7 +55,7 @@
           class="navbar-logo"
           src="assets/img/full-logo.svg"
           alt="FinSynth Logo"
-          onclick="window.location.href='https://finsynth.ai/'"
+          onclick="window.location.href = 'https://finsynth.ai/'"
         />
         <div class="navbar-links">
           <button class="button button-variant-outline">
@@ -71,8 +71,10 @@
             <div class="accel-logo-container">
               <img class="accel-logo" src="assets/img/backed-by-accel-logo.svg" alt="Backed by Accel Logo" />
             </div>
-            <div class="hero-title">Query, update and track your financial models natively in excel</div>
-            <div class="hero-subtitle">10x your research productivity and build an edge in public markets</div>
+            <div class="hero-title">
+              Finally, an <span class="title-text-highlighted">auditable</span> spreadsheet agent for buy-side analysts
+            </div>
+            <div class="hero-subtitle">No verification anxiety. No PM second-guessing.</div>
             <div class="hero-cta-container">
               <div class="cta-container">
                 <button class="button button-cta">
@@ -91,10 +93,88 @@
         </div>
         <div class="hero-bottom">
           <div class="excel-grid-overlay"></div>
-          <div class="hero-bottom-video">
+          <!-- <div class="hero-bottom-video">
             <video autoplay loop muted playsinline class="hero-bottom-video-content">
               <source src="assets/img/addin-demo.webm" type="video/webm" />
             </video>
+          </div> -->
+          <div class="features-row">
+            <div class="feature-card">
+              <div class="fc-visual">
+                <div class="viz-cite">
+                  <div class="viz-mini-xl">
+                    <div class="xl-row xl-h">
+                      <div class="xl-corner"></div>
+                      <div class="xl-col-h">B</div>
+                      <div class="xl-col-h">C</div>
+                      <div class="xl-col-h">D</div>
+                    </div>
+                    <div class="xl-row">
+                      <div class="xl-row-h">12</div>
+                      <div class="xl-cell">26,272</div>
+                      <div class="xl-cell xl-active">29,200</div>
+                      <div class="xl-cell">32,640</div>
+                    </div>
+                    <div class="xl-row">
+                      <div class="xl-row-h">13</div>
+                      <div class="xl-cell">22,563</div>
+                      <div class="xl-cell">26,272</div>
+                      <div class="xl-cell">29,200</div>
+                    </div>
+                    <div class="xl-row">
+                      <div class="xl-row-h">14</div>
+                      <div class="xl-cell">2,835</div>
+                      <div class="xl-cell">2,900</div>
+                      <div class="xl-cell">3,090</div>
+                    </div>
+                  </div>
+                  <div class="viz-cite-arrow">&rarr;</div>
+                  <div class="viz-cite-source">
+                    <mark>$29,200M</mark>, up 9.3% sequentially.
+                    <div class="meta">NVDA 10-Q &middot; Page 14</div>
+                  </div>
+                </div>
+              </div>
+              <div class="fc-body">
+                <div class="fc-tag">Auditability</div>
+                <div class="fc-title">Citations on every cell</div>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="fc-visual">
+                <div class="viz-coverage">
+                  <div class="viz-cov-row">
+                    <span>Filings</span>
+                    <span>Transcripts</span>
+                    <span>Press releases</span>
+                  </div>
+                  <div class="viz-cov-row">
+                    <span>IR decks</span>
+                    <span class="custom">+ Custom integrations</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fc-body">
+                <div class="fc-tag">Data integrations</div>
+                <div class="fc-title">Global coverage out of the box, plus custom integrations</div>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="fc-visual">
+                <div class="viz-soc">
+                  <div class="viz-soc-badge">
+                    <span class="viz-soc-text">SOC&nbsp;2</span>
+                    <span class="viz-soc-type">TYPE&nbsp;2</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fc-body">
+                <div class="fc-tag">Compliance</div>
+                <div class="fc-title">SOC 2 Type 2 certified</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -105,7 +185,7 @@
               class="footer-logo"
               src="assets/img/full-logo-white.svg"
               alt="FinSynth Logo"
-              onclick="window.location.href='https://finsynth.ai/'"
+              onclick="window.location.href = 'https://finsynth.ai/'"
             />
           </div>
           <div class="footer-content-right">
@@ -155,7 +235,7 @@
             </div>
           </div>
         </div>
-        <div class="footer-copyright">FinSynth AI © 2025</div>
+        <div class="footer-copyright">FinSynth AI © 2026</div>
       </div>
     </div>
   </body>
