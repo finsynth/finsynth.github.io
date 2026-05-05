@@ -187,6 +187,7 @@ body {
 .title-text-highlighted {
   color: #2c51be;
   text-decoration: underline;
+  font-style: italic;
 }
 
 .hero-subtitle {
