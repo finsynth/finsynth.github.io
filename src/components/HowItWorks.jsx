@@ -132,7 +132,7 @@ export default function HowItWorks() {
   }, [runAnimation])
 
   return (
-    <section className="hiw-section" ref={sectionRef}>
+    <section className="hiw-section" id="how-it-works" ref={sectionRef}>
       <div className="hiw-wrap">
         <div className="hiw-head">
           <p className="hiw-eyebrow">HOW IT WORKS</p>

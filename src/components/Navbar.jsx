@@ -8,15 +8,12 @@ export default function Navbar() {
         onClick={() => window.location.href = 'https://finsynth.ai/'}
       />
       <div className="navbar-links">
-        <a className="nav-link" href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy</a>
-        <a className="nav-link" href="mailto:support@finsynth.ai">Pricing</a>
-        <a className="nav-link" href="mailto:support@finsynth.ai">Case Studies</a>
-        <a className="nav-link" href="mailto:support@finsynth.ai">Enterprise</a>
-        <a className="nav-link" href="mailto:support@finsynth.ai">Changelog</a>
+        <a className="nav-link" href="#how-it-works">How it works</a>
+        <a className="nav-link" href="#p-accuracy">Product</a>
+        <a className="nav-link" href="#security">Security</a>
       </div>
       <div className="navbar-right">
-        <a className="nav-signin" href="https://webapp.finsynth.ai" target="_blank" rel="noopener noreferrer">Log In</a>
-        <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book Demo</a>
+        <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book a demo</a>
       </div>
     </nav>
   );

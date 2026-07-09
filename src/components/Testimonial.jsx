@@ -1,6 +1,6 @@
 export default function Testimonial() {
   return (
-    <section className="testi-sec">
+    <section className="testi-sec" id="customers">
       <div className="wrap">
         <div className="testi-card">
           <div className="testi-stars" aria-hidden="true">
