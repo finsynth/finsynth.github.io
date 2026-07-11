@@ -142,9 +142,8 @@ export default function UseCases() {
     <section className="usecases" id="use-cases">
       <div className="wrap">
         <div className="uc-head">
-          <p className="hiw-eyebrow">USE CASES</p>
-          <h2>What analysts run on FinSynth</h2>
-          <p className="uc-sub">Real tasks, done inside your model, every output cited.</p>
+          <p className="hiw-eyebrow">FEATURES</p>
+          <h2>One agent, every modelling workflow</h2>
         </div>
         <div className="uc-grid">
           {CASES.map((c, i) => (

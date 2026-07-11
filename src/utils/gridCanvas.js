@@ -53,6 +53,34 @@ export function initGrid() {
   const ref = (c, r) => colRef(c) + (r + 1)
   const key = (c, r) => c + '_' + r
 
+  // Clicking a cell echoes a formula into the sticky formula bar next to "fx"
+  const fxNamebox = document.querySelector('.formula-bar-namebox')
+  const fxFormula = document.querySelector('.formula-bar-formula')
+  const fxDefault = fxFormula && { ref: fxNamebox.textContent, f: fxFormula.textContent }
+  let fxTimer = 0
+  const FX_SAMPLES = [
+    '=SUM(B4:B12)*$B$2',
+    '=NPV($B$2,C5:C14)+C4',
+    "=XLOOKUP($A14,'10-K'!A:A,'10-K'!D:D)",
+    '=IRR(D4:D12)',
+    '=B12*(1+B13)',
+    '=AVERAGE(EBITDA_FY22:EBITDA_FY24)',
+    '=D8/D4-1',
+    '=INDEX(Comps!C:C,MATCH($A9,Comps!A:A,0))',
+  ]
+  function echoFormula(cell) {
+    if (!fxDefault || cell.c < 0 || cell.r < 0) return
+    const v = cellValue(cell.c, cell.r)
+    const f = FX_SAMPLES[Math.floor(hash(cell.c, cell.r) * FX_SAMPLES.length)]
+    fxNamebox.textContent = ref(cell.c, cell.r)
+    fxFormula.textContent = f + '  =  ' + v.t
+    clearTimeout(fxTimer)
+    fxTimer = setTimeout(() => {
+      fxNamebox.textContent = fxDefault.ref
+      fxFormula.textContent = fxDefault.f
+    }, 5000)
+  }
+
   let hover = null, pointerOn = false
   let dragStart = null, dragEnd = null, dragging = false
   const sparks = new Map()
@@ -96,6 +124,7 @@ export function initGrid() {
       dragging = true
       const p = toLocal(e)
       dragStart = dragEnd = cellAt(p.x, p.y)
+      echoFormula(dragStart)
     })
     const endDrag = () => {
       dragging = false
@@ -278,6 +307,7 @@ export function initGrid() {
 
   return () => {
     alive = false
+    clearTimeout(fxTimer)
     if (rafId) cancelAnimationFrame(rafId)
     window.removeEventListener('resize', resize)
     document.removeEventListener('pointermove', onMove)

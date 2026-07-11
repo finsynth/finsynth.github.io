@@ -15,7 +15,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Book a demo <span aria-hidden="true">→</span>
+              <span className="foot-cta-btn-inner">Book a demo <span aria-hidden="true">→</span></span>
             </a>
           </div>
         </div>

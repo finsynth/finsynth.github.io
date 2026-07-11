@@ -32,12 +32,29 @@ const FAQS = [
 ]
 
 export default function Faq() {
-  const [open, setOpen] = useState(0)
+  const [open, setOpen] = useState(-1)
 
   return (
     <section className="faq" id="faq">
-      <div className="wrap faq-wrap">
-        <h2 className="faq-title">Questions analysts ask</h2>
+      <div className="wrap faq-grid">
+        <div className="faq-intro">
+          <h2 className="faq-title">Frequently Asked Questions</h2>
+          <p className="faq-sub">
+            Clear, zero-fluff technical and operational answers about how FinSynth
+            builds, cites, and secures your financial models.
+          </p>
+          <div className="faq-contact">
+            <span className="faq-contact-line" aria-hidden="true" />
+            <a className="faq-contact-chip" href="mailto:support@finsynth.ai">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 6 10-6" />
+              </svg>
+              support@finsynth.ai
+            </a>
+          </div>
+        </div>
+
         <div className="faq-list">
           {FAQS.map((item, i) => {
             const isOpen = open === i
@@ -50,7 +67,7 @@ export default function Faq() {
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >
                   <span>{item.q}</span>
-                  <span className="faq-toggle" aria-hidden="true">{isOpen ? '×' : '+'}</span>
+                  <span className="faq-toggle" aria-hidden="true">{isOpen ? '−' : '+'}</span>
                 </button>
                 <div className="faq-a" hidden={!isOpen}>
                   <p>{item.a}</p>

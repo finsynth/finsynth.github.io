@@ -2,17 +2,26 @@ import { useRef, useEffect, useState } from 'react';
 
 const PILLARS = [
   {
-    id: 'accuracy',
-    label: 'Accuracy',
+    id: 'build',
+    label: 'Build models',
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
-        <circle cx="8" cy="8" r="6.2" /><circle cx="8" cy="8" r="2.6" /><circle cx="8" cy="8" r="0.5" fill="currentColor" />
+        <rect x="2" y="2" width="12" height="12" rx="1.2" /><path d="M2 5.6h12M5.6 5.6V14M8.4 8h4M8.4 10.5h4" />
       </svg>
     ),
   },
   {
-    id: 'auditability',
-    label: 'Auditability',
+    id: 'update',
+    label: 'Update & extend',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
+        <path d="M11 2.5l2.5 2.5-8 8-3 .5.5-3 8-8z" /><path d="M3 14h5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'citations',
+    label: 'Cell-level citations',
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
         <path d="M4 1.8h6l3 3v9.4H4z" /><path d="M10 1.8v3h3" /><path d="M6 9.2l1.5 1.5 3-3" />
@@ -20,20 +29,29 @@ const PILLARS = [
     ),
   },
   {
-    id: 'data',
-    label: 'Data Coverage',
+    id: 'grounded',
+    label: 'Source-grounded',
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
-        <circle cx="8" cy="8" r="6.2" /><path d="M1.8 8h12.4M8 1.8c2.2 2 2.2 10.4 0 12.4M8 1.8c-2.2 2-2.2 10.4 0 12.4" />
+        <path d="M4.5 2h7a1 1 0 0 1 1 1v11l-4.5-2.5L3.5 14V3a1 1 0 0 1 1-1z" />
       </svg>
     ),
   },
   {
-    id: 'speed',
-    label: 'Speed',
+    id: 'approval',
+    label: 'Human-in-the-loop',
     icon: (
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
-        <path d="M8.8 1.5 3.5 9h4l-.8 5.5L12.5 7h-4l.3-5.5z" strokeLinejoin="round" />
+        <circle cx="6.5" cy="5" r="2.6" /><path d="M2 14c.4-3 2.2-4.6 4.5-4.6S10.6 11 11 14" /><path d="M10.5 6.5 12 8l2.5-2.5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'excel',
+    label: 'Native to Excel',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3">
+        <rect x="2" y="2.5" width="12" height="11" rx="1" /><path d="M2 6h12M6.5 6v7.5M10.2 6v7.5M2 9.7h12" />
       </svg>
     ),
   },
@@ -132,7 +150,23 @@ function BenchmarkCard() {
 
 const ACCURACY_SHEETS = [
   {
-    tab: 'Formula-driven',
+    tab: 'Describe',
+    title: 'Describe it in plain English',
+    desc: '"Build a revenue model for AAPL with segment detail through FY27" — that\'s the whole input.',
+    ref: 'A1',
+    fx: 'Build a revenue model for AAPL…',
+    demo: <><span className="accwb-demo-chip">Build a revenue model for AAPL, segment detail, through FY27</span></>,
+  },
+  {
+    tab: 'Structure',
+    title: 'A structured model, not a blob',
+    desc: 'Schedules, drivers, and assumptions laid out the way an analyst would build them.',
+    ref: 'A1',
+    fx: 'Revenue Build ($ in millions)',
+    demo: <><span className="accwb-demo-chip">Revenue Build</span><span className="accwb-demo-chip">Drivers</span><span className="accwb-demo-chip">Assumptions</span></>,
+  },
+  {
+    tab: 'Formulas',
     title: 'Formula-driven outputs',
     desc: 'Every value is computed via auditable Excel formulas, not opaque model generations.',
     ref: 'B14',
@@ -140,28 +174,12 @@ const ACCURACY_SHEETS = [
     demo: <><span className="accwb-demo-ref">B14</span><span className="accwb-demo-fx">fx</span><span className="accwb-demo-code">=SUM(B4:B12)*B2</span></>,
   },
   {
-    tab: 'Source-grounded',
-    title: 'Source-grounded numbers',
-    desc: 'All financial figures are extracted verbatim from filings, transcripts, and decks — never inferred.',
+    tab: 'Audit-ready',
+    title: 'Ready to audit on arrival',
+    desc: 'Inputs are extracted from filings and cited, so your first pass is verification — not a rebuild.',
     ref: 'C8',
     fx: '391035 · source: 10-K FY2024 p.28',
     demo: <><span className="accwb-demo-code">$391.0B</span><span className="accwb-demo-arrow">←</span><span className="accwb-demo-chip">10-K FY2024 · p.28</span></>,
-  },
-  {
-    tab: 'Non-destructive',
-    title: 'Non-destructive edits',
-    desc: 'FinSynth never overwrites your existing work without a diff preview and explicit approval.',
-    ref: 'B14',
-    fx: '=B12*(1+B13) · pending approval',
-    demo: <><span className="accwb-demo-ref">B14</span><span className="accwb-demo-old">$88.1B</span><span className="accwb-demo-arrow">→</span><span className="accwb-demo-new">$94.9B</span><span className="accwb-demo-chip accwb-demo-approve">Approve?</span></>,
-  },
-  {
-    tab: 'Formatting',
-    title: 'Professional formatting preserved',
-    desc: "Outputs match your firm's model standards — headers, units, color coding, and decimal precision.",
-    ref: 'A1',
-    fx: 'Revenue Build ($ in millions)',
-    demo: <><span className="accwb-demo-chip">$ in millions</span><span className="accwb-demo-chip">1 decimal</span><span className="accwb-demo-chip">firm color coding</span></>,
   },
 ];
 
@@ -175,7 +193,7 @@ function AccuracyWorkbook() {
     <div className="accwb">
       <div className="accwb-titlebar">
         <span className="accwb-logo">X</span>
-        <span className="accwb-name">Accuracy.xlsx</span>
+        <span className="accwb-name">Model_Build.xlsx</span>
       </div>
       <div className="accwb-fxbar">
         <span className="accwb-namebox">{sheet.ref}</span>
@@ -197,7 +215,7 @@ function AccuracyWorkbook() {
           <div className="accwb-demo">{sheet.demo}</div>
         </div>
       </div>
-      <div className="accwb-tabs" role="tablist" aria-label="Accuracy features">
+      <div className="accwb-tabs" role="tablist" aria-label="From prompt to working model">
         {ACCURACY_SHEETS.map((s, i) => (
           <button
             key={s.tab}
@@ -282,37 +300,108 @@ function DataVisual() {
   );
 }
 
-function SpeedVisual() {
-  const ROWS = [
-    { who: 'First-year analyst', time: '3 days', w: '100%', slow: true },
-    { who: 'Offshore team', time: '1 day', w: '40%', slow: true },
-    { who: 'FinSynth AI', time: '< 1 hour', w: '8%', slow: false },
+function UpdateVisual() {
+  return (
+    <div className="pviz pviz-audit">
+      <div className="pviz-cellbar">
+        <span className="pviz-ref">B14</span>
+        <span className="pviz-val">$94.9B</span>
+        <span className="pviz-tracebadge">refreshed</span>
+      </div>
+      <div className="pviz-cite">
+        <div className="pviz-cite-src">New filing detected · 10-Q Q3</div>
+        <p className="pviz-cite-quote">17 affected cells identified across Revenue Build and Comps — refreshed with citations attached.</p>
+      </div>
+      <div className="pviz-log">
+        <div className="pviz-log-title">Refresh log</div>
+        {[
+          ['10:02', 'B14: $88.1B → $94.9B', 'approved'],
+          ['10:02', 'C22: 41.8% → 43.2%', 'approved'],
+          ['10:01', 'Source linked: 10-Q Q3', 'auto'],
+        ].map(([t, a, tag], i) => (
+          <div className="pviz-log-row" key={i}>
+            <span className="pviz-log-t">{t}</span>
+            <span className="pviz-log-a">{a}</span>
+            <span className={`pviz-log-tag${tag === 'approved' ? ' ok' : ''}`}>{tag}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ApprovalVisual() {
+  return (
+    <div className="pviz pviz-audit">
+      <div className="pviz-cellbar">
+        <span className="pviz-ref">B14</span>
+        <span className="pviz-val">=B12*(1+B13)</span>
+        <span className="pviz-tracebadge">pending</span>
+      </div>
+      <div className="pviz-cite">
+        <div className="pviz-cite-src">Diff preview</div>
+        <p className="pviz-cite-quote">$88.1B → $94.9B — nothing is written to your model until you approve.</p>
+      </div>
+      <div className="pviz-log">
+        <div className="pviz-log-title">Approval log</div>
+        {[
+          ['09:41', 'Write B14 → $94.9B', 'approved'],
+          ['09:40', 'Refresh comps D2:D9', 'approved'],
+          ['09:38', 'Proposed: extend FY26 col', 'pending'],
+        ].map(([t, a, tag], i) => (
+          <div className="pviz-log-row" key={i}>
+            <span className="pviz-log-t">{t}</span>
+            <span className="pviz-log-a">{a}</span>
+            <span className={`pviz-log-tag${tag === 'approved' ? ' ok' : ''}`}>{tag}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExcelVisual() {
+  const ITEMS = [
+    { name: 'Excel add-in', meta: 'Windows · Mac' },
+    { name: 'Web app', meta: 'browser-based' },
+    { name: 'Macros preserved', meta: 'nothing breaks' },
+    { name: 'Shortcuts intact', meta: 'your workflow' },
+    { name: 'Local workbook', meta: 'runs on device' },
+    { name: 'No data uploads', meta: 'stays with you' },
   ];
   return (
-    <div className="pviz pviz-speed">
-      <div className="pviz-speed-title">Time to a complete model</div>
-      {ROWS.map((r) => (
-        <div className={`pviz-speed-row${r.slow ? '' : ' win'}`} key={r.who}>
-          <div className="pviz-speed-meta">
-            <span className="pviz-speed-who">{r.who}</span>
-            <span className="pviz-speed-time">{r.time}</span>
+    <div className="pviz pviz-data">
+      <div className="pviz-data-head">
+        <span className="pviz-globe" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
+            <rect x="3" y="4" width="18" height="16" rx="1.5" /><path d="M3 9h18M9.5 9v11M15 9v11M3 14.5h18" />
+          </svg>
+        </span>
+        <span>Runs in your environment</span>
+      </div>
+      <div className="pviz-data-grid">
+        {ITEMS.map((s) => (
+          <div className="pviz-srccard" key={s.name}>
+            <span className="pviz-srccheck" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+            <span className="pviz-srcname">{s.name}</span>
+            <span className="pviz-srcmeta">{s.meta}</span>
           </div>
-          <div className="pviz-speed-track">
-            <span className="pviz-speed-fill" style={{ width: r.w }} />
-          </div>
-        </div>
-      ))}
-      <div className="pviz-speed-foot">Parallel research across dozens of sources — no sequential waiting.</div>
+        ))}
+      </div>
     </div>
   );
 }
 
 const PILLAR_CONTENT = {
-  accuracy: {
-    eyebrow: 'Accuracy',
-    headline: <>Built to be right,<br />not just confident</>,
-    lead: 'FinSynth uses a structured research pipeline — not a single prompt.',
-    rest: 'Every number is produced with formulas and sources, so you can verify outputs cell by cell.',
+  build: {
+    eyebrow: 'Build models',
+    headline: <>Describe the analysis,<br />get a working model</>,
+    lead: 'Describe the analysis in plain English.',
+    rest: 'FinSynth assembles a fully structured model — schedules, drivers, and formulas — ready to audit.',
     body: (
       <div className="pillar-grid-new">
         <AccuracyWorkbook />
@@ -320,11 +409,27 @@ const PILLAR_CONTENT = {
       </div>
     ),
   },
-  auditability: {
-    eyebrow: 'Auditability',
+  update: {
+    eyebrow: 'Update & extend',
+    headline: <>Point it at the model<br />you already use</>,
+    lead: 'No template, no rebuild.',
+    rest: 'FinSynth refreshes figures, adds periods, and extends logic without breaking your structure.',
+    body: (
+      <div className="pillar-grid-new">
+        <div className="points">
+          <div className="point"><span className="n">1</span><div><h3>New-quarter refresh</h3><p>When a new filing drops, affected cells are identified and refreshed with citations attached.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Extend without breaking</h3><p>New periods and schedules follow your existing structure, formats, and naming conventions.</p></div></div>
+          <div className="point"><span className="n">3</span><div><h3>Your formulas stay yours</h3><p>Existing logic is preserved — FinSynth extends it rather than replacing it with its own.</p></div></div>
+        </div>
+        <UpdateVisual />
+      </div>
+    ),
+  },
+  citations: {
+    eyebrow: 'Cell-level citations',
     headline: <>Every cell traces<br />to a primary source</>,
-    lead: 'Audit trail is built in — not bolted on afterward.',
-    rest: 'PM challenge mode or compliance review: click any cell and see the exact document, page, and quote behind it.',
+    lead: 'Click any cell to see the document behind it.',
+    rest: 'SEC filings, live quotes, or your own inputs — down to the exact page and quote.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
@@ -337,11 +442,11 @@ const PILLAR_CONTENT = {
       </div>
     ),
   },
-  data: {
-    eyebrow: 'Data Coverage',
-    headline: <>Every source your<br />analyst would check</>,
-    lead: 'FinSynth ingests the full research stack.',
-    rest: 'Structured, unstructured, public, and proprietary — filings, transcripts, decks, and your own data.',
+  grounded: {
+    eyebrow: 'Source-grounded numbers',
+    headline: <>Numbers extracted,<br />never inferred</>,
+    lead: 'Every figure is extracted verbatim from primary documents.',
+    rest: 'Filings, transcripts, and decks — never inferred, never hallucinated.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
@@ -354,31 +459,51 @@ const PILLAR_CONTENT = {
       </div>
     ),
   },
-  speed: {
-    eyebrow: 'Speed',
-    headline: <>From question to<br />model in minutes</>,
-    lead: 'Significantly faster than humans on complex, long-running work.',
-    rest: 'Instant turnaround on quick tasks, parallel research on the heavy ones.',
+  approval: {
+    eyebrow: 'Human-in-the-loop',
+    headline: <>The agent proposes,<br />you approve</>,
+    lead: 'No autonomous writes to your model.',
+    rest: 'Every cell change is previewed as a diff and lands only with your sign-off.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
-          <div className="point"><span className="n">1</span><div><h3>10× faster than manual research</h3><p>A model that takes a first-year analyst 3 days takes FinSynth under an hour.</p></div></div>
-          <div className="point"><span className="n">2</span><div><h3>Parallel research execution</h3><p>FinSynth queries dozens of sources simultaneously — no sequential waiting.</p></div></div>
+          <div className="point"><span className="n">1</span><div><h3>Diff preview on every write</h3><p>See exactly which cells change and how, before anything touches your workbook.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Permission-gated by design</h3><p>The agent can't overwrite your work on its own — every landed cell is one you signed off on.</p></div></div>
+          <div className="point"><span className="n">3</span><div><h3>Reviewable history</h3><p>Every approval and rejection is logged, so reviews and rollbacks are straightforward.</p></div></div>
         </div>
-        <SpeedVisual />
+        <ApprovalVisual />
+      </div>
+    ),
+  },
+  excel: {
+    eyebrow: 'Native to Excel',
+    headline: <>Runs where your<br />models already live</>,
+    lead: 'An add-in alongside your real workbook.',
+    rest: 'Your macros, formulas, and shortcuts keep working — nothing leaves your environment.',
+    body: (
+      <div className="pillar-grid-new">
+        <div className="points">
+          <div className="point"><span className="n">1</span><div><h3>Excel add-in and web app</h3><p>Works inside Excel on Windows and Mac, with a browser-based web app alongside.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Nothing leaves your machine</h3><p>Excel runs locally — the backend never reads or stores your workbook.</p></div></div>
+          <div className="point"><span className="n">3</span><div><h3>Your workflow, unchanged</h3><p>Macros, formulas, and shortcuts keep working exactly as they did before.</p></div></div>
+        </div>
+        <ExcelVisual />
       </div>
     ),
   },
 };
 
 export function Pillars() {
-  const [active, setActive] = useState('accuracy');
+  const [active, setActive] = useState('build');
   const c = PILLAR_CONTENT[active];
   return (
     <section className="pillar-new" id="p-accuracy">
       <div className="wrap">
+        <div className="pillar-sec-head">
+          <p className="hiw-eyebrow">CAPABILITIES</p>
+          <h2>Everything an analyst does, in your spreadsheet</h2>
+        </div>
         <div className="pillar-band">
-          <p className="pillar-band-title">An agent built for institutional research</p>
           <PillarNav active={active} onSelect={setActive} />
         </div>
         <div className="pillar-pane" key={active}>
