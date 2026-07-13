@@ -46,15 +46,6 @@ export default function BeforeAfter() {
               <div className="bsp-row"><span className="bsp-num">3</span><span className="bsp-cell"></span></div>
             </div>
 
-            <div className="bsp-approve" aria-hidden="true">
-              <span className="bsp-approve-note">Powered by FinSynth</span>
-              <span className="bsp-approve-btn">
-                Approve write
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
-            </div>
           </div>
         </div>
       </div>

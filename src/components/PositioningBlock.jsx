@@ -1,3 +1,5 @@
+import VideoCard from './VideoCard'
+
 /* ── Mini visuals ─────────────────────────────── */
 
 function VizCitation() {
@@ -109,6 +111,9 @@ export default function PositioningBlock() {
               </div>
             </div>
           ))}
+        </div>
+        <div className="pos-video">
+          <VideoCard />
         </div>
       </div>
     </section>

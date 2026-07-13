@@ -8,7 +8,6 @@ import HowItWorks from '../components/HowItWorks'
 import Setup from '../components/Setup'
 import { Pillars } from '../components/PillarSections'
 import Auditability from '../components/Auditability'
-import VideoSection from '../components/VideoSection'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
 import Faq from '../components/Faq'
@@ -39,8 +38,6 @@ function Home() {
       <Setup />
       <SectionRule />
       <Pillars />
-      <SectionRule />
-      <VideoSection />
       <SectionRule />
       <Testimonial />
       <SectionRule />

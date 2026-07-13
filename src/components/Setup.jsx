@@ -84,7 +84,11 @@ export default function Setup() {
         // line starts drawing when the timeline top passes 78% of the
         // viewport and finishes as its bottom approaches the same mark
         const start = window.innerHeight * 0.78
-        const p = (start - r.top) / r.height
+        // horizontal (desktop) layout is much shorter, so drive progress
+        // over a fixed viewport-based distance instead of the element height
+        const horizontal = window.matchMedia('(min-width: 901px)').matches
+        const denom = horizontal ? window.innerHeight * 0.45 : r.height
+        const p = (start - r.top) / denom
         setProgress(Math.max(0, Math.min(1, p)))
       })
     }

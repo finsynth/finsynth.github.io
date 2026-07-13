@@ -73,6 +73,9 @@ function PillarNav({ active, onSelect }) {
           <span className="pn-label">{p.label}</span>
         </button>
       ))}
+      <button type="button" className="pn-item" disabled>
+        <span className="pn-label">And more</span>
+      </button>
     </nav>
   );
 }

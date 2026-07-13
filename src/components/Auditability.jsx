@@ -74,10 +74,6 @@ function SceneVerify() {
           </div>
         ))}
       </div>
-      <div className="astage-zero">
-        <span className="astage-zero-num">0</span>
-        <span className="astage-zero-cap">unattributed cells in any FinSynth output</span>
-      </div>
     </>
   )
 }

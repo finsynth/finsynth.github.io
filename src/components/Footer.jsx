@@ -5,20 +5,6 @@ export default function Footer() {
         <div className="foot-brand">
           <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
         </div>
-        <div className="foot-cta">
-          <h2>See FinSynth on your own models</h2>
-          <div className="foot-cta-right">
-            <p>Book a 20-minute call and we'll run a live analysis on a company you cover — citations and all.</p>
-            <a
-              className="foot-cta-btn"
-              href="https://calendly.com/kartik-finsynth/intro"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="foot-cta-btn-inner">Book a demo <span aria-hidden="true">→</span></span>
-            </a>
-          </div>
-        </div>
         <div className="foot-grid-new">
           <div>
             <h4>Product</h4>
