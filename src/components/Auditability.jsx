@@ -17,9 +17,11 @@ export default function Auditability() {
   return (
     <section className="audit-sec" id="auditability">
       <div className="wrap">
+        <div className="hiw-head">
+          <p className="hiw-eyebrow">Why FinSynth</p>
+        </div>
         <div className="audit-grid">
           <div>
-            <p className="hiw-eyebrow">AUDITABILITY</p>
             <h2 className="audit-title">Every number traces back to its source</h2>
             <p className="audit-sub">Auditability isn't a feature we bolted on. It's how the agent works.</p>
             <div className="points">

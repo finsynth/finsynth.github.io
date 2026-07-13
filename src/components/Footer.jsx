@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="foot-cta">
           <h2>See FinSynth on your own models</h2>
           <div className="foot-cta-right">
-            <p>Book a 20-minute call and we'll run a live analysis on a company you cover — citations and all.</p>
+            <p>Book a 20-minute call and we'll run a live analysis on a company you cover.</p>
             <a
               className="foot-cta-btn"
               href="https://calendly.com/kartik-finsynth/intro"

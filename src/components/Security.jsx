@@ -95,8 +95,8 @@ export default function Security() {
     <section className="sec-trust" id="security">
       <div className="wrap">
         <div className="sec-trust-head">
-          <h2>Your files never leave<br />your machine</h2>
-          <p>For a buy-side team, security is the first question. Here are the answers.</p>
+          <h2>Enterprise ready</h2>
+          <p>Your files never leave your machine.</p>
         </div>
         <div className="sec-trust-grid">
           {CARDS.map(c => (

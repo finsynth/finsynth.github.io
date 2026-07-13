@@ -9,7 +9,7 @@ export default function Navbar() {
       />
       <div className="navbar-links">
         <a className="nav-link" href="#how-it-works">How it works</a>
-        <a className="nav-link" href="#p-accuracy">Product</a>
+        <a className="nav-link" href="#use-cases">Product</a>
         <a className="nav-link" href="#security">Security</a>
       </div>
       <div className="navbar-right">
