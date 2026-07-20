@@ -34,6 +34,8 @@ export default function Footer() {
               <a href="#how-it-works">How it works</a>
               <a href="#use-cases">Use cases</a>
               <a href="#security">Security</a>
+              <a href="#faq">FAQ</a>
+              <a href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book a demo</a>
             </div>
             <div className="foot-reveal">
               <h4>Legal</h4>
