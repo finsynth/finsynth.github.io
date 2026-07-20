@@ -843,16 +843,23 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* ════════ FOOTER (new style) ════════ */
 .footer-new {
-  background: var(--grad-dark); color: #E7ECE9; padding: 96px 0 40px;
+  /* soft aurora mesh in brand blues — deep enough to keep white text legible */
+  background:
+    radial-gradient(75% 85% at 12% -5%, rgba(53,80,200,.55), transparent 60%),
+    radial-gradient(70% 80% at 88% 8%, rgba(107,132,232,.42), transparent 58%),
+    radial-gradient(85% 70% at 68% 92%, rgba(91,110,230,.32), transparent 62%),
+    radial-gradient(120% 110% at 45% 115%, rgba(36,56,168,.55), transparent 60%),
+    linear-gradient(180deg, #16244e 0%, #1a2a60 46%, #1b2c6b 100%);
+  color: #E7ECE9; padding: 96px 0 40px;
   border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, transparent, rgba(255,255,255,.14) 50%, transparent) 1;
+  border-image: linear-gradient(90deg, transparent, rgba(255,255,255,.16) 50%, transparent) 1;
   position: relative; overflow: hidden; z-index: 6 /* covers the page rails */
 }
-/* soft ambient glow — depth without a hard light source */
+/* bright focal bloom — the luminous highlight in the aurora */
 .footer-new::before {
-  content: ''; position: absolute; top: -46%; left: 50%; width: 920px; height: 620px;
+  content: ''; position: absolute; top: -34%; left: 46%; width: 1040px; height: 680px;
   transform: translateX(-50%);
-  background: radial-gradient(50% 50% at 50% 50%, rgba(107,132,232,.15), transparent 70%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(122,146,240,.30), rgba(107,132,232,.10) 45%, transparent 72%);
   pointer-events: none;
 }
 .footer-new .wrap { position: relative; z-index: 1 }
