@@ -1,48 +1,64 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const FAQS = [
   {
+    q: 'How do I get access, and what does it cost?',
+    a: "FinSynth is currently available to select funds. Book a demo and we'll walk you through access for your team.",
+  },
+  {
     q: 'Does FinSynth make up numbers?',
-    a: "No figure is written without a citation to its source. If FinSynth can't find and cite a number, it won't invent one. And you approve every write before it lands.",
+    a: "No. Every figure is written with a citation to its source. If FinSynth can't find and cite a number, it won't invent one, and nothing gets written to your model without your approval first.",
   },
   {
     q: 'Does my data or model ever leave my machine?',
-    a: 'No. Excel runs locally. The backend never reads or stores your workbook.',
+    a: "No. Excel operations run locally, on your machine. FinSynth's backend never reads, stores, or transmits your workbook.",
   },
   {
-    q: 'Does it work with my existing models?',
-    a: 'Yes, FinSynth works inside your existing workbooks. No template, no rebuild.',
+    q: 'Does FinSynth work with my existing models?',
+    a: 'Yes, FinSynth works inside your existing Excel workbooks. No template, no rebuild required.',
   },
   {
-    q: 'Which surfaces does it run on?',
-    a: 'An Excel add-in and a webapp. Windows and Mac.',
+    q: 'Which surfaces does FinSynth run on?',
+    a: 'An Excel add-in and a webapp, the same agent either way.',
   },
   {
-    q: 'What data does it cover?',
-    a: 'Filings, transcripts, reports, and presentations across 12,000+ global companies.',
+    q: 'What data does FinSynth cover?',
+    a: 'Filings, transcripts, reports, and presentations across 12k+ global companies.',
   },
   {
-    q: 'How is it different from a general AI assistant?',
-    a: "It's built for financial work on Anthropic Claude — every number is cited to its source, and nothing is written to your model without your approval. Audit-friendly, citation-grounded and permission-gated by design.",
-  },
-  {
-    q: 'How do I get access?',
-    a: "FinSynth is currently available to select funds. Book a demo and we'll walk you through access for your team.",
+    q: 'How is FinSynth different from a general AI assistant?',
+    a: "It's built specifically for financial work: it cites every number to its source, and never writes to your model without your approval.",
   },
 ]
 
 export default function Faq() {
   const [open, setOpen] = useState(-1)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            el.classList.add('is-in')
+            io.disconnect()
+          }
+        })
+      },
+      { threshold: 0.15 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   return (
-    <section className="faq" id="faq">
+    <section className="faq" id="faq" ref={ref}>
       <div className="wrap faq-grid">
         <div className="faq-intro">
-          <h2 className="faq-title">Frequently Asked Questions</h2>
-          <p className="faq-sub">
-            Clear, zero-fluff technical and operational answers about how FinSynth
-            builds, cites, and secures your financial models.
-          </p>
+          <p className="faq-eyebrow">Frequently Asked Questions</p>
+          <h2 className="faq-title">Curious about FinSynth?<br />We got you covered.</h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
             <a className="faq-contact-chip" href="mailto:support@finsynth.ai">
@@ -67,10 +83,12 @@ export default function Faq() {
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >
                   <span>{item.q}</span>
-                  <span className="faq-toggle" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                  <span className="faq-toggle" aria-hidden="true" />
                 </button>
-                <div className="faq-a" hidden={!isOpen}>
-                  <p>{item.a}</p>
+                <div className="faq-a" role="region" aria-hidden={!isOpen}>
+                  <div className="faq-a-inner">
+                    <p>{item.a}</p>
+                  </div>
                 </div>
               </div>
             )
