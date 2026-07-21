@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useReveal from '../hooks/useReveal'
 
 const POINTS = [
   {
@@ -84,6 +85,7 @@ const SCENES = [<SceneCitation />, <SceneApprove />, <SceneVerify />]
 
 export default function Auditability() {
   const pointRefs = useRef([])
+  const revealRef = useReveal()
   const [active, setActive] = useState(0)
 
   useEffect(() => {
@@ -105,7 +107,7 @@ export default function Auditability() {
   }, [])
 
   return (
-    <section className="audit-sec" id="auditability">
+    <section className="audit-sec" id="auditability" ref={revealRef}>
       <div className="wrap">
         <div className="audit-grid">
           <div>

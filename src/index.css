@@ -1340,37 +1340,18 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--secondary); margin-top: 16px; max-width: 560px; margin-left: auto; margin-right: auto;
 }
 
-/* Featured (dark) + side cards */
-.testi-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; align-items: stretch }
-.testi-feature {
-  background: var(--grad-dark); border-radius: 16px; color: #fff;
-  padding: 40px 44px 36px; display: flex; flex-direction: column;
-  box-shadow: 0 30px 60px -30px rgba(14,26,58,.45);
-}
-.testi-feature-brand {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 600; letter-spacing: -.01em;
-}
-.testi-feature-mark { font-size: 12px; color: var(--blue-light) }
-.testi-feature-quote {
-  font-family: var(--font-body); font-size: clamp(19px, 1.8vw, 24px); font-weight: 500;
-  line-height: 1.5; letter-spacing: -.01em; margin-top: 36px;
-}
-.testi-feature .testi-author { margin-top: auto; padding-top: 56px }
-.testi-feature .testi-name { color: #fff }
-.testi-feature .testi-role { color: rgba(255,255,255,.6) }
-
-.testi-side { display: flex; flex-direction: column; gap: 24px }
-.testi-card-sm {
-  flex: 1; border: 1px solid var(--hair); border-radius: 14px; background: #fff;
-  padding: 26px 30px 24px; box-shadow: 0 14px 34px -26px rgba(20,36,46,.25);
+/* Three equal cards */
+.testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch }
+.testi-card {
+  border: 1px solid var(--hair); border-radius: 14px; background: #fff;
+  padding: 32px 32px 28px; box-shadow: 0 14px 34px -26px rgba(20,36,46,.25);
   display: flex; flex-direction: column;
 }
-.testi-sm-quote {
-  font-family: var(--font-body); font-size: var(--fs-body); line-height: var(--lh-body);
-  color: var(--ink); margin-top: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--hair);
+.testi-quote {
+  font-family: var(--font-body); font-size: clamp(16px, 1.15vw, 18px); line-height: 1.55;
+  color: var(--ink); padding-bottom: 24px; border-bottom: 1px solid var(--hair);
 }
-.testi-card-sm .testi-author { margin-top: auto; padding-top: 18px }
+.testi-card .testi-author { margin-top: auto; padding-top: 22px }
 
 /* Author row (shared) */
 .testi-author { display: flex; align-items: center; gap: 12px }
@@ -1385,8 +1366,7 @@ button.play { border: none; padding: 0; appearance: none }
 
 @media (max-width: 900px) {
   .testi-grid { grid-template-columns: 1fr }
-  .testi-feature { padding: 32px 28px 30px }
-  .testi-feature .testi-author { padding-top: 36px }
+  .testi-card { padding: 28px 28px 26px }
 }
 
 /* ════════ CTA BAND ════════ */
@@ -2430,35 +2410,57 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--ink);
 }
 
-.bsp-sub {
-  font-family: var(--font-body);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  color: var(--secondary);
-  max-width: 480px;
-  margin: 18px auto 0;
-}
-
-/* ── Split panel ── */
-.bsp-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 40px 80px -40px rgba(14, 26, 46, .35);
-}
-
-.bsp-side {
-  padding: 56px 56px 60px;
+/* ── Comparison groups ── */
+.why-groups {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 52px;
 }
 
-.bsp-side-dark { background: #16181D; }
-.bsp-side-blue { background: var(--grad-dark); }
+.why-group-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: 600;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
 
-.bsp-eyebrow {
+.why-group-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hair);
+}
+
+.why-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.why-card {
+  background: #fff;
+  border: 1px solid var(--hair);
+  border-radius: 18px;
+  padding: 24px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 2px rgba(20, 36, 46, .04);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+.why-card:hover {
+  border-color: var(--hair-strong);
+  box-shadow: 0 26px 50px -30px rgba(20, 36, 46, .3);
+  transform: translateY(-2px);
+}
+
+.why-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2467,111 +2469,77 @@ button.play { border: none; padding: 0; appearance: none }
   font-weight: 600;
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, .55);
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
-.bsp-dot {
+.why-tag.old { color: var(--muted); }
+.why-tag.new { color: var(--accent); }
+
+.why-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #8FA6F0;
+  background: var(--accent);
 }
 
-.bsp-dot.red { background: #E5654F; }
+.why-dot.red { background: #E5654F; }
 
-.bsp-side h3 {
+.why-old p {
   font-family: var(--font-body);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: #fff;
-  margin-bottom: 36px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--secondary);
 }
 
-/* ── Spreadsheet fragment ── */
-.bsp-sheet {
-  width: 100%;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 20px 44px -18px rgba(0, 0, 0, .5);
-}
-
-.bsp-row {
-  display: flex;
-  align-items: stretch;
-}
-
-.bsp-row + .bsp-row { border-top: 1px solid var(--hair); }
-
-.bsp-num {
-  flex: 0 0 44px;
+.why-arrow {
+  align-self: flex-start;
+  margin: 14px 0;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  color: var(--muted);
-  background: #F4F6FB;
-  border-right: 1px solid var(--hair);
-}
-
-.bsp-cell {
-  flex: 1;
-  min-height: 40px;
-  padding: 13px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-}
-
-.bsp-cell b {
-  font-family: var(--font-mono);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: .01em;
-}
-
-.bsp-cell i {
-  font-family: var(--font-mono);
-  font-style: normal;
-  font-size: 12px;
-}
-
-.bsp-bad .bsp-cell { background: #FDF4F2; }
-.bsp-bad b, .bsp-bad i { color: #C0452F; }
-
-.bsp-good .bsp-cell { background: #EDF1FC; }
-.bsp-good b, .bsp-good i { color: var(--green-icon); }
-
-/* ── Dark side: manual steps ── */
-.bsp-steps {
-  list-style: none;
-  margin-top: 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.bsp-steps li {
-  display: flex;
-  gap: 10px;
-  font-family: var(--font-body);
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, .5);
+  line-height: 1;
 }
 
-.bsp-steps li span { color: rgba(255, 255, 255, .3); }
+.why-new {
+  background: var(--accent-soft);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-top: auto;
+}
 
-@media (max-width: 900px) {
-  .bsp-sec { padding: 80px 0; }
-  .bsp-split { grid-template-columns: 1fr; }
-  .bsp-side { padding: 44px 28px 48px; }
-  .bsp-side h3 { margin-bottom: 30px; }
+.why-new p {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.why-closing {
+  text-align: center;
+  margin-top: 72px;
+  font-family: var(--font-body);
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+}
+
+.why-closing span { color: var(--accent); }
+
+@media (max-width: 760px) {
+  .bsp-sec { padding: 64px 0 84px; }
+  .why-groups { gap: 44px; }
+  .why-cards { grid-template-columns: 1fr; }
+  .why-closing { margin-top: 56px; }
 }
 
 @media (max-width: 900px) {
@@ -2638,4 +2606,68 @@ button.play { border: none; padding: 0; appearance: none }
   text-transform: uppercase;
   color: var(--accent);
   white-space: nowrap;
+}
+
+/* ── Scroll-reveal entrances ───────────────────────────────────
+   Sections fade + rise into place once scrolled into view (`is-in`
+   added by useReveal). Entrances use the house ease-out curve so
+   they arrive fast and settle gently. Cards use keyframe animations
+   (not transitions) so the reveal never fights their hover translate.
+   Reduced-motion is fully honored below. */
+@keyframes sectionRise {
+  from { opacity: 0; transform: translateY(16px) }
+  to   { opacity: 1; transform: none }
+}
+
+/* Positioning block — head, three cards, then the video */
+.pos-head, .pos-item, .pos-video { opacity: 0 }
+.pos-block.is-in .pos-head  { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.pos-block.is-in .pos-item  { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.pos-block.is-in .pos-item:nth-child(1) { animation-delay: .10s }
+.pos-block.is-in .pos-item:nth-child(2) { animation-delay: .18s }
+.pos-block.is-in .pos-item:nth-child(3) { animation-delay: .26s }
+.pos-block.is-in .pos-video { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .30s both }
+
+/* Auditability — copy column staggers, stage panel arrives alongside */
+.audit-title, .audit-sub, .audit-sec .hiw-eyebrow,
+.audit-sec .point, .audit-stage-col { opacity: 0 }
+.audit-sec.is-in .hiw-eyebrow { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.audit-sec.is-in .audit-title { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .06s both }
+.audit-sec.is-in .audit-sub   { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .12s both }
+.audit-sec.is-in .point       { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.audit-sec.is-in .point:nth-child(1) { animation-delay: .18s }
+.audit-sec.is-in .point:nth-child(2) { animation-delay: .26s }
+.audit-sec.is-in .point:nth-child(3) { animation-delay: .34s }
+.audit-sec.is-in .audit-stage-col { animation: sectionRise .8s cubic-bezier(.32,.72,0,1) .18s both }
+
+/* Before / After — head, four groups in sequence, closing line */
+.bsp-head, .why-group, .why-closing { opacity: 0 }
+.bsp-sec.is-in .bsp-head  { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.bsp-sec.is-in .why-group { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.bsp-sec.is-in .why-group:nth-child(1) { animation-delay: .08s }
+.bsp-sec.is-in .why-group:nth-child(2) { animation-delay: .16s }
+.bsp-sec.is-in .why-group:nth-child(3) { animation-delay: .24s }
+.bsp-sec.is-in .why-group:nth-child(4) { animation-delay: .32s }
+.bsp-sec.is-in .why-closing { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .40s both }
+
+/* Testimonials — head, then the three quote cards in sequence */
+.testi-head, .testi-card { opacity: 0 }
+.testi-sec.is-in .testi-head { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.testi-sec.is-in .testi-card { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.testi-sec.is-in .testi-card:nth-child(1) { animation-delay: .12s }
+.testi-sec.is-in .testi-card:nth-child(2) { animation-delay: .20s }
+.testi-sec.is-in .testi-card:nth-child(3) { animation-delay: .28s }
+
+@media (prefers-reduced-motion: reduce) {
+  .pos-head, .pos-item, .pos-video,
+  .audit-title, .audit-sub, .audit-sec .hiw-eyebrow, .audit-sec .point, .audit-stage-col,
+  .bsp-head, .why-group, .why-closing,
+  .testi-head, .testi-card { opacity: 1 }
+  .pos-block.is-in .pos-head, .pos-block.is-in .pos-item, .pos-block.is-in .pos-video,
+  .audit-sec.is-in .hiw-eyebrow, .audit-sec.is-in .audit-title, .audit-sec.is-in .audit-sub,
+  .audit-sec.is-in .point, .audit-sec.is-in .audit-stage-col,
+  .bsp-sec.is-in .bsp-head, .bsp-sec.is-in .why-group, .bsp-sec.is-in .why-closing,
+  .testi-sec.is-in .testi-head, .testi-sec.is-in .testi-card {
+    animation: none;
+  }
 }

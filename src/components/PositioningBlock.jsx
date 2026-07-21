@@ -1,4 +1,5 @@
 import VideoCard from './VideoCard'
+import useReveal from '../hooks/useReveal'
 
 /* ── Mini visuals ─────────────────────────────── */
 
@@ -93,8 +94,9 @@ const ITEMS = [
 ]
 
 export default function PositioningBlock() {
+  const ref = useReveal()
   return (
-    <section className="pos-block">
+    <section className="pos-block" ref={ref}>
       <div className="wrap">
         <div className="pos-head">
           <p className="hiw-eyebrow">WHY FINSYNTH</p>
