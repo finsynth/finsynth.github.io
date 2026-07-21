@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 const FAQS = [
   {
@@ -34,6 +34,23 @@ const FAQS = [
 export default function Faq() {
   const [open, setOpen] = useState(-1)
   const ref = useRef(null)
+  const listRef = useRef(null)
+  const btnRefs = useRef([])
+  const innerRefs = useRef([])
+  const [rail, setRail] = useState({ top: 0, height: 0, on: false })
+
+  useLayoutEffect(() => {
+    if (open < 0) {
+      setRail(r => ({ ...r, on: false }))
+      return
+    }
+    const btn = btnRefs.current[open]
+    const inner = innerRefs.current[open]
+    if (!btn) return
+    // span the full open item: question button + expanded answer
+    const height = btn.offsetHeight + (inner ? inner.scrollHeight : 0)
+    setRail({ top: btn.offsetTop, height, on: true })
+  }, [open])
 
   useEffect(() => {
     const el = ref.current
@@ -71,7 +88,12 @@ export default function Faq() {
           </div>
         </div>
 
-        <div className="faq-list">
+        <div className="faq-list" ref={listRef}>
+          <span
+            className={`faq-rail${rail.on ? ' on' : ''}`}
+            aria-hidden="true"
+            style={{ '--rail-top': `${rail.top}px`, '--rail-h': `${rail.height}px` }}
+          />
           {FAQS.map((item, i) => {
             const isOpen = open === i
             return (
@@ -79,6 +101,7 @@ export default function Faq() {
                 <button
                   type="button"
                   className="faq-q"
+                  ref={el => (btnRefs.current[i] = el)}
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >
@@ -86,7 +109,7 @@ export default function Faq() {
                   <span className="faq-toggle" aria-hidden="true" />
                 </button>
                 <div className="faq-a" role="region" aria-hidden={!isOpen}>
-                  <div className="faq-a-inner">
+                  <div className="faq-a-inner" ref={el => (innerRefs.current[i] = el)}>
                     <p>{item.a}</p>
                   </div>
                 </div>

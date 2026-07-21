@@ -11,7 +11,6 @@ import Auditability from '../components/Auditability'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
 import Faq from '../components/Faq'
-import CtaBand from '../components/CtaBand'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
 
@@ -45,7 +44,6 @@ function Home() {
       <SectionRule />
       <Faq />
       <SectionRule />
-      <CtaBand />
       <Footer />
     </div>
   )

@@ -46,6 +46,11 @@ export default function BeforeAfter() {
               <div className="bsp-row"><span className="bsp-num">3</span><span className="bsp-cell"></span></div>
             </div>
 
+            <ul className="bsp-steps">
+              <li><span>1.</span>Ask for the figure in plain English — no filing to open, no Ctrl-F.</li>
+              <li><span>2.</span>FinSynth writes the value into the cell, source attached.</li>
+              <li><span>3.</span>Six weeks later, click the cell and jump straight to the filing.</li>
+            </ul>
           </div>
         </div>
       </div>
