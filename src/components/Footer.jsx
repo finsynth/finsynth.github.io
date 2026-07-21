@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import GooWordmark from './GooWordmark';
 
 export default function Footer() {
   const ref = useRef(null);
@@ -24,16 +23,10 @@ export default function Footer() {
 
   return (
     <footer className="footer-new" ref={ref}>
-      <div className="foot-aurora" aria-hidden="true">
-        <span className="foot-blob foot-blob-1" />
-        <span className="foot-blob foot-blob-2" />
-        <span className="foot-blob foot-blob-3" />
-        <span className="foot-blob foot-blob-4" />
-      </div>
       <div className="wrap">
         <div className="foot-top">
           <div className="foot-brand foot-reveal">
-            <img src="/assets/img/full-logo.svg" alt="FinSynth Logo" />
+            <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
           </div>
           <div className="foot-grid-new">
             <div className="foot-reveal">
@@ -73,9 +66,6 @@ export default function Footer() {
         </div>
         <div className="foot-legal foot-reveal">
           <span>© 2026 FinSynth · Backed by Accel</span>
-        </div>
-        <div className="foot-wordmark foot-reveal">
-          <GooWordmark />
         </div>
       </div>
     </footer>
