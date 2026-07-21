@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import useSectionZoom from '../hooks/useSectionZoom'
 
 function BadgeSoc2() {
   return (
@@ -41,6 +42,7 @@ const POINTS = [
 
 export default function Security() {
   const ref = useRef(null)
+  const zoomRef = useSectionZoom()
 
   useEffect(() => {
     const el = ref.current
@@ -63,7 +65,7 @@ export default function Security() {
 
   return (
     <section className="secx" id="security">
-      <div className="wrap">
+      <div className="wrap" ref={zoomRef}>
         <div className="secx-frame" ref={ref}>
           <span className="secx-crop tl" /><span className="secx-crop tr" />
           <span className="secx-crop bl" /><span className="secx-crop br" />
@@ -93,23 +95,6 @@ export default function Security() {
               </li>
             ))}
           </ul>
-
-          <div className="secx-cred secx-reveal">
-            <p className="secx-cred-lead">
-              Backed by Accel and industry angels, trusted by investors from global funds.
-            </p>
-            <div className="secx-founders">
-              <div className="secx-founder">
-                <span className="secx-founder-name">Kartik Agarwal</span>
-                <span className="secx-founder-role">Co-founder &amp; CEO</span>
-              </div>
-              <span className="secx-founder-div" aria-hidden="true" />
-              <div className="secx-founder">
-                <span className="secx-founder-name">Akshay Sunil Masare</span>
-                <span className="secx-founder-role">Co-founder &amp; CTO</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

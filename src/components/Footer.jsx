@@ -1,5 +1,15 @@
 import { useEffect, useRef } from 'react';
 
+const ASK_PROMPT = 'Tell me about FinSynth (finsynth.ai), the auditable spreadsheet agent for buy-side analysts.';
+const q = encodeURIComponent(ASK_PROMPT);
+
+const AGENTS = [
+  { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}` },
+  { name: 'Claude', href: `https://claude.ai/new?q=${q}` },
+  { name: 'Gemini', href: 'https://gemini.google.com/app' },
+  { name: 'Grok', href: `https://grok.com/?q=${q}` },
+];
+
 export default function Footer() {
   const ref = useRef(null);
 
@@ -24,41 +34,17 @@ export default function Footer() {
   return (
     <footer className="footer-new" ref={ref}>
       <div className="wrap">
-        <div className="foot-brand foot-reveal">
-          <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
-        </div>
-
-        <div className="foot-main">
-          <div className="foot-cta foot-reveal">
-            <div className="foot-cta-copy">
-              <h2>Your new co-worker's<br />ready when you are.</h2>
-              <p>Book a demo, see what a normal Tuesday could look like.</p>
-            </div>
-            <a
-              className="cta-cta"
-              href="https://calendly.com/kartik-finsynth/intro"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="cta-cta-label">Book a demo</span>
-              <span className="cta-cta-icon" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12L12 4" />
-                  <path d="M5.5 4H12V10.5" />
-                </svg>
-              </span>
-            </a>
+        <div className="foot-headrow">
+          <div className="foot-brand foot-reveal">
+            <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
           </div>
 
-          <div className="foot-top">
+          <div className="foot-top foot-reveal">
             <div className="foot-grid-new">
             <div className="foot-reveal">
               <h4>Product</h4>
-              <a href="#how-it-works">How it works</a>
               <a href="#use-cases">Use cases</a>
               <a href="#security">Security</a>
-              <a href="#faq">FAQ</a>
-              <a href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book a demo</a>
             </div>
             <div className="foot-reveal">
               <h4>Legal</h4>
@@ -84,9 +70,54 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
+        <div className="foot-main">
+          <div className="foot-cta foot-reveal">
+            <div className="foot-cta-copy">
+              <h2>Your new co-worker's<br />ready when you are.</h2>
+            </div>
+            <a
+              className="cta-cta"
+              href="https://calendly.com/kartik-finsynth/intro"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="cta-cta-label">Setup a call</span>
+              <span className="cta-cta-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12L12 4" />
+                  <path d="M5.5 4H12V10.5" />
+                </svg>
+              </span>
+            </a>
+          </div>
+
+          <div className="foot-askai foot-reveal">
+            <span className="foot-askai-eyebrow">Ask AI about FinSynth</span>
+            <div className="foot-askai-row">
+              {AGENTS.map((a) => (
+                <a
+                  key={a.name}
+                  className="foot-askai-chip"
+                  href={a.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="foot-askai-dot" aria-hidden="true" />
+                  {a.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="foot-legal foot-reveal">
           <span>© 2026 FinSynth · Backed by Accel</span>
         </div>
+      </div>
+
+      <div className="foot-wordmark" aria-hidden="true">
+        <span>FINSYNTH</span>
       </div>
     </footer>
   );

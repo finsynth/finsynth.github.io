@@ -33,10 +33,8 @@ export default function VideoCard() {
               <div className="c">finsynthai</div>
             </div>
           </div>
-          {VIDEO_URL ? (
+          {VIDEO_URL && (
             <button className="play" onClick={() => setPlaying(true)} aria-label="Play the FinSynth demo"><i></i></button>
-          ) : (
-            <a href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer" className="play" aria-label="Watch the demo"><i></i></a>
           )}
         </>
       )}

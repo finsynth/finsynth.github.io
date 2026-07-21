@@ -5,9 +5,6 @@ import AnnouncementBar from '../components/AnnouncementBar'
 import BeforeAfter from '../components/BeforeAfter'
 import PositioningBlock from '../components/PositioningBlock'
 import HowItWorks from '../components/HowItWorks'
-import Setup from '../components/Setup'
-import { Pillars } from '../components/PillarSections'
-import Auditability from '../components/Auditability'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
 import Faq from '../components/Faq'
@@ -29,14 +26,8 @@ function Home() {
       <PositioningBlock />
       <SectionRule />
       <HowItWorks />
-      <SectionRule />
-      <Auditability />
       <SectionRule label="Before / After" />
       <BeforeAfter />
-      <SectionRule />
-      <Setup />
-      <SectionRule />
-      <Pillars />
       <SectionRule />
       <Testimonial />
       <SectionRule />

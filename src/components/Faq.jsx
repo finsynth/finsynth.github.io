@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import useSectionZoom from '../hooks/useSectionZoom'
 
 const FAQS = [
   {
@@ -34,6 +35,7 @@ const FAQS = [
 export default function Faq() {
   const [open, setOpen] = useState(-1)
   const ref = useRef(null)
+  const zoomRef = useSectionZoom()
   const listRef = useRef(null)
   const btnRefs = useRef([])
   const innerRefs = useRef([])
@@ -72,7 +74,7 @@ export default function Faq() {
 
   return (
     <section className="faq" id="faq" ref={ref}>
-      <div className="wrap faq-grid">
+      <div className="wrap faq-grid" ref={zoomRef}>
         <div className="faq-intro">
           <p className="faq-eyebrow">Frequently Asked Questions</p>
           <h2 className="faq-title">Curious about FinSynth?<br />We got you covered.</h2>

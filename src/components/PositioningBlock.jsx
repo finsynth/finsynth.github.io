@@ -1,5 +1,5 @@
-import VideoCard from './VideoCard'
 import useReveal from '../hooks/useReveal'
+import useSectionZoom from '../hooks/useSectionZoom'
 
 /* ── Mini visuals ─────────────────────────────── */
 
@@ -95,9 +95,10 @@ const ITEMS = [
 
 export default function PositioningBlock() {
   const ref = useReveal()
+  const zoomRef = useSectionZoom()
   return (
     <section className="pos-block" ref={ref}>
-      <div className="wrap">
+      <div className="wrap" ref={zoomRef}>
         <div className="pos-head">
           <p className="hiw-eyebrow">WHY FINSYNTH</p>
           <h2>Auditable by design, native to Excel</h2>
@@ -113,9 +114,6 @@ export default function PositioningBlock() {
               </div>
             </div>
           ))}
-        </div>
-        <div className="pos-video">
-          <VideoCard />
         </div>
       </div>
     </section>

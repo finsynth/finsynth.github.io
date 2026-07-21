@@ -1,4 +1,5 @@
 import useReveal from '../hooks/useReveal'
+import useSectionZoom from '../hooks/useSectionZoom'
 
 const QUOTES = [
   {
@@ -29,9 +30,10 @@ const QUOTES = [
 
 export default function Testimonial() {
   const ref = useReveal()
+  const zoomRef = useSectionZoom()
   return (
     <section className="testi-sec" id="customers" ref={ref}>
-      <div className="wrap">
+      <div className="wrap" ref={zoomRef}>
 
         {/* Head */}
         <div className="testi-head">

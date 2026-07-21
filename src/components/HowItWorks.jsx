@@ -1,18 +1,126 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import useSectionZoom from '../hooks/useSectionZoom'
 
-// Locked copy — "How" section (§4, Updated Content 2026-07-16).
-// Each line is a beat, read start to finish — not a labeled list.
+// Locked copy — "How" section (§4, Updated Content 2026-07-21).
+// Three beats, each a title + line, drive a live AI-chat panel.
 const BEATS = [
-  'Tell it what you need.',
-  'It gets to work.',
-  'It checks with you first.',
-  'You call the shot.',
-  'It delivers the answer, sourced.',
+  {
+    icon: 'brief',
+    title: 'Brief the task',
+    line: "Ask it the way you'd brief an associate: pull the comparables, check the model, screen the filings.",
+  },
+  {
+    icon: 'work',
+    title: 'Watch it work',
+    line: 'It reads the filings, opens your model, and runs the numbers, live.',
+  },
+  {
+    icon: 'approve',
+    title: 'Approve, and the answer lands',
+    line: "Nothing touches your model without your yes. The moment you approve, it's delivered, cited.",
+  },
 ]
+
+// The conversation the three beats play out, briefing FinSynth like an associate.
+const BRIEF = 'Pull the comparables, check the model, screen the filings.'
+const WORK_LEAD = 'On it — reading the filings and opening your model.'
+const WORK_TASKS = [
+  ['Read 10-K, 10-Q filings', 'done'],
+  ['Opened Model_Build.xlsx', 'done'],
+  ['Running the numbers', 'live'],
+]
+const CITE = {
+  src: 'SEC 10-K · FY2024 · p.31',
+  quote: '“Total net sales of $391.0 billion for fiscal 2024…”',
+}
+const APPROVE_LEAD = 'Ready to update revenue in B14.'
+const DIFF = { ref: 'B14', from: '$88.1B', to: '$94.9B' }
+const DELIVERED = 'Delivered to B14 — cited to 10-Q Q3. Your model, your call.'
+
+// ── Inline glyphs (no external icon dep) ──
+const Spark = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M8 1.5l1.4 3.9 3.9 1.4-3.9 1.4L8 12.1 6.6 8.2 2.7 6.8l3.9-1.4L8 1.5z" fill="currentColor" />
+  </svg>
+)
+const Check = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const Spin = () => (
+  <svg className="hiwc-spin" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M8 2a6 6 0 1 1-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+)
+const Mic = () => (
+  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+    <rect x="6.5" y="2.5" width="5" height="8.5" rx="2.5" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M4 8.5a5 5 0 0 0 10 0M9 13.5v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+  </svg>
+)
+const SendArrow = () => (
+  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+    <path d="M9 14.5v-11M4.5 8L9 3.5 13.5 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const Copy = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M11 5V4a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 4v5.5A1.5 1.5 0 0 0 4 11h1" stroke="currentColor" strokeWidth="1.3" />
+  </svg>
+)
+const Retry = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M12.5 6.5A5 5 0 1 0 13 9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    <path d="M12.8 3v3.5H9.3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const ThumbUp = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M5 7l2.5-4.5a1.5 1.5 0 0 1 2 2L9 7h3.2a1.3 1.3 0 0 1 1.3 1.6l-1 4A1.3 1.3 0 0 1 11.2 13.5H5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    <rect x="2.3" y="7" width="2.7" height="6.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+  </svg>
+)
+const ThumbDown = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ transform: 'rotate(180deg)' }}>
+    <path d="M5 7l2.5-4.5a1.5 1.5 0 0 1 2 2L9 7h3.2a1.3 1.3 0 0 1 1.3 1.6l-1 4A1.3 1.3 0 0 1 11.2 13.5H5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    <rect x="2.3" y="7" width="2.7" height="6.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+  </svg>
+)
+// Left-rail item glyphs, keyed to BEATS[i].icon
+const BeatIcon = ({ name }) => {
+  if (name === 'work') {
+    return (
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M2.5 10.5l3.5-4 3 3.5 3.5-5 5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (name === 'approve') {
+    return (
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M10 2.5l6 2.2v4.3c0 3.5-2.4 6.3-6 8-3.6-1.7-6-4.5-6-8V4.7L10 2.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+        <path d="M7.4 9.8l1.9 1.9L13 7.9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  return (
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4h11A1.5 1.5 0 0 1 17 5.5v6A1.5 1.5 0 0 1 15.5 13H8l-3.5 3v-3H4.5A1.5 1.5 0 0 1 3 11.5v-6z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M6.5 7.5h7M6.5 10h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
 
 export default function HowItWorks() {
   const ref = useRef(null)
+  const trackRef = useRef(null)
+  const zoomRef = useSectionZoom()
+  const [active, setActive] = useState(0)
+  const [approved, setApproved] = useState(false)
 
+  // Reveal on scroll
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -31,21 +139,204 @@ export default function HowItWorks() {
     return () => io.disconnect()
   }, [])
 
+  // Drive the active beat from the pinned track's scroll progress. The panel
+  // is pinned (sticky) for the whole track, so the screen stays put while the
+  // three beats advance — beat 3 is reached with the panel still framed, never
+  // after it has scrolled away.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const mq = window.matchMedia('(max-width: 900px)')
+    // Reduced motion / stacked mobile layout: reveal the full thread at once.
+    if (reduce || mq.matches) {
+      setActive(BEATS.length - 1)
+      return
+    }
+    let raf = 0
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        if (mq.matches) {
+          setActive(BEATS.length - 1)
+          return
+        }
+        const rect = track.getBoundingClientRect()
+        const total = track.offsetHeight - window.innerHeight
+        if (total <= 0) return
+        const p = clamp(-rect.top / total, 0, 1)
+        const idx = clamp(Math.floor(p * BEATS.length), 0, BEATS.length - 1)
+        setActive((prev) => (prev === idx ? prev : idx))
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    onScroll()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
+  // A reset if we scroll back above the approve stage.
+  useEffect(() => {
+    if (active < 2 && approved) setApproved(false)
+  }, [active, approved])
+
+  const select = (i) => {
+    setApproved(false)
+    setActive(i)
+  }
+
+  // Status shown top-right of the chat header, per stage.
+  const status =
+    active >= 2 ? (approved ? 'Delivered · cited' : 'Awaiting approval')
+    : active === 1 ? 'Working…'
+    : 'Briefed'
+
+  const tasksDone = active >= 2 // once approved-stage is reached, work is finished
+
   return (
     <section className="hiw-section" id="how-it-works" ref={ref}>
-      <div className="hiw-wrap">
+      <div className="hiw-track" ref={trackRef}>
+        <div className="hiw-pin">
+          <div className="hiw-wrap" ref={zoomRef}>
         <div className="hiw-head">
           <p className="hiw-eyebrow">HOW IT WORKS</p>
           <h2 className="hiw-title">Say hello to your new co-worker.</h2>
         </div>
-        <ol className="hiw-flow">
-          {BEATS.map((line, i) => (
-            <li className="hiw-beat" key={line}>
-              <span className="hiw-beat-marker">{String(i + 1).padStart(2, '0')}</span>
-              <span className="hiw-beat-line">{line}</span>
-            </li>
-          ))}
-        </ol>
+
+        <div className="hiw-panel">
+          <ol className="hiw-rail">
+            {BEATS.map((beat, i) => (
+              <li className={`hiw-item${active === i ? ' is-active' : ''}`} key={beat.title}>
+                <button
+                  type="button"
+                  className="hiw-item-btn"
+                  aria-pressed={active === i}
+                  onClick={() => select(i)}
+                >
+                  <span className="hiw-item-icon"><BeatIcon name={beat.icon} /></span>
+                  <span className="hiw-item-body">
+                    <span className="hiw-item-title">{beat.title}</span>
+                    <span className="hiw-item-desc">{beat.line}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+
+          <div className="hiw-pane" aria-live="polite">
+            <div className="hiw-chat">
+              {/* header */}
+              <div className="hiwc-bar">
+                <span className="hiwc-dots" aria-hidden="true"><i /><i /><i /></span>
+                <span className="hiwc-bar-div" aria-hidden="true" />
+                <span className="hiwc-name">AI Assistant</span>
+                <span className="hiwc-with">with</span>
+                <span className="hiwc-chip"><Spark /> FinSynth</span>
+                <span className="hiwc-status">
+                  <span className="hiwc-dot" />
+                  Real-time · {status}
+                </span>
+              </div>
+
+              {/* conversation */}
+              <div className="hiwc-thread">
+                {/* 1 · the brief */}
+                <div className="hiwc-msg hiwc-msg--user">
+                  <div className="hiwc-bubble">{BRIEF}</div>
+                </div>
+
+                {/* thinking, until it starts working */}
+                {active < 1 && (
+                  <div className="hiwc-msg hiwc-msg--ai">
+                    <span className="hiwc-ava"><Spark /></span>
+                    <div className="hiwc-typing" aria-label="FinSynth is working">
+                      <span /><span /><span />
+                    </div>
+                  </div>
+                )}
+
+                {/* 2 · watch it work */}
+                {active >= 1 && (
+                  <div className="hiwc-msg hiwc-msg--ai">
+                    <span className="hiwc-ava"><Spark /></span>
+                    <div className="hiwc-aibody">
+                      <p className="hiwc-aitext">{WORK_LEAD}</p>
+                      <div className="hiwc-tasks">
+                        {WORK_TASKS.map(([label, tag]) => {
+                          const state = tasksDone ? 'done' : tag
+                          return (
+                            <div className={`hiwc-task${state === 'live' ? ' hiwc-task--live' : ''}`} key={label}>
+                              {state === 'live' ? <Spin /> : <Check />}
+                              <span className="hiwc-task-a">{label}</span>
+                              <span className="hiwc-task-tag">{state === 'live' ? 'live' : 'done'}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <div className="hiwc-cite">
+                        <div className="hiwc-cite-src">{CITE.src}</div>
+                        <p className="hiwc-cite-q">{CITE.quote}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3 · approve, and the answer lands */}
+                {active >= 2 && (
+                  <div className="hiwc-msg hiwc-msg--ai">
+                    <span className="hiwc-ava"><Spark /></span>
+                    <div className="hiwc-aibody">
+                      {approved ? (
+                        <>
+                          <p className="hiwc-aitext">{DELIVERED}</p>
+                          <span className="hiwc-delivered"><Check /> Delivered</span>
+                          <div className="hiwc-react">
+                            <button type="button" aria-label="Copy"><Copy /></button>
+                            <button type="button" aria-label="Retry"><Retry /></button>
+                            <button type="button" aria-label="Good answer"><ThumbUp /></button>
+                            <button type="button" aria-label="Bad answer"><ThumbDown /></button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="hiwc-aitext">{APPROVE_LEAD}</p>
+                          <div className="hiwc-diff">
+                            <span className="hiwc-diff-ref">{DIFF.ref}</span>
+                            <span className="hiwc-diff-old">{DIFF.from}</span>
+                            <span className="hiwc-diff-arr">→</span>
+                            <span className="hiwc-diff-new">{DIFF.to}</span>
+                          </div>
+                          <p className="hiwc-note">Nothing is written to your model until you approve.</p>
+                          <button
+                            type="button"
+                            className="hiw-approve"
+                            onClick={() => setApproved(true)}
+                          >
+                            Approve &amp; deliver
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* input bar — the chat affordance */}
+              <div className="hiwc-input" aria-hidden="true">
+                <span className="hiwc-field">Ask a follow-up…</span>
+                <span className="hiwc-mic"><Mic /></span>
+                <span className="hiwc-send"><SendArrow /></span>
+              </div>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
       </div>
     </section>
   )
