@@ -53,7 +53,7 @@
   --ls-mono:    0.06em;
   --lh-body:    1.7;
 
-  --maxw:       1300px;
+  --maxw:       1560px;
 
   /* shared dark-shade gradient (CTA band, video card, hero portrait) */
   --grad-dark:  radial-gradient(120% 140% at 50% 0%, #20336e 0%, #16244e 50%, #0E1A3A 100%);
@@ -1057,9 +1057,6 @@ button.play { border: none; padding: 0; appearance: none }
   --color-complimentary: #45359C; /* violet complement, deepened */
   --footer-opacity: 0.17;
   background:
-    /* blueprint grid, woven directly into the bg so it reads as one surface */
-    repeating-linear-gradient(90deg, rgba(190,205,255,.045) 0 1px, transparent 1px 88px),
-    repeating-linear-gradient(0deg,  rgba(190,205,255,.038) 0 1px, transparent 1px 88px),
     radial-gradient(ellipse 80% 40% at 40% 60%, rgb(from var(--color-indigo-500) r g b / var(--footer-opacity)), transparent 100%),
     radial-gradient(ellipse 80% 40% at -50% 40%, rgb(from var(--color-complimentary) r g b / var(--footer-opacity)), rgb(from var(--color-indigo-500) r g b / var(--footer-opacity)), transparent 100%),
     radial-gradient(ellipse 80% 50% at 150% 50%, rgb(from var(--color-complimentary) r g b / var(--footer-opacity)), rgb(from var(--color-indigo-500) r g b / var(--footer-opacity)), transparent 100%),
@@ -1083,19 +1080,39 @@ button.play { border: none; padding: 0; appearance: none }
   opacity: 1; mix-blend-mode: color-burn;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.3'/%3E%3C/svg%3E");
 }
+/* blueprint cell grid — its own layer so it fades before the edges and reads as spreadsheet cells, not a boxed-in block */
+.foot-cells {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(190,205,255,.05) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg,  rgba(190,205,255,.042) 0 1px, transparent 1px 64px);
+  background-position: center top;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent),
+    linear-gradient(0deg, transparent, #000 30%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent),
+    linear-gradient(0deg, transparent, #000 30%);
+  mask-composite: intersect;
+}
 .footer-new .wrap { position: relative; z-index: 1 }
 .foot-brand img { height: 30px; width: auto; display: block }
 
-/* head row — logo (left) + nav columns (right), tops aligned */
-.foot-headrow {
+/* two columns — brand lockup (left) + nav / Ask-AI stack (right), tops aligned */
+.foot-cols {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 64px;
+  padding-bottom: 8px; margin-bottom: 8px;
 }
-.foot-headrow .foot-brand img { position: relative; top: 2px }
-
-/* lower region — CTA lockup (left) + Ask-AI (right) */
-.foot-main {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 64px;
-  margin-top: 72px; padding-bottom: 8px; margin-bottom: 8px;
+/* LEFT — logo, headline and CTA as one aligned lockup */
+.foot-lockup {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 28px;
+  flex-shrink: 0;
+}
+.foot-lockup .foot-brand img { position: relative; top: 0 }
+/* RIGHT — nav columns above, Ask-AI below */
+.foot-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 56px;
 }
 /* Ask AI about FinSynth */
 .foot-askai {
@@ -1436,8 +1453,8 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* header */
 .secx-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 40px; padding: 60px 72px 40px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 24px; padding: 60px 72px 40px;
 }
 .secx-head-copy { min-width: 0 }
 .secx-eyebrow {
@@ -1451,7 +1468,7 @@ button.play { border: none; padding: 0; appearance: none }
 }
 
 /* certification seals */
-.secx-badges { display: flex; gap: 14px; flex-shrink: 0; padding-top: 6px }
+.secx-badges { display: flex; gap: 14px; flex-shrink: 0; justify-content: center }
 .secx-badge {
   position: relative; width: 74px; height: 74px; border-radius: 14px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
@@ -2061,9 +2078,8 @@ button.play { border: none; padding: 0; appearance: none }
   .pillar-band { border-bottom: none }
   .pillar-sec-head { padding: 72px 0 36px }
   .cli-grid { grid-template-columns: 1fr }
-  .foot-main { flex-direction: column; gap: 48px }
-  .foot-cta { gap: 28px }
-  .foot-top { flex-direction: column; gap: 40px }
+  .foot-cols { flex-direction: column; gap: 56px }
+  .foot-right { align-items: flex-start; gap: 44px; width: 100% }
   .foot-grid-new { justify-content: flex-start }
   .foot-grid-new > div { padding: 0 20px 24px }
   .foot-grid-new > div:first-child { padding-left: 20px; border-left: 1px solid rgba(255,255,255,.1) }
@@ -3063,7 +3079,7 @@ button.play { border: none; padding: 0; appearance: none }
    square caps that sit on two vertical rails at the content edges. */
 :root {
   /* x-offset of each rail from the viewport edge; tracks the 1200px content column */
-  --rail-x: calc((100% - min(100% - 32px, 1320px)) / 2);
+  --rail-x: calc((100% - min(100% - 32px, 1580px)) / 2);
 }
 
 .page-rails {

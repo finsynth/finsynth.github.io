@@ -37,6 +37,7 @@ export default function Testimonial() {
 
         {/* Head */}
         <div className="testi-head">
+          <p className="hiw-eyebrow">Customers</p>
           <h2>Trusted by the analysts<br />moving fastest.</h2>
           <p className="testi-head-sub">
             Buy-side teams use FinSynth to build, update, and audit models

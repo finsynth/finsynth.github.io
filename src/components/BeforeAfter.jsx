@@ -341,6 +341,7 @@ export default function BeforeAfter() {
         <div className="bsp-pin">
           <div className="wrap" ref={zoomRef}>
             <div className="bsp-head">
+              <p className="hiw-eyebrow">Before &amp; after</p>
               <h2>What happens when<br />analysts use FinSynth</h2>
               <p className="bsp-sub">
                 None of this required hiring.{' '}
