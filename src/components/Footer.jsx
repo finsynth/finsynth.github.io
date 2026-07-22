@@ -4,10 +4,10 @@ const ASK_PROMPT = 'Tell me about FinSynth (finsynth.ai), the auditable spreadsh
 const q = encodeURIComponent(ASK_PROMPT);
 
 const AGENTS = [
-  { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}` },
-  { name: 'Claude', href: `https://claude.ai/new?q=${q}` },
-  { name: 'Gemini', href: 'https://gemini.google.com/app' },
-  { name: 'Grok', href: `https://grok.com/?q=${q}` },
+  { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}`, logo: '/assets/img/logos/chatgpt.svg' },
+  { name: 'Claude', href: `https://claude.ai/new?q=${q}`, logo: '/assets/img/logos/claude.svg' },
+  { name: 'Gemini', href: 'https://gemini.google.com/app', logo: '/assets/img/logos/gemini.svg' },
+  { name: 'Grok', href: `https://grok.com/?q=${q}`, logo: '/assets/img/logos/grok.svg' },
 ];
 
 export default function Footer() {
@@ -90,29 +90,28 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-
-            <div className="foot-askai foot-reveal">
-              <span className="foot-askai-eyebrow">Ask AI about FinSynth</span>
-              <div className="foot-askai-row">
-                {AGENTS.map((a) => (
-                  <a
-                    key={a.name}
-                    className="foot-askai-chip"
-                    href={a.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span className="foot-askai-dot" aria-hidden="true" />
-                    {a.name}
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
         <div className="foot-legal foot-reveal">
-          <span>© 2026 FinSynth · Backed by Accel</span>
+          <div className="foot-askai">
+            <span className="foot-askai-eyebrow">Ask AI about FinSynth</span>
+            <div className="foot-askai-row">
+              {AGENTS.map((a) => (
+                <a
+                  key={a.name}
+                  className="foot-askai-chip"
+                  href={a.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img className="foot-askai-logo" src={a.logo} alt="" aria-hidden="true" width="15" height="15" />
+                  {a.name}
+                </a>
+              ))}
+            </div>
+          </div>
+          <span className="foot-copyright">© 2025 FinSynth. All rights reserved.</span>
         </div>
       </div>
 

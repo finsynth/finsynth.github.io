@@ -1,4 +1,4 @@
-export function initGrid() {
+export function initGrid(canvasEl) {
   const CONFIG = {
     cellW: 80, cellH: 32, headerH: 24, rowNumW: 40,
     headerBg: '#F6F8FA', headerBorder: '#D0D7DE', headerText: '#57606A',
@@ -12,7 +12,7 @@ export function initGrid() {
     mono: "'IBM Plex Mono', ui-monospace, monospace",
   }
 
-  const canvas = document.querySelector('[data-grid-hero]')
+  const canvas = canvasEl || document.querySelector('[data-grid-hero]')
   if (!canvas) return () => {}
   const stage = canvas.parentElement
   const pill = stage.querySelector('.stat-pill')
@@ -185,6 +185,18 @@ export function initGrid() {
 
   let alive = true
   let rafId = null
+  let visible = true // gated by IntersectionObserver so the rAF loop idles off-screen
+
+  // Left-to-right staggered reveal on first paint (mosaic-hero style): each
+  // column/row fades in on a swept + randomised delay, ~0.55s per element.
+  const bornT = performance.now()
+  const rev = (delay, now) => {
+    if (reduceMotion) return 1
+    const q = ((now - bornT) / 1000 - delay) / 0.55
+    return q <= 0 ? 0 : q >= 1 ? 1 : Math.min(q * 1.6, 1)
+  }
+  const colDelay = c => (c / Math.max(cols, 1)) * 0.9 + hash(c, 977) * 0.8
+  const rowDelay = r => (r / Math.max(rows, 1)) * 0.9 + hash(977, r) * 0.8
 
   function draw(now) {
     if (!alive) return
@@ -192,13 +204,16 @@ export function initGrid() {
 
     ctx.lineWidth = 1
     for (let c = 0; c <= cols; c++) {
+      const a = rev(colDelay(c), now)
+      if (a <= 0) continue
+      ctx.globalAlpha = a
       ctx.strokeStyle = (c % CONFIG.strongEveryCol === 0) ? CONFIG.lineStrong : CONFIG.line
       const x = rowNumW + c * cellW + .5
       ctx.beginPath(); ctx.moveTo(x, headerH); ctx.lineTo(x, H); ctx.stroke()
     }
     for (let r = 0; r <= rows; r++) {
       const rowFade = Math.max(0.06, 1 - (r / rows) * 0.94)
-      ctx.globalAlpha = rowFade
+      ctx.globalAlpha = rowFade * rev(rowDelay(r), now)
       ctx.strokeStyle = (r % CONFIG.strongEveryRow === 0) ? CONFIG.lineStrong : CONFIG.line
       const y = headerH + r * cellH + .5
       ctx.beginPath(); ctx.moveTo(rowNumW, y); ctx.lineTo(W, y); ctx.stroke()
@@ -219,6 +234,9 @@ export function initGrid() {
     ctx.fillStyle = CONFIG.headerText
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
     for (let c = 0; c < cols; c++) {
+      const a = rev(colDelay(c), now)
+      if (a <= 0) continue
+      ctx.globalAlpha = a
       if (hover && pointerOn && c === hover.c) {
         ctx.fillStyle = CONFIG.accent
         ctx.fillRect(cellX(c), 0, cellW, headerH - 1)
@@ -228,6 +246,7 @@ export function initGrid() {
       }
       ctx.fillText(colRef(c), cellX(c) + cellW / 2, headerH / 2)
     }
+    ctx.globalAlpha = 1
 
     ctx.fillStyle = CONFIG.headerBg
     ctx.fillRect(0, headerH, rowNumW, H)
@@ -236,6 +255,9 @@ export function initGrid() {
     ctx.font = '500 11px ' + CONFIG.mono
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
     for (let r = 0; r < rows; r++) {
+      const a = rev(rowDelay(r), now)
+      if (a <= 0) continue
+      ctx.globalAlpha = a
       if (hover && pointerOn && r === hover.r) {
         ctx.fillStyle = CONFIG.accent
         ctx.fillRect(0, cellY(r), rowNumW - 1, cellH)
@@ -245,6 +267,7 @@ export function initGrid() {
       }
       ctx.fillText(String(r + 1), rowNumW / 2, cellY(r) + cellH / 2)
     }
+    ctx.globalAlpha = 1
 
     ctx.fillStyle = CONFIG.headerBg
     ctx.fillRect(0, 0, rowNumW, headerH)
@@ -300,14 +323,34 @@ export function initGrid() {
     }
 
     ambient(now)
-    rafId = requestAnimationFrame(draw)
+    if (visible) rafId = requestAnimationFrame(draw)
   }
 
   rafId = requestAnimationFrame(draw)
 
+  // Only paint while the hero is on (or near) screen — a scrolled-past canvas
+  // must not keep the rAF loop running and contending with page scroll.
+  const io = 'IntersectionObserver' in window
+    ? new IntersectionObserver(
+        ([e]) => {
+          const wasVisible = visible
+          visible = e.isIntersecting
+          if (visible && !wasVisible && alive && !rafId) {
+            rafId = requestAnimationFrame(draw)
+          } else if (!visible && rafId) {
+            cancelAnimationFrame(rafId)
+            rafId = null
+          }
+        },
+        { rootMargin: '160px' }
+      )
+    : null
+  io?.observe(stage)
+
   return () => {
     alive = false
     clearTimeout(fxTimer)
+    io?.disconnect()
     if (rafId) cancelAnimationFrame(rafId)
     window.removeEventListener('resize', resize)
     document.removeEventListener('pointermove', onMove)

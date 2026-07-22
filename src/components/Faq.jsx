@@ -49,9 +49,24 @@ export default function Faq() {
     const btn = btnRefs.current[open]
     const inner = innerRefs.current[open]
     if (!btn) return
+    // Compute the rail's resting position from intrinsic button heights rather
+    // than btn.offsetTop: the entrance animation (fill-mode: both) leaves an
+    // identity-matrix transform on each .faq-item, which makes the item its own
+    // offsetParent, so offsetTop is always 0. Summing button heights + item
+    // borders also lands the rail correctly while a sibling answer is still
+    // mid-collapse (its animated height would otherwise skew a live measurement).
+    const secondItem = btnRefs.current[1]?.parentElement
+    const borderTop = secondItem
+      ? parseFloat(getComputedStyle(secondItem).borderTopWidth) || 0
+      : 0
+    let top = 0
+    for (let i = 0; i < open; i++) {
+      top += btnRefs.current[i]?.offsetHeight || 0
+      top += borderTop // every item past the first adds a hairline border above it
+    }
     // span the full open item: question button + expanded answer
     const height = btn.offsetHeight + (inner ? inner.scrollHeight : 0)
-    setRail({ top: btn.offsetTop, height, on: true })
+    setRail({ top, height, on: true })
   }, [open])
 
   useEffect(() => {

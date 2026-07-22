@@ -23,7 +23,6 @@ const BEATS = [
 
 // The conversation the three beats play out, briefing FinSynth like an associate.
 const BRIEF = 'Pull the comparables, check the model, screen the filings.'
-const WORK_LEAD = 'On it — reading the filings and opening your model.'
 const WORK_TASKS = [
   ['Read 10-K, 10-Q filings', 'done'],
   ['Opened Model_Build.xlsx', 'done'],
@@ -62,6 +61,29 @@ const Mic = () => (
 const SendArrow = () => (
   <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
     <path d="M9 14.5v-11M4.5 8L9 3.5 13.5 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const Plus = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+)
+const ClockGlyph = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <circle cx="8" cy="8" r="5.6" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M8 5v3.2l2.2 1.3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const FileSheet = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M2.5 6.5h11M6.5 6.5v7" stroke="currentColor" strokeWidth="1.3" />
+  </svg>
+)
+const FileDoc = () => (
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M4 1.5h5.5L13 5v8A1.5 1.5 0 0 1 11.5 14.5h-7A1.5 1.5 0 0 1 3 13V3A1.5 1.5 0 0 1 4 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    <path d="M9.5 1.5V5H13" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
   </svg>
 )
 const Copy = () => (
@@ -119,6 +141,26 @@ export default function HowItWorks() {
   const zoomRef = useSectionZoom()
   const [active, setActive] = useState(0)
   const [approved, setApproved] = useState(false)
+  // Beat 1: the brief is typed live into the input bar below the thread.
+  const [typed, setTyped] = useState('')
+  useEffect(() => {
+    if (active !== 0) {
+      setTyped('')
+      return
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTyped(BRIEF)
+      return
+    }
+    setTyped('')
+    let i = 0
+    const t = setInterval(() => {
+      i += 1
+      setTyped(BRIEF.slice(0, i))
+      if (i >= BRIEF.length) clearInterval(t)
+    }, 45)
+    return () => clearInterval(t)
+  }, [active])
 
   // Reveal on scroll
   useEffect(() => {
@@ -180,13 +222,34 @@ export default function HowItWorks() {
     }
   }, [])
 
-  // A reset if we scroll back above the approve stage.
+  // Beat 3: the permission dialog pops over the input, then approves itself —
+  // the viewer never has to click. Ask → beat → auto-approve → output lands.
+  const [permitGone, setPermitGone] = useState(false)
   useEffect(() => {
-    if (active < 2 && approved) setApproved(false)
-  }, [active, approved])
+    if (active < 2) {
+      if (approved) setApproved(false)
+      if (permitGone) setPermitGone(false)
+      return
+    }
+    if (approved) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setApproved(true)
+      setPermitGone(true)
+      return
+    }
+    const t1 = setTimeout(() => setApproved(true), 1600)
+    return () => clearTimeout(t1)
+  }, [active, approved, permitGone])
+  // linger on the "Approved" state a moment before the dialog slips away
+  useEffect(() => {
+    if (!approved || permitGone) return
+    const t = setTimeout(() => setPermitGone(true), 900)
+    return () => clearTimeout(t)
+  }, [approved, permitGone])
 
   const select = (i) => {
     setApproved(false)
+    setPermitGone(false)
     setActive(i)
   }
 
@@ -194,7 +257,7 @@ export default function HowItWorks() {
   const status =
     active >= 2 ? (approved ? 'Delivered · cited' : 'Awaiting approval')
     : active === 1 ? 'Working…'
-    : 'Briefed'
+    : 'Briefing…'
 
   const tasksDone = active >= 2 // once approved-stage is reached, work is finished
 
@@ -245,27 +308,23 @@ export default function HowItWorks() {
 
               {/* conversation */}
               <div className="hiwc-thread">
-                {/* 1 · the brief */}
-                <div className="hiwc-msg hiwc-msg--user">
-                  <div className="hiwc-bubble">{BRIEF}</div>
-                </div>
-
-                {/* thinking, until it starts working */}
-                {active < 1 && (
-                  <div className="hiwc-msg hiwc-msg--ai">
-                    <span className="hiwc-ava"><Spark /></span>
-                    <div className="hiwc-typing" aria-label="FinSynth is working">
-                      <span /><span /><span />
-                    </div>
+                {/* 1 · the brief — while it's being typed below, the thread stays empty */}
+                {active >= 1 && (
+                  <div className="hiwc-msg hiwc-msg--user">
+                    <div className="hiwc-bubble">{BRIEF}</div>
                   </div>
                 )}
 
-                {/* 2 · watch it work */}
+                {/* 2 · watch it work — thinking, then the tool calls */}
                 {active >= 1 && (
                   <div className="hiwc-msg hiwc-msg--ai">
                     <span className="hiwc-ava"><Spark /></span>
                     <div className="hiwc-aibody">
-                      <p className="hiwc-aitext">{WORK_LEAD}</p>
+                      {!tasksDone && (
+                        <div className="hiwc-typing" aria-label="FinSynth is thinking">
+                          <span /><span /><span />
+                        </div>
+                      )}
                       <div className="hiwc-tasks">
                         {WORK_TASKS.map(([label, tag]) => {
                           const state = tasksDone ? 'done' : tag
@@ -278,59 +337,74 @@ export default function HowItWorks() {
                           )
                         })}
                       </div>
-                      <div className="hiwc-cite">
-                        <div className="hiwc-cite-src">{CITE.src}</div>
-                        <p className="hiwc-cite-q">{CITE.quote}</p>
-                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* 3 · approve, and the answer lands */}
-                {active >= 2 && (
+                {/* 3 · the output lands after the permission overlay approves */}
+                {active >= 2 && approved && (
                   <div className="hiwc-msg hiwc-msg--ai">
                     <span className="hiwc-ava"><Spark /></span>
                     <div className="hiwc-aibody">
-                      {approved ? (
-                        <>
-                          <p className="hiwc-aitext">{DELIVERED}</p>
-                          <span className="hiwc-delivered"><Check /> Delivered</span>
-                          <div className="hiwc-react">
-                            <button type="button" aria-label="Copy"><Copy /></button>
-                            <button type="button" aria-label="Retry"><Retry /></button>
-                            <button type="button" aria-label="Good answer"><ThumbUp /></button>
-                            <button type="button" aria-label="Bad answer"><ThumbDown /></button>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <p className="hiwc-aitext">{APPROVE_LEAD}</p>
-                          <div className="hiwc-diff">
-                            <span className="hiwc-diff-ref">{DIFF.ref}</span>
-                            <span className="hiwc-diff-old">{DIFF.from}</span>
-                            <span className="hiwc-diff-arr">→</span>
-                            <span className="hiwc-diff-new">{DIFF.to}</span>
-                          </div>
-                          <p className="hiwc-note">Nothing is written to your model until you approve.</p>
-                          <button
-                            type="button"
-                            className="hiw-approve"
-                            onClick={() => setApproved(true)}
-                          >
-                            Approve &amp; deliver
-                          </button>
-                        </>
-                      )}
+                      <p className="hiwc-aitext">{DELIVERED}</p>
+                      <div className="hiwc-cite">
+                        <div className="hiwc-cite-src">{CITE.src}</div>
+                        <p className="hiwc-cite-q">{CITE.quote}</p>
+                      </div>
+                      <span className="hiwc-delivered"><Check /> Delivered</span>
+                      <div className="hiwc-react">
+                        <button type="button" aria-label="Copy"><Copy /></button>
+                        <button type="button" aria-label="Retry"><Retry /></button>
+                        <button type="button" aria-label="Good answer"><ThumbUp /></button>
+                        <button type="button" aria-label="Bad answer"><ThumbDown /></button>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* input bar — the chat affordance */}
+              {/* permission dialog — pops over the input, then approves itself */}
+              {active >= 2 && !permitGone && (
+                <div className={`hiwc-permit${approved ? ' is-approved' : ''}`} role="alertdialog" aria-label="Approval request">
+                  <p className="hiwc-aitext">{APPROVE_LEAD}</p>
+                  <div className="hiwc-diff">
+                    <span className="hiwc-diff-ref">{DIFF.ref}</span>
+                    <span className="hiwc-diff-old">{DIFF.from}</span>
+                    <span className="hiwc-diff-arr">→</span>
+                    <span className="hiwc-diff-new">{DIFF.to}</span>
+                  </div>
+                  <p className="hiwc-note">Nothing is written to your model until you approve.</p>
+                  {approved ? (
+                    <span className="hiwc-delivered"><Check /> Approved</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="hiw-approve"
+                      onClick={() => setApproved(true)}
+                    >
+                      Approve &amp; deliver
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* composer card — beat 1 types the brief here, live */}
               <div className="hiwc-input" aria-hidden="true">
-                <span className="hiwc-field">Ask a follow-up…</span>
-                <span className="hiwc-mic"><Mic /></span>
-                <span className="hiwc-send"><SendArrow /></span>
+                <div className="hiwc-composer">
+                  <div className="hiwc-attach">
+                    <span className="hiwc-file"><FileSheet /> Comps-Q2.xlsx</span>
+                    <span className="hiwc-file"><FileDoc /> AAPL-10K.pdf</span>
+                  </div>
+                  <div className={`hiwc-prompt${active === 0 ? ' hiwc-prompt--typing' : ''}`}>
+                    {active === 0 ? typed : 'Ask a follow-up…'}
+                  </div>
+                  <div className="hiwc-toolbar">
+                    <span className="hiwc-tool hiwc-tool--plus"><Plus /></span>
+                    <span className="hiwc-tool"><Spark /> FinSynth</span>
+                    <span className="hiwc-tool"><ClockGlyph /> 30s</span>
+                    <span className="hiwc-send"><SendArrow /></span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

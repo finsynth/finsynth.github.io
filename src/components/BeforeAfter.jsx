@@ -11,6 +11,7 @@ const SHEETS = [
     tone: 'indigo',
     oldLead: 'Every model starts from a blank sheet — every comp pulled by hand.',
     newLead: 'A model in minutes, comps across the whole peer set.',
+    manual: true,
     before: [
       { icon: 'grid', label: 'Open a blank workbook' },
       { icon: 'bars', label: 'Pull each peer by hand' },
@@ -87,11 +88,7 @@ const SHEETS = [
   },
 ]
 
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
-const smooth = (t) => t * t * (3 - 2 * t) // smoothstep — eases the zoom in/out
-
 const OUTRO = 'FinSynth does it all'
-const ZOOM_MIN = 0.86 // scale when the section is fully outside the locked zone
 
 // ── Inline monochrome glyphs (no external icon dep) ──
 const GLYPHS = {
@@ -143,22 +140,70 @@ function Glyph({ name }) {
   )
 }
 
+// Tab 1 "before" — the manual pull, drawn instead of told: a browser window
+// open on a filing next to a blank workbook, with a value dragged by hand
+// from the page into a cell, on loop.
+function BeforeManual() {
+  return (
+    <div className="ba-manual" aria-hidden="true">
+      <div className="ba-mini ba-mini--browser">
+        <div className="ba-mini-bar">
+          <i /><i /><i />
+          <span className="ba-mini-name">sec.gov › AAPL · 10-K</span>
+        </div>
+        <div className="ba-mini-page">
+          <span className="ba-mline" style={{ width: '84%' }} />
+          <span className="ba-mline" style={{ width: '62%' }} />
+          <span className="ba-mlink">EV/EBITDA&nbsp;&nbsp;18.4×</span>
+          <span className="ba-mline" style={{ width: '74%' }} />
+        </div>
+      </div>
+
+      <svg className="ba-manual-arc" viewBox="0 0 100 40" preserveAspectRatio="none">
+        <path
+          d="M4 30 C 30 4, 70 4, 96 26"
+          fill="none" stroke="currentColor" strokeWidth="1.4"
+          strokeDasharray="1 6" strokeLinecap="round" vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      <span className="ba-pull-chip">18.4×</span>
+
+      <div className="ba-mini ba-mini--sheet">
+        <div className="ba-mini-bar">
+          <i /><i /><i />
+          <span className="ba-mini-name">Comps.xlsx</span>
+        </div>
+        <div className="ba-msheet">
+          <span /><span /><span />
+          <span /><span className="ba-mcell-target"><em>18.4×</em></span><span />
+          <span /><span /><span />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // "Before" — a fragmented manual flow: stacked step cards joined by a down
-// arrow, ending in the cost of doing it by hand.
+// arrow, ending in the cost of doing it by hand. Tabs flagged `manual` swap
+// the step cards for the browser-to-sheet vignette.
 function BeforeGraph({ sheet }) {
   return (
     <div className="ba-flow">
-      {sheet.before.map((s, i) => (
-        <div className="ba-frag-row" key={i}>
-          <div className="ba-frag">
-            <span className="ba-frag-ic"><Glyph name={s.icon} /></span>
-            <span>{s.label}</span>
+      {sheet.manual ? (
+        <BeforeManual />
+      ) : (
+        sheet.before.map((s, i) => (
+          <div className="ba-frag-row" key={i}>
+            <div className="ba-frag">
+              <span className="ba-frag-ic"><Glyph name={s.icon} /></span>
+              <span>{s.label}</span>
+            </div>
+            {i < sheet.before.length - 1 && (
+              <span className="ba-frag-arrow" aria-hidden="true"><Glyph name="down" /></span>
+            )}
           </div>
-          {i < sheet.before.length - 1 && (
-            <span className="ba-frag-arrow" aria-hidden="true"><Glyph name="down" /></span>
-          )}
-        </div>
-      ))}
+        ))
+      )}
       <div className="ba-cost">
         <Glyph name="alert" />
         <span>{sheet.cost}</span>
@@ -250,16 +295,24 @@ function AfterGraph({ sheet }) {
 
 export default function BeforeAfter() {
   const ref = useReveal()
-  const trackRef = useRef(null)
-  const zoomRef = useRef(null)
-  const [active, setActive] = useState(0)
+  const panelRefs = useRef([])
   const [typed, setTyped] = useState(0)
-  const lastStep = active === SHEETS.length - 1
+  const [outroOn, setOutroOn] = useState(false)
 
-  // Typewriter outro (Parker ends its stepper with a typed line). Types out
-  // once the final step is reached; resets if the user scrolls back up.
+  // Typewriter outro — types out once the last panel has docked into view.
   useEffect(() => {
-    if (!lastStep) {
+    const last = panelRefs.current[SHEETS.length - 1]
+    if (!last) return
+    const io = new IntersectionObserver(
+      ([entry]) => setOutroOn(entry.isIntersecting && entry.intersectionRatio > 0.55),
+      { threshold: [0.55] }
+    )
+    io.observe(last)
+    return () => io.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!outroOn) {
       setTyped(0)
       return
     }
@@ -274,132 +327,98 @@ export default function BeforeAfter() {
       if (i >= OUTRO.length) clearInterval(id)
     }, 32)
     return () => clearInterval(id)
-  }, [lastStep])
+  }, [outroOn])
 
-  // Scroll-driven stepper + zoom. Two things are scrubbed off the section's
-  // scroll position: (1) the active tab (Parker-style pinned "how it works"),
-  // and (2) a dolly-zoom — the content scales up as the section locks into the
-  // pinned view and scales back down as it leaves. Both are disabled on narrow
-  // screens, where the panel scrolls normally and tabs stay click-only.
-  useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-    const mq = window.matchMedia('(max-width: 760px)')
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const LOCK = 72 // matches .bsp-pin sticky top offset
-
-    const onScroll = () => {
-      const wrap = zoomRef.current
-      if (mq.matches) {
-        if (wrap) wrap.style.transform = ''
-        return
-      }
-      const rect = track.getBoundingClientRect()
-      const vh = window.innerHeight
-      const total = track.offsetHeight - vh
-      if (total <= 0) return
-
-      // Active step
-      const p = clamp(-rect.top / total, 0, 1)
-      setActive(clamp(Math.floor(p * SHEETS.length), 0, SHEETS.length - 1))
-
-      // Zoom: ramp 0→1 as the top rises to the lock line, hold at 1 while
-      // pinned, then ramp 1→0 as the bottom passes back up through it.
-      if (wrap && !reduce) {
-        const span = vh - LOCK
-        const pIn = clamp((vh - rect.top) / span, 0, 1)
-        const pOut = clamp((vh - rect.bottom) / span, 0, 1)
-        const z = smooth(clamp(Math.min(pIn, 1 - pOut), 0, 1))
-        wrap.style.transform = `scale(${(ZOOM_MIN + (1 - ZOOM_MIN) * z).toFixed(4)})`
-      }
-    }
-
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [])
-
-  // Clicking a tab scrolls to that step so the pinned view follows along.
+  // Clicking a tab scrolls to that panel's dock point. offsetTop reflects the
+  // panel's flow position (stickiness is visual only), so this lands each
+  // panel exactly at its docked state.
   const goTo = (i) => {
-    const track = trackRef.current
-    if (!track || window.matchMedia('(max-width: 760px)').matches) {
-      setActive(i)
-      return
-    }
-    const total = track.offsetHeight - window.innerHeight
-    const targetP = (i + 0.5) / SHEETS.length
-    window.scrollTo({ top: track.offsetTop + targetP * total, behavior: 'smooth' })
+    const el = panelRefs.current[i]
+    if (!el) return
+    let y = 0
+    for (let n = el; n; n = n.offsetParent) y += n.offsetTop
+    const dock = parseFloat(getComputedStyle(el).top) || 0
+    window.scrollTo({ top: y - dock + 2, behavior: 'smooth' })
   }
 
   return (
     <section className="bsp-sec" ref={ref}>
-      <div className="bsp-track" ref={trackRef}>
-        <div className="bsp-pin">
-          <div className="wrap" ref={zoomRef}>
-            <div className="bsp-head">
-              <p className="hiw-eyebrow">Before &amp; after</p>
-              <h2>What happens when<br />analysts use FinSynth</h2>
-              <p className="bsp-sub">
-                None of this required hiring.{' '}
-                <span>It just required FinSynth.</span>
-              </p>
-            </div>
+      {/* header scrolls away as the first panel docks */}
+      <div className="wrap">
+        <div className="bsp-head bstk-head">
+          <p className="hiw-eyebrow">Before &amp; after</p>
+          <h2>What happens when<br />analysts use FinSynth</h2>
+          <p className="bsp-sub">
+            None of this required hiring.{' '}
+            <span>It just required FinSynth.</span>
+          </p>
+        </div>
+      </div>
 
-            <div className="accwb whywb">
-              <nav className="whywb-tabs" role="tablist" aria-label="What happens when analysts use FinSynth">
-                {SHEETS.map((s, i) => (
+      {/* Parker-style stack: each panel is sticky at the same dock point; the
+          next one scrolls up and covers it while its tab (offset one quarter
+          further right) clicks into the accumulating tab rail. The tab band is
+          transparent so earlier docked tabs stay visible through it. */}
+      {SHEETS.map((sheet, si) => (
+        <div
+          className="bstk-panel"
+          key={sheet.tab}
+          ref={(el) => { panelRefs.current[si] = el }}
+        >
+          <div className="bstk-band">
+            <div className="wrap bstk-band-wrap">
+              {/* full rail: this panel's tab is solid; upcoming tabs render as
+                  muted ghosts so any section is reachable from the start.
+                  Earlier tabs show through the transparent band as before. */}
+              {SHEETS.map((s, ti) =>
+                ti < si ? null : (
                   <button
                     key={s.tab}
                     type="button"
-                    role="tab"
-                    aria-selected={i === active}
-                    className={`whywb-tab${i === active ? ' active' : ''}${i < active ? ' done' : ''}${i > active ? ' upcoming' : ''}`}
-                    onClick={() => goTo(i)}
+                    className={`bstk-tab${ti === si ? '' : ' bstk-tab--ghost'}`}
+                    style={{ '--i': ti }}
+                    onClick={() => goTo(ti)}
                   >
-                    <span className="whywb-tab-label">{s.tab}</span>
+                    {s.tab}
                   </button>
-                ))}
-              </nav>
-
-              <div className="whywb-stage">
-                {SHEETS.map((sheet, si) => (
-                  <div
-                    className={`whywb-sheet ba-tone--${sheet.tone}${si === active ? ' on' : ''}`}
-                    key={sheet.tab}
-                    aria-hidden={si !== active}
-                  >
-                    <div className="ba-split">
-                      <div className="ba-panel ba-panel--old">
-                        <span className="ba-kick ba-kick--old">
-                          <span className="ba-dot red" />Before FinSynth
-                        </span>
-                        <p className="ba-lead">{sheet.oldLead}</p>
-                        <BeforeGraph sheet={sheet} />
-                      </div>
-
-                      <div className="ba-panel ba-panel--new">
-                        <span className="ba-kick ba-kick--new">
-                          <span className="ba-dot" />After FinSynth
-                        </span>
-                        <p className="ba-lead ba-lead--new">{sheet.newLead}</p>
-                        <AfterGraph sheet={sheet} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                )
+              )}
             </div>
+          </div>
+          <div className="bstk-content">
+            <div className="wrap">
+              <div className={`bstk-sheet ba-tone--${sheet.tone}`}>
+                <div className="ba-split">
+                  <div className="ba-panel ba-panel--old">
+                    <span className="ba-kick ba-kick--old">
+                      <span className="ba-dot red" />Before FinSynth
+                    </span>
+                    <p className="ba-lead">{sheet.oldLead}</p>
+                    <BeforeGraph sheet={sheet} />
+                  </div>
 
-            <div className={`whywb-outro${lastStep ? ' on' : ''}`} aria-hidden={!lastStep}>
-              <span className="whywb-outro-text">{OUTRO.slice(0, typed)}</span>
+                  <div className="ba-panel ba-panel--new">
+                    <span className="ba-kick ba-kick--new">
+                      <span className="ba-dot" />After FinSynth
+                    </span>
+                    <p className="ba-lead ba-lead--new">{sheet.newLead}</p>
+                    <AfterGraph sheet={sheet} />
+                  </div>
+                </div>
+              </div>
+
+              {si === SHEETS.length - 1 && (
+                <div className={`whywb-outro${outroOn ? ' on' : ''}`} aria-hidden={!outroOn}>
+                  <span className="whywb-outro-text">{OUTRO.slice(0, typed)}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      ))}
+
+      {/* dwell scroll distance for the last panel before the stack releases */}
+      <div className="bstk-spacer" aria-hidden="true" />
     </section>
   )
 }
