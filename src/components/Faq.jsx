@@ -68,6 +68,9 @@ export default function Faq() {
       fallback()
     }
   }
+  const openMail = () => {
+    window.location.href = `mailto:${CONTACT_EMAIL}`
+  }
   useEffect(() => () => clearTimeout(copyTimer.current), [])
 
   useLayoutEffect(() => {
@@ -121,21 +124,25 @@ export default function Faq() {
       <div className="wrap faq-grid" ref={zoomRef}>
         <div className="faq-intro">
           <p className="faq-eyebrow">Frequently Asked Questions</p>
-          <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered.</span></h2>
+          <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
-            <button
-              type="button"
+            <div
               className={`faq-contact-chip${copied ? ' is-copied' : ''}`}
-              onClick={copyEmail}
-              aria-label={copied ? 'Email address copied to clipboard' : `Copy email address ${CONTACT_EMAIL}`}
+              onDoubleClick={openMail}
+              title="Double-click to email us"
             >
               <svg className="faq-contact-mail" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m2 7 10 6 10-6" />
               </svg>
               <span className="faq-contact-email">{CONTACT_EMAIL}</span>
-              <span className="faq-contact-action" aria-hidden="true">
+              <button
+                type="button"
+                className="faq-contact-action"
+                onClick={copyEmail}
+                aria-label={copied ? 'Email address copied to clipboard' : `Copy email address ${CONTACT_EMAIL}`}
+              >
                 {copied ? (
                   <>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -152,8 +159,8 @@ export default function Faq() {
                     Copy
                   </>
                 )}
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
 

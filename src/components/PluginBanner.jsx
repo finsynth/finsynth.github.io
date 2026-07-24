@@ -3,7 +3,7 @@ export default function PluginBanner() {
     <section className="plug">
       <div className="wrap plug-grid">
         <div className="plug-left">
-          <p>Everything you love about FinSynth — Excel Native. Your existing macros, keyboard shortcuts, large files, and more keep working.</p>
+          <p>Everything you love about FinSynth, now Excel Native. Your existing macros, keyboard shortcuts, large files, and more keep working.</p>
         </div>
         <div className="plug-div"></div>
         <div className="plug-right">

@@ -102,7 +102,7 @@ export default function PositioningBlock() {
         <div className="pos-head">
           <p className="hiw-eyebrow">WHY FINSYNTH</p>
           <h2>Auditable by design, native to Excel</h2>
-          <p className="pos-sub">Cited numbers, global coverage, and a two-minute setup — inside the spreadsheet you already use.</p>
+          <p className="pos-sub">Cited numbers, global coverage, and a two-minute setup, inside the spreadsheet you already use.</p>
         </div>
         <div className="pos-grid">
           {ITEMS.map(item => (

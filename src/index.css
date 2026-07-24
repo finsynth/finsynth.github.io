@@ -925,19 +925,17 @@ button.play { border: none; padding: 0; appearance: none }
 .hiw-item-more svg { width: 13px; height: 13px; }
 
 /* ════════ Right pane — chat (fixed height so beats don't shift it) ════════ */
-.hiw-pane { display: flex; flex-direction: column; height: 560px; background: #fff; }
+.hiw-pane { display: flex; flex-direction: column; height: 560px; background: #fff; min-width: 0; }
 .hiw-chat { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; position: relative; }
-/* Beat 3: permission dialog pops over the input bar, then approves itself */
+/* Beat 3: permission overlay covers the composer, asks a single yes/no,
+   then approves itself */
 .hiwc-permit {
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 78px;
+  bottom: 14px;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px 18px 18px;
+  padding: 16px 18px;
   background: #fff;
   border: 1px solid var(--accent);
   border-radius: 14px;
@@ -946,33 +944,27 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hiwc-permit.is-approved { border-color: var(--positive); }
 
-/* permission header — reads like a deliberate tool-call gate, not a banner */
-.hiwc-permit-head {
-  display: flex; align-items: center; gap: 9px;
-  padding-bottom: 12px; border-bottom: 1px solid var(--hair);
+/* dismiss (deny) — sits at the extreme right of the overlay */
+.hiwc-permit-x {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; padding: 5px; border: 0; background: none;
+  color: var(--muted); border-radius: 7px; cursor: default;
 }
-.hiwc-permit-ic {
-  flex: none; width: 26px; height: 26px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--accent-soft); color: var(--accent);
-}
-.hiwc-permit-ic svg { width: 15px; height: 15px; }
-.hiwc-permit-title {
-  font-family: var(--font-body); font-size: 13.5px; font-weight: 600; color: var(--ink);
-}
-.hiwc-permit-kind {
-  margin-left: auto; font-family: var(--font-mono); font-size: 11px; letter-spacing: .02em;
-  color: var(--accent); background: var(--accent-soft);
-  border-radius: 6px; padding: 3px 8px;
-}
-.hiwc-permit.is-approved .hiwc-permit-ic { background: rgba(14,159,110,.1); color: var(--positive); }
-.hiwc-permit.is-approved .hiwc-permit-kind { color: var(--positive); background: rgba(14,159,110,.1); }
+.hiwc-permit-x svg { width: 15px; height: 15px; }
 
-/* action row — primary approve + a muted, non-interactive counterpart so the
-   gate reads as a genuine yes/no decision rather than a lone button */
-.hiwc-permit-actions { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+/* the confirm question */
+.hiwc-permit-q {
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600;
+  line-height: 1.4; color: var(--ink);
+  padding-right: 28px; margin-bottom: 14px;
+}
+
+/* two CTAs, side by side — deny (muted) + approve (primary) */
+.hiwc-permit-actions { display: flex; align-items: stretch; gap: 8px; }
+.hiwc-permit-actions .hiw-approve,
+.hiwc-permit-actions .hiw-decline { flex: 1; }
 .hiw-decline {
-  width: 100%; text-align: center;
+  text-align: center;
   font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink);
   background: #fff; border: 1px solid var(--hair); border-radius: 10px;
   padding: 11px 16px; cursor: default;
@@ -987,38 +979,19 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* header bar — window dots · agent · live label */
 .hiwc-bar {
-  display: flex; align-items: center; gap: 15px;
-  padding: 18px 22px; border-bottom: 1px solid var(--hair);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 1px solid var(--hair);
   background: #FCFDFF;
 }
-.hiwc-dots { display: inline-flex; gap: 7px; flex: none; }
-.hiwc-dots i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid #D5DAE6; }
-.hiwc-bar-div { width: 1px; height: 20px; background: var(--hair); flex: none; }
-.hiwc-ava {
-  flex: none; width: 30px; height: 30px; border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--accent-soft); color: var(--accent);
+.hiwc-logo { height: 22px; width: auto; display: block; border-radius: 6px; }
+.hiwc-actions { display: inline-flex; align-items: center; gap: 2px; }
+.hiwc-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px; color: var(--muted);
+  transition: background .18s ease, color .18s ease;
 }
-.hiwc-ava svg { width: 16px; height: 16px; }
-.hiwc-name { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink); }
-.hiwc-with { font-family: var(--font-body); font-size: 13px; color: var(--muted); }
-.hiwc-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: .01em;
-  color: var(--ink); background: #fff;
-  border: 1px solid var(--hair); border-radius: 999px; padding: 3px 10px 3px 8px;
-}
-.hiwc-chip svg { width: 13px; height: 13px; color: var(--accent); }
-.hiwc-status {
-  margin-left: auto; display: flex; align-items: center; gap: 7px; white-space: nowrap;
-  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .02em; color: var(--muted);
-}
-.hiwc-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--positive);
-  box-shadow: 0 0 0 3px rgba(14,159,110,.14);
-  animation: hiwPulse 1.4s ease-in-out infinite;
-}
-
+.hiwc-iconbtn:hover { background: rgba(14,26,46,.05); color: var(--ink); }
+.hiwc-iconbtn svg { width: 17px; height: 17px; }
 
 /* conversation */
 .hiwc-thread {
@@ -1029,7 +1002,6 @@ button.play { border: none; padding: 0; appearance: none }
 @keyframes hiwcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .hiwc-msg--user { justify-content: flex-end; }
 .hiwc-msg--ai { gap: 12px; align-items: flex-start; }
-.hiwc-msg--ai .hiwc-ava { margin-top: 2px; }
 
 .hiwc-bubble {
   max-width: 80%; background: #F1F3F8; color: var(--ink);
@@ -1037,8 +1009,6 @@ button.play { border: none; padding: 0; appearance: none }
   border-radius: 15px 15px 4px 15px;
 }
 .hiwc-aibody { display: flex; flex-direction: column; gap: 12px; max-width: 90%; }
-.hiwc-aitext { font-size: 14.5px; line-height: 1.55; color: var(--body-gray); }
-.hiwc-aitext strong { color: var(--ink); font-weight: 600; }
 
 /* working tasks */
 .hiwc-tasks { border: 1px solid var(--hair); border-radius: 11px; padding: 4px 12px; background: var(--bg); }
@@ -1055,19 +1025,35 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hiwc-spin { color: var(--accent) !important; animation: hiwcSpin 1s linear infinite; }
 @keyframes hiwcSpin { to { transform: rotate(360deg); } }
+/* the write lands as a fresh tool-call row once approved */
+.hiwc-task--wrote { animation: hiwcIn .4s cubic-bezier(.32,.72,0,1) both; }
 
-/* citation */
-.hiwc-cite { border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; padding: 10px 14px; }
-.hiwc-cite-src { font-family: var(--font-mono); font-size: 11px; color: var(--accent-deep); letter-spacing: .01em; }
-.hiwc-cite-q { font-style: italic; font-size: 13.5px; color: var(--body-gray); margin-top: 5px; line-height: 1.5; }
-
-/* proposed write (diff) */
-.hiwc-diff { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 13px; }
-.hiwc-diff-ref { color: var(--secondary); background: #fff; border: 1px solid var(--hair); border-radius: 5px; padding: 3px 8px; }
-.hiwc-diff-old { color: var(--muted); text-decoration: line-through; }
-.hiwc-diff-arr { color: var(--muted); }
-.hiwc-diff-new { color: var(--accent-deep); font-weight: 600; }
-.hiwc-note { font-size: 13px; color: var(--muted); }
+/* the written answer — the substantive response under the tool call */
+.hiwc-answer {
+  display: flex; flex-direction: column; gap: 12px;
+  animation: hiwcIn .45s cubic-bezier(.32,.72,0,1) both;
+}
+.hiwc-p { font-size: 14px; line-height: 1.6; color: var(--body-gray); }
+.hiwc-p--head { font-weight: 600; color: var(--ink); }
+.hiwc-p--muted { font-size: 13px; line-height: 1.6; color: var(--muted); }
+.hiwc-answer strong { color: var(--ink); font-weight: 600; }
+/* inline "jump to source" chip */
+.hiwc-cx {
+  width: 12px; height: 12px; vertical-align: -1px; margin: 0 1px;
+  color: var(--accent); opacity: .8;
+}
+/* result table */
+.hiwc-table-wrap { overflow-x: auto; border: 1px solid var(--hair); border-radius: 10px; }
+.hiwc-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.hiwc-table th, .hiwc-table td { text-align: left; padding: 9px 14px; }
+.hiwc-table thead th { font-weight: 600; color: var(--ink); background: #F7F9FC; }
+.hiwc-table tbody tr { border-top: 1px solid var(--hair); }
+.hiwc-table tbody td:first-child { color: var(--secondary); }
+.hiwc-table tbody td:last-child { color: var(--accent-deep); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* narrative bullets */
+.hiwc-bullets { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.hiwc-bullets li { font-size: 14px; line-height: 1.6; color: var(--body-gray); }
+.hiwc-bullets li::marker { color: var(--muted); }
 
 /* delivered + reactions */
 .hiwc-delivered { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--positive); }
@@ -1090,13 +1076,6 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hiw-approve:hover { filter: brightness(1.06); }
 .hiw-approve:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* typing indicator */
-.hiwc-typing { display: inline-flex; gap: 4px; padding: 13px 15px; background: #F1F3F8; border-radius: 15px 15px 15px 4px; }
-.hiwc-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: hiwcBounce 1.2s ease-in-out infinite; }
-.hiwc-typing span:nth-child(2) { animation-delay: .15s; }
-.hiwc-typing span:nth-child(3) { animation-delay: .3s; }
-@keyframes hiwcBounce { 0%,60%,100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
 
 /* input bar */
 .hiwc-input { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--hair); }
@@ -1154,13 +1133,26 @@ button.play { border: none; padding: 0; appearance: none }
   box-shadow: 0 6px 14px -6px rgba(53, 80, 200, 0.55);
 }
 .hiwc-send svg { width: 16px; height: 16px; }
+/* Approval state: the answer has landed, so the composer collapses to a
+   compact single-line bar — no attachments, tighter padding, and the send
+   button reads as disabled (nothing left to send). */
+.hiwc-input--compact { padding: 12px 16px; }
+.hiwc-input--compact .hiwc-composer { gap: 8px; padding: 10px 12px; }
+.hiwc-input--compact .hiwc-prompt { min-height: 28px; }
+.hiwc-send.is-disabled {
+  background: var(--bg);
+  color: var(--muted);
+  box-shadow: none;
+  border: 1px solid var(--hair);
+  cursor: default;
+}
 
 @media (max-width: 900px) {
   /* Below 900px the stepper stops pinning — the panel flows normally and the
      full thread is shown (JS sets active to the last beat). */
   .hiw-track { height: auto; }
   .hiw-pin { position: static; min-height: 0; display: block; padding: 96px 0; }
-  .hiw-panel { grid-template-columns: 1fr; }
+  .hiw-panel { grid-template-columns: minmax(0, 1fr); }
   .hiw-rail { border-right: 0; border-bottom: 1px solid var(--hair); justify-content: flex-start; }
   .hiw-pane { height: 520px; }
   /* stacked layout isn't scroll-driven — show every description, no accordion */
@@ -1174,7 +1166,7 @@ button.play { border: none; padding: 0; appearance: none }
   .hiw-section.is-in .hiw-panel,
   .hiwc-msg { animation: none; }
   .hiw-head, .hiw-panel, .hiwc-msg { opacity: 1; transform: none; filter: none; }
-  .hiwc-dot, .hiwc-spin, .hiwc-typing span,
+  .hiwc-spin, .hiwc-task--wrote, .hiwc-answer,
   .hiwc-task--live .hiwc-task-tag::after { animation: none; }
   /* no scroll animation → reveal every description, no collapse transition */
   .hiw-item-desc { max-height: 140px; opacity: 1; margin-top: 10px; transform: none; transition: none; }
@@ -1288,25 +1280,48 @@ button.play { border: none; padding: 0; appearance: none }
 .foot-right {
   display: flex; flex-direction: column; align-items: flex-end; gap: 56px;
 }
-/* Ask AI about FinSynth — sits at the left of the bottom legal bar */
-.foot-askai {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 14px; flex-shrink: 0;
-}
-.foot-askai-eyebrow {
-  font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
-  text-transform: uppercase; letter-spacing: .18em; color: #7F8BA3;
-}
-.foot-askai-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start }
-.foot-askai-chip {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-body); font-size: 14px; color: #C6CCD6; text-decoration: none;
-  padding: 9px 15px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px;
-  background: rgba(255,255,255,.02);
+/* Ask your AI — single dropdown button at the left of the bottom legal bar */
+.foot-askai { position: relative; display: inline-flex; flex-shrink: 0 }
+.foot-askai-btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-body); font-size: 14px; color: #C6CCD6;
+  padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+  background: rgba(255,255,255,.02); cursor: pointer;
   transition: color .5s cubic-bezier(.32,.72,0,1), border-color .5s cubic-bezier(.32,.72,0,1),
-              background .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
+              background .5s cubic-bezier(.32,.72,0,1);
 }
-.foot-askai-chip:hover { color: #fff; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.06); transform: translateY(-2px) }
-.foot-askai-logo { width: 15px; height: 15px; flex-shrink: 0; display: block }
+.foot-askai-btn:hover,
+.foot-askai-btn[aria-expanded="true"] {
+  color: #fff; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.06);
+}
+.foot-askai-btn-label { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,.32) }
+.foot-askai-btn-icon { width: 13px; height: 13px; flex-shrink: 0; display: block }
+
+.foot-askai-menu {
+  position: absolute; top: calc(100% + 10px); left: 0; z-index: 5;
+  min-width: 194px; padding: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: #14161c; border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,.6);
+  animation: footAskaiIn .18s cubic-bezier(.32,.72,0,1);
+}
+@keyframes footAskaiIn { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: translateY(0) } }
+.foot-askai-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; border-radius: 8px; border: none; background: none;
+  font-family: var(--font-body); font-size: 14px; color: #C6CCD6; text-decoration: none;
+  text-align: left; cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.foot-askai-item:hover { background: rgba(255,255,255,.06); color: #fff }
+.foot-askai-copy {
+  margin-top: 4px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.08); border-radius: 0 0 8px 8px;
+  color: #7F8BA3;
+}
+.foot-askai-copy:hover { color: #fff }
+.foot-askai-logo { width: 16px; height: 16px; flex-shrink: 0; display: block }
+@media (prefers-reduced-motion: reduce) { .foot-askai-menu { animation: none } }
 /* merged CTA lockup — copy stacked above the button */
 .foot-cta {
   display: flex; flex-direction: column; align-items: flex-start; gap: 32px;
@@ -1322,6 +1337,10 @@ button.play { border: none; padding: 0; appearance: none }
   color: #A8AFAA; margin-top: 18px; max-width: 420px;
 }
 .foot-cta .cta-cta { flex: 0 0 auto }
+/* Setup-a-call + Ask-your-AI sit side by side under the headline —
+   stretch so both pills share the same (taller) height */
+.foot-cta-actions { display: flex; align-items: stretch; flex-wrap: wrap; gap: 14px }
+.foot-cta-actions .foot-askai-btn { height: 100% }
 
 .foot-top { display: flex }
 .foot-grid-new {
@@ -1349,7 +1368,7 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .foot-social-row a:hover { color: #fff; transform: translateY(-2px) }
 .foot-legal {
-  display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 24px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;
   margin-top: 40px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px;
   padding-bottom: 8px;
   font-family: var(--font-body); font-size: 13px; letter-spacing: .01em; color: #7F8BA3;
@@ -1361,6 +1380,7 @@ button.play { border: none; padding: 0; appearance: none }
   position: relative; z-index: 1;
   width: 100%; margin-top: 8px; overflow: hidden;
   line-height: 0; text-align: center;
+  pointer-events: none;
 }
 .foot-wordmark span {
   position: relative; z-index: 1;
@@ -1823,10 +1843,11 @@ button.play { border: none; padding: 0; appearance: none }
 .cta-cta {
   display: inline-flex; align-items: center; gap: 14px;
   padding: 9px 9px 9px 26px; border-radius: 999px;
-  background: var(--btn-blue-grad); color: #fff;
-  border: 1px solid var(--btn-blue-line); box-shadow: var(--btn-blue-glow);
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,.6); box-shadow: none;
   font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
   transition: background .5s cubic-bezier(.32,.72,0,1),
+              border-color .5s cubic-bezier(.32,.72,0,1),
               transform .5s cubic-bezier(.32,.72,0,1),
               box-shadow .5s cubic-bezier(.32,.72,0,1);
   will-change: transform;
@@ -1835,14 +1856,15 @@ button.play { border: none; padding: 0; appearance: none }
 .cta-cta-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 34px; height: 34px; border-radius: 999px;
-  background: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
   transition: transform .5s cubic-bezier(.32,.72,0,1),
               background .5s cubic-bezier(.32,.72,0,1);
 }
 .cta-cta-icon svg { width: 15px; height: 15px }
 .cta-cta:hover {
-  background: var(--btn-blue-grad-h); transform: translateY(-2px);
+  background: var(--btn-blue-grad-h); border-color: var(--btn-blue-line);
+  transform: translateY(-2px);
   box-shadow: var(--btn-blue-glow), 0 16px 36px -18px rgba(46,81,212,.7);
 }
 .cta-cta:hover .cta-cta-icon {
@@ -2205,7 +2227,7 @@ button.play { border: none; padding: 0; appearance: none }
   background: var(--ink); color: var(--bg); text-decoration: none;
   font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em;
   padding: 9px 16px;
-  border: none; cursor: pointer; appearance: none;
+  border: none; cursor: pointer; appearance: none; user-select: none;
   transition: background .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
 }
 .faq-contact-chip:hover { background: var(--accent); transform: translateY(-2px) }
@@ -2215,6 +2237,8 @@ button.play { border: none; padding: 0; appearance: none }
 .faq-contact-action {
   display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
   max-width: 0; opacity: 0; overflow: hidden; margin-left: -9px;
+  border: none; background: none; color: inherit; font: inherit;
+  letter-spacing: inherit; padding: 0; cursor: pointer; appearance: none;
   transition: max-width .45s cubic-bezier(.32,.72,0,1), opacity .3s ease,
     margin-left .45s cubic-bezier(.32,.72,0,1);
 }
@@ -2339,6 +2363,152 @@ button.play { border: none; padding: 0; appearance: none }
 
 @media (max-width: 1100px) {
   .cta-lockup { max-width: none }
+}
+
+/* Mobile "best on desktop" popup — rendered only on small screens (gated in JS),
+   so no media query is needed here. */
+.hero-desktop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.hero-desktop-modal__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 18, 34, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: heroModalFade 0.24s ease both;
+}
+.hero-desktop-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px 26px 26px;
+  text-align: center;
+  box-shadow: 0 24px 60px -20px rgba(10, 18, 34, 0.5);
+  animation: heroModalIn 0.28s cubic-bezier(0.2, 0.82, 0.24, 1) both;
+}
+.hero-desktop-modal__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hero-desktop-modal__icon svg { width: 26px; height: 26px; }
+.hero-desktop-modal__title {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.hero-desktop-modal__body {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--body-gray);
+  margin: 0 0 22px;
+}
+.hero-desktop-modal__btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--btn-blue-grad);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+.hero-desktop-modal__btn:hover { background: var(--btn-blue-grad-h); }
+.hero-desktop-modal__btn:active { transform: translateY(1px); }
+@keyframes heroModalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes heroModalIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-desktop-modal__scrim, .hero-desktop-modal__card { animation: none; }
+  .hero-desktop-modal__btn:active { transform: none; }
+}
+
+/* Mobile advisory banner — hidden on laptop/desktop, shown on tablets & phones.
+   Sits at the very top of the hero, just under the sticky navbar. */
+.hero-mobile-banner { display: none; }
+
+@media (max-width: 768px) {
+  .hero-mobile-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 20px;
+    background: var(--btn-blue-grad);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-align: center;
+    box-shadow: 0 1px 6px -2px rgba(20, 36, 46, 0.25);
+  }
+  .hero-mobile-banner svg { flex: none; width: 15px; height: 15px; }
+}
+
+/* ════════ MOBILE — phones & small tablets ════════ */
+@media (max-width: 640px) {
+  /* tighter gutters so full-bleed content isn't cramped against the edges */
+  .wrap { padding: 0 20px }
+
+  /* navbar: shrink padding, gap and buttons so "Book a demo" always fits */
+  .navbar-inner { padding: 0 1rem; gap: 0.75rem; }
+  .navbar-logo { height: 1.35rem; }
+  .navbar-right { gap: 0.4rem; }
+  .nav-signin, .nav-demo { padding: 0.5rem 0.7rem; font-size: 0.9rem; }
+
+  /* WhatSection: the tall min-height leaves a big empty band on phones —
+     let the section size to its content instead, and shrink the scrolling
+     checklist viewport so it reads as a dense list, not a mostly-empty pane */
+  .what-sec { min-height: 0; }
+  .what-stage { gap: 24px; }
+  .what-list-viewport { height: clamp(300px, 42vh, 380px); }
+
+  /* HowItWorks: keep the chat header from forcing horizontal overflow */
+  .hiwc-bar { padding: 12px 14px; gap: 8px; }
+  .hiwc-logo { height: 20px; }
+}
+
+/* ════════ MOBILE — narrow phones ════════ */
+@media (max-width: 480px) {
+  /* stack the hero CTAs full-width so long labels never wrap or clip */
+  .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-s2-ctas .hero-s2-cta { width: 100%; }
+
+  /* footer CTAs stack too, filling the row */
+  .foot-cta-actions { width: 100%; }
+  .foot-cta-actions .cta-cta,
+  .foot-cta-actions .foot-askai { flex: 1 1 auto; }
 }
 
 @media (max-width: 768px) {
@@ -2861,20 +3031,32 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   flex: none;
-  width: 40px;
   height: 40px;
+  padding: 0 14px;
   border: 1px solid var(--btn-blue-line);
   border-radius: 11px;
   background: var(--btn-blue-grad);
   box-shadow: var(--btn-blue-glow);
   color: #fff;
   cursor: pointer;
-  transition: background .15s ease, transform .12s ease;
+  transition: background .15s ease, transform .12s ease, opacity .15s ease;
 }
-.hero-cmd__submit:hover {
+.hero-cmd__submit-copy {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+.hero-cmd__submit:hover:not(:disabled) {
   background: var(--btn-blue-grad-h);
   transform: translateY(-1px);
+}
+.hero-cmd__submit:disabled {
+  opacity: .45;
+  cursor: default;
+  box-shadow: none;
 }
 
 /* ── Interactive ask: the answer content that unfolds inside the input shell,
@@ -3032,22 +3214,23 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   color: var(--accent);
   background: var(--surface, rgba(20, 36, 46, .04));
 }
-.hero-answer__cite {
-  margin: 13px 0 0;
-  font-family: var(--font-body);
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: var(--muted);
-}
 .hero-answer__cta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 15px;
-  padding-top: 14px;
+  /* pinned to the bottom of the scrolling answer: negative side margins let the
+     bar span edge-to-edge and its opaque background covers the table scrolling
+     behind it; the container's bottom padding keeps its original base spacing */
+  position: sticky;
+  bottom: -22px;
+  z-index: 2;
+  margin: 15px -30px 0;
+  padding: 13px 30px 0;
+  background: var(--bg);
   border-top: 1px solid var(--hair);
+  box-shadow: 0 -10px 18px -14px rgba(20, 36, 46, .22);
 }
 .hero-answer__cta-copy {
   font-family: var(--font-body);
@@ -3070,10 +3253,10 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   text-decoration: none;
   transition: background .15s ease, transform .15s ease;
 }
-.hero-answer__cta-btn:hover { background: #1d8469; transform: translateY(-1px); }
+.hero-answer__cta-btn:hover { background: var(--btn-blue-grad); transform: translateY(-1px); }
 
-/* Excel-style deliverable table — the worked result for the asked prompt, with
-   an "Open" arrow in the header bar that routes to Book a demo. */
+/* Excel-style deliverable table — the worked result for the asked prompt. The
+   header bar shows just the workbook name; booking lives at the pinned bottom. */
 .hero-answer__xls {
   margin-bottom: 14px;
   border: 1px solid var(--hair-strong);
@@ -3101,31 +3284,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.hero-answer__xls-open {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: none;
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(16, 124, 65, .35);
-  background: #fff;
-  color: #107C41;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
-}
-.hero-answer__xls-open svg { transition: transform .15s ease; }
-.hero-answer__xls-open:hover {
-  background: #107C41;
-  color: #fff;
-  box-shadow: 0 8px 18px -12px rgba(16, 124, 65, .8);
-  transform: translateY(-1px);
-}
-.hero-answer__xls-open:hover svg { transform: translateY(1px); }
 
 /* contact-email capture that slides in under the workbook bar when the user
    asks for the download */
@@ -3229,6 +3387,13 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 .hero-answer__xls-tbl tbody td:first-child { font-weight: 600; color: var(--ink); }
 .hero-answer__xls-tbl tbody td { color: var(--body-gray, var(--muted)); }
 .hero-answer__xls-tbl tbody tr:hover td { background: rgba(16, 124, 65, .04); }
+/* source-pulled figures shown as Excel hyperlink-blue cited cells (inert — no click action) */
+.hero-answer__cell-link {
+  color: #0563C1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .hero-answer { animation: none; }
@@ -3269,8 +3434,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   font-weight: 600;
   color: var(--ink);
 }
-/* logo scales with the smaller chip (feedback: "reduce the size") */
-.hero-excel-pill img { height: 12px; width: auto; }
+/* logo sized up so the Accel wordmark reads clearly (feedback: "barely
+   visible, increase the size a bit") */
+.hero-excel-pill img { height: 15px; width: auto; }
 
 /* ── Heading ── */
 .hero-s2-title {
@@ -3436,6 +3602,55 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   margin-bottom: 72px;
 }
 
+/* Supporting claims as buttons — two per row (photo hero) */
+.hero-s2-claims {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  justify-content: center;
+  gap: 10px;
+  list-style: none;
+  margin: 0 0 64px;
+  padding: 0;
+}
+.hero-s2-claim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  /* warm frosted-glass chips: the low-opacity cream fill (previously only on
+     the Excel chip) applied to all, with a backdrop blur so the hero softens
+     through (feedback: "I like the fill behind the Excel chip") */
+  background: rgba(244, 241, 231, 0.5);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  backdrop-filter: blur(14px) saturate(135%);
+  color: var(--ink);
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 1px 2px rgba(20, 36, 46, .06), 0 10px 26px -18px rgba(20, 36, 46, .35);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.hero-s2-claim__ic {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+/* the Excel logo replaces the word "Excel" in this chip ("Built for [icon]"),
+   so size the mark to sit inline with the text (feedback: icon instead of the
+   word, not icon-only) */
+.hero-s2-claim--excel .hero-s2-claim__ic svg { width: 18px; height: 18px; }
+
+@media (max-width: 780px) {
+  .hero-s2-claims { grid-template-columns: repeat(2, max-content); }
+}
+@media (max-width: 560px) {
+  .hero-s2-claims { grid-template-columns: 1fr; max-width: 300px; gap: 8px; }
+  .hero-s2-claim { font-size: 13px; padding: 8px 14px; }
+}
+
 /* ── CTA button — embossed, brand color ── */
 .hero-s2-cta {
   display: inline-flex;
@@ -3452,6 +3667,8 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   padding: 15px 40px;
   border-radius: 12px;
   text-decoration: none;
+  white-space: nowrap;
+  text-align: center;
   transition: background 0.15s, transform 0.12s;
   margin-bottom: 28px;
 }
@@ -3467,9 +3684,19 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin-bottom: 48px;
+  margin-bottom: 18px;
 }
 .hero-s2-ctas .hero-s2-cta { margin-bottom: 0; }
+
+/* Trust line under the CTAs */
+.hero-s2-trust {
+  margin: 0 0 44px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--secondary);
+  text-align: center;
+}
 
 /* secondary (Sign in) — outline / glass */
 .hero-s2-cta.hero-s2-cta--ghost {
@@ -3481,6 +3708,22 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 .hero-s2-cta.hero-s2-cta--ghost:hover {
   background: #fff;
   transform: translateY(-1px);
+}
+
+/* primary CTA carries a sub-label ("Set up a call") stacked under the main
+   copy — switch that button to a tight two-line column */
+.hero-s2-cta:has(.hero-s2-cta__sub) {
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 1.18;
+}
+.hero-s2-cta__sub {
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  opacity: 0.82;
 }
 
 
@@ -5383,15 +5626,19 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   justify-content: center;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
-  background: var(--ink);
-  color: #fff;
+  background: transparent;
+  color: var(--ink);
   cursor: pointer;
   appearance: none;
-  box-shadow: 0 8px 20px -14px rgba(53, 80, 200, .5);
   transition: color .25s, border-color .25s, background .25s, transform .25s;
 }
 .scroll-next svg { width: 18px; height: 18px; }
-.scroll-next:hover { background: var(--accent); color: #fff; }
+/* Over a dark section: white outline + icon so it stays visible */
+.scroll-next--on-dark {
+  border-color: rgba(255, 255, 255, .9);
+  color: #fff;
+}
+.scroll-next:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .scroll-next { transition: none; }
 }

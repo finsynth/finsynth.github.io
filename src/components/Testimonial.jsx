@@ -40,7 +40,7 @@ export default function Testimonial() {
           {/* Head */}
           <div className="testi-head">
             <p className="hiw-eyebrow">Customers</p>
-            <h2>Trusted by the analysts<br />moving <span className="ttl-hl">fastest.</span></h2>
+            <h2>Hear what the analysts<br />have to <span className="ttl-hl">say</span></h2>
           </div>
 
           {/* Card stack — front card flies up and tucks behind automatically */}

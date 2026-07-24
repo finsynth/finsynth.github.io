@@ -12,9 +12,9 @@ const ROLES = [
   'equity research',
 ]
 
-const TYPE_MS = 45      // per character
-const HOLD_MS = 2600    // full word on screen
-const SELECT_MS = 620   // selection highlight before delete
+const TYPE_MS = 28      // per character
+const HOLD_MS = 1500    // full word on screen
+const SELECT_MS = 380   // selection highlight before delete
 
 const BOOK_URL = 'https://calendly.com/kartik-finsynth/intro'
 
@@ -30,10 +30,12 @@ const PROMPTS = [
     response:
       "Nine quarters, checked one by one against a real threshold. Nothing here crossed 200bps, and FinSynth says so instead of manufacturing a story that isn't there.",
     file: 'Apple_Gross_Margin.xlsx',
-    cta: 'See it run on the name you cover.',
+    cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD millions unless noted · fiscal year Oct–Sep · as-of 2026-07-22',
       cols: ['Quarter', 'Period Ending', 'Revenue', 'Gross Profit', 'Gross Margin', 'QoQ Δ (bps)', '>200 bps'],
+      // source-pulled figures rendered as blue cited links (computed columns stay plain)
+      linkCols: [2, 3],
       rows: [
         ['Q2 2024', '30-Mar-24', '90,753', '42,271', '46.6%', '', ''],
         ['Q3 2024', '29-Jun-24', '85,777', '39,678', '46.3%', '(32)', ''],
@@ -54,10 +56,12 @@ const PROMPTS = [
     response:
       "Ten names, median and mean calculated automatically. It also catches the details an analyst would: SK hynix flagged as KRW-listed, Intel's P/E marked n/a on negative earnings, not left as a broken number.",
     file: 'Semiconductor_Comps.xlsx',
-    cta: 'Build your own comp set, live.',
+    cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD · Mkt Cap in $B · P/E and EV/EBITDA trailing (TTM) · Rev growth = latest completed FY (YoY) · as-of 2026-07-22',
       cols: ['Company', 'Ticker', 'Mkt Cap ($B)', 'P/E (TTM)', 'EV/EBITDA', 'Rev Growth (FY YoY)', 'Growth FY'],
+      // source-pulled figures rendered as blue cited links (computed columns / aggregate rows stay plain)
+      linkCols: [2, 3, 4, 5],
       rows: [
         ['NVIDIA', 'NVDA', '5,020.8', '31.75', '30.09', '65.5%', 'FY2026'],
         ['Taiwan Semiconductor', 'TSM', '2,202.2', '27.58', '18.49', '31.6%', 'FY2025'],
@@ -81,10 +85,12 @@ const PROMPTS = [
     response:
       'Twelve quarters of guidance versus actuals, categorized and summarized: 7 quarters beat the top of the range, 5 landed inside it, 0 missed. A track record, not just a data pull.',
     file: 'Meta_Guidance_vs_Actual.xlsx',
-    cta: 'See a track record built for a name you follow.',
+    cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD millions · Guidance = next-quarter revenue range (stated in $B, shown here in $M) · Actual = reported total revenue · as-of 2026-07-22',
       cols: ['Quarter', 'Guide Low', 'Guide High', 'Guide Mid', 'Actual Rev', 'Act − Mid', 'Act vs Mid %', 'Act − High', 'Result vs Range'],
+      // source-pulled figures rendered as blue cited links (computed columns stay plain)
+      linkCols: [1, 2, 4],
       rows: [
         ['Jun-23A', '29,500', '32,000', '30,750', '31,999', '1,249', '4.1%', '(1)', 'In range'],
         ['Sep-23A', '32,000', '34,500', '33,250', '34,146', '896', '2.7%', '(354)', 'In range'],
@@ -103,18 +109,15 @@ const PROMPTS = [
   },
 ]
 
-// The reassurance line shown under every answer — every number is cited.
-const CITATION_NOTE =
-  "Not sure about the output? Don't worry — every cell written carries a citation. Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted."
-
 // Fallback for a query the user types themselves (not one of the examples).
 const DEFAULT_RESULT = {
   response:
-    "On it. I've pulled the figures, traced each one back to its source filing, and staged the update for your review — nothing is written to your model until you approve every cell.",
+    "On it. I've pulled the figures, traced each one back to its source filing, and staged the update for your review. Nothing is written to your model until you approve every cell.",
   file: 'FinSynth_Output.xlsx',
-  cta: 'See it run on the name you cover.',
+  cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
   table: {
     cols: ['Metric', 'Value', 'Source'],
+    linkCols: [1],
     rows: [
       ['Revenue', '$391.0B', '10-K · p.31'],
       ['Gross margin', '46.2%', '10-K · p.32'],
@@ -126,9 +129,9 @@ const DEFAULT_RESULT = {
 const LOAD_MS = 1500    // loader held under the prompt before the result appears
 const FILL_MS = 20      // per-char cadence when a prompt types itself in
 
-// The workbook bar beneath a result table. Rather than a soft email lead-capture
-// ("send it over"), the workbook is shown alongside a direct "Request a demo"
-// CTA — the clearer next step, sending the visitor straight to booking.
+// The workbook bar beneath a result table: just the Excel icon and the file
+// name. The booking CTA lives once, pinned at the bottom of the answer, rather
+// than repeated here inside the table.
 function XlsDownload({ file }) {
   return (
     <div className="hero-answer__xls-bar">
@@ -142,17 +145,6 @@ function XlsDownload({ file }) {
         </svg>
       </span>
       <span className="hero-answer__xls-name">{file}</span>
-      <a
-        className="hero-answer__xls-open"
-        href={BOOK_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M11.5 2.5h-9A1.5 1.5 0 0 0 1 4v8.5A1.5 1.5 0 0 0 2.5 14h11A1.5 1.5 0 0 0 15 12.5V6M11 2v3.5M5 2v3.5M1 7h9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span>Request a demo</span>
-      </a>
     </div>
   )
 }
@@ -328,17 +320,30 @@ function HeroAsk({ onOverlayChange }) {
                               </tr>
                             </thead>
                             <tbody>
-                              {result.table.rows.map((r, ri) => (
+                              {result.table.rows.map((r, ri) => {
+                                // aggregate rows (Median/Mean) are computed, not sourced — leave plain
+                                const agg = r[0] === 'Median' || r[0] === 'Mean'
+                                return (
                                 <tr key={ri}>
-                                  {r.map((cell, ci) => <td key={ci}>{cell}</td>)}
+                                  {r.map((cell, ci) => {
+                                    // source-pulled figures render as blue Excel-style cited links
+                                    const cited = !agg && result.table.linkCols?.includes(ci) && cell && cell !== 'n/a'
+                                    return (
+                                      <td key={ci}>
+                                        {cited ? (
+                                          <span className="hero-answer__cell-link">{cell}</span>
+                                        ) : cell}
+                                      </td>
+                                    )
+                                  })}
                                 </tr>
-                              ))}
+                                )
+                              })}
                             </tbody>
                           </table>
                         </div>
                       </div>
                     )}
-                    <p className="hero-answer__cite">{CITATION_NOTE}</p>
                     <div className="hero-answer__cta">
                       <span className="hero-answer__cta-copy">{result.cta}</span>
                       <a className="hero-answer__cta-btn" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
@@ -385,7 +390,7 @@ function HeroAsk({ onOverlayChange }) {
         {status === 'idle' && (
         <form
           className="hero-cmd"
-          onSubmit={(e) => { e.preventDefault(); ask(value) }}
+          onSubmit={(e) => { e.preventDefault(); if (value.trim()) ask(value); else if (menu) pickPrompt(0) }}
         >
           <span className="hero-cmd__lead" aria-hidden="true">
             <svg width="17" height="17" viewBox="0 0 16 16" fill="none">
@@ -393,20 +398,25 @@ function HeroAsk({ onOverlayChange }) {
               <path d="M2.2 8h11.6M8 2C5.8 4 5.8 12 8 14M8 2c2.2 2 2.2 10 0 12" stroke="currentColor" strokeWidth="1.1" />
             </svg>
           </span>
+          {/* read-only: the demo only runs the curated prompts, never a free-typed
+              query. Clicking opens the suggestion palette instead of accepting text. */}
           <input
             ref={inputRef}
             className="hero-cmd__input"
             type="text"
-            placeholder="Ask FinSynth to pull, model, or audit any number…"
+            readOnly
+            placeholder="Ask FinSynth to pull Apple's gross margin for the last nine quarters…"
             aria-label="Ask FinSynth"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
             onFocus={() => { if (!open) openMenu() }}
             onClick={() => { if (!open) openMenu() }}
           />
-          <button type="submit" className="hero-cmd__submit" aria-label="Submit">
-            <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h9.5M8.5 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          {/* enabled once the palette is open or a prompt has been picked (typing
+              in / value present); shows the Enter affordance */}
+          <button type="submit" className="hero-cmd__submit" aria-label="Submit" disabled={!menu && !value.trim()}>
+            <span className="hero-cmd__submit-copy">Enter</span>
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M13 3v4.5a2 2 0 0 1-2 2H3.5M6 6.5 3 9.5l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </form>
@@ -513,17 +523,54 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bare
     onAskOpenChange?.(v)
   }, [onAskOpenChange])
   const canvasRef = useRef(null)
-  // photo hero: the pixel mosaic reports when it has fully assembled, so the
-  // trust line (which sits over the image) can flip from muted grey to solid ink
-  const [pixelDone, setPixelDone] = useState(false)
-  const handleRevealDone = useCallback(() => setPixelDone(true), [])
   useEffect(() => {
     if (mosaic) return
     return initGrid(canvasRef.current)
   }, [mosaic])
 
+  // Mobile-only "best on desktop" notice — shown once per session as a popup on
+  // small screens, then a slim banner stays at the top of the hero as a reminder
+  const [showDesktopNote, setShowDesktopNote] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      if (sessionStorage.getItem('fs-desktop-note') === 'seen') return
+    } catch { /* storage blocked — still show the notice */ }
+    if (window.matchMedia('(max-width: 768px)').matches) setShowDesktopNote(true)
+  }, [])
+  const dismissDesktopNote = useCallback(() => {
+    setShowDesktopNote(false)
+    try { sessionStorage.setItem('fs-desktop-note', 'seen') } catch { /* no-op */ }
+  }, [])
+
   return (
     <section className={`hero-s2${mosaic && !dot && !photo ? ' hero-s2--mosaic' : ''}${dot ? ' hero-s2--globe' : ''}${photo ? ' hero-s2--photo' : ''}${bare ? ' hero-s2--bare' : ''}`}>
+      {/* Mobile-only popup shown first on small screens (once per session) */}
+      {showDesktopNote && (
+        <div className="hero-desktop-modal" role="dialog" aria-modal="true" aria-labelledby="hero-desktop-modal-title">
+          <div className="hero-desktop-modal__scrim" onClick={dismissDesktopNote} />
+          <div className="hero-desktop-modal__card">
+            <span className="hero-desktop-modal__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3.5" width="20" height="13" rx="1.8" />
+                <path d="M8 20.5h8M12 16.5v4" />
+              </svg>
+            </span>
+            <h2 id="hero-desktop-modal-title" className="hero-desktop-modal__title">Best viewed on desktop</h2>
+            <button type="button" className="hero-desktop-modal__btn" onClick={dismissDesktopNote}>
+              Continue on mobile
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Mobile-only advisory — hidden on laptop/desktop via CSS media query */}
+      <div className="hero-mobile-banner" role="note">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="1.5" y="2.5" width="13" height="8.5" rx="1.2" />
+          <path d="M5.5 13.5h5M8 11v2.5" />
+        </svg>
+        <span>For the best experience, view on desktop</span>
+      </div>
       {/* bare mode omits the background entirely — the copy is overlaid on top
           of an external backdrop (the pixel-bridge scroll scene) */}
       {!bare && (bgImage ? (
@@ -533,7 +580,7 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bare
           aria-hidden="true"
         />
       ) : photo ? (
-        <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" paused={paused} onRevealDone={handleRevealDone} />
+        <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" paused={paused} />
       ) : dot ? (
         <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" paused={paused} />
       ) : variant === 'tiles' ? (
@@ -586,23 +633,27 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bare
             agent for <RotatingRole paused={paused} />
           </h1>
 
-          {/* Supporting paragraph */}
-          <p className="hero-s2-sub">
-            Global coverage. Cell-level citations. Built for{' '}
-            <span className="excel-inline" aria-hidden="true" style={{display:'inline-flex',verticalAlign:'-3px',marginRight:'5px'}}>
-              <svg width="17" height="17" viewBox="0 0 32 32" aria-hidden="true">
-                <path fill="#185C37" d="M20 16l-11-2v14.5c0 .83.67 1.5 1.5 1.5h19c.83 0 1.5-.67 1.5-1.5V23z" />
-                <path fill="#21A366" d="M20 2h-9.5C9.67 2 9 2.67 9 3.5V9l11 7 5.5 2L31 16V9z" />
-                <path fill="#107C41" d="M9 9h11v7H9z" />
-                <path fill="#33C481" d="M29.5 2H20v7h11V3.5c0-.83-.67-1.5-1.5-1.5z" />
-                <path fill="#107C41" d="M31 16H20v7h11z" />
-                <path fill="#134A2C" d="M16.67 7H9v18h7.67c.73 0 1.33-.6 1.33-1.33V8.33C18 7.6 17.4 7 16.67 7z" opacity=".4" />
-                <rect x="1" y="7" width="17" height="18" rx="1.8" fill="#107C41" />
-                <path fill="#fff" d="M5.1 21.5l3.1-4.9-2.85-4.6h2.3l1.55 2.9c.15.3.25.5.3.65h.02c.1-.25.2-.47.32-.68l1.66-2.87h2.12l-2.92 4.58 3 4.92h-2.26l-1.8-3.36c-.08-.15-.15-.3-.21-.47h-.03c-.05.16-.12.3-.2.46l-1.85 3.37z" />
-              </svg>
-            </span>
-            Excel. Enterprise ready.
-          </p>
+          {/* Supporting claims — shown as compact chips, two per row */}
+          <ul className="hero-s2-claims" aria-label="What FinSynth delivers">
+            <li className="hero-s2-claim">Global coverage</li>
+            <li className="hero-s2-claim">Cell-level citations</li>
+            <li className="hero-s2-claim hero-s2-claim--excel" aria-label="Built for Excel">
+              Built for
+              <span className="hero-s2-claim__ic" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 32 32" aria-hidden="true">
+                  <path fill="#185C37" d="M20 16l-11-2v14.5c0 .83.67 1.5 1.5 1.5h19c.83 0 1.5-.67 1.5-1.5V23z" />
+                  <path fill="#21A366" d="M20 2h-9.5C9.67 2 9 2.67 9 3.5V9l11 7 5.5 2L31 16V9z" />
+                  <path fill="#107C41" d="M9 9h11v7H9z" />
+                  <path fill="#33C481" d="M29.5 2H20v7h11V3.5c0-.83-.67-1.5-1.5-1.5z" />
+                  <path fill="#107C41" d="M31 16H20v7h11z" />
+                  <path fill="#134A2C" d="M16.67 7H9v18h7.67c.73 0 1.33-.6 1.33-1.33V8.33C18 7.6 17.4 7 16.67 7z" opacity=".4" />
+                  <rect x="1" y="7" width="17" height="18" rx="1.8" fill="#107C41" />
+                  <path fill="#fff" d="M5.1 21.5l3.1-4.9-2.85-4.6h2.3l1.55 2.9c.15.3.25.5.3.65h.02c.1-.25.2-.47.32-.68l1.66-2.87h2.12l-2.92 4.58 3 4.92h-2.26l-1.8-3.36c-.08-.15-.15-.3-.21-.47h-.03c-.05.16-.12.3-.2.46l-1.85 3.37z" />
+                </svg>
+              </span>
+            </li>
+            <li className="hero-s2-claim">Enterprise ready</li>
+          </ul>
 
           {/* CTAs — primary demo + secondary sign-in */}
           <div className="hero-s2-ctas">
@@ -624,9 +675,8 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bare
             </a>
           </div>
 
-          {/* Trust line — turns solid ink once the pixel mosaic has settled */}
-          <p className={`hero-trust-line${pixelDone ? ' is-solid' : ''}`}>
-            Trusted by investors from leading global hedge funds and asset managers
+          <p className="hero-s2-trust">
+            Backed by Accel &amp; industry angels. Trusted by investors from global funds.
           </p>
 
           {/* Input box + prompts, kept together below the content (mosaic hero only) */}

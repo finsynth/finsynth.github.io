@@ -7,7 +7,7 @@ const BEATS = [
   {
     icon: 'brief',
     title: 'Brief the task',
-    line: "Ask it the way you'd brief an associate: pull the comparables, check the model, screen the filings.",
+    line: "Ask it the way you'd brief an associate.",
   },
   {
     icon: 'work',
@@ -22,22 +22,17 @@ const BEATS = [
 ]
 
 // The conversation the three beats play out, briefing FinSynth like an associate.
-const BRIEF = 'Pull the comparables, check the model, screen the filings.'
+const BRIEF = "Track how Meta's guidance has compared to what it actually delivered, over the last twelve quarters."
+// Watch-it-work: the one or two tool calls this brief actually triggers.
 const WORK_TASKS = [
-  ['Read 10-K, 10-Q filings', 'done'],
-  ['Opened Model_Build.xlsx', 'done'],
-  ['Running the numbers', 'live'],
+  ['Read META 10-Qs & earnings releases', 'done'],
+  ['Building the guidance vs. actuals track', 'live'],
 ]
-const APPROVE_LEAD = 'Ready to update revenue in B14.'
-const DIFF = { ref: 'B14', from: '$88.1B', to: '$94.9B' }
-const DELIVERED = 'Delivered to B14 — cited to 10-Q Q3. Your model, your call.'
+// Approve: a single confirm question; on yes, the write lands as a new tool call.
+const APPROVE_Q = 'Write the 12-quarter guidance vs. actuals to your model?'
+const WROTE = 'Wrote guidance vs. actuals to B4:M9 · cited to filings'
 
 // ── Inline glyphs (no external icon dep) ──
-const Spark = () => (
-  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <path d="M8 1.5l1.4 3.9 3.9 1.4-3.9 1.4L8 12.1 6.6 8.2 2.7 6.8l3.9-1.4L8 1.5z" fill="currentColor" />
-  </svg>
-)
 const Check = () => (
   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -106,34 +101,18 @@ const ThumbDown = () => (
     <rect x="2.3" y="7" width="2.7" height="6.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
   </svg>
 )
-// Left-rail item glyphs, keyed to BEATS[i].icon
-const BeatIcon = ({ name }) => {
-  if (name === 'work') {
-    return (
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M2.5 10.5l3.5-4 3 3.5 3.5-5 5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
-  }
-  if (name === 'approve') {
-    return (
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M10 2.5l6 2.2v4.3c0 3.5-2.4 6.3-6 8-3.6-1.7-6-4.5-6-8V4.7L10 2.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-        <path d="M7.4 9.8l1.9 1.9L13 7.9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
-  }
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4h11A1.5 1.5 0 0 1 17 5.5v6A1.5 1.5 0 0 1 15.5 13H8l-3.5 3v-3H4.5A1.5 1.5 0 0 1 3 11.5v-6z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M6.5 7.5h7M6.5 10h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  )
-}
-
+// small "jump to source" chip trailing a cited figure
+const Cite = () => (
+  <svg className="hiwc-cx" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M6 4.5h5.5V10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M11.5 4.5L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
 export default function HowItWorks() {
   const ref = useRef(null)
   const trackRef = useRef(null)
+  const threadRef = useRef(null)
+  const answerRef = useRef(null)
   const zoomRef = useSectionZoom()
   const [active, setActive] = useState(0)
   const [approved, setApproved] = useState(false)
@@ -242,18 +221,29 @@ export default function HowItWorks() {
     const t = setTimeout(() => setPermitGone(true), 900)
     return () => clearTimeout(t)
   }, [approved, permitGone])
+  // once the answer lands, scroll the thread (never the page) to reveal it
+  useEffect(() => {
+    if (!(active >= 2 && approved)) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setTimeout(() => {
+      const thread = threadRef.current
+      const answer = answerRef.current
+      if (!thread || !answer) return
+      const top =
+        answer.getBoundingClientRect().top -
+        thread.getBoundingClientRect().top +
+        thread.scrollTop -
+        12
+      thread.scrollTo({ top, behavior: 'smooth' })
+    }, 60)
+    return () => clearTimeout(t)
+  }, [active, approved])
 
   const select = (i) => {
     setApproved(false)
     setPermitGone(false)
     setActive(i)
   }
-
-  // Status shown top-right of the chat header, per stage.
-  const status =
-    active >= 2 ? (approved ? 'Delivered · cited' : 'Awaiting approval')
-    : active === 1 ? 'Working…'
-    : 'Briefing…'
 
   const tasksDone = active >= 2 // once approved-stage is reached, work is finished
 
@@ -267,7 +257,7 @@ export default function HowItWorks() {
           <div className="hiw-wrap" ref={zoomRef}>
         <div className="hiw-head">
           <p className="hiw-eyebrow">HOW IT WORKS</p>
-          <h2 className="hiw-title">Say hello to your new <span className="ttl-hl">co-worker.</span></h2>
+          <h2 className="hiw-title">Say hello to your new <span className="ttl-hl">co-worker</span></h2>
         </div>
 
         <div className="hiw-panel">
@@ -291,21 +281,36 @@ export default function HowItWorks() {
 
           <div className="hiw-pane" aria-live="polite">
             <div className="hiw-chat">
-              {/* header */}
+              {/* header — mirrors the production app toolbar: logo left,
+                  history / new / menu on the right */}
               <div className="hiwc-bar">
-                <span className="hiwc-dots" aria-hidden="true"><i /><i /><i /></span>
-                <span className="hiwc-bar-div" aria-hidden="true" />
-                <span className="hiwc-name">AI Assistant</span>
-                <span className="hiwc-with">with</span>
-                <span className="hiwc-chip"><Spark /> FinSynth</span>
-                <span className="hiwc-status">
-                  <span className="hiwc-dot" />
-                  Real-time · {status}
+                <img className="hiwc-logo" src="/assets/img/icon-64.png" alt="FinSynth" />
+                <span className="hiwc-actions" aria-hidden="true">
+                  <span className="hiwc-iconbtn" title="History">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                      <path d="M3 3v5h5" />
+                      <path d="M12 7v5l3.5 2" />
+                    </svg>
+                  </span>
+                  <span className="hiwc-iconbtn" title="New chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 8v8M8 12h8" />
+                    </svg>
+                  </span>
+                  <span className="hiwc-iconbtn" title="More">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <circle cx="12" cy="5" r="1.6" />
+                      <circle cx="12" cy="12" r="1.6" />
+                      <circle cx="12" cy="19" r="1.6" />
+                    </svg>
+                  </span>
                 </span>
               </div>
 
               {/* conversation */}
-              <div className="hiwc-thread">
+              <div className="hiwc-thread" ref={threadRef}>
                 {/* 1 · the brief — while it's being typed below, the thread stays empty */}
                 {active >= 1 && (
                   <div className="hiwc-msg hiwc-msg--user">
@@ -313,16 +318,11 @@ export default function HowItWorks() {
                   </div>
                 )}
 
-                {/* 2 · watch it work — thinking, then the tool calls */}
+                {/* 2 · watch it work — just the tool calls this brief triggers.
+                    3 · once approved, the write lands, then the answer streams in. */}
                 {active >= 1 && (
                   <div className="hiwc-msg hiwc-msg--ai">
-                    <span className="hiwc-ava"><Spark /></span>
                     <div className="hiwc-aibody">
-                      {!tasksDone && (
-                        <div className="hiwc-typing" aria-label="FinSynth is thinking">
-                          <span /><span /><span />
-                        </div>
-                      )}
                       <div className="hiwc-tasks">
                         {WORK_TASKS.map(([label, tag]) => {
                           const state = tasksDone ? 'done' : tag
@@ -334,85 +334,127 @@ export default function HowItWorks() {
                             </div>
                           )
                         })}
+                        {active >= 2 && approved && (
+                          <div className="hiwc-task hiwc-task--wrote">
+                            <Check />
+                            <span className="hiwc-task-a">{WROTE}</span>
+                            <span className="hiwc-task-tag">done</span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                )}
 
-                {/* 3 · the output lands after the permission overlay approves */}
-                {active >= 2 && approved && (
-                  <div className="hiwc-msg hiwc-msg--ai">
-                    <span className="hiwc-ava"><Spark /></span>
-                    <div className="hiwc-aibody">
-                      <p className="hiwc-aitext">{DELIVERED}</p>
-                      {/* the write lands as a completed tool call, matching the
-                          "watch it work" task rows above */}
-                      <div className="hiwc-tasks">
-                        <div className="hiwc-task">
-                          <Check />
-                          <span className="hiwc-task-a">Wrote {DIFF.to} to {DIFF.ref} · cited 10-Q Q3</span>
-                          <span className="hiwc-task-tag">done</span>
+                      {/* the written answer lands under the tool call */}
+                      {active >= 2 && approved && (
+                        <div className="hiwc-answer" ref={answerRef}>
+                          <p className="hiwc-p">
+                            Every guidance and actual figure links back to the
+                            originating earnings release; midpoint, variances, and the range verdict
+                            are live formulas.
+                          </p>
+                          <p className="hiwc-p hiwc-p--head">
+                            What the 12-quarter record shows (next-quarter total-revenue guidance vs.
+                            delivered):
+                          </p>
+                          <div className="hiwc-table-wrap">
+                            <table className="hiwc-table">
+                              <thead>
+                                <tr><th>Metric</th><th>Result</th></tr>
+                              </thead>
+                              <tbody>
+                                <tr><td>Above top of range</td><td>7 of 12 <Cite /></td></tr>
+                                <tr><td>Within range</td><td>5 of 12 <Cite /></td></tr>
+                                <tr><td>Below range</td><td>0 <Cite /></td></tr>
+                                <tr><td>Avg actual vs. guide midpoint</td><td>+3.9% <Cite /></td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <ul className="hiwc-bullets">
+                            <li>
+                              <strong>Never missed</strong> the low end once in three years. The
+                              story is systematic conservatism.
+                            </li>
+                            <li>
+                              <strong>Beats widened through 2025</strong>: five straight quarters
+                              above the top of the range (Dec-24A → Dec-25A), peaking at{' '}
+                              <strong>+8.0% above midpoint in Jun-25A</strong> <Cite /> — a
+                              step-change from the ~in-range prints of 2023.
+                            </li>
+                            <li>
+                              <strong>Most recent quarter (Mar-26A)</strong> landed within range but
+                              near the top (+2.4% vs. mid) <Cite />, a slight moderation from the
+                              blowout 2025 pattern.
+                            </li>
+                          </ul>
+                          <p className="hiwc-p hiwc-p--muted">
+                            One convention note: guidance is issued in $B (0.5B increments) and stored
+                            here in $M for exact comparison against reported revenue; units are
+                            flagged in the header note <Cite />. Meta's forward guide for Q2-26 (given
+                            on the Mar-26A call) is $58–61B — outside this actuals window since Q2-26
+                            reports next week; I can add it once it prints.
+                          </p>
                         </div>
-                      </div>
-                      <div className="hiwc-react">
-                        <button type="button" aria-label="Copy"><Copy /></button>
-                        <button type="button" aria-label="Retry"><Retry /></button>
-                        <button type="button" aria-label="Good answer"><ThumbUp /></button>
-                        <button type="button" aria-label="Bad answer"><ThumbDown /></button>
-                      </div>
+                      )}
+
+                      {active >= 2 && approved && (
+                        <div className="hiwc-react">
+                          <button type="button" aria-label="Copy"><Copy /></button>
+                          <button type="button" aria-label="Retry"><Retry /></button>
+                          <button type="button" aria-label="Good answer"><ThumbUp /></button>
+                          <button type="button" aria-label="Bad answer"><ThumbDown /></button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* permission dialog — pops over the input, then approves itself */}
+              {/* permission overlay — covers the composer, asks a single yes/no */}
               {active >= 2 && !permitGone && (
                 <div className={`hiwc-permit${approved ? ' is-approved' : ''}`} role="alertdialog" aria-label="Approval request">
-                  <div className="hiwc-permit-head">
-                    <span className="hiwc-permit-ic" aria-hidden="true"><BeatIcon name="approve" /></span>
-                    <span className="hiwc-permit-title">Approval required</span>
-                    <span className="hiwc-permit-kind">write · {DIFF.ref}</span>
-                  </div>
-                  <p className="hiwc-aitext">{APPROVE_LEAD}</p>
-                  <div className="hiwc-diff">
-                    <span className="hiwc-diff-ref">{DIFF.ref}</span>
-                    <span className="hiwc-diff-old">{DIFF.from}</span>
-                    <span className="hiwc-diff-arr">→</span>
-                    <span className="hiwc-diff-new">{DIFF.to}</span>
-                  </div>
-                  <p className="hiwc-note">Nothing is written to your model until you approve.</p>
                   {approved ? (
                     <span className="hiwc-delivered"><Check /> Approved</span>
                   ) : (
-                    <div className="hiwc-permit-actions">
-                      <button
-                        type="button"
-                        className="hiw-approve"
-                        onClick={() => setApproved(true)}
-                      >
-                        Always allow
+                    <>
+                      <button type="button" className="hiwc-permit-x" aria-label="Deny" tabIndex={-1} aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                        </svg>
                       </button>
-                      <button type="button" className="hiw-decline" tabIndex={-1} aria-hidden="true">
-                        Deny
-                      </button>
-                    </div>
+                      <p className="hiwc-permit-q">{APPROVE_Q}</p>
+                      <div className="hiwc-permit-actions">
+                        <button type="button" className="hiw-decline" tabIndex={-1} aria-hidden="true">
+                          Deny
+                        </button>
+                        <button
+                          type="button"
+                          className="hiw-approve"
+                          onClick={() => setApproved(true)}
+                        >
+                          Approve
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
               )}
 
-              {/* composer card — beat 1 types the brief here, live */}
-              <div className="hiwc-input" aria-hidden="true">
+              {/* composer card — beat 1 types the brief here, live. On the
+                  approval state it collapses to a compact, no-attachment bar
+                  with a disabled send (the answer has already landed). */}
+              <div className={`hiwc-input${tasksDone ? ' hiwc-input--compact' : ''}`} aria-hidden="true">
                 <div className="hiwc-composer">
-                  <div className="hiwc-attach">
-                    <span className="hiwc-file"><FileSheet /> Comps-Q2.xlsx</span>
-                    <span className="hiwc-file"><FileDoc /> AAPL-10K.pdf</span>
-                  </div>
+                  {!tasksDone && (
+                    <div className="hiwc-attach">
+                      <span className="hiwc-file"><FileSheet /> Comps-Q2.xlsx</span>
+                      <span className="hiwc-file"><FileDoc /> AAPL-10K.pdf</span>
+                    </div>
+                  )}
                   <div className={`hiwc-prompt${active === 0 ? ' hiwc-prompt--typing' : ''}`}>
                     {active === 0 ? typed : 'Ask a follow-up…'}
                   </div>
                   <div className="hiwc-toolbar">
                     <span className="hiwc-tool hiwc-tool--plus"><Plus /></span>
-                    <span className="hiwc-send"><SendArrow /></span>
+                    <span className={`hiwc-send${tasksDone ? ' is-disabled' : ''}`}><SendArrow /></span>
                   </div>
                 </div>
               </div>

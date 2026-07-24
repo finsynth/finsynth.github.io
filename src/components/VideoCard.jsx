@@ -29,7 +29,7 @@ export default function VideoCard() {
           <div className="yt-top">
             <span className="yt-av">F</span>
             <div className="yt-meta">
-              <div className="t">Introducing FinSynth — The Auditable Excel Agent for Buy-Side Analysts</div>
+              <div className="t">Introducing FinSynth: The Auditable Excel Agent for Buy-Side Analysts</div>
               <div className="c">finsynthai</div>
             </div>
           </div>

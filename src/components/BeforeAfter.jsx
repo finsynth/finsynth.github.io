@@ -12,7 +12,7 @@ const SHEETS = [
     pairs: [
       {
         old: 'Hours to build a model from scratch',
-        neu: 'A model built in minutes — 80% less time to build and update models.',
+        neu: 'A model built in minutes, with 80% less time to build and update models.',
       },
       {
         old: 'A day pulling valuation multiples for 15 peers, one by one',

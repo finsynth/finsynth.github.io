@@ -4,11 +4,11 @@ export default function CliSection() {
       <div className="wrap cli-grid">
         <div>
           <h2>Our Manifest</h2>
-          <p className="lede">Finance deserves better tools. We built FinSynth because we believe analysts should spend their time thinking — not hunting for data, formatting cells, or second-guessing numbers they can't trace.</p>
+          <p className="lede">Finance deserves better tools. We built FinSynth because we believe analysts should spend their time thinking, not hunting for data, formatting cells, or second-guessing numbers they can't trace.</p>
           <div className="cli-steps">
             <div className="step">
               <div className="sl">Every number has a source.</div>
-              <p className="note">Cell-level citations that trace every output back to its origin — a filing, a quote, or your own input. No black boxes.</p>
+              <p className="note">Cell-level citations that trace every output back to its origin: a filing, a quote, or your own input. No black boxes.</p>
             </div>
             <div className="step">
               <div className="sl">The analyst is always in control.</div>
@@ -16,7 +16,7 @@ export default function CliSection() {
             </div>
             <div className="step">
               <div className="sl">Your workflow, not ours.</div>
-              <p className="note">Excel native — your existing macros, shortcuts, and models keep working. FinSynth fits around you.</p>
+              <p className="note">Excel native. Your existing macros, shortcuts, and models keep working. FinSynth fits around you.</p>
             </div>
           </div>
           <a className="learn" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to us ›</a>

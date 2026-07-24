@@ -3,7 +3,7 @@
 // there is an actual announcement.
 const ANNOUNCEMENT = {
   tag: 'New',
-  text: 'FinSynth is now available to select funds — book a demo',
+  text: 'FinSynth is now available to select funds. Book a demo',
   href: 'https://calendly.com/kartik-finsynth/intro',
 }
 

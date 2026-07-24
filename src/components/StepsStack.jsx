@@ -93,7 +93,7 @@ const STEPS = [
     copy: [
       ['Ask questions.', 'Get analyst answers.'],
       ['FinSynth is trained on the models, methods, and filings top analysts use.'],
-      ["So when you ask, you don't get generic AI — you get answers built for finance."],
+      ["So when you ask, you don't get generic AI. You get answers built for finance."],
     ],
     media: (
       <div className="steps-stack__card steps-stack__card--chat">

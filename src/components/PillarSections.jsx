@@ -155,7 +155,7 @@ const ACCURACY_SHEETS = [
   {
     tab: 'Describe',
     title: 'Describe it in plain English',
-    desc: '"Build a revenue model for AAPL with segment detail through FY27" — that\'s the whole input.',
+    desc: '"Build a revenue model for AAPL with segment detail through FY27." That\'s the whole input.',
     ref: 'A1',
     fx: 'Build a revenue model for AAPL…',
     demo: <><span className="accwb-demo-chip">Build a revenue model for AAPL, segment detail, through FY27</span></>,
@@ -179,7 +179,7 @@ const ACCURACY_SHEETS = [
   {
     tab: 'Audit-ready',
     title: 'Ready to audit on arrival',
-    desc: 'Inputs are extracted from filings and cited, so your first pass is verification — not a rebuild.',
+    desc: 'Inputs are extracted from filings and cited, so your first pass is verification, not a rebuild.',
     ref: 'C8',
     fx: '391035 · source: 10-K FY2024 p.28',
     demo: <><span className="accwb-demo-code">$391.0B</span><span className="accwb-demo-arrow">←</span><span className="accwb-demo-chip">10-K FY2024 · p.28</span></>,
@@ -313,7 +313,7 @@ function UpdateVisual() {
       </div>
       <div className="pviz-cite">
         <div className="pviz-cite-src">New filing detected · 10-Q Q3</div>
-        <p className="pviz-cite-quote">17 affected cells identified across Revenue Build and Comps — refreshed with citations attached.</p>
+        <p className="pviz-cite-quote">17 affected cells identified across Revenue Build and Comps, refreshed with citations attached.</p>
       </div>
       <div className="pviz-log">
         <div className="pviz-log-title">Refresh log</div>
@@ -343,7 +343,7 @@ function ApprovalVisual() {
       </div>
       <div className="pviz-cite">
         <div className="pviz-cite-src">Diff preview</div>
-        <p className="pviz-cite-quote">$88.1B → $94.9B — nothing is written to your model until you approve.</p>
+        <p className="pviz-cite-quote">$88.1B → $94.9B. Nothing is written to your model until you approve.</p>
       </div>
       <div className="pviz-log">
         <div className="pviz-log-title">Approval log</div>
@@ -404,7 +404,7 @@ const PILLAR_CONTENT = {
     eyebrow: 'Build models',
     headline: <>Describe the analysis,<br />get a working model</>,
     lead: 'Describe the analysis in plain English.',
-    rest: 'FinSynth assembles a fully structured model — schedules, drivers, and formulas — ready to audit.',
+    rest: 'FinSynth assembles a fully structured model with schedules, drivers, and formulas, ready to audit.',
     body: (
       <div className="pillar-grid-new">
         <AccuracyWorkbook />
@@ -422,7 +422,7 @@ const PILLAR_CONTENT = {
         <div className="points">
           <div className="point"><span className="n">1</span><div><h3>New-quarter refresh</h3><p>When a new filing drops, affected cells are identified and refreshed with citations attached.</p></div></div>
           <div className="point"><span className="n">2</span><div><h3>Extend without breaking</h3><p>New periods and schedules follow your existing structure, formats, and naming conventions.</p></div></div>
-          <div className="point"><span className="n">3</span><div><h3>Your formulas stay yours</h3><p>Existing logic is preserved — FinSynth extends it rather than replacing it with its own.</p></div></div>
+          <div className="point"><span className="n">3</span><div><h3>Your formulas stay yours</h3><p>Existing logic is preserved. FinSynth extends it rather than replacing it with its own.</p></div></div>
         </div>
         <UpdateVisual />
       </div>
@@ -432,14 +432,14 @@ const PILLAR_CONTENT = {
     eyebrow: 'Cell-level citations',
     headline: <>Every cell traces<br />to a primary source</>,
     lead: 'Click any cell to see the document behind it.',
-    rest: 'SEC filings, live quotes, or your own inputs — down to the exact page and quote.',
+    rest: 'SEC filings, live quotes, or your own inputs, down to the exact page and quote.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
           <div className="point"><span className="n">1</span><div><h3>Inline citations</h3><p>Click any cell to see the exact document, page number, and quote it came from.</p></div></div>
-          <div className="point"><span className="n">2</span><div><h3>Full transparency</h3><p>Every assumption and data point is exposed — no black box, no unexplained figures.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Full transparency</h3><p>Every assumption and data point is exposed, no black box, no unexplained figures.</p></div></div>
           <div className="point"><span className="n">3</span><div><h3>Enterprise-grade audit log</h3><p>Track every model change, data refresh, and user action for compliance and review.</p></div></div>
-          <div className="point"><span className="n">4</span><div><h3>Intuitive UX for verification</h3><p>PMs and compliance teams can verify outputs directly — no analyst intermediary required.</p></div></div>
+          <div className="point"><span className="n">4</span><div><h3>Intuitive UX for verification</h3><p>PMs and compliance teams can verify outputs directly, no analyst intermediary required.</p></div></div>
         </div>
         <AuditVisual />
       </div>
@@ -449,14 +449,14 @@ const PILLAR_CONTENT = {
     eyebrow: 'Source-grounded numbers',
     headline: <>Numbers extracted,<br />never inferred</>,
     lead: 'Every figure is extracted verbatim from primary documents.',
-    rest: 'Filings, transcripts, and decks — never inferred, never hallucinated.',
+    rest: 'Filings, transcripts, and decks, never inferred, never hallucinated.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
           <div className="point"><span className="n">1</span><div><h3>Global filing coverage</h3><p>10-K, 10-Q, 8-K, 20-F, 6-K, and international equivalents across all public markets.</p></div></div>
           <div className="point"><span className="n">2</span><div><h3>Earnings call transcripts</h3><p>Full Q&A transcript access with speaker-level attribution and sentence-level indexing.</p></div></div>
           <div className="point"><span className="n">3</span><div><h3>IR decks and press releases</h3><p>Slide-level extraction with table parsing, chart OCR, and footnote handling.</p></div></div>
-          <div className="point"><span className="n">4</span><div><h3>Custom integrations</h3><p>Connect your proprietary data — internal models, CRM notes, Bloomberg exports, and more.</p></div></div>
+          <div className="point"><span className="n">4</span><div><h3>Custom integrations</h3><p>Connect your proprietary data: internal models, CRM notes, Bloomberg exports, and more.</p></div></div>
         </div>
         <DataVisual />
       </div>
@@ -471,7 +471,7 @@ const PILLAR_CONTENT = {
       <div className="pillar-grid-new">
         <div className="points">
           <div className="point"><span className="n">1</span><div><h3>Diff preview on every write</h3><p>See exactly which cells change and how, before anything touches your workbook.</p></div></div>
-          <div className="point"><span className="n">2</span><div><h3>Permission-gated by design</h3><p>The agent can't overwrite your work on its own — every landed cell is one you signed off on.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Permission-gated by design</h3><p>The agent can't overwrite your work on its own. Every landed cell is one you signed off on.</p></div></div>
           <div className="point"><span className="n">3</span><div><h3>Reviewable history</h3><p>Every approval and rejection is logged, so reviews and rollbacks are straightforward.</p></div></div>
         </div>
         <ApprovalVisual />
@@ -482,12 +482,12 @@ const PILLAR_CONTENT = {
     eyebrow: 'Native to Excel',
     headline: <>Runs where your<br />models already live</>,
     lead: 'An add-in alongside your real workbook.',
-    rest: 'Your macros, formulas, and shortcuts keep working — nothing leaves your environment.',
+    rest: 'Your macros, formulas, and shortcuts keep working. Nothing leaves your environment.',
     body: (
       <div className="pillar-grid-new">
         <div className="points">
           <div className="point"><span className="n">1</span><div><h3>Excel add-in and web app</h3><p>Works inside Excel on Windows and Mac, with a browser-based web app alongside.</p></div></div>
-          <div className="point"><span className="n">2</span><div><h3>Nothing leaves your machine</h3><p>Excel runs locally — the backend never reads or stores your workbook.</p></div></div>
+          <div className="point"><span className="n">2</span><div><h3>Nothing leaves your machine</h3><p>Excel runs locally. The backend never reads or stores your workbook.</p></div></div>
           <div className="point"><span className="n">3</span><div><h3>Your workflow, unchanged</h3><p>Macros, formulas, and shortcuts keep working exactly as they did before.</p></div></div>
         </div>
         <ExcelVisual />

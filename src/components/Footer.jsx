@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import GridReveal from './GridReveal';
 
 const ASK_PROMPT = 'Tell me about FinSynth (finsynth.ai), the auditable spreadsheet agent for buy-side analysts.';
@@ -13,6 +13,9 @@ const AGENTS = [
 
 export default function Footer() {
   const ref = useRef(null);
+  const askRef = useRef(null);
+  const [askOpen, setAskOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -32,6 +35,33 @@ export default function Footer() {
     return () => io.disconnect();
   }, []);
 
+  // Ask-AI dropdown — close on outside click / Escape
+  useEffect(() => {
+    if (!askOpen) return;
+    const onDown = (e) => {
+      if (askRef.current && !askRef.current.contains(e.target)) setAskOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setAskOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [askOpen]);
+
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(ASK_PROMPT);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard unavailable — no-op */
+    }
+  };
+
   return (
     <footer className="footer-new" ref={ref}>
       <GridReveal asBackground pointerTargetRef={ref} idle idleLevel={0.28} reach={340} core={90} />
@@ -43,22 +73,63 @@ export default function Footer() {
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
-              <h2>Your new co-worker's<br />ready when you are.</h2>
+              <h2>Your new co-worker's <br />ready when you are.</h2>
             </div>
-            <a
-              className="cta-cta"
-              href="https://calendly.com/kartik-finsynth/intro"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="cta-cta-label">Setup a call</span>
-              <span className="cta-cta-icon" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12L12 4" />
-                  <path d="M5.5 4H12V10.5" />
-                </svg>
-              </span>
-            </a>
+            <div className="foot-cta-actions">
+              <a
+                className="cta-cta"
+                href="https://calendly.com/kartik-finsynth/intro"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="cta-cta-label">Setup a call</span>
+                <span className="cta-cta-icon" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12L12 4" />
+                    <path d="M5.5 4H12V10.5" />
+                  </svg>
+                </span>
+              </a>
+              <div className="foot-askai" ref={askRef}>
+                <button
+                  type="button"
+                  className="foot-askai-btn"
+                  aria-haspopup="menu"
+                  aria-expanded={askOpen}
+                  onClick={() => setAskOpen((v) => !v)}
+                >
+                  <span className="foot-askai-btn-label">Ask your AI</span>
+                  <svg className="foot-askai-btn-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 0c.3 2.9 1.1 4.9 2.5 6.3S13.9 8.4 16 8.7c-2.9.3-4.9 1.1-6.3 2.5S8.3 15.1 8 16c-.3-2.9-1.1-4.9-2.5-6.3S2.1 8.3 0 8c2.9-.3 4.9-1.1 6.3-2.5S7.7 2.1 8 0z" />
+                  </svg>
+                </button>
+                {askOpen && (
+                  <div className="foot-askai-menu" role="menu">
+                    {AGENTS.map((a) => (
+                      <a
+                        key={a.name}
+                        className="foot-askai-item"
+                        href={a.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        role="menuitem"
+                        onClick={() => setAskOpen(false)}
+                      >
+                        <img className="foot-askai-logo" src={a.logo} alt="" aria-hidden="true" width="16" height="16" />
+                        {a.name}
+                      </a>
+                    ))}
+                    <button type="button" className="foot-askai-item foot-askai-copy" role="menuitem" onClick={copyPrompt}>
+                      <svg className="foot-askai-logo" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                        <rect x="5.5" y="5.5" width="8" height="8" rx="1.6" />
+                        <path d="M10.5 5.5V4a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5" />
+                      </svg>
+                      {copied ? 'Copied' : 'Copy'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* RIGHT — nav columns above, Ask-AI below */}
@@ -95,23 +166,6 @@ export default function Footer() {
         </div>
 
         <div className="foot-legal foot-reveal">
-          <div className="foot-askai">
-            <span className="foot-askai-eyebrow">Ask AI about FinSynth</span>
-            <div className="foot-askai-row">
-              {AGENTS.map((a) => (
-                <a
-                  key={a.name}
-                  className="foot-askai-chip"
-                  href={a.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img className="foot-askai-logo" src={a.logo} alt="" aria-hidden="true" width="15" height="15" />
-                  {a.name}
-                </a>
-              ))}
-            </div>
-          </div>
           <span className="foot-copyright">© 2026 FinSynth. All rights reserved.</span>
         </div>
       </div>
