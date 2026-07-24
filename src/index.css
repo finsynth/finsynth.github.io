@@ -4857,7 +4857,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   will-change: transform;
   animation: whatMarquee 26s linear infinite;
 }
-.what-list-viewport:hover .what-list { animation-play-state: paused; }
 @keyframes whatMarquee { to { transform: translateY(-50%); } }
 
 .what-item {
