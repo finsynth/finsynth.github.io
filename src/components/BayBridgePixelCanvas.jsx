@@ -8,7 +8,7 @@ import { useEffect, useRef } from 'react'
 // and pop into their slots on scattered, staggered beats — like Lego bricks
 // snapping into place — until the full image has settled edge-to-edge (tiles
 // flush, no gaps). Reduced motion → the finished mosaic, painted once.
-const SRC = '/assets/img/bay-bridge.png'
+const SRC = '/assets/img/bay-bridge.webp'
 
 // fraction of the whole timeline a single tile takes to drop + settle
 const REVEAL_WINDOW = 0.16

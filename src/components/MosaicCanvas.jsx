@@ -16,7 +16,7 @@ import { useEffect, useRef } from 'react'
 // Both modes reveal left-to-right on load, honour an optional blank centre
 // corridor (clearBand) so overlaid copy stays legible, and fade out in a soft
 // lens around the cursor. Falls back to a static render for reduced motion.
-const IMG_SRC = '/assets/img/sf-mosaic.png'
+const IMG_SRC = '/assets/img/sf-mosaic.webp'
 const INK = '#5778da'
 
 // Bayer 8×8 ordered-dither threshold matrix
