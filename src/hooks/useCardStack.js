@@ -34,6 +34,7 @@ export default function useCardStack(count) {
     let phase = 'hold' // 'hold' | 'flight'
     let phaseStart = 0
     let visible = false
+    let held = false // true while the user is pressing a card — freezes the timer
 
     const ease = (t) => t * t * (3 - 2 * t) // smoothstep
 
@@ -64,8 +65,8 @@ export default function useCardStack(count) {
 
     const tick = (now) => {
       raf = requestAnimationFrame(tick)
-      if (!visible) {
-        phaseStart = now // hold the timer while offscreen
+      if (!visible || held) {
+        phaseStart = now // hold the timer while offscreen or pressed
         return
       }
       const elapsed = now - phaseStart
@@ -91,6 +92,13 @@ export default function useCardStack(count) {
     })
     io.observe(section)
 
+    const onHoldStart = () => { held = true }
+    const onHoldEnd = () => { held = false }
+    stack.addEventListener('pointerdown', onHoldStart)
+    stack.addEventListener('pointerup', onHoldEnd)
+    stack.addEventListener('pointercancel', onHoldEnd)
+    stack.addEventListener('pointerleave', onHoldEnd)
+
     cards.forEach((el) => {
       el.style.willChange = 'transform'
     })
@@ -100,6 +108,10 @@ export default function useCardStack(count) {
     return () => {
       io.disconnect()
       cancelAnimationFrame(raf)
+      stack.removeEventListener('pointerdown', onHoldStart)
+      stack.removeEventListener('pointerup', onHoldEnd)
+      stack.removeEventListener('pointercancel', onHoldEnd)
+      stack.removeEventListener('pointerleave', onHoldEnd)
       cards.forEach((el) => {
         el.style.transform = ''
         el.style.zIndex = ''

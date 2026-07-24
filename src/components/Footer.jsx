@@ -34,7 +34,7 @@ export default function Footer() {
 
   return (
     <footer className="footer-new" ref={ref}>
-      <GridReveal asBackground pointerTargetRef={ref} idle idleLevel={0.28} />
+      <GridReveal asBackground pointerTargetRef={ref} idle idleLevel={0.28} reach={340} core={90} />
       <div className="wrap">
         <div className="foot-cols">
           {/* LEFT — brand + headline + CTA, aligned as one lockup */}
@@ -112,7 +112,7 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <span className="foot-copyright">© 2025 FinSynth. All rights reserved.</span>
+          <span className="foot-copyright">© 2026 FinSynth. All rights reserved.</span>
         </div>
       </div>
 

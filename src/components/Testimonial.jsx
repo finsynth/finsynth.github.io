@@ -41,10 +41,6 @@ export default function Testimonial() {
           <div className="testi-head">
             <p className="hiw-eyebrow">Customers</p>
             <h2>Trusted by the analysts<br />moving <span className="ttl-hl">fastest.</span></h2>
-            <p className="testi-head-sub">
-              Buy-side teams use FinSynth to build, update, and audit models
-              without leaving Excel.
-            </p>
           </div>
 
           {/* Card stack — front card flies up and tucks behind automatically */}
