@@ -4,3 +4,6 @@ dist
 
 # Playwright CLI session artifacts
 .playwright-cli/
+
+# Agent log
+_claude_session_decision_logs
