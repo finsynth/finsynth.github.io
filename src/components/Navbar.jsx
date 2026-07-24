@@ -68,7 +68,7 @@ export default function Navbar() {
           <a className="nav-link" href="#faq">FAQ</a>
         </div>
         <div className="navbar-right">
-          <a className="nav-signin" href="https://app.finsynth.ai/" target="_blank" rel="noopener noreferrer">Sign in</a>
+          <a className="nav-signin" href="https://web-agent.finsynth.ai" target="_blank" rel="noopener noreferrer">Sign in</a>
           <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book a demo</a>
         </div>
       </div>

@@ -1,50 +1,57 @@
 import { useEffect, useState } from 'react'
 
-// Floating bottom-right pill: jumps to the top of the next section. Targets
-// the page's top-level <section>s and the footer; hides once the last stop
-// is on screen so it never dead-ends. Respects the sticky navbar offset.
+// Floating bottom-right pill. On the way down it jumps to the bottom of the
+// page; once you're there it flips into a back-to-top control. It never hides,
+// so there's always a one-tap way to the other end of the page.
 function ScrollNextButton() {
-  const [hidden, setHidden] = useState(false)
+  const [atBottom, setAtBottom] = useState(false)
 
   useEffect(() => {
     const onScroll = () => {
       const doc = document.documentElement
-      setHidden(window.scrollY + window.innerHeight >= doc.scrollHeight - 160)
+      setAtBottom(window.scrollY + window.innerHeight >= doc.scrollHeight - 120)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
-  const goNext = () => {
-    const nav = document.querySelector('.navbar')
-    const offset = (nav ? nav.getBoundingClientRect().height : 0) + 1
-    const stops = [...document.querySelectorAll('.mainContainer > section, .mainContainer > footer')]
-    const next = stops.find((el) => el.getBoundingClientRect().top > offset + 8)
-    if (next) {
-      window.scrollTo({
-        top: window.scrollY + next.getBoundingClientRect().top - offset,
-        behavior: 'smooth',
-      })
-    }
+  const onClick = () => {
+    const top = atBottom ? 0 : document.documentElement.scrollHeight
+    window.scrollTo({ top, behavior: 'smooth' })
   }
 
   return (
     <button
       type="button"
-      className={`scroll-next${hidden ? ' scroll-next--hidden' : ''}`}
-      onClick={goNext}
-      aria-label="Scroll to next section"
+      className="scroll-next"
+      onClick={onClick}
+      aria-label={atBottom ? 'Scroll to top' : 'Scroll to bottom'}
     >
       <svg viewBox="0 0 16 16" aria-hidden="true">
-        <path
-          d="M8 3v10M3.5 8.5L8 13l4.5-4.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {atBottom ? (
+          <path
+            d="M8 13V3M3.5 7.5L8 3l4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          <path
+            d="M8 3v10M3.5 8.5L8 13l4.5-4.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
       </svg>
     </button>
   )

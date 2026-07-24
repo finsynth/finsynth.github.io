@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import GridReveal from './GridReveal';
 
 const ASK_PROMPT = 'Tell me about FinSynth (finsynth.ai), the auditable spreadsheet agent for buy-side analysts.';
 const q = encodeURIComponent(ASK_PROMPT);
@@ -33,7 +34,7 @@ export default function Footer() {
 
   return (
     <footer className="footer-new" ref={ref}>
-      <div className="foot-cells" aria-hidden="true" />
+      <GridReveal asBackground pointerTargetRef={ref} idle idleLevel={0.28} />
       <div className="wrap">
         <div className="foot-cols">
           {/* LEFT — brand + headline + CTA, aligned as one lockup */}

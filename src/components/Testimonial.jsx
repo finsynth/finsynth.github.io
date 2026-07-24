@@ -1,5 +1,5 @@
 import useReveal from '../hooks/useReveal'
-import useSectionZoom from '../hooks/useSectionZoom'
+import useCardStack from '../hooks/useCardStack'
 
 const QUOTES = [
   {
@@ -29,38 +29,40 @@ const QUOTES = [
 ]
 
 export default function Testimonial() {
-  const ref = useReveal()
-  const zoomRef = useSectionZoom()
+  const revealRef = useReveal()
+  const { sectionRef, stackRef } = useCardStack(QUOTES.length)
   return (
-    <section className="testi-sec" id="customers" ref={ref}>
-      <div className="wrap" ref={zoomRef}>
+    <section className="testi-sec" id="customers" ref={sectionRef}>
+      {/* the stack cycles through the quotes on an automatic timer */}
+      <div className="testi-pin" ref={revealRef}>
+        <div className="wrap">
 
-        {/* Head */}
-        <div className="testi-head">
-          <p className="hiw-eyebrow">Customers</p>
-          <h2>Trusted by the analysts<br />moving fastest.</h2>
-          <p className="testi-head-sub">
-            Buy-side teams use FinSynth to build, update, and audit models
-            without leaving Excel.
-          </p>
-        </div>
+          {/* Head */}
+          <div className="testi-head">
+            <p className="hiw-eyebrow">Customers</p>
+            <h2>Trusted by the analysts<br />moving <span className="ttl-hl">fastest.</span></h2>
+            <p className="testi-head-sub">
+              Buy-side teams use FinSynth to build, update, and audit models
+              without leaving Excel.
+            </p>
+          </div>
 
-        {/* Three equal cards */}
-        <div className="testi-grid">
-          {QUOTES.map(t => (
-            <div className="testi-card" key={t.name}>
-              <blockquote className="testi-quote">{t.quote}</blockquote>
-              <div className="testi-author">
-                <span className="testi-avatar" style={{ background: t.color }}>{t.initials}</span>
-                <div className="testi-meta">
-                  <span className="testi-name">{t.name}</span>
-                  <span className="testi-role">{t.role}</span>
+          {/* Card stack — front card flies up and tucks behind automatically */}
+          <div className="testi-stack" ref={stackRef}>
+            {QUOTES.map(t => (
+              <div className="testi-card" key={t.name}>
+                <blockquote className="testi-quote">{t.quote}</blockquote>
+                <div className="testi-author">
+                  <span className="testi-avatar" style={{ background: t.color }}>{t.initials}</span>
+                  <div className="testi-meta">
+                    <span className="testi-name">{t.name}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
+        </div>
       </div>
     </section>
   );

@@ -28,11 +28,14 @@ function TileMosaicCanvas({
   clearBand = null,     // { halfWidthFrac, featherFrac } — blank vertical corridor down the centre
   hoverReveal = false,  // grayscale at rest; cursor reveals true colour in a scattered blob
   revealRadius = 250,   // hoverReveal: lens radius (px)
+  paused = false,       // freeze the shimmer on its current frame
   stageClassName = 'sf-mosaic__stage',
   ariaLabel = 'A San Francisco skyline rendered as a tile mosaic.',
 }) {
   const stageRef = useRef(null)
   const canvasRef = useRef(null)
+  const pausedRef = useRef(paused)
+  const controlsRef = useRef(null)
 
   useEffect(() => {
     const cv = canvasRef.current
@@ -49,6 +52,7 @@ function TileMosaicCanvas({
     let imgLoaded = false
     let raf = 0
     let running = false
+    let visible = false
     let born = 0 // timestamp of first paint — anchors the intro bloom
     // hoverReveal cursor, in canvas coordinates (tracked on window because the
     // canvas itself is pointer-events:none under the hero copy)
@@ -160,7 +164,7 @@ function TileMosaicCanvas({
     }
 
     const start = () => {
-      if (running || reduce || !imgLoaded) return
+      if (running || reduce || !imgLoaded || !visible || pausedRef.current) return
       running = true
       if (!born) born = performance.now()
       raf = requestAnimationFrame(frame)
@@ -169,6 +173,7 @@ function TileMosaicCanvas({
       running = false
       cancelAnimationFrame(raf)
     }
+    controlsRef.current = { start, stop }
 
     const build = () => {
       if (!imgLoaded) return
@@ -297,7 +302,7 @@ function TileMosaicCanvas({
 
     // run the loop only while the canvas is actually on screen
     const io = new IntersectionObserver(
-      ([entry]) => { entry.isIntersecting ? start() : stop() },
+      ([entry]) => { visible = entry.isIntersecting; visible ? start() : stop() },
       { threshold: 0.05 }
     )
 
@@ -313,7 +318,11 @@ function TileMosaicCanvas({
     window.addEventListener('resize', onResize)
 
     return () => {
+      // drop the load callback so a disposed instance (StrictMode double-mount)
+      // can't re-observe and start a ghost draw loop after cleanup
+      if (img) img.onload = null
       stop()
+      controlsRef.current = null
       io.disconnect()
       window.removeEventListener('resize', onResize)
       window.removeEventListener('pointermove', onMove)
@@ -321,6 +330,16 @@ function TileMosaicCanvas({
       document.removeEventListener('mouseleave', onOut)
     }
   }, [tileSize, gap, reach, centerWash, clearBand, hoverReveal, revealRadius])
+
+  // pause/resume without rebuilding the mosaic — the canvas simply holds its
+  // last painted frame while the loop is stopped
+  useEffect(() => {
+    pausedRef.current = paused
+    const c = controlsRef.current
+    if (!c) return
+    if (paused) c.stop()
+    else c.start()
+  }, [paused])
 
   return (
     <div className={stageClassName} ref={stageRef}>

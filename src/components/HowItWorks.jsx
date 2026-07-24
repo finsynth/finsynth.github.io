@@ -28,10 +28,6 @@ const WORK_TASKS = [
   ['Opened Model_Build.xlsx', 'done'],
   ['Running the numbers', 'live'],
 ]
-const CITE = {
-  src: 'SEC 10-K · FY2024 · p.31',
-  quote: '“Total net sales of $391.0 billion for fiscal 2024…”',
-}
 const APPROVE_LEAD = 'Ready to update revenue in B14.'
 const DIFF = { ref: 'B14', from: '$88.1B', to: '$94.9B' }
 const DELIVERED = 'Delivered to B14 — cited to 10-Q Q3. Your model, your call.'
@@ -158,7 +154,7 @@ export default function HowItWorks() {
       i += 1
       setTyped(BRIEF.slice(0, i))
       if (i >= BRIEF.length) clearInterval(t)
-    }, 45)
+    }, 24)
     return () => clearInterval(t)
   }, [active])
 
@@ -265,10 +261,13 @@ export default function HowItWorks() {
     <section className="hiw-section" id="how-it-works" ref={ref}>
       <div className="hiw-track" ref={trackRef}>
         <div className="hiw-pin">
+          {/* backdrop = the testimonial glass-column wash (royal-blue glow behind
+              frosted vertical panels dissolving to white), contained inside the
+              page rails — see .hiw-pin::before */}
           <div className="hiw-wrap" ref={zoomRef}>
         <div className="hiw-head">
           <p className="hiw-eyebrow">HOW IT WORKS</p>
-          <h2 className="hiw-title">Say hello to your new co-worker.</h2>
+          <h2 className="hiw-title">Say hello to your new <span className="ttl-hl">co-worker.</span></h2>
         </div>
 
         <div className="hiw-panel">
@@ -281,7 +280,6 @@ export default function HowItWorks() {
                   aria-pressed={active === i}
                   onClick={() => select(i)}
                 >
-                  <span className="hiw-item-icon"><BeatIcon name={beat.icon} /></span>
                   <span className="hiw-item-body">
                     <span className="hiw-item-title">{beat.title}</span>
                     <span className="hiw-item-desc">{beat.line}</span>
@@ -347,11 +345,15 @@ export default function HowItWorks() {
                     <span className="hiwc-ava"><Spark /></span>
                     <div className="hiwc-aibody">
                       <p className="hiwc-aitext">{DELIVERED}</p>
-                      <div className="hiwc-cite">
-                        <div className="hiwc-cite-src">{CITE.src}</div>
-                        <p className="hiwc-cite-q">{CITE.quote}</p>
+                      {/* the write lands as a completed tool call, matching the
+                          "watch it work" task rows above */}
+                      <div className="hiwc-tasks">
+                        <div className="hiwc-task">
+                          <Check />
+                          <span className="hiwc-task-a">Wrote {DIFF.to} to {DIFF.ref} · cited 10-Q Q3</span>
+                          <span className="hiwc-task-tag">done</span>
+                        </div>
                       </div>
-                      <span className="hiwc-delivered"><Check /> Delivered</span>
                       <div className="hiwc-react">
                         <button type="button" aria-label="Copy"><Copy /></button>
                         <button type="button" aria-label="Retry"><Retry /></button>
@@ -366,6 +368,11 @@ export default function HowItWorks() {
               {/* permission dialog — pops over the input, then approves itself */}
               {active >= 2 && !permitGone && (
                 <div className={`hiwc-permit${approved ? ' is-approved' : ''}`} role="alertdialog" aria-label="Approval request">
+                  <div className="hiwc-permit-head">
+                    <span className="hiwc-permit-ic" aria-hidden="true"><BeatIcon name="approve" /></span>
+                    <span className="hiwc-permit-title">Approval required</span>
+                    <span className="hiwc-permit-kind">write · {DIFF.ref}</span>
+                  </div>
                   <p className="hiwc-aitext">{APPROVE_LEAD}</p>
                   <div className="hiwc-diff">
                     <span className="hiwc-diff-ref">{DIFF.ref}</span>
@@ -377,13 +384,18 @@ export default function HowItWorks() {
                   {approved ? (
                     <span className="hiwc-delivered"><Check /> Approved</span>
                   ) : (
-                    <button
-                      type="button"
-                      className="hiw-approve"
-                      onClick={() => setApproved(true)}
-                    >
-                      Approve &amp; deliver
-                    </button>
+                    <div className="hiwc-permit-actions">
+                      <button
+                        type="button"
+                        className="hiw-approve"
+                        onClick={() => setApproved(true)}
+                      >
+                        Always allow
+                      </button>
+                      <button type="button" className="hiw-decline" tabIndex={-1} aria-hidden="true">
+                        Deny
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
@@ -400,8 +412,6 @@ export default function HowItWorks() {
                   </div>
                   <div className="hiwc-toolbar">
                     <span className="hiwc-tool hiwc-tool--plus"><Plus /></span>
-                    <span className="hiwc-tool"><Spark /> FinSynth</span>
-                    <span className="hiwc-tool"><ClockGlyph /> 30s</span>
                     <span className="hiwc-send"><SendArrow /></span>
                   </div>
                 </div>

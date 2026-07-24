@@ -16,9 +16,12 @@ function DotBridgeCanvas({
   ariaLabel = '',
   step = 10,          // px between dot centres (before density clamp)
   intro = 1.7,        // intro assemble duration (s)
+  paused = false,     // freeze the field on its current frame
 }) {
   const stageRef = useRef(null)
   const canvasRef = useRef(null)
+  const pausedRef = useRef(paused)
+  const controlsRef = useRef(null)
 
   useEffect(() => {
     const cv = canvasRef.current
@@ -34,6 +37,8 @@ function DotBridgeCanvas({
     let dots = []
     let raf = 0
     let t0 = null
+    let running = false
+    let pausedAt = null
     let img = null
     let imgLoaded = false
     let base = null // low-res sampled photo, drawn under the dots so the
@@ -182,10 +187,27 @@ function DotBridgeCanvas({
     }
 
     const frame = (now) => {
+      if (!running) return
       if (t0 == null) t0 = now
       draw((now - t0) / 1000)
       raf = requestAnimationFrame(frame)
     }
+
+    // pause/resume: shift the clock by the time spent frozen so the intro and
+    // twinkle pick up exactly where they stopped instead of jumping ahead
+    const start = () => {
+      if (running || reduce || !imgLoaded || pausedRef.current) return
+      running = true
+      if (pausedAt != null && t0 != null) t0 += performance.now() - pausedAt
+      pausedAt = null
+      raf = requestAnimationFrame(frame)
+    }
+    const stop = () => {
+      if (running) pausedAt = performance.now()
+      running = false
+      cancelAnimationFrame(raf)
+    }
+    controlsRef.current = { start, stop }
 
     const onResize = () => build()
     const onMove = (ev) => {
@@ -199,8 +221,8 @@ function DotBridgeCanvas({
     img.onload = () => {
       imgLoaded = true
       build()
-      if (reduce) draw(intro + 6) // one settled static frame
-      else raf = requestAnimationFrame(frame)
+      if (reduce || pausedRef.current) draw(intro + 6) // one settled static frame
+      else start()
     }
     img.src = IMG_SRC
 
@@ -208,12 +230,26 @@ function DotBridgeCanvas({
     cv.addEventListener('mouseleave', onLeave)
     window.addEventListener('resize', onResize)
     return () => {
+      // drop the load callback so a disposed instance (StrictMode double-mount)
+      // can't start a ghost draw loop after cleanup
+      if (img) img.onload = null
+      running = false
       cancelAnimationFrame(raf)
+      controlsRef.current = null
       cv.removeEventListener('mousemove', onMove)
       cv.removeEventListener('mouseleave', onLeave)
       window.removeEventListener('resize', onResize)
     }
   }, [step, intro])
+
+  // pause/resume without rebuilding — the canvas holds its last painted frame
+  useEffect(() => {
+    pausedRef.current = paused
+    const c = controlsRef.current
+    if (!c) return
+    if (paused) c.stop()
+    else c.start()
+  }, [paused])
 
   return (
     <div className={stageClassName} ref={stageRef}>

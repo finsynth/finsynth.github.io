@@ -40,6 +40,35 @@ export default function Faq() {
   const btnRefs = useRef([])
   const innerRefs = useRef([])
   const [rail, setRail] = useState({ top: 0, height: 0, on: false })
+  const [copied, setCopied] = useState(false)
+  const copyTimer = useRef(null)
+
+  const CONTACT_EMAIL = 'support@finsynth.ai'
+  const copyEmail = () => {
+    const done = () => {
+      setCopied(true)
+      clearTimeout(copyTimer.current)
+      copyTimer.current = setTimeout(() => setCopied(false), 1800)
+    }
+    const fallback = () => {
+      const ta = document.createElement('textarea')
+      ta.value = CONTACT_EMAIL
+      ta.setAttribute('readonly', '')
+      ta.style.position = 'absolute'
+      ta.style.left = '-9999px'
+      document.body.appendChild(ta)
+      ta.select()
+      try { document.execCommand('copy') } catch { /* no-op */ }
+      document.body.removeChild(ta)
+      done()
+    }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(CONTACT_EMAIL).then(done).catch(fallback)
+    } else {
+      fallback()
+    }
+  }
+  useEffect(() => () => clearTimeout(copyTimer.current), [])
 
   useLayoutEffect(() => {
     if (open < 0) {
@@ -92,16 +121,39 @@ export default function Faq() {
       <div className="wrap faq-grid" ref={zoomRef}>
         <div className="faq-intro">
           <p className="faq-eyebrow">Frequently Asked Questions</p>
-          <h2 className="faq-title">Curious about FinSynth?<br />We got you covered.</h2>
+          <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered.</span></h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
-            <a className="faq-contact-chip" href="mailto:support@finsynth.ai">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <button
+              type="button"
+              className={`faq-contact-chip${copied ? ' is-copied' : ''}`}
+              onClick={copyEmail}
+              aria-label={copied ? 'Email address copied to clipboard' : `Copy email address ${CONTACT_EMAIL}`}
+            >
+              <svg className="faq-contact-mail" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m2 7 10 6 10-6" />
               </svg>
-              support@finsynth.ai
-            </a>
+              <span className="faq-contact-email">{CONTACT_EMAIL}</span>
+              <span className="faq-contact-action" aria-hidden="true">
+                {copied ? (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </span>
+            </button>
           </div>
         </div>
 

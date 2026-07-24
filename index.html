@@ -11,6 +11,26 @@
     href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400;500;700&display=swap"
     rel="stylesheet"
   />
+  <script>
+    // TEMP: Figma capture mode — force scroll-reveals in and disable section zoom
+    if (location.hash.includes('figmacapture')) {
+      window.IntersectionObserver = class {
+        constructor(cb) { this.cb = cb }
+        observe(el) { this.cb([{ isIntersecting: true, intersectionRatio: 1, target: el }], this) }
+        unobserve() {}
+        disconnect() {}
+        takeRecords() { return [] }
+      }
+      const realMM = window.matchMedia.bind(window)
+      window.matchMedia = (q) => q.includes('prefers-reduced-motion')
+        ? { matches: true, media: q, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent() { return false } }
+        : realMM(q)
+      const style = document.createElement('style')
+      style.textContent = '*, *::before, *::after { transition: none !important; animation-duration: 0s !important; }'
+      document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style))
+    }
+  </script>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
   <title>FinSynth — The audit-first spreadsheet agent for finance</title>
   <meta name="title" content="FinSynth — The audit-first spreadsheet agent for finance" />
   <meta name="description" content="FinSynth turns spreadsheet work into an auditable, source-backed workflow for modern finance teams." />

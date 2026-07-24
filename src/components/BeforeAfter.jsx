@@ -1,94 +1,70 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
 
-// Per-tab cards. The "before" side is always a fragmented manual flow (stacked
-// step cards); the "after" side gets a composition tailored to that tab's
-// content — a model grid, a coverage tile-wall, a cited answer, or a live diff —
-// so no two tabs look alike. Each tab also carries its own accent tone.
+// Each tab is one theme of the analyst's day. A tab holds a short list of
+// paired lines — the old, manual way on the left and the FinSynth way on the
+// right — so every panel reads as a direct before → after comparison. Each tab
+// carries its own accent tone (see .ba-tone--* in index.css).
 const SHEETS = [
   {
     tab: 'Model building',
     tone: 'indigo',
-    oldLead: 'Every model starts from a blank sheet — every comp pulled by hand.',
-    newLead: 'A model in minutes, comps across the whole peer set.',
-    manual: true,
-    before: [
-      { icon: 'grid', label: 'Open a blank workbook' },
-      { icon: 'bars', label: 'Pull each peer by hand' },
-    ],
-    cost: 'Hours before the first number',
-    after: {
-      kind: 'grid',
-      chips: ['Model in minutes', 'Comps auto-filled'],
-      grid: {
-        cols: ['Peer', 'EV/EBITDA', 'Rev'],
-        rows: [
-          ['AAPL', '18.4×', '$391B'],
-          ['MSFT', '22.1×', '$245B'],
-          ['NVDA', '31.7×', '$61B'],
-        ],
-        hot: [1, 2],
+    pairs: [
+      {
+        old: 'Hours to build a model from scratch',
+        neu: 'A model built in minutes — 80% less time to build and update models.',
       },
-    },
+      {
+        old: 'A day pulling valuation multiples for 15 peers, one by one',
+        neu: 'A comparables table across your whole peer set, in minutes.',
+      },
+    ],
   },
   {
     tab: 'Coverage & scale',
     tone: 'emerald',
-    oldLead: 'The names you can cover are capped by the hours in the day.',
-    newLead: '2× the names, same headcount — filings read in minutes.',
-    before: [
-      { icon: 'bolt', label: 'Capped by hours in the day' },
-      { icon: 'doc', label: 'A full day per filing' },
+    pairs: [
+      {
+        old: 'Coverage capped by hours in the day',
+        neu: '2× the names, same headcount.',
+      },
+      {
+        old: 'A full day reading filings before you can speak on a new name',
+        neu: 'The business summary, drivers, and citations, in minutes.',
+      },
     ],
-    cost: 'Half the coverage you want',
-    after: {
-      kind: 'tiles',
-      chips: ['2× the names', 'Summaries in minutes'],
-      tiles: ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'META', 'AVGO', 'TSLA', '+42'],
-    },
   },
   {
     tab: 'Trust & verification',
     tone: 'violet',
-    oldLead: 'Tracing one number back to its filing eats the afternoon.',
-    newLead: 'Minutes, citation attached — an answer you can defend in the room.',
-    before: [
-      { icon: 'scan', label: 'Hours tracing one number' },
-      { icon: 'quote', label: 'Hope the source is right' },
+    pairs: [
+      {
+        old: '3 hours to trace one number back to its filing',
+        neu: '4 minutes, citation attached.',
+      },
+      {
+        old: 'An answer you hope is right',
+        neu: 'An answer you can defend in the room.',
+      },
     ],
-    cost: 'An answer you can’t fully defend',
-    after: {
-      kind: 'highlight',
-      chips: ['4 min, cited', 'Defensible'],
-      label: 'FY24 revenue',
-      text: 'Total net sales were ',
-      mark: '$391.0B',
-      cite: 'SEC 10-K · p.31',
-    },
   },
   {
     tab: 'Monitoring & earnings',
     tone: 'amber',
-    oldLead: 'Every release means re-keying the model by hand.',
-    newLead: 'The model updates itself the moment the release hits, citations attached.',
-    before: [
-      { icon: 'grid', label: 'Re-key the model by hand' },
-      { icon: 'bars', label: 'Manual consensus check' },
+    pairs: [
+      {
+        old: 'A frantic afternoon re-keying the model after every earnings release',
+        neu: 'The model updates itself the moment the release hits, citations attached.',
+      },
+      {
+        old: 'Manually cross-referencing your numbers against sell-side consensus',
+        neu: 'Your model checked against consensus automatically, gaps flagged.',
+      },
     ],
-    cost: 'A scramble every earnings day',
-    after: {
-      kind: 'diff',
-      chips: ['Auto-updated', 'Gaps flagged'],
-      trigger: 'Earnings hit · 8:31am',
-      ref: 'B14',
-      from: '$88.1B',
-      to: '$94.9B',
-      cite: '10-Q · Q3',
-    },
   },
 ]
 
-const OUTRO = 'FinSynth does it all'
+const OUTRO = 'None of this required hiring. It just required FinSynth.'
 
 // ── Inline monochrome glyphs (no external icon dep) ──
 const GLYPHS = {
@@ -140,154 +116,17 @@ function Glyph({ name }) {
   )
 }
 
-// Tab 1 "before" — the manual pull, drawn instead of told: a browser window
-// open on a filing next to a blank workbook, with a value dragged by hand
-// from the page into a cell, on loop.
-function BeforeManual() {
+// One before → after comparison row: the old, manual line on the left and the
+// FinSynth outcome on the right, each led by a bullet. A single full-height
+// separator on the parent .ba-cmp divides the two columns.
+function ComparisonRow({ pair }) {
   return (
-    <div className="ba-manual" aria-hidden="true">
-      <div className="ba-mini ba-mini--browser">
-        <div className="ba-mini-bar">
-          <i /><i /><i />
-          <span className="ba-mini-name">sec.gov › AAPL · 10-K</span>
-        </div>
-        <div className="ba-mini-page">
-          <span className="ba-mline" style={{ width: '84%' }} />
-          <span className="ba-mline" style={{ width: '62%' }} />
-          <span className="ba-mlink">EV/EBITDA&nbsp;&nbsp;18.4×</span>
-          <span className="ba-mline" style={{ width: '74%' }} />
-        </div>
+    <div className="ba-cmp-row">
+      <div className="ba-cmp-side ba-cmp-old">
+        <p><span className="ba-cmp-dot" aria-hidden="true" /><span>{pair.old}</span></p>
       </div>
-
-      <svg className="ba-manual-arc" viewBox="0 0 100 40" preserveAspectRatio="none">
-        <path
-          d="M4 30 C 30 4, 70 4, 96 26"
-          fill="none" stroke="currentColor" strokeWidth="1.4"
-          strokeDasharray="1 6" strokeLinecap="round" vectorEffect="non-scaling-stroke"
-        />
-      </svg>
-      <span className="ba-pull-chip">18.4×</span>
-
-      <div className="ba-mini ba-mini--sheet">
-        <div className="ba-mini-bar">
-          <i /><i /><i />
-          <span className="ba-mini-name">Comps.xlsx</span>
-        </div>
-        <div className="ba-msheet">
-          <span /><span /><span />
-          <span /><span className="ba-mcell-target"><em>18.4×</em></span><span />
-          <span /><span /><span />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// "Before" — a fragmented manual flow: stacked step cards joined by a down
-// arrow, ending in the cost of doing it by hand. Tabs flagged `manual` swap
-// the step cards for the browser-to-sheet vignette.
-function BeforeGraph({ sheet }) {
-  return (
-    <div className="ba-flow">
-      {sheet.manual ? (
-        <BeforeManual />
-      ) : (
-        sheet.before.map((s, i) => (
-          <div className="ba-frag-row" key={i}>
-            <div className="ba-frag">
-              <span className="ba-frag-ic"><Glyph name={s.icon} /></span>
-              <span>{s.label}</span>
-            </div>
-            {i < sheet.before.length - 1 && (
-              <span className="ba-frag-arrow" aria-hidden="true"><Glyph name="down" /></span>
-            )}
-          </div>
-        ))
-      )}
-      <div className="ba-cost">
-        <Glyph name="alert" />
-        <span>{sheet.cost}</span>
-      </div>
-    </div>
-  )
-}
-
-// A mini spreadsheet card — the model + comps FinSynth builds.
-function AfterGrid({ data }) {
-  return (
-    <div className="ba-sheet">
-      <div className="ba-sheet-bar"><i /><i /><i /><span>Model_Build.xlsx</span></div>
-      <table className="ba-tbl">
-        <thead>
-          <tr>{data.cols.map((c) => <th key={c}>{c}</th>)}</tr>
-        </thead>
-        <tbody>
-          {data.rows.map((r, ri) => (
-            <tr key={ri}>
-              {r.map((cell, ci) => (
-                <td key={ci} className={data.hot && data.hot[0] === ri && data.hot[1] === ci ? 'hot' : ''}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// A tile-wall of tickers — coverage at scale.
-function AfterTiles({ tiles }) {
-  return (
-    <div className="ba-tiles">
-      {tiles.map((t, i) => (
-        <span className={`ba-tile${t.startsWith('+') ? ' ba-tile--more' : ''}`} key={i}>{t}</span>
-      ))}
-    </div>
-  )
-}
-
-// A cited answer — highlighted value with its source attached.
-function AfterHighlight({ a }) {
-  return (
-    <div className="ba-hl">
-      <span className="ba-hl-label">{a.label}</span>
-      <p className="ba-hl-text">{a.text}<mark>{a.mark}</mark></p>
-      <span className="ba-hl-cite"><Glyph name="cite" />{a.cite}</span>
-    </div>
-  )
-}
-
-// A live diff — the model updating itself the moment a release lands.
-function AfterDiff({ a }) {
-  return (
-    <div className="ba-diffcard">
-      <div className="ba-diff-trigger"><span className="ba-live" />{a.trigger}</div>
-      <div className="ba-diff-row">
-        <span className="ba-diff-ref">{a.ref}</span>
-        <span className="ba-diff-from">{a.from}</span>
-        <span className="ba-diff-arrow"><Glyph name="arrowR" /></span>
-        <span className="ba-diff-to">{a.to}</span>
-      </div>
-      <span className="ba-hl-cite"><Glyph name="cite" />{a.cite}</span>
-    </div>
-  )
-}
-
-// "After" — a composition tailored to the tab, plus the outcome chips.
-function AfterGraph({ sheet }) {
-  const a = sheet.after
-  return (
-    <div className="ba-after">
-      <div className="ba-after-canvas">
-        {a.kind === 'grid' && <AfterGrid data={a.grid} />}
-        {a.kind === 'tiles' && <AfterTiles tiles={a.tiles} />}
-        {a.kind === 'highlight' && <AfterHighlight a={a} />}
-        {a.kind === 'diff' && <AfterDiff a={a} />}
-      </div>
-      <div className="ba-chips">
-        {a.chips.map((c, i) => (
-          <span className="ba-chip" key={i}><Glyph name="check" />{c}</span>
-        ))}
+      <div className="ba-cmp-side ba-cmp-new">
+        <p><span className="ba-cmp-dot" aria-hidden="true" /><span>{pair.neu}</span></p>
       </div>
     </div>
   )
@@ -296,8 +135,36 @@ function AfterGraph({ sheet }) {
 export default function BeforeAfter() {
   const ref = useReveal()
   const panelRefs = useRef([])
+  const anchorRefs = useRef([])
   const [typed, setTyped] = useState(0)
   const [outroOn, setOutroOn] = useState(false)
+  const [active, setActive] = useState(0)
+
+  // Track which panel is docked so every visible pill can reflect the current
+  // tab: earlier pills stay on screen through the transparent bands beneath,
+  // and drop back to the outline state once their panel is covered.
+  useEffect(() => {
+    let raf = 0
+    const measure = () => {
+      raf = 0
+      let a = 0
+      panelRefs.current.forEach((el, i) => {
+        if (!el) return
+        const dock = parseFloat(getComputedStyle(el).top) || 0
+        if (el.getBoundingClientRect().top <= dock + 6) a = i
+      })
+      setActive(a)
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(measure) }
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
 
   // Typewriter outro — types out once the last panel has docked into view.
   useEffect(() => {
@@ -329,29 +196,29 @@ export default function BeforeAfter() {
     return () => clearInterval(id)
   }, [outroOn])
 
-  // Clicking a tab scrolls to that panel's dock point. offsetTop reflects the
-  // panel's flow position (stickiness is visual only), so this lands each
-  // panel exactly at its docked state.
+  // Clicking a tab scrolls to that panel's dock point. Each panel is sticky, so
+  // once docked its own offsetTop/getBoundingClientRect reports the *stuck*
+  // position, not its flow position — that makes every already-docked panel look
+  // like it's "here", so backward jumps silently do nothing. Instead we measure
+  // a zero-height, non-sticky anchor rendered just before each panel: its
+  // document position always equals the panel's true flow top, so the target
+  // stays correct whether we're scrolling up or down.
   const goTo = (i) => {
+    const a = anchorRefs.current[i]
     const el = panelRefs.current[i]
-    if (!el) return
-    let y = 0
-    for (let n = el; n; n = n.offsetParent) y += n.offsetTop
+    if (!a || !el) return
     const dock = parseFloat(getComputedStyle(el).top) || 0
-    window.scrollTo({ top: y - dock + 2, behavior: 'smooth' })
+    const top = a.getBoundingClientRect().top + window.scrollY - dock + 2
+    window.scrollTo({ top, behavior: 'smooth' })
   }
 
   return (
     <section className="bsp-sec" ref={ref}>
-      {/* header scrolls away as the first panel docks */}
-      <div className="wrap">
+      {/* header scrolls away normally; panels dock just below the navbar */}
+      <div className="wrap bstk-head-wrap">
         <div className="bsp-head bstk-head">
           <p className="hiw-eyebrow">Before &amp; after</p>
-          <h2>What happens when<br />analysts use FinSynth</h2>
-          <p className="bsp-sub">
-            None of this required hiring.{' '}
-            <span>It just required FinSynth.</span>
-          </p>
+          <h2>What happens when<br />analysts use <span className="ttl-hl">FinSynth</span></h2>
         </div>
       </div>
 
@@ -360,50 +227,55 @@ export default function BeforeAfter() {
           further right) clicks into the accumulating tab rail. The tab band is
           transparent so earlier docked tabs stay visible through it. */}
       {SHEETS.map((sheet, si) => (
+        <Fragment key={sheet.tab}>
+        {/* non-sticky flow anchor: a sibling right before the sticky panel, so
+            its document position always equals the panel's true flow top. Tab
+            clicks measure this to dock the panel from any scroll position (see
+            goTo). It must NOT wrap the panel — the panels stay direct siblings
+            of the section so each sticks across the whole stack. */}
+        <span className="bstk-anchor" aria-hidden="true" ref={(el) => { anchorRefs.current[si] = el }} />
         <div
-          className="bstk-panel"
-          key={sheet.tab}
+          className={`bstk-panel${si === SHEETS.length - 1 ? ' bstk-panel--last' : ''}`}
           ref={(el) => { panelRefs.current[si] = el }}
         >
           <div className="bstk-band">
             <div className="wrap bstk-band-wrap">
-              {/* full rail: this panel's tab is solid; upcoming tabs render as
-                  muted ghosts so any section is reachable from the start.
-                  Earlier tabs show through the transparent band as before. */}
-              {SHEETS.map((s, ti) =>
-                ti < si ? null : (
+              {/* the first panel lays down the full rail — every tab visible
+                  and clickable from the start. Later panels carry only their
+                  own pill, which lands on its slot in the rail below; the
+                  docked panel's pill runs solid, already-merged ones keep the
+                  hairline, and not-yet-merged ones read as dotted placeholders. */}
+              {(si === 0 ? SHEETS : [sheet]).map((s) => {
+                const ti = SHEETS.indexOf(s)
+                return (
                   <button
                     key={s.tab}
                     type="button"
-                    className={`bstk-tab${ti === si ? '' : ' bstk-tab--ghost'}`}
+                    className={`bstk-tab${ti === active ? ' is-active' : ti > active ? ' is-upcoming' : ''}`}
                     style={{ '--i': ti }}
                     onClick={() => goTo(ti)}
                   >
                     {s.tab}
                   </button>
                 )
-              )}
+              })}
             </div>
           </div>
           <div className="bstk-content">
             <div className="wrap">
               <div className={`bstk-sheet ba-tone--${sheet.tone}`}>
-                <div className="ba-split">
-                  <div className="ba-panel ba-panel--old">
-                    <span className="ba-kick ba-kick--old">
-                      <span className="ba-dot red" />Before FinSynth
-                    </span>
-                    <p className="ba-lead">{sheet.oldLead}</p>
-                    <BeforeGraph sheet={sheet} />
-                  </div>
-
-                  <div className="ba-panel ba-panel--new">
-                    <span className="ba-kick ba-kick--new">
-                      <span className="ba-dot" />After FinSynth
-                    </span>
-                    <p className="ba-lead ba-lead--new">{sheet.newLead}</p>
-                    <AfterGraph sheet={sheet} />
-                  </div>
+                {/* one centered Before → After label above the paired rows */}
+                <div className="bstk-rule" aria-hidden="true">
+                  <span className="bstk-pill">Before<em>→</em>After</span>
+                  <span className="guide-node guide-node--l" />
+                  <span className="guide-node guide-node--r" />
+                </div>
+                <div className="ba-cmp">
+                  <span className="guide-node guide-node--t" aria-hidden="true" />
+                  <span className="guide-node guide-node--b" aria-hidden="true" />
+                  {sheet.pairs.map((pair, pi) => (
+                    <ComparisonRow key={pi} pair={pair} />
+                  ))}
                 </div>
               </div>
 
@@ -415,6 +287,7 @@ export default function BeforeAfter() {
             </div>
           </div>
         </div>
+        </Fragment>
       ))}
 
       {/* dwell scroll distance for the last panel before the stack releases */}

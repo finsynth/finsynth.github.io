@@ -67,13 +67,11 @@ export default function Security() {
     <section className="secx" id="security">
       <div className="wrap" ref={zoomRef}>
         <div className="secx-frame" ref={ref}>
-          <span className="secx-crop tl" /><span className="secx-crop tr" />
-          <span className="secx-crop bl" /><span className="secx-crop br" />
 
           <div className="secx-head secx-reveal">
             <div className="secx-head-copy">
               <p className="secx-eyebrow">Security &amp; compliance</p>
-              <h2>Enterprise-ready</h2>
+              <h2>Enterprise-<span className="ttl-hl">ready</span></h2>
             </div>
             <div className="secx-badges">
               <BadgeSoc2 />
