@@ -5,18 +5,21 @@
 // nothing else — there is no serverless function we can add here. So delivery
 // has to be a third-party endpoint that accepts a JSON POST from the browser:
 // a Formspree / Basin / Getform form endpoint, a HubSpot forms URL, a Zapier or
-// Make catch hook, or a Google Apps Script web app. Any of them works; put the
-// URL in .env.local (see .env.example):
+// Make catch hook, or a Google Apps Script web app. We use a Formspree form; the
+// URL is hardcoded in ENDPOINT below (public by design — it ships in the bundle
+// either way), with an optional VITE_ASK_ENDPOINT override for local testing.
 //
-//   VITE_ASK_ENDPOINT=https://formspree.io/f/xxxxxxx
-//
-// Until that is set — or if the POST fails — submitAsk reports
+// If the POST fails, submitAsk reports
 // { delivered: false } and the composer does NOT tell the visitor we'll be in
 // touch. It hands them a pre-filled mail-to instead, so the ask still reaches
 // support@finsynth.ai under their own send. Nothing is silently dropped either
 // way; the only difference is whether it arrives automatically.
 
-const ENDPOINT = import.meta.env?.VITE_ASK_ENDPOINT || ''
+// Formspree endpoint for the "FinSynth landing asks" form. Hardcoded on purpose:
+// this URL is public by design (it ships in the client bundle either way), and
+// the site deploys as a prebuilt bundle, so there is no build-time env to read.
+// An env override still wins if VITE_ASK_ENDPOINT is ever set.
+const ENDPOINT = import.meta.env?.VITE_ASK_ENDPOINT || 'https://formspree.io/f/mnpanynp'
 
 export const configured = Boolean(ENDPOINT)
 
