@@ -1,12 +1,18 @@
 import { useEffect, useRef } from 'react'
 import useSectionZoom from '../hooks/useSectionZoom'
 
-function BadgeSoc2() {
+/**
+ * A certification seal. `pending` marks one that hasn't been awarded yet: the
+ * seal reads slightly back from the certified ones and carries an "In progress"
+ * pill on its lower edge, so the row never implies a certification we don't hold.
+ */
+function SealBadge({ top, name, pending }) {
   return (
-    <div className="secx-badge">
-      <span className="secx-badge-top">AICPA</span>
+    <div className={`secx-badge${pending ? ' secx-badge--pending' : ''}`}>
+      <span className="secx-badge-top">{top}</span>
       <span className="secx-badge-rule" />
-      <span className="secx-badge-bot">SOC 2</span>
+      <span className="secx-badge-bot">{name}</span>
+      {pending && <span className="secx-badge-pill">In progress</span>}
     </div>
   )
 }
@@ -17,21 +23,31 @@ const CheckIcon = (
   </svg>
 )
 
+// Every certification gets a seal. The ones not yet awarded carry an
+// "In progress" pill instead of being stated as plain status lines, so the row
+// reads as one set without over-claiming.
+const CERTS = [
+  { key: 'soc2', top: 'AICPA', name: 'SOC 2' },
+  { key: 'gdpr', top: 'EU', name: 'GDPR', pending: true },
+  { key: 'iso', top: 'ISO/IEC', name: '27001', pending: true },
+]
+
+// Four points, two columns — the controls the customer holds.
 const POINTS = [
-  {
-    key: 'local',
-    title: 'Local Excel execution',
-    body: "Excel operations run locally, on your machine. FinSynth's backend never reads, stores, or transmits your workbook.",
-  },
   {
     key: 'gate',
     title: 'Permission-gated by design',
     body: 'The agent cannot write to your model without your explicit approval.',
   },
   {
-    key: 'soc2',
-    title: 'SOC 2 Type II certified',
-    body: 'Independently audited controls for security, availability, and confidentiality.',
+    key: 'notraining',
+    title: 'No training on your data',
+    body: 'By default your data is never shared, used to train AI models, or made accessible to other firms or third-party AI providers.',
+  },
+  {
+    key: 'access',
+    title: 'Strict access controls',
+    body: 'FinSynth runs a zero-trust, least-privilege access model with granular role-based controls.',
   },
   {
     key: 'integrations',
@@ -73,8 +89,12 @@ export default function Security() {
               <p className="secx-eyebrow">Security &amp; compliance</p>
               <h2>Enterprise-<span className="ttl-hl">ready</span></h2>
             </div>
-            <div className="secx-badges">
-              <BadgeSoc2 />
+            <div className="secx-certs">
+              <div className="secx-badges">
+                {CERTS.map((c) => (
+                  <SealBadge key={c.key} top={c.top} name={c.name} pending={c.pending} />
+                ))}
+              </div>
             </div>
           </div>
 

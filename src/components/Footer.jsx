@@ -73,7 +73,7 @@ export default function Footer() {
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
-              <h2>Your new co-worker's <br />ready when you are.</h2>
+              <h2>Your new co-worker's <br />ready when you are</h2>
             </div>
             <div className="foot-cta-actions">
               <a

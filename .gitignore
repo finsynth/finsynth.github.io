@@ -2,5 +2,10 @@ node_modules
 dist
 .DS_Store
 
+# Local env — keep endpoint URLs out of the repo (.env.example is committed)
+.env
+.env.local
+.env.*.local
+
 # Playwright CLI session artifacts
 .playwright-cli/

@@ -112,6 +112,11 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
+/* Text selection: white wash behind, accent-blue text — instead of the
+   browser's default light-blue band over dark ink. */
+::selection { background: #fff; color: var(--accent); }
+::-moz-selection { background: #fff; color: var(--accent); }
+
 .mainContainer {
   height: auto;
   width: 100%;
@@ -236,22 +241,45 @@ a { text-decoration: none; color: inherit; }
   flex-shrink: 0;
 }
 
+/* Both nav buttons carry a raised, 3D read: a vertical face gradient, a light
+   inset ridge on top, a darker inset edge along the bottom, and a drop shadow
+   under the whole thing. Hover lifts them a hair; :active presses them in
+   (shadow collapses to an inset so the face reads as pushed down). */
 .nav-signin {
   padding: 0.55rem 0.875rem;
   font-family: var(--font-body);
   font-size: var(--fs-body);
   font-weight: 500;
   color: var(--ink);
-  background: transparent;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1f8 100%);
   border: 1px solid var(--hair-strong);
   border-radius: 8px;
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(9, 20, 52, 0.07),
+    0 1px 2px rgba(9, 20, 52, 0.12),
+    0 2px 6px rgba(9, 20, 52, 0.07);
+  transition: color 0.15s, background 0.15s, border-color 0.15s,
+    box-shadow 0.15s, transform 0.12s ease;
 }
 
 .nav-signin:hover {
   color: var(--ink);
-  background: var(--accent-soft);
+  background: linear-gradient(180deg, #ffffff 0%, #e7edff 100%);
   border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(9, 20, 52, 0.07),
+    0 2px 4px rgba(9, 20, 52, 0.12),
+    0 4px 10px rgba(9, 20, 52, 0.09);
+}
+
+.nav-signin:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 3px rgba(9, 20, 52, 0.12),
+    0 1px 1px rgba(9, 20, 52, 0.08);
 }
 
 .nav-demo {
@@ -262,16 +290,34 @@ a { text-decoration: none; color: inherit; }
   color: #fff;
   background: var(--btn-blue-grad);
   border: 1px solid var(--btn-blue-line);
-  box-shadow: var(--btn-blue-glow);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(10, 22, 74, 0.4),
+    0 2px 5px rgba(6, 16, 50, 0.4);
   border-radius: 8px;
-  transition: background 0.15s, transform 0.12s ease;
+  transition: background 0.15s, transform 0.12s ease, box-shadow 0.15s;
 }
 
-.nav-demo:hover { background: var(--btn-blue-grad-h); }
-.nav-demo:active { transform: translateY(1px) scale(.985); }
+.nav-demo:hover {
+  background: var(--btn-blue-grad-h);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(10, 22, 74, 0.4),
+    0 4px 10px rgba(6, 16, 50, 0.45);
+}
+
+.nav-demo:active {
+  transform: translateY(1px) scale(.985);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 2px 4px rgba(6, 16, 50, 0.35),
+    0 1px 2px rgba(6, 16, 50, 0.3);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-demo:active { transform: none; }
+  .nav-signin:hover, .nav-signin:active,
+  .nav-demo:hover, .nav-demo:active { transform: none; }
 }
 
 /* ── Formula Bar ── */
@@ -780,16 +826,15 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* ════════ HOW IT WORKS ════════ */
 .hiw-section { background: var(--bg); }
-/* Tall scroll track: the pinned panel holds through the whole run so the
-   screen stays put while the three beats advance (1 → 2 → 3). */
-.hiw-track { position: relative; height: 260vh; }
+/* The panel used to be pinned inside a 260vh scroll track, which is how the
+   beats were stepped. The beats run on their own clock now (see BEATS in
+   HowItWorks.jsx), so the section is simply as tall as its content. */
 .hiw-pin {
-  position: sticky; top: 0;
-  min-height: 100vh;
+  position: relative;
   display: flex; flex-direction: column; justify-content: center;
   padding: 96px 0;
   background: #fff;
-  overflow: hidden;               /* clip the backdrop grid to the pinned frame */
+  overflow: hidden;               /* clip the backdrop wash to the frame */
 }
 .hiw-wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 32px; width: 100%; }
 
@@ -838,14 +883,15 @@ button.play { border: none; padding: 0; appearance: none }
 .hiw-title em { font-style: italic; color: #3550C8; }
 
 @keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
-@keyframes hiwPulse { 0%,100% { opacity: .25 } 50% { opacity: 1 } }
+/* hiwPulse went with the live tool-call row's blinking dot — nothing pulses here now */
 
-/* One bordered panel: left rail + right pane split by a hairline divider */
+/* One bordered panel holding the chat pane. Narrower since the beat rail beside
+   it went — the chat is the whole panel now. */
 .hiw-panel {
   display: grid;
-  grid-template-columns: minmax(240px, 0.82fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(0, 1fr);
   /* narrower than the wrap — floats centred on the wider blue field */
-  max-width: 920px;
+  max-width: 660px;
   margin: 0 auto;
   width: 100%;
   border: 1px solid var(--hair);
@@ -857,125 +903,15 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hiw-section.is-in .hiw-panel { animation: hiwBeat .85s cubic-bezier(.32,.72,0,1) .45s both; }
 
-/* Left rail — stacked feature cards, hairline-divided. Flex column, centred so
-   the group stays anchored as the active beat's description expands/collapses. */
-.hiw-rail {
-  list-style: none; margin: 0; padding: 0; border-right: 1px solid var(--hair);
-  display: flex; flex-direction: column; justify-content: center;
-}
-.hiw-item { position: relative; }
-.hiw-item + .hiw-item { border-top: 1px solid var(--hair); }
-.hiw-item-btn {
-  width: 100%; text-align: left; background: none; border: 0;
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 22px 24px; cursor: pointer;
-  transition: background .3s ease;
-}
-.hiw-item-btn:hover { background: rgba(77,116,242,.04); }
-.hiw-item-btn:focus-visible { outline: 2px solid #2E51D4; outline-offset: -2px; }
-/* active — soft blurred glass tint + primary-blue bar on the leading edge
-   (no more indigo/"purple" accent wash) */
-.hiw-item.is-active .hiw-item-btn {
-  background: rgba(77,116,242,.09);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-.hiw-item.is-active::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--btn-blue-grad); z-index: 1;
-}
-.hiw-item-icon {
-  flex: none; width: 24px; height: 24px; margin-top: 4px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted); transition: color .3s ease;
-}
-.hiw-item-icon svg { width: 20px; height: 20px; }
-.hiw-item.is-active .hiw-item-icon { color: var(--accent); }
-.hiw-item-body { display: flex; flex-direction: column; }
-.hiw-item-title {
-  font-family: var(--font-body); font-size: 19px; font-weight: 600;
-  color: var(--ink); letter-spacing: -.01em; line-height: 1.2;
-  transition: color .3s ease;
-}
-/* Apple-style accordion: the description is collapsed to nothing by default and
-   only the active beat expands it — so the three descriptions never share the
-   rail at once. max-height + opacity + margin animate on one snappy ease-out. */
-.hiw-item-desc {
-  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
-  color: var(--body-gray); max-width: 34ch;
-  max-height: 0; opacity: 0; margin-top: 0;
-  transform: translateY(-4px); overflow: hidden;
-  transition: max-height .55s cubic-bezier(.32,.72,0,1),
-              opacity .34s ease,
-              margin-top .55s cubic-bezier(.32,.72,0,1),
-              transform .55s cubic-bezier(.32,.72,0,1),
-              color .3s ease;
-}
-/* titles stay black throughout — the active beat is distinguished by its
-   background tint, leading blue bar, and the expanded description below */
-.hiw-item.is-active .hiw-item-title { color: var(--ink); }
-.hiw-item:last-child .hiw-item-title { color: var(--ink); }
-.hiw-item.is-active .hiw-item-desc {
-  max-height: 140px; opacity: 1; margin-top: 10px; transform: none;
-}
-.hiw-item-more {
-  display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--accent);
-}
-.hiw-item-more svg { width: 13px; height: 13px; }
-
 /* ════════ Right pane — chat (fixed height so beats don't shift it) ════════ */
-.hiw-pane { display: flex; flex-direction: column; height: 560px; background: #fff; min-width: 0; }
+/* Fixed height so the beats never resize the panel under the reader, but taken
+   from the viewport: the finished thread runs ~820px of content, so a short box
+   scrolls most of the cited answer out of sight. */
+.hiw-pane { display: flex; flex-direction: column; height: clamp(560px, 86vh, 880px); background: #fff; min-width: 0; }
 .hiw-chat { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; position: relative; }
-/* Beat 3: permission overlay covers the composer, asks a single yes/no,
-   then approves itself */
-.hiwc-permit {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 14px;
-  z-index: 3;
-  padding: 16px 18px;
-  background: #fff;
-  border: 1px solid var(--accent);
-  border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(14, 26, 46, 0.05), 0 30px 70px -28px rgba(14, 26, 46, 0.5);
-  animation: hiwcPermitIn .32s cubic-bezier(.2, .82, .24, 1) both;
-}
-.hiwc-permit.is-approved { border-color: var(--positive); }
-
-/* dismiss (deny) — sits at the extreme right of the overlay */
-.hiwc-permit-x {
-  position: absolute; top: 12px; right: 12px;
-  display: flex; padding: 5px; border: 0; background: none;
-  color: var(--muted); border-radius: 7px; cursor: default;
-}
-.hiwc-permit-x svg { width: 15px; height: 15px; }
-
-/* the confirm question */
-.hiwc-permit-q {
-  font-family: var(--font-body); font-size: 14.5px; font-weight: 600;
-  line-height: 1.4; color: var(--ink);
-  padding-right: 28px; margin-bottom: 14px;
-}
-
-/* two CTAs, side by side — deny (muted) + approve (primary) */
-.hiwc-permit-actions { display: flex; align-items: stretch; gap: 8px; }
-.hiwc-permit-actions .hiw-approve,
-.hiwc-permit-actions .hiw-decline { flex: 1; }
-.hiw-decline {
-  text-align: center;
-  font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink);
-  background: #fff; border: 1px solid var(--hair); border-radius: 10px;
-  padding: 11px 16px; cursor: default;
-}
-@keyframes hiwcPermitIn {
-  from { opacity: 0; transform: translateY(16px) scale(.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hiwc-permit { animation: none; }
-}
+/* The approval overlay that used to sit over the composer (.hiwc-permit, with
+   its deny/approve pair and the hiwcPermitIn keyframes) is gone with the beat
+   that drove it — the approval claim is made in <Differentiator /> instead. */
 
 /* header bar — window dots · agent · live label */
 .hiwc-bar {
@@ -998,6 +934,12 @@ button.play { border: none; padding: 0; appearance: none }
   flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px;
   padding: 22px 20px; overflow-y: auto;
 }
+/* The thread sits on its floor, not its ceiling: the pane is tall enough now that
+   top-anchored early beats left a void between the task card and the composer.
+   Growing upward from the composer is what a chat client does. An auto margin
+   rather than justify-content: flex-end — the margin collapses once the thread
+   overflows, so the top of a long answer stays scrollable. */
+.hiwc-thread > :first-child { margin-top: auto; }
 .hiwc-msg { display: flex; animation: hiwcIn .45s cubic-bezier(.32,.72,0,1) both; }
 @keyframes hiwcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .hiwc-msg--user { justify-content: flex-end; }
@@ -1010,72 +952,17 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hiwc-aibody { display: flex; flex-direction: column; gap: 12px; max-width: 90%; }
 
-/* working tasks */
-.hiwc-tasks { border: 1px solid var(--hair); border-radius: 11px; padding: 4px 12px; background: var(--bg); }
-.hiwc-task { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13.5px; color: var(--body-gray); }
-.hiwc-task + .hiwc-task { border-top: 1px solid var(--hair); }
-.hiwc-task svg { width: 14px; height: 14px; flex: none; color: var(--positive); }
-.hiwc-task-a { flex: 1; }
-.hiwc-task-tag { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
-.hiwc-task--live .hiwc-task-tag { color: var(--accent); }
-.hiwc-task--live .hiwc-task-tag::after {
-  content: ''; display: inline-block; width: 5px; height: 5px; margin-left: 5px;
-  border-radius: 50%; background: var(--accent); vertical-align: middle;
-  animation: hiwPulse 1.1s ease-in-out infinite;
-}
+/* the spinner on "Sending…" in the ask form */
 .hiwc-spin { color: var(--accent) !important; animation: hiwcSpin 1s linear infinite; }
 @keyframes hiwcSpin { to { transform: rotate(360deg); } }
-/* the write lands as a fresh tool-call row once approved */
-.hiwc-task--wrote { animation: hiwcIn .4s cubic-bezier(.32,.72,0,1) both; }
 
-/* the written answer — the substantive response under the tool call */
-.hiwc-answer {
-  display: flex; flex-direction: column; gap: 12px;
-  animation: hiwcIn .45s cubic-bezier(.32,.72,0,1) both;
-}
-.hiwc-p { font-size: 14px; line-height: 1.6; color: var(--body-gray); }
-.hiwc-p--head { font-weight: 600; color: var(--ink); }
-.hiwc-p--muted { font-size: 13px; line-height: 1.6; color: var(--muted); }
-.hiwc-answer strong { color: var(--ink); font-weight: 600; }
-/* inline "jump to source" chip */
-.hiwc-cx {
-  width: 12px; height: 12px; vertical-align: -1px; margin: 0 1px;
-  color: var(--accent); opacity: .8;
-}
-/* result table */
-.hiwc-table-wrap { overflow-x: auto; border: 1px solid var(--hair); border-radius: 10px; }
-.hiwc-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.hiwc-table th, .hiwc-table td { text-align: left; padding: 9px 14px; }
-.hiwc-table thead th { font-weight: 600; color: var(--ink); background: #F7F9FC; }
-.hiwc-table tbody tr { border-top: 1px solid var(--hair); }
-.hiwc-table tbody td:first-child { color: var(--secondary); }
-.hiwc-table tbody td:last-child { color: var(--accent-deep); font-variant-numeric: tabular-nums; white-space: nowrap; }
-/* narrative bullets */
-.hiwc-bullets { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
-.hiwc-bullets li { font-size: 14px; line-height: 1.6; color: var(--body-gray); }
-.hiwc-bullets li::marker { color: var(--muted); }
+/* The reel's tool-call card is gone, and with it .hiwc-tasks / .hiwc-task and
+   its --live / --wrote states — so is the written answer that used to stream in
+   under it (.hiwc-answer / .hiwc-p / .hiwc-table / .hiwc-bullets / .hiwc-cx and
+   the reaction row). Nothing else on the page used any of them. */
 
-/* delivered + reactions */
-.hiwc-delivered { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--positive); }
-.hiwc-delivered svg { width: 15px; height: 15px; }
-.hiwc-react { display: flex; gap: 4px; margin-top: 2px; }
-.hiwc-react button { display: flex; padding: 6px; border: 0; background: none; border-radius: 7px; color: var(--muted); cursor: pointer; transition: background .2s, color .2s; }
-.hiwc-react button:hover { background: var(--accent-soft); color: var(--accent); }
-.hiwc-react button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.hiwc-react svg { width: 15px; height: 15px; }
-
-/* approve button (inside chat) */
-.hiw-approve {
-  width: 100%; text-align: center;
-  padding: 11px 18px; border: 0; border-radius: 10px; cursor: pointer;
-  align-self: stretch; margin-top: 2px;
-  font-family: var(--font-body); font-size: 14px; font-weight: 600;
-  color: #fff; background: var(--accent);
-  box-shadow: 0 12px 26px -14px rgba(53,80,200,.7);
-  transition: filter .2s ease;
-}
-.hiw-approve:hover { filter: brightness(1.06); }
-.hiw-approve:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* .hiwc-delivered and .hiw-approve went with the approval overlay too: the
+   confirmation line and its primary button had no other user on the page. */
 
 /* input bar */
 .hiwc-input { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--hair); }
@@ -1089,15 +976,6 @@ button.play { border: none; padding: 0; appearance: none }
   background: #fff;
   box-shadow: 0 10px 28px -18px rgba(20, 32, 72, 0.28);
 }
-.hiwc-attach { display: flex; gap: 8px; flex-wrap: wrap; }
-.hiwc-file {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 6px 12px 6px 9px;
-  border: 1px solid var(--hair); border-radius: 10px;
-  background: var(--bg);
-  font-size: 13px; font-weight: 500; color: var(--ink);
-}
-.hiwc-file svg { width: 15px; height: 15px; color: var(--muted); }
 .hiwc-prompt {
   min-height: 40px;
   padding: 0 3px;
@@ -1133,12 +1011,6 @@ button.play { border: none; padding: 0; appearance: none }
   box-shadow: 0 6px 14px -6px rgba(53, 80, 200, 0.55);
 }
 .hiwc-send svg { width: 16px; height: 16px; }
-/* Approval state: the answer has landed, so the composer collapses to a
-   compact single-line bar — no attachments, tighter padding, and the send
-   button reads as disabled (nothing left to send). */
-.hiwc-input--compact { padding: 12px 16px; }
-.hiwc-input--compact .hiwc-composer { gap: 8px; padding: 10px 12px; }
-.hiwc-input--compact .hiwc-prompt { min-height: 28px; }
 .hiwc-send.is-disabled {
   background: var(--bg);
   color: var(--muted);
@@ -1146,30 +1018,359 @@ button.play { border: none; padding: 0; appearance: none }
   border: 1px solid var(--hair);
   cursor: default;
 }
+/* the composer is a real form now — reset the button/textarea defaults it
+   inherits so it still reads as the mock it replaced */
+.hiwc-composer { text-align: left; }
+button.hiwc-send { border: 0; padding: 0; cursor: pointer; transition: filter .18s ease; }
+button.hiwc-send:hover:not(.is-disabled) { filter: brightness(1.07); }
+button.hiwc-send:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hiwc-iconbtn--btn { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; color: inherit; }
+.hiwc-iconbtn--btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 7px; }
+
+/* the live field, with the walkthrough's self-typing brief laid over it */
+.hiwc-field { position: relative; }
+.hiwc-textarea {
+  display: block; width: 100%;
+  min-height: 40px; max-height: 132px;
+  padding: 0 3px; border: 0; margin: 0;
+  background: none; resize: none; overflow-y: auto;
+  font-family: var(--font-body); font-size: 14px; line-height: 1.45; color: var(--ink);
+}
+.hiwc-textarea::placeholder { color: var(--muted); }
+.hiwc-textarea:focus { outline: none; }
+.hiwc-ghost {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+/* example chips above the composer — seed the field, or take the workbook */
+.hiwc-egs { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; min-width: 0; }
+.hiwc-egs-label {
+  flex: none;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted);
+}
+.hiwc-egs-row {
+  display: flex; gap: 7px; min-width: 0;
+  overflow-x: auto; scrollbar-width: none;
+  padding-bottom: 1px;
+}
+.hiwc-egs-row::-webkit-scrollbar { display: none; }
+.hiwc-eg {
+  flex: none; display: inline-flex; align-items: stretch;
+  border: 1px solid var(--hair); border-radius: 999px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hiwc-eg:hover { border-color: var(--accent); box-shadow: 0 6px 16px -12px rgba(53, 80, 200, .6); }
+.hiwc-eg-use {
+  border: 0; background: none; cursor: pointer;
+  padding: 6px 11px;
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 500; color: var(--ink);
+  white-space: nowrap;
+}
+.hiwc-eg-dl {
+  display: inline-flex; align-items: center;
+  padding: 0 9px 0 7px;
+  border-left: 1px solid var(--hair);
+  color: var(--muted);
+  transition: background .18s ease, color .18s ease;
+}
+.hiwc-eg-dl svg { width: 14px; height: 14px; }
+.hiwc-eg-use:hover { color: var(--accent); }
+.hiwc-eg-dl:hover { background: var(--accent-soft); color: var(--accent); }
+.hiwc-eg-use:focus-visible,
+.hiwc-eg-dl:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* ── ask mode: the honest reply to a live question ── */
+.hiwc-ask { display: flex; flex-direction: column; gap: 12px; }
+.hiwc-ask-lead {
+  display: flex; gap: 9px; align-items: flex-start;
+  margin: 0;
+  font-size: 14px; line-height: 1.55; color: var(--ink);
+}
+.hiwc-ask-ic {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin-top: 1px;
+  border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent);
+}
+.hiwc-ask-ic svg { width: 14px; height: 14px; }
+.hiwc-ask-ic--ok { background: rgba(16, 124, 65, .1); color: #107C41; }
+
+.hiwc-ask-form { display: flex; gap: 8px; flex-wrap: wrap; }
+.hiwc-ask-email {
+  flex: 1 1 190px; min-width: 0;
+  height: 40px; padding: 0 13px;
+  border: 1px solid var(--hair); border-radius: 10px;
+  background: #fff;
+  font-family: var(--font-body); font-size: 14px; color: var(--ink);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hiwc-ask-email::placeholder { color: var(--muted); }
+.hiwc-ask-email:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hiwc-ask-email.has-err { border-color: #C0392B; }
+.hiwc-ask-email:disabled { background: var(--bg); color: var(--muted); }
+.hiwc-ask-send {
+  flex: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 40px; padding: 0 16px;
+  border: 0; border-radius: 10px; cursor: pointer;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  color: #fff; background: var(--accent);
+  box-shadow: 0 12px 26px -16px rgba(53, 80, 200, .8);
+  transition: filter .18s ease;
+}
+.hiwc-ask-send svg { width: 15px; height: 15px; }
+.hiwc-ask-send:hover:not(:disabled) { filter: brightness(1.06); }
+.hiwc-ask-send:disabled { opacity: .7; cursor: default; }
+.hiwc-ask-send:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hiwc-ask-err { margin: -4px 0 0; font-size: 13px; color: #C0392B; }
+
+/* Mail-to fallback: shown when the ask could not be delivered automatically,
+   so the visitor can still send it themselves in one tap. */
+.hiwc-ask-send-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0;
+}
+.hiwc-ask-send--link { text-decoration: none; }
+.hiwc-ask-send-note { font-size: 12.5px; color: var(--muted); }
+
+/* "try it on one of these" — compare against whatever they already run */
+.hiwc-ask-tools { display: flex; flex-wrap: wrap; gap: 7px; }
+.hiwc-ask-copy,
+.hiwc-ask-tool {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border: 1px solid var(--hair); border-radius: 999px;
+  background: #fff; cursor: pointer;
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 500; color: var(--ink);
+  transition: border-color .18s ease, color .18s ease, background .18s ease;
+}
+.hiwc-ask-copy svg,
+.hiwc-ask-tool svg { width: 14px; height: 14px; color: var(--muted); }
+.hiwc-ask-copy:hover,
+.hiwc-ask-tool:hover { border-color: var(--accent); color: var(--accent); }
+.hiwc-ask-copy:hover svg,
+.hiwc-ask-tool:hover svg { color: var(--accent); }
+.hiwc-ask-copy:focus-visible,
+.hiwc-ask-tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* the workbooks themselves */
+.hiwc-ask-dl {
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 12px; border: 1px solid var(--hair); border-radius: 12px;
+  background: var(--bg);
+}
+.hiwc-ask-dl-lead { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.hiwc-ask-dl-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.hiwc-ask-dl-btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 8px 13px 8px 11px;
+  border: 1px solid var(--hair); border-radius: 10px;
+  background: #fff;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hiwc-ask-dl-btn svg { flex: none; width: 15px; height: 15px; color: #107C41; }
+.hiwc-ask-dl-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.hiwc-ask-dl-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.hiwc-ask-dl-file { font-size: 11.5px; color: var(--muted); }
+.hiwc-ask-dl-btn:hover { border-color: #107C41; box-shadow: 0 8px 20px -14px rgba(16, 124, 65, .8); }
+.hiwc-ask-dl-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* the sheet that answers what they actually asked, called out from the rest */
+.hiwc-ask-dl-btn.is-match { border-color: #107C41; background: rgba(16, 124, 65, .05); }
+
+/* ════════ An answered example, in the chat ════════ */
+/* "FinSynth is working" — held for a beat before a known answer lands */
+.hiwc-working { display: inline-flex; align-items: center; gap: 9px; padding: 2px 0; }
+.hiwc-working-name {
+  font-family: var(--font-body); font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+}
+.hiwc-working-dots { display: inline-flex; gap: 5px; }
+.hiwc-working-dots i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); opacity: .35;
+  animation: heroDot 1.1s ease-in-out infinite;
+}
+.hiwc-working-dots i:nth-child(2) { animation-delay: .18s; }
+.hiwc-working-dots i:nth-child(3) { animation-delay: .36s; }
+
+.hiwc-res { display: flex; flex-direction: column; gap: 12px; }
+.hiwc-res-lead { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+
+/* the workbook: file bar, as-of note, then the cited table */
+.hiwc-res-sheet {
+  border: 1px solid var(--hair); border-radius: 12px; overflow: hidden; background: #fff;
+}
+.hiwc-res-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 11px; border-bottom: 1px solid var(--hair); background: #FCFDFF;
+}
+.hiwc-res-ic { display: flex; flex: none; }
+.hiwc-res-ic svg { width: 15px; height: 15px; }
+.hiwc-res-file {
+  min-width: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hiwc-res-dl {
+  flex: none; margin-left: auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border: 1px solid rgba(16, 124, 65, .45); border-radius: 8px;
+  background: rgba(16, 124, 65, .06);
+  font-size: 12px; font-weight: 600; color: #107C41; text-decoration: none;
+  transition: background .16s ease, border-color .16s ease;
+}
+.hiwc-res-dl svg { width: 13px; height: 13px; }
+.hiwc-res-dl:hover { background: rgba(16, 124, 65, .12); border-color: #107C41; }
+.hiwc-res-dl:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hiwc-res-note {
+  margin: 0; padding: 7px 11px; border-bottom: 1px solid var(--hair);
+  font-size: 11px; font-style: italic; line-height: 1.45; color: var(--muted);
+}
+.hiwc-res-scroll { overflow-x: auto; }
+.hiwc-res-tbl { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 11.5px; }
+.hiwc-res-tbl th,
+.hiwc-res-tbl td {
+  padding: 6px 10px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--hair); border-right: 1px solid var(--hair);
+}
+.hiwc-res-tbl th:last-child,
+.hiwc-res-tbl td:last-child { border-right: none; }
+.hiwc-res-tbl tbody tr:last-child td { border-bottom: none; }
+.hiwc-res-tbl thead th {
+  background: rgba(20, 36, 46, .035);
+  font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted);
+}
+.hiwc-res-tbl tbody td { color: var(--body-gray, var(--muted)); }
+.hiwc-res-tbl tbody td:first-child { font-weight: 600; color: var(--ink); }
+.hiwc-res-tbl tbody tr:hover td { background: rgba(53, 80, 200, .035); }
+
+/* a sourced figure — an Excel hyperlink that really does open its source */
+.hiwc-cell-link {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; color: #0563C1;
+  text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px;
+  border-radius: 3px;
+  transition: color .14s ease, background .14s ease;
+}
+.hiwc-cell-link:hover { color: var(--accent); background: var(--accent-soft); }
+.hiwc-cell-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* the figure whose document is currently open */
+.hiwc-cell-link.is-open { background: rgba(250, 204, 21, .35); color: var(--ink); }
+
+.hiwc-res-cta {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink);
+}
+.hiwc-res-cta .hiwc-ask-ic { margin-top: 1px; }
+
+/* ════════ Source document, over the chat ════════ */
+.hiwc-doc { position: absolute; inset: 0; z-index: 5; display: flex; }
+.hiwc-doc-scrim {
+  position: absolute; inset: 0;
+  background: rgba(14, 26, 46, .42);
+  backdrop-filter: blur(2px);
+  animation: hiwcDocFade .2s ease both;
+}
+.hiwc-doc-sheet {
+  position: relative;
+  margin: auto; width: min(440px, calc(100% - 32px)); max-height: calc(100% - 32px);
+  display: flex; flex-direction: column;
+  background: #fff; border: 1px solid var(--hair); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(14, 26, 46, .06), 0 40px 80px -30px rgba(14, 26, 46, .55);
+  animation: hiwcDocIn .28s cubic-bezier(.2, .82, .24, 1) both;
+}
+@keyframes hiwcDocFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hiwcDocIn {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+.hiwc-doc-bar {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 12px 13px; border-bottom: 1px solid var(--hair); background: #FCFDFF;
+}
+.hiwc-doc-ic { display: flex; flex: none; margin-top: 1px; color: var(--accent); }
+.hiwc-doc-ic svg { width: 16px; height: 16px; }
+.hiwc-doc-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hiwc-doc-name { font-size: 13.5px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.hiwc-doc-meta { font-size: 11.5px; line-height: 1.35; color: var(--muted); }
+.hiwc-doc-x {
+  flex: none; margin-left: auto; display: flex; padding: 5px;
+  border: 0; border-radius: 7px; background: none; color: var(--muted); cursor: pointer;
+  transition: background .16s ease, color .16s ease;
+}
+.hiwc-doc-x svg { width: 14px; height: 14px; }
+.hiwc-doc-x:hover { background: rgba(14, 26, 46, .06); color: var(--ink); }
+.hiwc-doc-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* the excerpt itself, set like the page it came off */
+.hiwc-doc-body { padding: 15px 15px 16px; overflow-y: auto; }
+.hiwc-doc-section {
+  margin: 0; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+}
+.hiwc-doc-unit {
+  margin: 5px 0 0; font-size: 11px; font-style: italic; color: var(--muted);
+}
+.hiwc-doc-quote {
+  margin: 13px 0 0; padding: 11px 13px;
+  border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0;
+  background: var(--bg);
+  font-size: 13.5px; line-height: 1.6; color: var(--ink);
+}
+.hiwc-doc-lines { margin: 11px 0 0; display: flex; flex-direction: column; }
+.hiwc-doc-line {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 7px 6px; border-bottom: 1px dotted var(--hair);
+}
+.hiwc-doc-line:last-child { border-bottom: 0; }
+.hiwc-doc-line dt { flex: 1; min-width: 0; font-size: 12.5px; color: var(--ink); }
+.hiwc-doc-line dd {
+  margin: 0; flex: none; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted);
+}
+.hiwc-doc-line.is-hit dt { font-weight: 600; }
+.hiwc-doc-line.is-hit dd { color: var(--ink); }
+/* the cited figure, marked the way the webapp highlights the passage */
+.hiwc-doc-mark {
+  padding: 1px 4px; border-radius: 4px;
+  background: rgba(250, 204, 21, .45); color: var(--ink); font-weight: 600;
+  box-shadow: inset 0 -1px 0 rgba(180, 130, 0, .35);
+}
+.hiwc-doc-note { margin: 13px 0 0; font-size: 12px; line-height: 1.55; color: var(--muted); }
+
+.hiwc-doc-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  padding: 11px 13px; border-top: 1px solid var(--hair); background: #FCFDFF;
+}
+.hiwc-doc-trace { font-size: 11.5px; color: var(--muted); }
+.hiwc-doc-trace b { font-family: var(--font-mono); font-weight: 600; color: var(--ink); }
+.hiwc-doc-open {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none;
+}
+.hiwc-doc-open svg { width: 14px; height: 14px; }
+.hiwc-doc-open:hover { text-decoration: underline; text-underline-offset: 2px; }
+.hiwc-doc-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
 @media (max-width: 900px) {
-  /* Below 900px the stepper stops pinning — the panel flows normally and the
-     full thread is shown (JS sets active to the last beat). */
-  .hiw-track { height: auto; }
-  .hiw-pin { position: static; min-height: 0; display: block; padding: 96px 0; }
-  .hiw-panel { grid-template-columns: minmax(0, 1fr); }
-  .hiw-rail { border-right: 0; border-bottom: 1px solid var(--hair); justify-content: flex-start; }
-  .hiw-pane { height: 520px; }
-  /* stacked layout isn't scroll-driven — show every description, no accordion */
-  .hiw-item-desc { max-height: 140px; opacity: 1; margin-top: 10px; transform: none; }
+  .hiw-pin { display: block; }
+  .hiw-pane { height: 640px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hiw-track { height: auto; }
-  .hiw-pin { position: static; min-height: 0; }
   .hiw-section.is-in .hiw-head,
   .hiw-section.is-in .hiw-panel,
   .hiwc-msg { animation: none; }
   .hiw-head, .hiw-panel, .hiwc-msg { opacity: 1; transform: none; filter: none; }
-  .hiwc-spin, .hiwc-task--wrote, .hiwc-answer,
-  .hiwc-task--live .hiwc-task-tag::after { animation: none; }
-  /* no scroll animation → reveal every description, no collapse transition */
-  .hiw-item-desc { max-height: 140px; opacity: 1; margin-top: 10px; transform: none; transition: none; }
+  .hiwc-spin { animation: none; }
+  .hiwc-working-dots i { animation: none; opacity: .6; }
+  .hiwc-doc-sheet, .hiwc-doc-scrim { animation: none; }
 }
 
 /* ════════ CLI ════════ */
@@ -1290,11 +1491,17 @@ button.play { border: none; padding: 0; appearance: none }
   transition: color .5s cubic-bezier(.32,.72,0,1), border-color .5s cubic-bezier(.32,.72,0,1),
               background .5s cubic-bezier(.32,.72,0,1);
 }
+/* slight glassmorph fill on hover: translucent white over a backdrop blur,
+   with a faint inner highlight so the pill reads as frosted glass */
 .foot-askai-btn:hover,
 .foot-askai-btn[aria-expanded="true"] {
-  color: #fff; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.06);
+  color: #fff; border-color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.09);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
 }
-.foot-askai-btn-label { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,.32) }
+.foot-askai-btn-label { text-decoration: none }
 .foot-askai-btn-icon { width: 13px; height: 13px; flex-shrink: 0; display: block }
 
 .foot-askai-menu {
@@ -1664,14 +1871,46 @@ button.play { border: none; padding: 0; appearance: none }
   letter-spacing: var(--ls-display); color: var(--ink);
 }
 
-/* certification seals */
-.secx-badges { display: flex; gap: 14px; flex-shrink: 0; justify-content: center }
+/* certification seals — one per cert, the not-yet-awarded ones pilled */
+.secx-certs {
+  display: flex; align-items: center; gap: clamp(18px, 2.2vw, 30px);
+  flex-shrink: 0;
+}
+
+/* the pending pills hang off the seals' lower edge — pad for them so the row
+   doesn't clip and the seals still centre against the heading */
+.secx-badges {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  justify-content: center; padding-bottom: 11px;
+}
 .secx-badge {
   position: relative; width: 124px; height: 124px; border-radius: 22px;
   flex: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
   background: #fff; border: 1px solid var(--hair); color: var(--ink);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 18px 40px -24px rgba(20,36,46,.35), 0 1px 2px rgba(20,36,46,.05);
+}
+/* sits back from the awarded seals: dashed edge, no lift, slightly muted name */
+.secx-badge--pending {
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  color: var(--body-2);
+}
+/* the pill, straddling the seal's lower edge */
+.secx-badge-pill {
+  position: absolute; left: 50%; bottom: -11px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px; border-radius: 999px; white-space: nowrap;
+  background: #fff; border: 1px solid var(--accent-soft2);
+  box-shadow: 0 1px 2px rgba(20,36,46,.06);
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 500;
+  letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
+}
+/* hollow ring — reads as pending next to the solid check marks in the grid */
+.secx-badge-pill::before {
+  content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%;
+  border: 1.5px solid var(--accent); opacity: .55;
 }
 .secx-badge-top {
   font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em;
@@ -1695,8 +1934,10 @@ button.play { border: none; padding: 0; appearance: none }
   list-style: none; display: grid; grid-template-columns: 1fr 1fr;
   border-top: 1px solid var(--hair);
 }
+/* ten points over five rows: tighter cells than the old four-point grid so the
+   section stays a scannable table rather than a page of its own */
 .secx-point {
-  display: flex; gap: 16px; padding: 40px 56px 42px;
+  display: flex; gap: 16px; padding: 30px clamp(28px, 3.4vw, 48px) 32px;
   border-top: 1px solid var(--hair); border-right: 1px solid var(--hair);
   transition: background .4s cubic-bezier(.32,.72,0,1);
 }
@@ -1731,13 +1972,37 @@ button.play { border: none; padding: 0; appearance: none }
   .secx-reveal { opacity: 1; transform: none; filter: none; transition: none }
 }
 
+/* three seals beside the heading squeeze it into a hyphen break before the
+   layout stacks, so drop the seals to a tighter size first */
+@media (max-width: 1200px) {
+  .secx-badge { width: 104px; height: 104px; border-radius: 18px }
+  .secx-badge-bot { font-size: 21px }
+  .secx-badge-rule { width: 36px }
+}
+
 @media (max-width: 960px) {
   .secx-head { flex-direction: column; align-items: center; text-align: center; gap: 28px; padding: 44px 30px 60px }
   .secx-head-copy { text-align: center }
   .secx-badges { padding-top: 0 }
+  .secx-certs { flex-direction: column; gap: 22px }
+  .secx-badge { width: 124px; height: 124px; border-radius: 22px }
+  .secx-badge-bot { font-size: 25px }
+  .secx-badge-rule { width: 44px }
   .secx-grid { grid-template-columns: 1fr }
   .secx-point { padding: 32px 30px; border-right: none }
   .secx-point:nth-child(2) { border-top: 1px solid var(--hair) }
+}
+
+/* on phones the full-size seals only fit one per row, which turns the header
+   into a 400px-tall stack — shrink them so they go two-up with the third
+   wrapping under, and give the rows enough gap for the pills to clear */
+@media (max-width: 560px) {
+  .secx-badges { row-gap: 26px }
+  .secx-badge { width: 96px; height: 96px; border-radius: 16px }
+  .secx-badge-top { font-size: 9.5px; letter-spacing: .12em }
+  .secx-badge-bot { font-size: 18px }
+  .secx-badge-rule { width: 30px }
+  .secx-badge-pill { bottom: -10px; padding: 3px 8px; font-size: 8.5px }
 }
 
 /* ════════ TESTIMONIAL ════════ */
@@ -1784,12 +2049,35 @@ button.play { border: none; padding: 0; appearance: none }
 /* iOS-style card stack — every card occupies the same grid cell, useCardStack
    drives translate/scale/z-index on an automatic timer.
    Room below for the deeper cards peeking out (2 × PEEK). */
+.testi-deck { position: relative; width: min(680px, 100%); margin: 0 auto }
 .testi-stack {
   display: grid;
-  width: min(680px, 100%);
-  margin: 0 auto;
+  width: 100%;
   padding-bottom: 56px;
 }
+
+/* Deck controls — bottom-right on the front card, flush with the card's own
+   content box so they read as one row with the author block opposite them.
+   The offsets are the deck's own measurements: 56px is the stack's bottom
+   padding (where the deeper cards peek out), 36px/48px the card's padding.
+   They sit above every card rather than under the front one — a control the
+   deck can cover is a control that can't be clicked. */
+.testi-nav {
+  position: absolute;
+  right: 48px; bottom: calc(56px + 36px);
+  display: flex; gap: 8px; z-index: 20;
+}
+.testi-navbtn {
+  width: 38px; height: 38px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--hair); border-radius: 50%;
+  background: #fff; color: var(--ink); cursor: pointer;
+  transition: background .25s ease, border-color .25s ease, color .25s ease, transform .2s ease;
+}
+.testi-navbtn:hover { background: var(--accent); border-color: var(--accent); color: #fff }
+.testi-navbtn:active { transform: scale(.93) }
+.testi-navbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.testi-navbtn svg { width: 16px; height: 16px }
 .testi-card {
   grid-area: 1 / 1;
   transform-origin: top center;
@@ -1815,6 +2103,7 @@ button.play { border: none; padding: 0; appearance: none }
 .testi-role { display: block; font-family: var(--font-body); font-size: 13px; color: var(--secondary); margin-top: 2px }
 
 @media (max-width: 900px) {
+  .testi-nav { display: none }
   .testi-card { padding: 30px 28px 26px }
   .testi-head { margin-bottom: 80px }
 }
@@ -1823,6 +2112,9 @@ button.play { border: none; padding: 0; appearance: none }
 @media (prefers-reduced-motion: reduce) {
   .testi-stack { display: flex; flex-direction: column; gap: 24px; padding-bottom: 0 }
   .testi-card { grid-area: auto }
+  /* every quote is already on screen and the hook no-ops here, so the arrows
+     would be dead controls */
+  .testi-nav { display: none }
 }
 
 /* ════════ CTA BAND ════════ */
@@ -1862,10 +2154,14 @@ button.play { border: none; padding: 0; appearance: none }
               background .5s cubic-bezier(.32,.72,0,1);
 }
 .cta-cta-icon svg { width: 15px; height: 15px }
+/* matches the Ask-your-AI hover: slight glassmorph fill instead of the blue
+   gradient (feedback: "slight glassmorph fill on hover") */
 .cta-cta:hover {
-  background: var(--btn-blue-grad-h); border-color: var(--btn-blue-line);
+  background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.8);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
   transform: translateY(-2px);
-  box-shadow: var(--btn-blue-glow), 0 16px 36px -18px rgba(46,81,212,.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
 }
 .cta-cta:hover .cta-cta-icon {
   background: rgba(255,255,255,.26);
@@ -2608,6 +2904,16 @@ button.play { border: none; padding: 0; appearance: none }
   pointer-events: none;
 }
 
+/* Duplicated hero riding the how-it-works glass wash (testi-glass-bg.png)
+   instead of the bridge photo. The png is authored to stretch edge-to-edge
+   (same treatment as .hiw-pin::before) and already dissolves to white at its
+   top and bottom, so the imgbg's white readability scrim is dropped. */
+.hero-s2--glass .hero-s2-imgbg {
+  background-size: 100% 100%;
+  background-position: top center;
+}
+.hero-s2--glass .hero-s2-imgbg::after { content: none; }
+
 /* ── Pixel-bridge scroll reveal hero ───────────────────────────────────── */
 /* A tall pinned track: the first ~2 screens scrub the bridge assemble, the
    next ~2 dolly-zoom into the pixels while the copy fades out. */
@@ -2777,16 +3083,29 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* Soft white radial halo sitting behind the hero copy (photo hero). The cell
    is an isolated stacking context above the pixel mosaic, so z-index:-1 keeps
-   the glow over the image but behind the title/CTAs/trust line. */
+   the glow over the image but behind the title/CTAs/trust line.
+   Boxed to the copy block (pill → trust line) and capped at 100% of the cell,
+   so the wash never spills past the hero or over the ask composer. The
+   gradient fades to fully transparent well inside its own box — no visible
+   edge, no bright patch sitting on top of the photo. */
 .hero-glow {
   position: absolute;
-  top: -80px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: min(900px, 108%);
-  height: auto;
+  width: min(1180px, 100%);
+  height: 660px;
+  max-height: 100%;
   z-index: -1;
   pointer-events: none;
+  background: radial-gradient(
+    ellipse 56% 56% at 50% 40%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.74) 40%,
+    rgba(255, 255, 255, 0.44) 62%,
+    rgba(255, 255, 255, 0.16) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 /* Mosaic hero: drop the card chrome so content floats over the skyline */
@@ -2922,11 +3241,12 @@ button.play { border: none; padding: 0; appearance: none }
 /* While an ask popup is open (body.ask-freeze, set by Home) the whole page
    holds still: the scrim is viewport-fixed and only blurs, so any animation
    behind it — other sections' CSS loops, blinking carets — reads as motion.
-   The popup's own elements (.hero-ask subtree: scrim fade, palette pop-in,
-   thinking dots) are exempt so it still enters and responds normally. */
-body.ask-freeze *:not(.hero-ask, .hero-ask *),
-body.ask-freeze *:not(.hero-ask, .hero-ask *)::before,
-body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
+   The popup's own elements (.hero-ask and .hero-try subtrees: scrim fade,
+   palette pop-in, thinking dots, the modal's spinner) are exempt so they still
+   enter and respond normally. */
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *),
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::before,
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   animation-play-state: paused !important;
 }
 
@@ -3402,6 +3722,359 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   .hero-answer__after { animation: none; }
 }
 
+/* ── "Try It" modal ─────────────────────────────────────────────────────────
+   The hero's second primary CTA. Same page-idiom surface as the command box
+   (--bg on --hair-strong, deep soft shadow) but lifted to a real full-page
+   dialog at the .hero-desktop-modal layer, so it clears the sticky navbar and
+   the formula bar. It reuses .hero-suggest__row for the sample prompts and the
+   whole .hero-answer__* block for a played sample, so those need no new rules
+   here — only the shell, the composer, the email step and the confirmation. */
+.hero-try {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.hero-try__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 14, 28, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: heroScrimIn .28s ease both;
+}
+
+.hero-try__card {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px 32px 28px;
+  background: var(--bg);
+  border: 1px solid var(--hair-strong);
+  border-radius: 18px;
+  text-align: left;
+  box-shadow:
+    0 1px 2px rgba(14, 26, 46, 0.05),
+    0 42px 90px -30px rgba(9, 14, 28, 0.55);
+  animation: heroModalIn .3s cubic-bezier(.2, .82, .24, 1) both;
+  /* only the played answer needs the table's full width */
+  transition: max-width .4s cubic-bezier(.22, .9, .26, 1);
+}
+
+.hero-try__card.is-wide { max-width: min(1120px, 95vw); }
+
+.hero-try__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.hero-try__close:hover { color: var(--ink); border-color: var(--accent); }
+
+.hero-try__head { margin: 0 40px 20px 0; }
+/* Past the compose step only the eyebrow is left, so it needs less room under it. */
+.hero-try__head.is-compact { margin-bottom: 12px; }
+
+.hero-try__eyebrow {
+  display: block;
+  margin-bottom: 9px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero-try__title {
+  margin: 0 0 7px;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.hero-try__sub {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--secondary);
+}
+
+/* ── the prompt box ── */
+.hero-try__composer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  background: var(--surface);
+  border: 1px solid var(--hair-strong);
+  border-radius: 14px;
+  box-shadow: 0 10px 28px -20px rgba(14, 26, 46, 0.3);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hero-try__composer:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.hero-try__textarea {
+  display: block;
+  width: 100%;
+  min-height: 88px;
+  max-height: 190px;
+  padding: 0 2px;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  resize: none;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.hero-try__textarea::placeholder { color: var(--muted); }
+
+/* while a sample types itself in, the caret is the animation — keep hands off */
+.hero-try__textarea.is-typing { caret-color: var(--accent); }
+
+.hero-try__composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-try__hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--muted);
+}
+.hero-try__hint kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 5px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--secondary);
+}
+
+.hero-try__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: none;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--btn-blue-line);
+  border-radius: 11px;
+  background: var(--btn-blue-grad);
+  box-shadow: var(--btn-blue-glow);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s ease, transform .12s ease, opacity .15s ease;
+}
+.hero-try__send:hover:not(:disabled) { background: var(--btn-blue-grad-h); transform: translateY(-1px); }
+.hero-try__send:disabled { opacity: .45; cursor: default; box-shadow: none; }
+
+.hero-try__spin { animation: heroTrySpin .7s linear infinite; }
+@keyframes heroTrySpin { to { transform: rotate(360deg); } }
+
+/* ── the sample prompts (rows borrow .hero-suggest__* wholesale) ── */
+.hero-try__samples { margin-top: 18px; }
+.hero-try__samples .hero-suggest__label { padding: 0 0 8px; }
+.hero-try__samples .hero-suggest__row { padding: 11px 12px 11px 10px; }
+
+/* ── a played sample answer, inside the card ── */
+.hero-try__answer {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}
+.hero-try__answer .hero-answer__cta {
+  position: static;
+  margin: 15px 0 0;
+  padding: 13px 0 0;
+  box-shadow: none;
+}
+
+/* ── the email step ── */
+.hero-try__echo-label {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hero-try__echo {
+  margin: 0 0 18px;
+  padding: 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-left: 2px solid var(--accent);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.hero-try__ask-lead {
+  margin: 0 0 14px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+.hero-try__ask-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-try__email {
+  flex: 1 1 220px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 11px;
+  background: var(--surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hero-try__email::placeholder { color: var(--muted); }
+.hero-try__email:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hero-try__email.has-err { border-color: #C0392B; }
+.hero-try__email:disabled { opacity: .6; }
+
+.hero-try__err {
+  margin: 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #C0392B;
+}
+
+/* ── the confirmation ── */
+.hero-try__done { text-align: left; }
+
+.hero-try__done-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hero-try__done-ic.is-ok {
+  background: rgba(14, 159, 110, .1);
+  color: var(--positive);
+}
+
+.hero-try__done-copy {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.hero-try__done-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 18px 0 0;
+}
+
+.hero-try__done-note {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* the quiet way back — "Edit request" / "Ask something else" */
+.hero-try__back {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hair-strong);
+  cursor: pointer;
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+.hero-try__back:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+@media (max-width: 768px) {
+  .hero-try { padding: 14px; align-items: flex-start; }
+  .hero-try__card {
+    padding: 24px 20px 22px;
+    max-height: calc(100vh - 28px);
+    margin-top: 8px;
+  }
+  .hero-try__title { font-size: 19px; }
+  .hero-try__hint { display: none; }
+  .hero-try__composer-foot { justify-content: flex-end; }
+  .hero-try__ask-form { flex-direction: column; align-items: stretch; }
+  .hero-try__send { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-try__scrim, .hero-try__card { animation: none; }
+  .hero-try__card { transition: none; }
+  .hero-try__send:hover:not(:disabled) { transform: none; }
+  .hero-try__spin { animation: none; }
+}
+
 .hero-trust-line {
   font-family: var(--font-body);
   font-size: 12px;
@@ -3420,8 +4093,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 .hero-excel-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 9px 3px 7px;
+  gap: 8px;
+  /* 1.5× the original chip (feedback: "increase the size by .5x") */
+  padding: 5px 14px 5px 11px;
   margin-bottom: 28px;
   border: 1px solid var(--hair);
   border-radius: 999px;
@@ -3430,28 +4104,66 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   background: #fff;
   box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 16px -8px rgba(16, 24, 40, .16);
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--ink);
 }
 /* logo sized up so the Accel wordmark reads clearly (feedback: "barely
    visible, increase the size a bit") */
-.hero-excel-pill img { height: 15px; width: auto; }
+.hero-excel-pill img { height: 22px; width: auto; }
 
 /* ── Heading ── */
+/* The whole copy stack — title, lede, CTAs, trust line — scales as one unit, type
+   and rhythm together so the proportions hold at any size. Every value below is
+   written as its launch figure times --hero-scale, so re-sizing the stack is a
+   one-number change here rather than a dozen hand-recomputed literals (it has
+   moved four times now: 0.75×, 1.5×, 1.25×, 1.125×) and the launch baseline
+   stays readable in the source.
+
+   Scoped to .hero-s2 so nothing leaks to the "See it on your workflow" button in
+   <WhyAnalysts />, which borrows .hero-s2-cta and keeps base size. */
+.hero-s2 { --hero-scale: 1.125; }
+
+/* The min-height below is in em, so it follows the font size on its own. */
 .hero-s2-title {
   font-family: var(--font-body);
-  font-size: clamp(42px, 3.9vw, 62px);
+  font-size: clamp(
+    calc(42px * var(--hero-scale)),
+    calc(3.9vw * var(--hero-scale)),
+    calc(62px * var(--hero-scale))
+  );
   font-weight: 500;
   line-height: 1.18;
   color: var(--ink);
   letter-spacing: var(--ls-display);
-  margin-bottom: 22px;
+  margin-bottom: calc(22px * var(--hero-scale));
   text-wrap: balance;
-  /* Reserve both lines while the rotating role types/deletes, so the CTA and
-     ask input below never jump — they were impossible to click mid-cycle.
-     Height bumped ~5% so the two lines always sit with a little more room. */
-  min-height: 2.48em; /* 2 lines × line-height 1.18, +5% */
+  /* Reserve every row the headline can occupy, so the CTA and ask input below
+     never jump while the rotating segment types/deletes — they were impossible
+     to click mid-cycle. Two things move: at the empty frame of the cycle the
+     last row holds only the caret (0.82em), and the segments differ in width by
+     ~3em, which can push row two into wrapping. Bumped ~5% so the rows always
+     sit with a little more room. */
+  min-height: 2.48em; /* 2 rows × line-height 1.18, +5% */
+}
+
+/* Each headline row is a block with a tight internal line-height; the rest of
+   the 1.18 leading lives in the margin between rows. ::selection only paints
+   line boxes, never margins, so selecting the headline shows two separate
+   white strips with the photo visible between them. Row pitch is unchanged:
+   1.06 + 0.12 = 1.18em. */
+.hero-title-row { display: block; line-height: 1.03; }
+.hero-title-row + .hero-title-row { margin-top: 0.15em; }
+
+/* Below ~1125px the headline no longer holds two rows: row one
+   ("Auditable AI research infrastructure,") needs ~15.4em, and the measure
+   drops under that as the 79vw page rail closes in faster than the type
+   shrinks — so row one wraps and the headline runs to three rows. Reserve the
+   third here. Boundary is measured, not derived: 1125px renders two rows,
+   1120px renders three; the extra few px keep the reservation on the safe side
+   of the flip. Any higher and this would leave a dead row above the flip. */
+@media (max-width: 1129px) {
+  .hero-s2-title { min-height: 3.72em; } /* 3 rows × line-height 1.18, +5% */
 }
 
 /* Inline avatar cluster */
@@ -3524,12 +4236,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   transition: background-color 0.18s ease;
 }
 
-/* text-selection fill — sits behind the word while it's framed (hold),
-   and stays through the selection sweep before the word is deleted */
-.hero-rotate.hold .hero-s2-accent,
-.hero-rotate.selected .hero-s2-accent {
-  background: rgba(53, 80, 200, 0.18);
-}
+/* The white cell fill comes from .hr-frame's background, not the word itself —
+   the word sits at z-index 1 above the frame, so any opaque background here
+   would paint over the frame's border edges. */
 
 /* selection frame — like a selected cell / Figma frame */
 .hr-frame {
@@ -3537,7 +4246,7 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   inset: 0.06em -2px 0 -2px;
   border: 1.5px solid var(--accent);
   border-radius: 3px;
-  background: rgba(53, 80, 200, 0.04);
+  background: #fff;
   pointer-events: none;
   opacity: 0;
   transform: scale(0.96);
@@ -3564,6 +4273,13 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 .hr-handle.tr { right: -4px; top: -4px; }
 .hr-handle.bl { left: -4px; bottom: -4px; }
 .hr-handle.br { right: -4px; bottom: -4px; }
+
+/* While the user's own text selection sweeps over the word (.is-hl, toggled
+   from a selectionchange listener), the selected text itself turns accent
+   blue — so the cell frame flips to black to stay distinct. */
+.hero-rotate.is-hl .hr-frame,
+.hero-rotate.is-hl .hr-handle { border-color: #111; }
+.hero-rotate.is-hl .hr-caret { background: #111; }
 
 /* typing caret */
 .hr-caret {
@@ -3602,53 +4318,40 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   margin-bottom: 72px;
 }
 
-/* Supporting claims as buttons — two per row (photo hero) */
-.hero-s2-claims {
-  display: grid;
-  grid-template-columns: repeat(4, max-content);
-  justify-content: center;
-  gap: 10px;
-  list-style: none;
-  margin: 0 0 64px;
-  padding: 0;
-}
-.hero-s2-claim {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 16px;
-  /* warm frosted-glass chips: the low-opacity cream fill (previously only on
-     the Excel chip) applied to all, with a backdrop blur so the hero softens
-     through (feedback: "I like the fill behind the Excel chip") */
-  background: rgba(244, 241, 231, 0.5);
-  -webkit-backdrop-filter: blur(14px) saturate(135%);
-  backdrop-filter: blur(14px) saturate(135%);
-  color: var(--ink);
-  border-radius: 0;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 1px 2px rgba(20, 36, 46, .06), 0 10px 26px -18px rgba(20, 36, 46, .35);
+/* ── Secondary line under the headline (photo hero) ──
+   Set in ink rather than the usual secondary grey: it sits over the pixelated
+   photo, and at this size grey-on-mosaic loses the line. */
+.hero-s2-lede {
   font-family: var(--font-body);
-  font-size: 13.5px;
+  font-size: clamp(
+    calc(17.33px * var(--hero-scale)),
+    calc(1.353vw * var(--hero-scale)),
+    calc(21.33px * var(--hero-scale))
+  );
   font-weight: 500;
-  white-space: nowrap;
+  line-height: 1.5;
+  /* true black, not the softer body ink: this line sits directly on the
+     pixelated photo, where muted grey drops out of the mosaic */
+  color: #000;
+  letter-spacing: 0;
+  /* in ch, so the measure follows the type: two lines at any --hero-scale */
+  max-width: 34ch;
+  margin: 0 auto calc(34.67px * var(--hero-scale));
+  text-wrap: balance;
 }
-.hero-s2-claim__ic {
-  display: inline-flex;
-  align-items: center;
-  flex: none;
-}
-/* the Excel logo replaces the word "Excel" in this chip ("Built for [icon]"),
-   so size the mark to sit inline with the text (feedback: icon instead of the
-   word, not icon-only) */
-.hero-s2-claim--excel .hero-s2-claim__ic svg { width: 18px; height: 18px; }
 
-@media (max-width: 780px) {
-  .hero-s2-claims { grid-template-columns: repeat(2, max-content); }
-}
+/* Phones: at scales above ~1 the clamp floors are wider than a phone — the
+   headline's lead clause overflows. Below 560px both switch
+   to a viewport-relative size that meets those floors exactly at 560px, so the
+   step-up is continuous and nothing overflows the screen. Scaled by the same
+   factor, so that stays true wherever --hero-scale is set. */
 @media (max-width: 560px) {
-  .hero-s2-claims { grid-template-columns: 1fr; max-width: 300px; gap: 8px; }
-  .hero-s2-claim { font-size: 13px; padding: 8px 14px; }
+  .hero-s2-title { font-size: calc(7.5vw * var(--hero-scale)); }
+  .hero-s2-lede {
+    font-size: calc(3.1vw * var(--hero-scale));
+    max-width: 30ch;
+    margin-bottom: calc(28px * var(--hero-scale));
+  }
 }
 
 /* ── CTA button — embossed, brand color ── */
@@ -3683,19 +4386,50 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: calc(14px * var(--hero-scale));
+  margin-bottom: calc(18px * var(--hero-scale));
 }
 .hero-s2-ctas .hero-s2-cta { margin-bottom: 0; }
 
+/* The hero's own pair of buttons scales with the rest of the copy stack — the
+   base values above, times --hero-scale. Scoped to .hero-s2, because
+   .hero-s2-cta is borrowed by the "See it on your workflow" button in
+   Why-analysts, which keeps base size. */
+.hero-s2 .hero-s2-cta {
+  gap: calc(6px * var(--hero-scale));
+  font-size: calc(18px * var(--hero-scale));
+  padding: calc(15px * var(--hero-scale)) calc(40px * var(--hero-scale));
+  border-radius: calc(12px * var(--hero-scale));
+}
+
 /* Trust line under the CTAs */
 .hero-s2-trust {
-  margin: 0 0 44px;
+  margin: 0 0 calc(44px * var(--hero-scale));
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: calc(14px * var(--hero-scale));
   line-height: 1.5;
   color: var(--secondary);
   text-align: center;
+}
+
+/* "Try It" — the second primary. A button, not a link, so it needs the form
+   resets .hero-s2-cta never had to carry; white like the ghost but drawn in
+   accent so it reads as the other half of the pair rather than a third
+   afterthought behind Sign in. */
+.hero-s2-cta.hero-s2-cta--try {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-body);
+  cursor: pointer;
+  background: var(--btn-white-grad);
+  border: 1px solid var(--accent);
+  box-shadow: var(--btn-white-glow);
+  color: var(--accent-deep);
+}
+.hero-s2-cta.hero-s2-cta--try:hover {
+  background: var(--btn-white-grad);
+  border-color: var(--accent-deep);
+  transform: translateY(-1px);
 }
 
 /* secondary (Sign in) — outline / glass */
@@ -4721,23 +5455,25 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 
 /* Testimonials — head, then the stack rises as one (the cards themselves
    carry inline scroll-driven transforms, so only the container may animate) */
-.testi-head, .testi-stack { opacity: 0 }
+.testi-head, .testi-deck { opacity: 0 }
 .testi-pin.is-in .testi-head { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
-.testi-pin.is-in .testi-stack { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .14s both }
+.testi-pin.is-in .testi-deck { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .14s both }
 
 @media (prefers-reduced-motion: reduce) {
   .pos-head, .pos-item, .pos-video,
   .audit-title, .audit-sub, .audit-sec .hiw-eyebrow, .audit-sec .point, .audit-stage-col,
   .bsp-head, .whywb, .bstk-band, .bstk-sheet,
-  .testi-head, .testi-stack { opacity: 1 }
+  .testi-head, .testi-deck { opacity: 1 }
   .pos-block.is-in .pos-head, .pos-block.is-in .pos-item, .pos-block.is-in .pos-video,
   .audit-sec.is-in .hiw-eyebrow, .audit-sec.is-in .audit-title, .audit-sec.is-in .audit-sub,
   .audit-sec.is-in .point, .audit-sec.is-in .audit-stage-col,
   .bsp-sec.is-in .bsp-head, .bsp-sec.is-in .bsp-head h2, .bsp-sec.is-in .whywb,
   .bsp-sec.is-in .bstk-band, .bsp-sec.is-in .bstk-sheet,
-  .testi-pin.is-in .testi-head, .testi-pin.is-in .testi-stack {
+  .testi-pin.is-in .testi-head, .testi-pin.is-in .testi-deck {
     animation: none;
   }
+  /* the deck is a plain column here — there is no stack to step through */
+  .testi-nav { display: none }
 }
 
 /* ── SF Mosaic band (ported from Claude Design "SF Mosaic Hero") ── */
@@ -5688,4 +6424,828 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *)::after {
 }
 @media (prefers-reduced-motion: reduce) {
   .gridreveal__cells path { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   WHY ANALYSTS CHOOSE FINSYNTH
+   Four differentiators as table rows (index / claim / detail) with hairline
+   rules, then the verifiable stats as one proof row, then the CTA.
+   ══════════════════════════════════════════════════════════════════════ */
+.wac-sec {
+  position: relative;
+  padding: clamp(96px, 13vh, 168px) 0;
+}
+
+.wac-stage {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(24px, 5vw, 72px);
+  box-sizing: border-box;
+}
+
+.wac-heading {
+  margin: 0 0 clamp(40px, 5vh, 64px);
+  max-width: 24ch;
+  font-family: var(--font-body);
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+}
+
+/* ── the table ──
+   Same frame as .dfx-frame: one hairline box holding the columns, so the four
+   reasons read as a single set rather than four stacked rows. */
+.wac-frame {
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* Four abreast rather than stacked. Vertical hairlines divide the columns the
+   way the row rules used to divide the rows. */
+.wac-table {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wac-row {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--hair);
+  transition: background .2s ease;
+}
+.wac-row:first-child { border-left: 0; }
+.wac-row:hover { background: var(--bg); }
+
+.wac-idx {
+  padding: clamp(24px, 3vh, 32px) clamp(18px, 1.8vw, 26px) 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.wac-row:hover .wac-idx { color: var(--accent); }
+
+/* Takes the slack so the four diagrams sit on one line at the foot of the
+   columns however unevenly the copy above them wraps. */
+.wac-row-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+  padding: 10px clamp(18px, 1.8vw, 26px) clamp(22px, 2.6vh, 30px);
+}
+
+/* Both come down a step from the full-width row layout: the measure is now a
+   ~300px column, and the old 24px claim set to five ragged lines in it. */
+.wac-claim {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(17px, 1.4vw, 20px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.wac-detail {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--secondary);
+}
+
+/* ── the diagram under each claim ──
+   At the foot of its column, divided off by a hairline like .dfx-art. It has no
+   frame of its own any more: the column it sits in supplies one, and a box
+   inside a box read as a card grid. Swap the SVG for an <img> and nothing else
+   here needs to change. */
+.wac-visual {
+  aspect-ratio: 8 / 5;
+  border-top: 1px solid var(--hair);
+  overflow: hidden;
+}
+.wac-visual > svg,
+.wac-visual > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.wac-visual > img { object-fit: cover; }
+
+/* Shared drawing language for the four diagrams: hairline structure, ink for
+   what matters, accent only on the figure the claim is about. */
+.wv-cell,
+.wv-doc,
+.wv-panel,
+.wv-chip { fill: var(--bg); stroke: var(--hair); stroke-width: 1; }
+.wv-rule,
+.wv-axis { stroke: var(--hair); stroke-width: 1; }
+.wv-txt { fill: var(--hair); }
+.wv-cell-hit { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+.wv-hl { fill: var(--accent-soft); }
+.wv-txt-hit { fill: var(--accent); }
+.wv-lead {
+  fill: none; stroke: var(--accent); stroke-width: 1.4;
+  stroke-dasharray: 3 3; stroke-linecap: round;
+}
+.wv-dot { fill: var(--accent); }
+.wv-arrow {
+  fill: none; stroke: var(--accent); stroke-width: 1.3;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.wv-bar { fill: var(--hair); }
+.wv-bar--last { fill: var(--accent); }
+.wv-hub { fill: var(--accent); stroke: none; }
+.wv-hub-mark { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; }
+.wv-wire { fill: none; stroke: var(--hair); stroke-width: 1.2; }
+.wv-chip-dot { fill: var(--accent); }
+.wv-ok { fill: var(--accent); }
+.wv-ok-tick { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.wv-strike { stroke: var(--muted); stroke-width: 1.2; }
+
+/* text inside the diagrams */
+.wv text { font-family: var(--font-mono); letter-spacing: var(--ls-mono); }
+.wv-num { font-size: 9px; fill: var(--ink); text-anchor: middle; }
+.wv-old { font-size: 9px; fill: var(--muted); text-anchor: middle; }
+.wv-new { font-size: 9px; fill: var(--accent); text-anchor: middle; font-weight: 600; }
+.wv-lbl { font-size: 9px; fill: var(--ink); text-anchor: start; }
+.wv-tag { font-size: 8px; fill: var(--muted); }
+.wv-hd { font-size: 8px; fill: var(--muted); }
+.wv-hd--r { text-anchor: end; }
+.wv-fx { font-size: 8px; fill: var(--muted); font-style: italic; }
+.wv-code { font-size: 8.5px; fill: var(--accent); }
+.wv-chip-tx { font-size: 8.5px; fill: var(--secondary); font-family: var(--font-body); letter-spacing: 0; }
+
+/* ── proof row ── */
+.wac-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: clamp(56px, 7vh, 88px) 0 0;
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.wac-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(24px, 3.4vh, 36px) clamp(18px, 2vw, 28px);
+  border-left: 1px solid var(--hair);
+}
+.wac-stat:first-child { border-left: 0; }
+
+.wac-stat-value {
+  font-family: var(--font-body);
+  font-size: clamp(30px, 3.2vw, 44px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.wac-stat-label {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--secondary);
+}
+
+/* ── CTA ── */
+.wac-cta-row {
+  display: flex;
+  margin-top: clamp(40px, 5vh, 64px);
+}
+/* Not a button at all any more: no fill, no shadow, and no outline either — just
+   the label. Mid-page this is an aside, and the page's one solid blue button
+   belongs to the hero and the footer band, so anything boxed here read as a
+   second primary.
+
+   It carries no .hero-s2-cta classes now either, rather than overriding them one
+   by one: nothing of that button survived except the label. It takes the accent
+   colour and an arrow, because a bare string in body ink with no border and no
+   underline doesn't read as something you can click; hover underlines it and
+   nudges the arrow, the same signal .announce-link gives. Vertical padding keeps
+   a thumb-sized hit area, with no horizontal padding, so the label starts flush
+   with the frame and heading above it. */
+.wac-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  text-decoration: none;
+}
+.wac-cta svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform .18s ease;
+}
+.wac-cta:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.wac-cta:hover svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .wac-cta svg { transition: none; }
+}
+
+/* ── reveal staging ── */
+.wac-heading,
+.wac-row,
+.wac-stats,
+.wac-cta-row { opacity: 0; }
+.wac-sec.is-in .wac-heading { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.wac-sec.is-in .wac-row { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.wac-sec.is-in .wac-row:nth-child(1) { animation-delay: .08s }
+.wac-sec.is-in .wac-row:nth-child(2) { animation-delay: .16s }
+.wac-sec.is-in .wac-row:nth-child(3) { animation-delay: .24s }
+.wac-sec.is-in .wac-row:nth-child(4) { animation-delay: .32s }
+.wac-sec.is-in .wac-stats { animation: sectionRise .8s cubic-bezier(.32,.72,0,1) .4s both }
+.wac-sec.is-in .wac-cta-row { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .48s both }
+
+@media (prefers-reduced-motion: reduce) {
+  .wac-heading, .wac-row, .wac-stats, .wac-cta-row {
+    opacity: 1; transform: none; animation: none;
+  }
+}
+
+/* Four columns stop holding a readable measure here — a 15px paragraph in a
+   ~260px column sets to four ragged words a line — so they go two-up. */
+@media (max-width: 1180px) {
+  .wac-table { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wac-row:nth-child(odd) { border-left: 0; }
+  .wac-row:nth-child(n + 3) { border-top: 1px solid var(--hair); }
+}
+
+/* And one-up below that. Stacked, the diagram no longer has to align across
+   columns, so it holds a sensible size instead of stretching the full width. */
+@media (max-width: 720px) {
+  .wac-table { grid-template-columns: minmax(0, 1fr); }
+  .wac-row { border-left: 0; }
+  .wac-row + .wac-row { border-top: 1px solid var(--hair); }
+  .wac-visual {
+    max-width: 380px;
+    margin: 0 clamp(18px, 5vw, 26px) clamp(22px, 2.6vh, 30px);
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+  }
+  /* the body no longer needs to reserve slack for an aligned diagram */
+  .wac-row-body { flex: 0 1 auto; padding-bottom: 16px; }
+}
+
+/* Five stats don't divide evenly, so below the single row they go two-up with
+   the last one spanning the full width — no ragged empty cell. */
+@media (max-width: 820px) {
+  .wac-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wac-stat:nth-child(odd) { border-left: 0; }
+  .wac-stat:nth-child(n + 3) { border-top: 1px solid var(--hair); }
+  .wac-stat:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .wac-cta-row { display: block; }
+  .wac-cta { width: 100%; justify-content: center; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   DIFFERENTIATOR — "the difference", first informative section under the
+   hero. One job: stake the claim on auditability against the accuracy
+   claim everyone else leads with. Hairline spec-sheet language (same as
+   .secx / .wac), no stat row, no card grid.
+   ══════════════════════════════════════════════════════════════════════ */
+.dfx {
+  position: relative;
+  background: var(--bg);
+  padding: clamp(110px, 15vh, 180px) 0 clamp(120px, 16vh, 190px);
+}
+
+/* ── head: the section title with its secondary line stacked under it ──
+   THE PAGE'S SECTION-HEAD FORMAT. Every section head follows this shape: title,
+   secondary line directly beneath it, both flush left, and no full stop on
+   either. Two earlier layouts are gone — a two-column grid (which parked the
+   secondary line in a right-hand column, so a short title left ~470px of white
+   between them and it read as an unrelated column) and a baseline row hugging
+   the title. Stacked is the format; it holds at every width, and it matches the
+   claim/detail pairs inside the sections below.
+   Shared by .dfx (#difference) and .dfx.vsx (#comparison). */
+.dfx-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(10px, 1.2vh, 16px);
+  margin-bottom: clamp(40px, 5.5vh, 68px);
+}
+
+/* the two sentences each own a line, so no balancing — it would re-break them */
+.dfx-title {
+  margin: 0;
+  max-width: 36ch;
+  font-family: var(--font-body);
+  font-size: clamp(30px, 3.2vw, 44px);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+}
+
+.dfx-lede {
+  /* sits under the title, capped to a readable measure so it stays a second line
+     of the head rather than spanning the whole section */
+  margin: 0;
+  max-width: 46ch;
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--secondary);
+}
+
+.dfx-frame {
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* ── proof columns ──
+   Three abreast rather than stacked: the proofs are peers, not an ordered
+   sequence, so side by side they scan as one set. Vertical hairlines divide the
+   columns the way the row rules used to divide the rows. */
+.dfx-rows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dfx-row {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--hair);
+  transition: background .2s ease;
+}
+.dfx-row:first-child { border-left: 0; }
+.dfx-row:hover { background: var(--bg); }
+
+.dfx-row-idx {
+  padding: clamp(24px, 3vh, 32px) clamp(20px, 2.2vw, 32px) 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.dfx-row:hover .dfx-row-idx { color: var(--accent); }
+
+/* takes the slack so the three diagrams sit on one line at the foot of the
+   columns however unevenly the claims above them wrap */
+.dfx-row-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 10px clamp(20px, 2.2vw, 32px) clamp(24px, 3vh, 32px);
+}
+
+.dfx-row-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.dfx-row-claim {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.dfx-row-detail {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--secondary);
+}
+
+/* ── row diagrams ──
+   Schematics, not screenshots: each states the mechanics of its claim. Colour
+   lives here rather than on the SVG attributes so the :root tokens stay the
+   single source, and so the whole set restyles from one place. */
+.dfx-art {
+  display: flex;
+  align-items: center;
+  padding: clamp(18px, 2.2vh, 26px) clamp(20px, 2.2vw, 32px);
+  border-top: 1px solid var(--hair);
+}
+
+.dfx-art-svg { display: block; width: 100%; height: auto; }
+
+.dfx-art-frame { fill: none; stroke: var(--hair); stroke-width: 1; }
+/* set on both the <g> wrappers and bare lines — stroke/fill inherit either way */
+.dfx-art-hair { stroke: var(--hair); stroke-width: 1; }
+.dfx-art-bar { fill: var(--hair-strong); }
+.dfx-art-bar--on { fill: var(--accent); }
+.dfx-art-band { fill: var(--accent-soft); }
+
+.dfx-art-cell { fill: var(--accent-soft2); stroke: var(--accent); stroke-width: 1; }
+
+.dfx-art-node { fill: var(--surface); stroke: var(--hair-strong); stroke-width: 1; }
+.dfx-art-node--on { fill: var(--accent); stroke: var(--accent); }
+
+/* the reference link reads dashed — it points at a source, it isn't a data flow */
+.dfx-art-link {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+.dfx-art-dot { fill: var(--accent); }
+.dfx-art-strike { stroke: var(--muted); stroke-width: 1; }
+.dfx-art-check { stroke: var(--accent); }
+
+.dfx-art-chip { fill: none; stroke: var(--hair); stroke-width: 1; }
+.dfx-art-chip--on { fill: var(--accent-soft); stroke: var(--accent); }
+
+.dfx-art-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  fill: var(--muted);
+}
+.dfx-art-tag--on { fill: var(--accent); }
+
+.dfx-art-val {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-anchor: middle;
+  fill: var(--accent);
+}
+
+.dfx-art-sign {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  fill: var(--muted);
+}
+.dfx-art-sign--on { fill: var(--accent); }
+
+/* The outro line and its link out are gone, and with them .dfx-outro /
+   .dfx-outro-link — the section ends on the three proofs. */
+
+/* ── reveal staging ── */
+.dfx-row { opacity: 0; }
+.dfx-frame.is-in .dfx-row { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d) both }
+
+@media (prefers-reduced-motion: reduce) {
+  .dfx-row { opacity: 1; transform: none; animation: none; }
+}
+
+@media (max-width: 1000px) {
+  /* the head is already stacked; the title just narrows its measure */
+  .dfx-title { max-width: 30ch; }
+}
+
+/* Below this the three columns can't hold a readable measure — a 15px paragraph
+   in a ~280px column sets to four ragged words a line — so they stack. */
+@media (max-width: 900px) {
+  .dfx-rows { grid-template-columns: minmax(0, 1fr); }
+  .dfx-row {
+    border-left: 0;
+    border-top: 1px solid var(--hair);
+  }
+  .dfx-row:first-child { border-top: 0; }
+  /* stacked, the diagram no longer has to align across columns, so it holds a
+     sensible size instead of stretching the full width */
+  .dfx-art > .dfx-art-svg { max-width: 400px; }
+}
+
+@media (max-width: 640px) {
+  .dfx-row-idx { padding-inline: clamp(18px, 5vw, 24px); }
+  .dfx-row-body { padding-inline: clamp(18px, 5vw, 24px); }
+  .dfx-art { padding-inline: clamp(18px, 5vw, 24px); }
+  /* the svg scales down with the column, so the micro-labels are bumped in user
+     units here to land back at a readable size on a phone */
+  .dfx-art-tag,
+  .dfx-art-val { font-size: 10px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMPARISON — three-way: a generic copilot, Claude, and us. A duplicate
+   of the .dfx section: it reuses .dfx-head / .dfx-title / .dfx-lede /
+   .dfx-frame and only adds the table internals, so the pair reads as one
+   system.
+
+   Lanes, left to right: the two alternatives sit recessed on the page grey
+   as one group, ours comes forward on white. That grouping is the argument
+   — "whatever you already run" against "this" — and it also keeps the
+   table to two tones, so a third background never has to be invented.
+   ══════════════════════════════════════════════════════════════════════ */
+.vsx-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: left;
+}
+.vsx-th {
+  padding: clamp(16px, 2vh, 22px) clamp(16px, 1.5vw, 24px);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--hair);
+  color: var(--muted);
+}
+/* the category column gives up width to the third lane; the remaining three
+   split what's left evenly under table-layout: fixed */
+.vsx-th--cat { width: 21%; }
+.vsx-th--gen,
+.vsx-th--cla { background: var(--bg); border-left: 1px solid var(--hair); }
+.vsx-th--us { border-left: 1px solid var(--hair); color: var(--accent); }
+
+.vsx-td {
+  padding: clamp(18px, 2.2vh, 24px) clamp(16px, 1.5vw, 24px);
+  vertical-align: top;
+}
+.vsx-tr + .vsx-tr .vsx-td { border-top: 1px solid var(--hair); }
+
+/* the row header reads as a label, not as a competing claim */
+.vsx-td--cat {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.vsx-td--gen,
+.vsx-td--cla { background: var(--bg); border-left: 1px solid var(--hair); }
+.vsx-td--us { border-left: 1px solid var(--hair); }
+
+/* ── the rating pills ──
+   Tier sets colour only. No traffic-light palette: the page is grey plus one
+   blue, so a weak rating recedes and a strong one comes forward instead. */
+.vsx-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px 6px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 100px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--secondary);
+}
+/* nothing there yet — dashed, so the gap reads as absence rather than a score */
+.vsx-pill--none {
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  background: transparent;
+  color: var(--muted);
+}
+.vsx-pill--weak { color: var(--muted); }
+.vsx-pill--mid { color: var(--secondary); }
+.vsx-pill--strong {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.vsx-note {
+  display: block;
+  margin-top: 11px;
+  max-width: 30ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--secondary);
+}
+.vsx-td--gen .vsx-note,
+.vsx-td--cla .vsx-note { color: var(--muted); }
+
+/* ── reveal staging: rows rise in sequence once the frame is in view ── */
+.vsx-tr { opacity: 0; }
+.dfx-frame.is-in .vsx-tr { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d) both }
+
+@media (prefers-reduced-motion: reduce) {
+  .vsx-tr { opacity: 1; transform: none; animation: none; }
+}
+
+/* Four columns need ~1100px to hold a pill and its line without three-word
+   wraps, so the table collapses earlier than the two-lane version did: the
+   category becomes a heading and its three ratings stack under it, each named
+   by its own lane label. Stacked rather than three-up — a third of a tablet
+   width is narrower than the pills themselves. */
+@media (max-width: 1100px) {
+  .vsx-table,
+  .vsx-table tbody,
+  .vsx-table .vsx-tr { display: block; }
+  .vsx-table thead { display: none; }
+
+  .vsx-tr { display: block; }
+  .vsx-tr + .vsx-tr { border-top: 1px solid var(--hair); }
+  .vsx-tr + .vsx-tr .vsx-td { border-top: 0; }
+
+  /* stays body type: the lane labels below it are already mono, and a second
+     mono line would read as competing micro-labels */
+  .vsx-td--cat {
+    display: block;
+    padding: clamp(20px, 2.6vh, 26px) clamp(18px, 5vw, 24px) 0;
+    font-size: 16px;
+  }
+  .vsx-td--gen,
+  .vsx-td--cla,
+  .vsx-td--us {
+    display: block;
+    width: 100%;
+    padding: 14px clamp(18px, 5vw, 24px) 0;
+    background: none;
+    border-left: 0;
+  }
+  .vsx-td--us { padding-bottom: clamp(20px, 2.6vh, 26px); }
+  /* the lane label moves inline with the pill: three stacked rows each need
+     naming, and a label line above every one of them would treble the height */
+  .vsx-td--gen::before,
+  .vsx-td--cla::before,
+  .vsx-td--us::before {
+    content: 'Generic copilot';
+    display: inline-block;
+    /* px, not em: the label is mono 10.5px and the note under it is body 14px,
+       so an em width on one wouldn't line up with an em indent on the other */
+    width: 132px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: var(--ls-mono);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .vsx-td--cla::before { content: 'Claude'; }
+  .vsx-td--us::before { content: 'FinSynth'; color: var(--accent); }
+  /* the note sits under the pill, indented to the label's column so the three
+     ratings still line up as a comparison */
+  .vsx-note { margin-left: 132px; max-width: 46ch; }
+}
+
+@media (max-width: 640px) {
+  .vsx-note { font-size: 13.5px; margin-top: 9px; }
+  .vsx-pill { padding: 4px 9px 5px; }
+}
+
+@media (max-width: 520px) {
+  /* a phone can't hold the label and the pill on one line, so the label goes
+     back above it and the note loses its indent */
+  .vsx-td--gen::before,
+  .vsx-td--cla::before,
+  .vsx-td--us::before {
+    display: block;
+    width: auto;
+    margin-bottom: 8px;
+  }
+  .vsx-td--gen,
+  .vsx-td--cla,
+  .vsx-td--us { padding-top: 18px; }
+  .vsx-note { margin-left: 0; max-width: none; }
+}
+
+/* ══ FinSynth for Excel — reserved image frame left, pillars as text right ══ */
+.x4e-sec {
+  position: relative;
+  padding: clamp(96px, 13vh, 168px) 0;
+}
+.x4e-stage {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(24px, 5vw, 72px);
+  box-sizing: border-box;
+}
+.x4e-heading {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--font-body);
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+}
+.x4e-lede {
+  margin-top: 16px;
+  max-width: 62ch;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--body-gray);
+}
+/* the split: reserved image frame on the left, the four pillars as a
+   hairline-ruled list on the right. The frame is sized now so nothing
+   reflows when the product image lands in it. */
+.x4e-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(36px, 4.5vw, 88px);
+  align-items: stretch;
+  margin-top: clamp(36px, 5vh, 56px);
+}
+.x4e-media {
+  min-height: 360px;
+  border: 1px dashed var(--hair-strong);
+  border-radius: 12px;
+  background: rgba(247, 247, 247, .6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.x4e-media-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.x4e-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.x4e-item {
+  display: flex;
+  gap: 22px;
+  padding: clamp(20px, 2.6vh, 30px) 0;
+  border-top: 1px solid var(--hair);
+}
+.x4e-item:last-child { border-bottom: 1px solid var(--hair); }
+.x4e-idx {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--green-num);
+  font-weight: 500;
+  padding-top: 5px;
+}
+.x4e-claim {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin: 0;
+}
+.x4e-detail {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--body-gray);
+  margin: 6px 0 0;
+  max-width: 52ch;
+}
+
+/* entrance staging, matching the other sections' sectionRise reveal */
+.x4e-heading, .x4e-lede, .x4e-media, .x4e-item { opacity: 0; }
+.x4e-sec.is-in .x4e-heading { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.x4e-sec.is-in .x4e-lede { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both; animation-delay: .08s }
+.x4e-sec.is-in .x4e-media { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both; animation-delay: .16s }
+.x4e-sec.is-in .x4e-item { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.x4e-sec.is-in .x4e-item:nth-child(1) { animation-delay: .16s }
+.x4e-sec.is-in .x4e-item:nth-child(2) { animation-delay: .24s }
+.x4e-sec.is-in .x4e-item:nth-child(3) { animation-delay: .32s }
+.x4e-sec.is-in .x4e-item:nth-child(4) { animation-delay: .4s }
+@media (prefers-reduced-motion: reduce) {
+  .x4e-heading, .x4e-lede, .x4e-media, .x4e-item { opacity: 1; animation: none !important; }
+}
+
+@media (max-width: 900px) {
+  .x4e-grid { grid-template-columns: 1fr; }
+  .x4e-media { min-height: 200px; }
 }

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import useSignedIn from '../hooks/useSignedIn';
 
 export default function Navbar() {
   const [hidden, setHidden] = useState(false);
+  const signedIn = useSignedIn();
   const lastY = useRef(0);
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true);
 
   useEffect(() => {
-    const hero = document.querySelector('.hero-s2');
+    const heroes = Array.from(document.querySelectorAll('.hero-s2'));
     const footer = document.querySelector('.footer-new');
 
     const update = () => {
@@ -27,7 +29,7 @@ export default function Navbar() {
     const onScroll = () => window.requestAnimationFrame(update);
 
     let observer;
-    const targets = [hero, footer].filter(Boolean);
+    const targets = [...heroes, footer].filter(Boolean);
     if (targets.length) {
       const seen = new Set();
       observer = new IntersectionObserver(
@@ -63,13 +65,17 @@ export default function Navbar() {
         />
         <div className="navbar-links">
           <a className="nav-link" href="#how-it-works">How it works</a>
-          <a className="nav-link" href="#use-cases">Use cases</a>
+          <a className="nav-link" href="#use-cases">FinSynth for Excel</a>
           <a className="nav-link" href="#security">Security</a>
           <a className="nav-link" href="#faq">FAQ</a>
         </div>
         <div className="navbar-right">
-          <a className="nav-signin" href="https://web-agent.finsynth.ai" target="_blank" rel="noopener noreferrer">Sign in</a>
-          <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Book a demo</a>
+          {signedIn ? (
+            <a className="nav-signin" href="https://webapp.finsynth.ai/agent" target="_blank" rel="noopener noreferrer">Go to app</a>
+          ) : (
+            <a className="nav-signin" href="https://webapp.finsynth.ai/signin?redirectPath=%2Fagent" target="_blank" rel="noopener noreferrer">Sign in</a>
+          )}
+          <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
         </div>
       </div>
     </nav>

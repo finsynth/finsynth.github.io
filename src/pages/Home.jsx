@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-import BeforeAfter from '../components/BeforeAfter'
+import Differentiator from '../components/Differentiator'
+import WhyAnalysts from '../components/WhyAnalysts'
+import ExcelSection from '../components/ExcelSection'
 import WhatSection from '../components/WhatSection'
 import HowItWorks from '../components/HowItWorks'
 import Security from '../components/Security'
@@ -33,9 +35,31 @@ function Home() {
       {/* hero — copy over the Bay Bridge sunset photo pixelated in full colour. */}
       <Hero variant="photo" frozen={askOpen} onAskOpenChange={setAskOpen} />
       <SectionRule />
-      <BeforeAfter />
+      {/* the same hero again, riding the how-it-works glass wash instead of
+          the photo — a backdrop comparison, content identical */}
+      <Hero
+        variant="photo"
+        bgImage="/assets/img/testi-glass-bg.png"
+        bgGlass
+        frozen={askOpen}
+        onAskOpenChange={setAskOpen}
+      />
       <SectionRule />
+      {/* the product, working, straight off the hero — the panel plays itself
+          through brief → work → approve and the composer is live, so the first
+          thing under the fold is the thing itself rather than a claim about it */}
       <HowItWorks />
+      <SectionRule />
+      {/* then the claim that separates us: outreach lands on people already sold
+          on agents, so what they need is what makes this different from what
+          they already run — auditability, and nothing else in this section */}
+      <Differentiator />
+      <SectionRule />
+      <WhyAnalysts />
+      <SectionRule />
+      {/* the Excel add-in as its own product section — pillars as sheet tabs,
+          image slots reserved per sheet until product shots exist */}
+      <ExcelSection />
       <SectionRule />
       <WhatSection />
       <SectionRule />
