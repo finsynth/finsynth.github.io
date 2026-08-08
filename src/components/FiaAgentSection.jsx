@@ -14,18 +14,21 @@ import useReveal from '../hooks/useReveal'
  * /assets/img/fia-workspace.png — nothing here needs to change.
  */
 
+// One claim per row, each a single clause: the rows sit beside the Excel
+// section's rail on the same page, so they read in the same register as its
+// pillars rather than as sentences.
 const CLAIMS = [
   {
-    title: 'Beyond the spreadsheet',
-    body: 'The full research workspace: read filings, build the model, write the memo, all in one thread',
+    title: 'Agentic research',
+    body: 'Describe any complex problem and it runs the full analysis, cited end to end',
   },
   {
-    title: 'Every source in one place',
-    body: 'Global filings, transcripts, your internal drives and your market data vendors, queried together',
+    title: 'Background execution',
+    body: 'Confirm a plan and let it run, with no file to keep open',
   },
   {
-    title: 'Picks up where you left off',
-    body: 'Threads persist, so the work from this morning is context for the question you ask tonight',
+    title: 'Ready-made deliverables',
+    body: 'IC memos, pitch decks, dashboards and PDFs, built from the same analysis',
   },
 ]
 

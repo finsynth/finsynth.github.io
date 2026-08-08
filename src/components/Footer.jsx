@@ -138,6 +138,7 @@ export default function Footer() {
               <div className="foot-reveal">
                 <h4>Product</h4>
                 <a href="#excel">FinSynth for Excel</a>
+                <a href="#fia-agent">Fia</a>
                 <a href="#security">Security</a>
               </div>
               <div className="foot-reveal">

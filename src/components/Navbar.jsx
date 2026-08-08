@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import useSignedIn from '../hooks/useSignedIn';
 
+// The two products live in the same page, so "Product" is a jump menu rather
+// than a route switch.
+const PRODUCTS = [
+  { key: 'excel', label: 'FinSynth for Excel', href: '#excel' },
+  { key: 'fia', label: 'Fia', href: '#fia-agent' },
+];
+
 export default function Navbar() {
   const [hidden, setHidden] = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
   const signedIn = useSignedIn();
   const lastY = useRef(0);
+  const productRef = useRef(null);
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true);
 
@@ -54,6 +63,27 @@ export default function Navbar() {
     };
   }, []);
 
+  // A menu left open while the bar slides away would hang in mid-air.
+  useEffect(() => {
+    if (hidden) setProductOpen(false);
+  }, [hidden]);
+
+  useEffect(() => {
+    if (!productOpen) return;
+    const onDown = (e) => {
+      if (!productRef.current?.contains(e.target)) setProductOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setProductOpen(false);
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [productOpen]);
+
   return (
     <nav className={`navbar${hidden ? ' nav-hidden' : ''}`}>
       <div className="navbar-inner">
@@ -64,7 +94,39 @@ export default function Navbar() {
           onClick={() => window.location.href = 'https://finsynth.ai/'}
         />
         <div className="navbar-links">
-          <a className="nav-link" href="#excel">FinSynth for Excel</a>
+          <div
+            className={`nav-drop${productOpen ? ' is-open' : ''}`}
+            ref={productRef}
+            onMouseEnter={() => setProductOpen(true)}
+            onMouseLeave={() => setProductOpen(false)}
+          >
+            <button
+              type="button"
+              className="nav-link nav-drop-btn"
+              aria-haspopup="true"
+              aria-expanded={productOpen}
+              onClick={() => setProductOpen((o) => !o)}
+            >
+              Product
+              <svg className="nav-drop-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M2.75 4.5 6 7.75 9.25 4.5" />
+              </svg>
+            </button>
+            <div className="nav-drop-menu">
+              <div className="nav-drop-card">
+                {PRODUCTS.map((p) => (
+                  <a
+                    key={p.key}
+                    className="nav-drop-item"
+                    href={p.href}
+                    onClick={() => setProductOpen(false)}
+                  >
+                    {p.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
           <a className="nav-link" href="#security">Security</a>
           <a className="nav-link" href="#faq">FAQ</a>
         </div>

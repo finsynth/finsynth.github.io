@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
 import WorkflowMarquee from './WorkflowMarquee'
+import CertSeals from './CertSeals'
 
 /**
  * "FinSynth for Excel" — the Security section's bordered frame and headline.
@@ -429,36 +430,25 @@ function VisualIntegrated() {
   )
 }
 
-/* 04 · Enterprise ready — the one visual on the pane that isn't drawn: supplied
- * artwork, in place of the ticked dial that ran here before. It's laid
- * full-bleed across the stage rather than centred inside .x4e-visual's padding
- * — the render carries its own near-black ground, and any inset would frame
- * that ground as a rectangle pasted onto the navy. Blending and the edge fade
- * are in the CSS.
+/* 04 · Enterprise ready — the certification seals, and nothing else.
  *
- * The artwork arrived violet and was turned to the brand blue in the file
- * itself, not with a CSS filter — a filter would repaint 600k pixels on every
- * paint of a section that crossfades, to produce a result that never changes.
- * Hues were compressed toward #3550C8 rather than rotated by a fixed amount:
- * the rotation that lands the glow on blue drags the dark ground round to teal,
- * which then fights the navy stage it is screened onto.
+ * Two rounds of artwork ran here before: a ticked dial drawn in SVG, then a
+ * supplied shield render (enterprise-shield-keyed.png, still on disk). Both
+ * were pictures standing in for the claim; the seals are the claim's actual
+ * evidence, so they hold the stage on their own now and get the whole cell to
+ * be read in.
  *
- * Three control pills used to float over this (identity, compliance,
- * encryption); they were cleared on request. Their claims are all still made in
- * the Security section further down the page. */
+ * The same seals also caption the Security section further down: this stage is
+ * where the claim gets made in passing, that section is where it gets spelled
+ * out, and the evidence belongs with both. They render from one component
+ * (CertSeals) so the two can never disagree about what we hold. */
 function VisualEnterprise() {
   return (
     <div className="xvs">
-      <img
-        className="xvs-art"
-        src="/assets/img/enterprise-shield-keyed.png"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-      />
-      {/* the eyebrow was SVG text inside the dial; it's a plain element now */}
+      {/* was SVG text inside the dial, then the shield's caption; with the art
+          gone it labels the seal row */}
       <p className="xvs-eyebrow">FinSynth Security</p>
+      <CertSeals />
     </div>
   )
 }
@@ -482,7 +472,7 @@ const PILLARS = [
   {
     key: 'audit',
     title: 'Fully auditable',
-    body: 'Public sources or your own internal files, every number traced to where it came from.',
+    body: 'Public sources or your own internal files, every number traced to where it came from',
     Visual: VisualAudit,
     // all three beats of the 9s citation cycle, so every source gets shown
     // landing; the swap comes in the quiet after the third rather than cutting
@@ -492,9 +482,9 @@ const PILLARS = [
   {
     key: 'integrated',
     title: 'Integrated',
-    // the coverage claim itself sits inside the visual, so the copy carries
-    // what the list can't say: there is nothing to wire up first.
-    body: 'Nothing to connect before the first question, and anything you run in-house can be added after',
+    // the visual shows the field of sources; the copy says what it covers out
+    // of the box and that anything missing can still be wired in
+    body: 'Out-of-box global coverage, custom integrations supported',
     Visual: VisualIntegrated,
     // the pills stagger in over ~0.8s, and the field is a list to be read
     ms: 5400,
@@ -502,9 +492,9 @@ const PILLARS = [
   {
     key: 'enterprise',
     title: 'Enterprise ready',
-    // names the posture rather than promising it — the same claims the
-    // Security section makes in full further down the page
-    body: 'SOC 2 certified, zero-trust access controls, and your data never trains AI models',
+    // names the posture; the Security section further down the page spells out
+    // the specific claims (SOC 2, zero-trust, no training on your data)
+    body: 'Security and compliance built in from day one',
     Visual: VisualEnterprise,
     // a still image — no animation to wait on
     ms: 4200,
@@ -616,6 +606,14 @@ function useAutoStep(dwell, paneRef) {
 
   return {
     step,
+    // the clock is only counting down while the pane is on screen and nothing
+    // is holding it — the progress fill reads these so it never runs ahead of
+    // a clock that is standing still
+    running: onScreen && !held,
+    // changes on every step change and every restart (a row press, a scroll
+    // settling), so keying the fill on it remounts and replays the animation
+    // from zero — the fill always measures the wait actually in progress
+    cycle: `${step}:${nudge}`,
     goTo: i => { setStep(i); setNudge(n => n + 1) },
     hold: () => setHeld(true),
     release: () => setHeld(false),
@@ -635,7 +633,7 @@ export default function ExcelSection({
 }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const paneRef = useRef(null)
-  const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef)
+  const { step, goTo, hold, release, running, cycle } = useAutoStep(DWELL, paneRef)
 
   return (
     <section className="x4e-sec" id={id}>
@@ -678,6 +676,22 @@ export default function ExcelSection({
                       <span className="x4e-item-title">{p.title}</span>
                       <span className="x4e-item-p">{p.body}</span>
                     </span>
+                    {/* the wait, drawn: a hairline across the row's foot that
+                        fills over this claim's own dwell, so the rail's
+                        advancing reads as a countdown rather than a jump. Only
+                        the active row carries one, and it pauses with the clock
+                        on hover or focus. */}
+                    {i === step && (
+                      <span
+                        key={cycle}
+                        className="x4e-item-tick"
+                        style={{
+                          animationDuration: `${p.ms}ms`,
+                          animationPlayState: running ? 'running' : 'paused',
+                        }}
+                        aria-hidden="true"
+                      />
+                    )}
                   </button>
                 </li>
               ))}

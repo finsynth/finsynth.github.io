@@ -1,21 +1,6 @@
 import { useEffect, useRef } from 'react'
 import useSectionZoom from '../hooks/useSectionZoom'
-
-/**
- * A certification seal. `pending` marks one that hasn't been awarded yet: the
- * seal reads slightly back from the certified ones and carries an "In progress"
- * pill on its lower edge, so the row never implies a certification we don't hold.
- */
-function SealBadge({ top, name, pending }) {
-  return (
-    <div className={`secx-badge${pending ? ' secx-badge--pending' : ''}`}>
-      <span className="secx-badge-top">{top}</span>
-      <span className="secx-badge-rule" />
-      <span className="secx-badge-bot">{name}</span>
-      {pending && <span className="secx-badge-pill">In progress</span>}
-    </div>
-  )
-}
+import CertSeals from './CertSeals'
 
 const CheckIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -23,14 +8,10 @@ const CheckIcon = (
   </svg>
 )
 
-// Every certification gets a seal. The ones not yet awarded carry an
-// "In progress" pill instead of being stated as plain status lines, so the row
-// reads as one set without over-claiming.
-const CERTS = [
-  { key: 'soc2', top: 'AICPA', name: 'SOC 2' },
-  { key: 'gdpr', top: 'EU', name: 'GDPR', pending: true },
-  { key: 'iso', top: 'ISO/IEC', name: '27001', pending: true },
-]
+// The certification seals sit beside this heading and again on the add-in
+// section's "Enterprise ready" stage — both from CertSeals, so the two rows
+// can't drift apart. Compact here, because they share the band with a heading
+// rather than filling a stage cell.
 
 // Four points, two columns — the controls the customer holds.
 const POINTS = [
@@ -89,13 +70,7 @@ export default function Security() {
               <p className="secx-eyebrow">Security &amp; compliance</p>
               <h2>Enterprise-<span className="ttl-hl">ready</span></h2>
             </div>
-            <div className="secx-certs">
-              <div className="secx-badges">
-                {CERTS.map((c) => (
-                  <SealBadge key={c.key} top={c.top} name={c.name} pending={c.pending} />
-                ))}
-              </div>
-            </div>
+            <CertSeals compact />
           </div>
 
           <ul className="secx-grid">

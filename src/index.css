@@ -247,6 +247,94 @@ a { text-decoration: none; color: inherit; }
   background: var(--accent-soft);
 }
 
+/* ── Product dropdown ── */
+.nav-drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-drop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: inherit;
+}
+
+.nav-drop.is-open .nav-drop-btn {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.nav-drop-caret {
+  width: 12px;
+  height: 12px;
+  margin-top: 1px;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-drop.is-open .nav-drop-caret {
+  transform: rotate(180deg);
+}
+
+/* The wrapper's own box stops at the trigger, so the menu's padding-top is what
+   bridges the visual gap and keeps hover alive on the way down to the card. */
+.nav-drop-menu {
+  position: absolute;
+  top: 100%;
+  left: -0.25rem;
+  padding-top: 0.6rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s linear 0.16s;
+}
+
+.nav-drop.is-open .nav-drop-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s;
+}
+
+.nav-drop-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 12.5rem;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(228, 233, 242, 0.9);
+  box-shadow: 0 18px 40px -18px rgba(20, 36, 46, 0.28), 0 1px 2px rgba(20, 36, 46, 0.06);
+}
+
+.nav-drop-item {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--secondary);
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-drop-item:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-drop-menu, .nav-drop-caret, .nav-drop-item { transition: none; }
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
@@ -1884,62 +1972,13 @@ button.hiwc-send:focus-visible { outline: 2px solid var(--accent); outline-offse
   letter-spacing: var(--ls-display); color: var(--ink);
 }
 
-/* certification seals — one per cert, the not-yet-awarded ones pilled */
-.secx-certs {
-  display: flex; align-items: center; gap: clamp(18px, 2.2vw, 30px);
-  flex-shrink: 0;
-}
-
-/* the pending pills hang off the seals' lower edge — pad for them so the row
-   doesn't clip and the seals still centre against the heading */
-.secx-badges {
-  display: flex; flex-wrap: wrap; gap: 14px;
-  justify-content: center; padding-bottom: 11px;
-}
-.secx-badge {
-  position: relative; width: 124px; height: 124px; border-radius: 22px;
+/* The certification seals dress the band's second column — the .xvs-certs row
+   in its compact size, so it reads as the heading's evidence rather than
+   competing with it. The seal design itself lives with .xvs-certs. */
+.secx-head .xvs-certs {
+  margin: 0;
   flex: none;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  background: #fff; border: 1px solid var(--hair); color: var(--ink);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 18px 40px -24px rgba(20,36,46,.35), 0 1px 2px rgba(20,36,46,.05);
-}
-/* sits back from the awarded seals: dashed edge, no lift, slightly muted name */
-.secx-badge--pending {
-  border-style: dashed;
-  border-color: var(--hair-strong);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
-  color: var(--body-2);
-}
-/* the pill, straddling the seal's lower edge */
-.secx-badge-pill {
-  position: absolute; left: 50%; bottom: -11px; transform: translateX(-50%);
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 11px; border-radius: 999px; white-space: nowrap;
-  background: #fff; border: 1px solid var(--accent-soft2);
-  box-shadow: 0 1px 2px rgba(20,36,46,.06);
-  font-family: var(--font-mono); font-size: 9.5px; font-weight: 500;
-  letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
-}
-/* hollow ring — reads as pending next to the solid check marks in the grid */
-.secx-badge-pill::before {
-  content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%;
-  border: 1.5px solid var(--accent); opacity: .55;
-}
-.secx-badge-top {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--body-2);
-}
-.secx-badge-rule { width: 44px; height: 1px; background: var(--hair-strong) }
-.secx-badge-bot {
-  font-family: var(--font-display); font-weight: 600; font-size: 25px; letter-spacing: -.01em;
-}
-.secx-badge-stars { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--accent); opacity: .45 }
-.secx-badge-stars text { font-size: 8px }
-.secx-badge-mid { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: .02em }
-.secx-badge-check { width: 22px; height: 22px; color: var(--accent) }
-.secx-badge-cap {
-  font-family: var(--font-mono); font-size: 8px; text-transform: uppercase;
-  letter-spacing: .1em; line-height: 1.3; text-align: center; color: var(--body-2);
+  justify-content: flex-end;
 }
 
 /* equal-weight checklist grid */
@@ -1985,37 +2024,12 @@ button.hiwc-send:focus-visible { outline: 2px solid var(--accent); outline-offse
   .secx-reveal { opacity: 1; transform: none; filter: none; transition: none }
 }
 
-/* three seals beside the heading squeeze it into a hyphen break before the
-   layout stacks, so drop the seals to a tighter size first */
-@media (max-width: 1200px) {
-  .secx-badge { width: 104px; height: 104px; border-radius: 18px }
-  .secx-badge-bot { font-size: 21px }
-  .secx-badge-rule { width: 36px }
-}
-
 @media (max-width: 960px) {
   .secx-head { flex-direction: column; align-items: center; text-align: center; gap: 28px; padding: 44px 30px 60px }
   .secx-head-copy { text-align: center }
-  .secx-badges { padding-top: 0 }
-  .secx-certs { flex-direction: column; gap: 22px }
-  .secx-badge { width: 124px; height: 124px; border-radius: 22px }
-  .secx-badge-bot { font-size: 25px }
-  .secx-badge-rule { width: 44px }
   .secx-grid { grid-template-columns: 1fr }
   .secx-point { padding: 32px 30px; border-right: none }
   .secx-point:nth-child(2) { border-top: 1px solid var(--hair) }
-}
-
-/* on phones the full-size seals only fit one per row, which turns the header
-   into a 400px-tall stack — shrink them so they go two-up with the third
-   wrapping under, and give the rows enough gap for the pills to clear */
-@media (max-width: 560px) {
-  .secx-badges { row-gap: 26px }
-  .secx-badge { width: 96px; height: 96px; border-radius: 16px }
-  .secx-badge-top { font-size: 9.5px; letter-spacing: .12em }
-  .secx-badge-bot { font-size: 18px }
-  .secx-badge-rule { width: 30px }
-  .secx-badge-pill { bottom: -10px; padding: 3px 8px; font-size: 8.5px }
 }
 
 /* ════════ TESTIMONIAL ════════ */
@@ -4648,16 +4662,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   font-size: calc(18px * var(--hero-scale));
   padding: calc(15px * var(--hero-scale)) calc(40px * var(--hero-scale));
   border-radius: calc(12px * var(--hero-scale));
-}
-
-/* Trust line under the CTAs */
-.hero-s2-trust {
-  margin: 0 0 calc(44px * var(--hero-scale));
-  font-family: var(--font-body);
-  font-size: calc(14px * var(--hero-scale));
-  line-height: 1.5;
-  color: var(--secondary);
-  text-align: center;
 }
 
 /* "Try It" — the second primary. A button, not a link, so it needs the form
@@ -7300,6 +7304,19 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   opacity: 0;
   transition: opacity .35s cubic-bezier(.32,.72,0,1);
 }
+/* the wait — a hairline across the foot of the active row that fills over that
+   claim's dwell. Sits on the divider the next row draws, so it costs no height
+   and reads as that hairline turning accent rather than as a new part. scaleX
+   off a left origin, so the fill is compositor work and never lays out. */
+.x4e-item-tick {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: left center;
+  animation: x4e-tick linear forwards;
+}
+@keyframes x4e-tick { to { transform: scaleX(1) } }
+
 .x4e-item:hover { background: #F7F8FA }
 .x4e-item.is-active { background: #F7F8FA }
 .x4e-item.is-active::before { opacity: 1 }
@@ -7334,9 +7351,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   display: grid;
   overflow: hidden;
   /* Grainy blue ground, white card floating on it. Four layers, top down:
-     the card (an SVG cut-out so it needs no element of its own — .x4e-visual
-     is unpositioned on purpose, see .xvs, so a pseudo-element card would have
-     to sit above the visuals or force a stacking context on them), the grain,
+     the card (an SVG cut-out so it needs no element of its own — a
+     pseudo-element card would have to sit above the visuals or force a
+     stacking context on them), the grain,
      a corner light, and the blue itself.
 
      The grain is a repeating 320px tile rather than a stretched sheet: at this
@@ -7444,53 +7461,29 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
 .xv-chip { fill: #fff; stroke: #E4E1DA; }
 .xv-chip-dot { fill: var(--accent); }
 .xv-chip-tx { fill: var(--ink); font-size: 12.5px; font-weight: 500; }
-/* 04 · Enterprise ready — supplied artwork in place of the ticked dial that
-   ran here before. It is the only visual on the pane that isn't drawn in SVG,
-   so it's also the only one that has to be reconciled with the ground it lands
-   on rather than simply re-coloured for it. */
+/* 04 · Enterprise ready — a label over the row of certification seals, and
+   nothing else. A ticked SVG dial ran here first, then a supplied shield
+   render; both were pictures standing in for the claim, and the seals are the
+   claim's own evidence, so they hold the cell alone.
 
-/* Full-bleed, not centred: .x4e-visual pads its child, and inside that padding
-   the render's own near-black ground reads as a rectangle pasted onto the
-   stage. Absolute with no positioned ancestor short of .x4e-stage resolves
-   against the stage itself, which is exactly the box to fill — max-width has to
-   go with it, since .x4e-visual > * caps every visual at 660px. */
+   A column laid out in normal flow inside .x4e-visual's padding, like the drawn
+   visuals. It used to be absolute against the whole stage (inset: 0) because
+   the render carried its own near-black plate and any inset framed that plate
+   as a rectangle pasted onto the ground. With the art gone there is nothing
+   left to bleed — and in flow the visual contributes its own height, which is
+   what lets the stage grow for the seals on narrow screens where its min-height
+   is only 240px. */
 .xvs {
-  position: absolute;
-  inset: 0;
-  max-width: none;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Centred at a fraction of the stage rather than filling it: the shield ran
-   the full height of the cell and read as a picture the pane was built around,
-   where every other visual on the pane sits in its own air. Scaled down and
-   centred, not object-fit: contain — contain is width-bound in a cell this
-   shape, so it would hand back the same size it started at. */
-.xvs-art {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: auto;
-  /* No mask any more. The supplied render had its near-black plate baked into
-     opaque pixels, and a radial mask was fading that plate out from the middle
-     — which left a dark ring wherever the fade hadn't finished, and clipped the
-     shield's own outer glow along with it. enterprise-shield-keyed.png is the
-     same art with the plate keyed into real alpha (scratchpad key-shield.mjs:
-     alpha from max(r,g,b) above the plate's brightest pixel, colour then
-     unpremultiplied), so it composites on the stage with no reconciling. */
-}
-
-/* was SVG <text> centred over the dial; as an element it sits at the top of
-   the stage, clear of the shield */
+/* was SVG <text> centred over the dial, then the shield's caption; with the
+   artwork gone it is the seal row's label, and the column centres the pair in
+   the cell */
 .xvs-eyebrow {
-  position: absolute;
-  /* the bottom of the panel, not the top: the ground image's gradient cells own
-     the top-left, and accent-blue type dissolved into them */
-  bottom: clamp(52px, 12%, 72px);
-  left: 0;
-  right: 0;
   margin: 0;
   text-align: center;
   font-family: var(--font-mono);
@@ -7499,6 +7492,78 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   text-transform: uppercase;
   color: var(--accent);
   opacity: .78;
+}
+
+/* The certification seals, moved here from the Security section's head band —
+   this is the claim they are evidence for. Same seal design they had there:
+   white plate, mono issuer over a display name, dashed and pilled for the ones
+   not yet awarded. */
+.xvs-certs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 1.6vw, 22px);
+  /* tighter than it was under the shield: the label is the only thing above the
+     row now, and it is its caption rather than a separate beat */
+  margin: clamp(18px, 3%, 28px) 0 0;
+  /* the pending pills straddle the seals' lower edge — pad so the row keeps
+     them clear of the card's lower inset */
+  padding-bottom: 12px;
+}
+.xvs-seal {
+  position: relative;
+  /* the seals are the whole visual now, so they carry the cell at the size the
+     drawn visuals fill it at, rather than the badge size they had beside the
+     Security heading */
+  width: clamp(104px, 11vw, 148px); aspect-ratio: 1; border-radius: 22px;
+  flex: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: #fff; border: 1px solid var(--hair); color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 18px 40px -24px rgba(20,36,46,.35), 0 1px 2px rgba(20,36,46,.05);
+}
+/* sits back from the awarded seals: dashed edge, no lift, slightly muted name */
+.xvs-seal--pending {
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  color: var(--body-2);
+}
+/* the pill, straddling the seal's lower edge */
+.xvs-seal-pill {
+  position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px; white-space: nowrap;
+  background: #fff; border: 1px solid var(--accent-soft2);
+  box-shadow: 0 1px 2px rgba(20,36,46,.06);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
+}
+/* hollow ring — reads as pending next to the certified seals beside it */
+.xvs-seal-pill::before {
+  content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%;
+  border: 1.5px solid var(--accent); opacity: .55;
+}
+.xvs-seal-top {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--body-2);
+}
+.xvs-seal-rule { width: 46px; height: 1px; background: var(--hair-strong) }
+.xvs-seal-name {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(21px, 2.1vw, 28px); letter-spacing: -.01em;
+}
+
+/* Compact — the size the seals wear beside a heading rather than alone on a
+   stage. Everything else about them is unchanged, so the two rows on the page
+   read as the same object at two sizes. */
+.xvs-certs--compact { gap: 12px; padding-bottom: 14px }
+.xvs-certs--compact .xvs-seal { width: clamp(84px, 8vw, 104px); border-radius: 16px; gap: 6px }
+.xvs-certs--compact .xvs-seal-top { font-size: 9.5px; letter-spacing: .13em }
+.xvs-certs--compact .xvs-seal-rule { width: 30px }
+.xvs-certs--compact .xvs-seal-name { font-size: clamp(16px, 1.4vw, 19px) }
+.xvs-certs--compact .xvs-seal-pill {
+  bottom: -11px; padding: 3px 9px; font-size: 9px;
 }
 
 /* the source card the citation is currently coming from */
@@ -7884,6 +7949,8 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .x4e-reveal { opacity: 1; transform: none; filter: none; transition: none }
   .x4e-visual { transition: none }
   .x4e-item::before { transition: none }
+  /* the clock stands down under reduced motion, so there is no wait to draw */
+  .x4e-item-tick { display: none }
 }
 
 @media (max-width: 1100px) {
@@ -7903,6 +7970,21 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .x4e-item-p { max-width: none }
   .x4e-stage { min-height: 240px }
   .x4e-visual { padding: 28px 20px }
+  /* shrink the seals so the three still go one row across a phone rather than
+     wrapping two-and-one */
+  .xvs-certs { gap: 14px }
+  .xvs-seal { width: 88px; border-radius: 15px }
+  .xvs-seal-top { font-size: 9px; letter-spacing: .12em }
+  .xvs-seal-name { font-size: 17px }
+  .xvs-seal-rule { width: 28px }
+  /* the pill is wider than the 88px seal it hangs off at the desktop size, so
+     the two pending ones ran within a couple of px of each other — tighter
+     type and padding bring it back inside its own seal's width */
+  .xvs-seal-pill {
+    bottom: -10px; padding: 3px 6px; gap: 4px;
+    font-size: 8px; letter-spacing: .08em;
+  }
+  .xvs-seal-pill::before { width: 5px; height: 5px }
 }
 
 /* ══ Fia — wears the same framed layout as "FinSynth for Excel" (.x4e-*):

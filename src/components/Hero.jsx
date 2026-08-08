@@ -326,10 +326,6 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
               Explore
             </button>
           </div>
-
-          <p className="hero-s2-trust">
-            Trusted by investors from global funds
-          </p>
         </div>
 
       </div>
