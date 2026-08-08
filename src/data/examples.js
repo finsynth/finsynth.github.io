@@ -14,7 +14,7 @@ export const PROMPTS = [
     icon: 'trend',
     label: 'Gross margin, nine quarters',
     prompt:
-      "Pull Apple's gross margin for the last nine quarters, and flag any quarter it moved more than 200 basis points.",
+      "Pull Apple's gross margin for the last nine quarters, and flag any quarter it moved more than 200 basis points",
     response:
       "Nine quarters, checked one by one against a real threshold. Nothing here crossed 200bps, and FinSynth says so instead of manufacturing a story that isn't there.",
     file: 'Apple_Gross_Margin.xlsx',
@@ -43,7 +43,7 @@ export const PROMPTS = [
     icon: 'table',
     label: 'Semiconductor comps table',
     prompt:
-      'Build a comparables table for the ten largest semiconductor names on EV/EBITDA, P/E, and revenue growth.',
+      'Build a comparables table for the ten largest semiconductor names on EV/EBITDA, P/E, and revenue growth',
     response:
       "Ten names, median and mean calculated automatically. It also catches the details an analyst would: SK hynix flagged as KRW-listed, Intel's P/E marked n/a on negative earnings, not left as a broken number.",
     file: 'Semiconductor_Comps.xlsx',
@@ -75,7 +75,7 @@ export const PROMPTS = [
     icon: 'refresh',
     label: 'Guidance vs. actuals, twelve quarters',
     prompt:
-      "Track how Meta's guidance has compared to what it actually delivered, over the last twelve quarters.",
+      "Track how Meta's guidance has compared to what it actually delivered, over the last twelve quarters",
     response:
       'Twelve quarters of guidance versus actuals, categorized and summarized: 7 quarters beat the top of the range, 5 landed inside it, 0 missed. A track record, not just a data pull.',
     file: 'Meta_Guidance_vs_Actual.xlsx',

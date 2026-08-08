@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 954" preserveAspectRatio="none">
+  <!--
+    The hero's white wash. A heavily blurred white blob rather than a plain CSS
+    radial-gradient: the blurred-ellipse falloff is squarer than a gradient's,
+    so it covers the copy block without the bright elliptical core reading as a
+    spotlight, and the grain keeps it from banding on wide flat screens.
+    Stretched to the element box (preserveAspectRatio="none") — it has no edge
+    detail to distort.
+  -->
+  <defs>
+    <!-- the silhouette: one ellipse, blurred until the edge is pure falloff -->
+    <filter id="hgSoft" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="62" />
+    </filter>
+    <!-- monochrome film grain -->
+    <filter id="hgGrain" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="2" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <!-- core-to-edge falloff inside the silhouette, brightest just above centre -->
+    <radialGradient id="hgFill" cx="50%" cy="45%" r="64%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="1" />
+      <stop offset="52%" stop-color="#fff" stop-opacity="0.975" />
+      <stop offset="100%" stop-color="#fff" stop-opacity="0.9" />
+    </radialGradient>
+    <mask id="hgMask">
+      <ellipse cx="512" cy="470" rx="432" ry="398" fill="#fff" filter="url(#hgSoft)" />
+    </mask>
+  </defs>
+
+  <g mask="url(#hgMask)">
+    <rect width="1024" height="954" fill="url(#hgFill)" />
+    <rect width="1024" height="954" filter="url(#hgGrain)" opacity="0.13" />
+  </g>
+</svg>

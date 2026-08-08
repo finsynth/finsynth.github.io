@@ -73,7 +73,7 @@ export default function Footer() {
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
-              <h2>Your new co-worker's <br />ready when you are</h2>
+              <h2>See it on <br />your own model</h2>
             </div>
             <div className="foot-cta-actions">
               <a
@@ -137,7 +137,7 @@ export default function Footer() {
             <div className="foot-grid-new foot-reveal">
               <div className="foot-reveal">
                 <h4>Product</h4>
-                <a href="#use-cases">Use cases</a>
+                <a href="#excel">FinSynth for Excel</a>
                 <a href="#security">Security</a>
               </div>
               <div className="foot-reveal">
@@ -166,7 +166,7 @@ export default function Footer() {
         </div>
 
         <div className="foot-legal foot-reveal">
-          <span className="foot-copyright">© 2026 FinSynth. All rights reserved.</span>
+          <span className="foot-copyright">© 2026 FinSynth. All rights reserved</span>
         </div>
       </div>
 

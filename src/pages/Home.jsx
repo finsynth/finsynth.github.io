@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-import Differentiator from '../components/Differentiator'
 import WhyAnalysts from '../components/WhyAnalysts'
 import ExcelSection from '../components/ExcelSection'
-import WhatSection from '../components/WhatSection'
-import HowItWorks from '../components/HowItWorks'
+import FiaAgentSection from '../components/FiaAgentSection'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
 import Faq from '../components/Faq'
@@ -32,37 +30,24 @@ function Home() {
         <span className="rail rail-right" />
       </div>
       <Navbar />
-      {/* hero — copy over the Bay Bridge sunset photo pixelated in full colour. */}
+      {/* One hero — copy over the Bay Bridge sunset photo pixelated in full
+          colour. The `bare` variant that ran here (plain background + the
+          scattered photo-tile collage down the flanks) was dropped on request;
+          Hero.jsx keeps the whole backdrop switch intact if it's wanted back. */}
       <Hero variant="photo" frozen={askOpen} onAskOpenChange={setAskOpen} />
       <SectionRule />
-      {/* the same hero again, riding the how-it-works glass wash instead of
-          the photo — a backdrop comparison, content identical */}
-      <Hero
-        variant="photo"
-        bgImage="/assets/img/testi-glass-bg.png"
-        bgGlass
-        frozen={askOpen}
-        onAskOpenChange={setAskOpen}
-      />
-      <SectionRule />
-      {/* the product, working, straight off the hero — the panel plays itself
-          through brief → work → approve and the composer is live, so the first
-          thing under the fold is the thing itself rather than a claim about it */}
-      <HowItWorks />
-      <SectionRule />
-      {/* then the claim that separates us: outreach lands on people already sold
-          on agents, so what they need is what makes this different from what
-          they already run — auditability, and nothing else in this section */}
-      <Differentiator />
-      <SectionRule />
+      {/* the Excel add-in as its own product section — the Security section's
+          bordered table: four rows, the claim left and its visual right */}
+      <ExcelSection />
+      {/* the numbers belong to the add-in section: same .wrap, hung off the
+          bottom of its frame with no <SectionRule /> between them, so the
+          frame's own bottom hairline is the only line and the band reads as
+          the close of the section rather than a section of its own */}
       <WhyAnalysts />
       <SectionRule />
-      {/* the Excel add-in as its own product section — pillars as sheet tabs,
-          image slots reserved per sheet until product shots exist */}
-      <ExcelSection />
-      <SectionRule />
-      <WhatSection />
-      <SectionRule />
+      {/* Fia follows the add-in — the two products read as one suite, in the
+          same framed layout */}
+      <FiaAgentSection />
       <Testimonial />
       <SectionRule />
       <Security />

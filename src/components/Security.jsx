@@ -37,22 +37,22 @@ const POINTS = [
   {
     key: 'gate',
     title: 'Permission-gated by design',
-    body: 'The agent cannot write to your model without your explicit approval.',
+    body: 'The agent cannot write to your model without your explicit approval',
   },
   {
     key: 'notraining',
     title: 'No training on your data',
-    body: 'By default your data is never shared, used to train AI models, or made accessible to other firms or third-party AI providers.',
+    body: 'By default your data is never shared, used to train AI models, or made accessible to other firms or third-party AI providers',
   },
   {
     key: 'access',
     title: 'Strict access controls',
-    body: 'FinSynth runs a zero-trust, least-privilege access model with granular role-based controls.',
+    body: 'FinSynth runs a zero-trust, least-privilege access model with granular role-based controls',
   },
   {
     key: 'integrations',
     title: 'Custom integrations supported',
-    body: 'Connect FinSynth to the data sources and tools your team already runs on.',
+    body: 'Connect FinSynth to the data sources and tools your team already runs on',
   },
 ]
 

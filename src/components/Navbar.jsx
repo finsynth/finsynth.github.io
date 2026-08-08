@@ -64,8 +64,7 @@ export default function Navbar() {
           onClick={() => window.location.href = 'https://finsynth.ai/'}
         />
         <div className="navbar-links">
-          <a className="nav-link" href="#how-it-works">How it works</a>
-          <a className="nav-link" href="#use-cases">FinSynth for Excel</a>
+          <a className="nav-link" href="#excel">FinSynth for Excel</a>
           <a className="nav-link" href="#security">Security</a>
           <a className="nav-link" href="#faq">FAQ</a>
         </div>

@@ -4,27 +4,21 @@ import useCardStack from '../hooks/useCardStack'
 const QUOTES = [
   {
     quote:
-      '"It cut my model build time by 80%. What used to be two days of pulling numbers & building, I get through in an afternoon now."',
+      '"It cut my model build time by 80%. What used to be two days of pulling numbers and building, I get through in an afternoon now."',
     name: 'Long-only Analyst',
     role: 'Long-only fund',
-    initials: 'LO',
-    color: '#3550C8',
   },
   {
     quote:
-      '"Honestly, the citations and quality of global coverage stands out for me. It\'s easier now to work on and review any research in Excel."',
-    name: 'L/S Portfolio Manager',
+      '"This is the first tool I can trust with confidence for any research I do in Excel."',
+    name: 'L/S Analyst',
     role: 'Long-short equity fund',
-    initials: 'PM',
-    color: '#17593B',
   },
   {
     quote:
-      '"We cover twice the names we used to, same headcount. Model-build time just isn\'t the bottleneck anymore."',
-    name: 'Buy-side Analyst',
-    role: 'Asset manager',
-    initials: 'BA',
-    color: '#2438A8',
+      '"We\'re seeing the actual leverage of an AI tool, the outputs aren\'t just good-looking, they\'re easily verifiable."',
+    name: 'Long-only Portfolio Manager',
+    role: 'Long-only fund',
   },
 ]
 
@@ -78,7 +72,6 @@ export default function Testimonial() {
                 <div className="testi-card" key={t.name}>
                   <blockquote className="testi-quote">{t.quote}</blockquote>
                   <div className="testi-author">
-                    <span className="testi-avatar" style={{ background: t.color }}>{t.initials}</span>
                     <div className="testi-meta">
                       <span className="testi-name">{t.name}</span>
                     </div>

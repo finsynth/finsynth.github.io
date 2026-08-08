@@ -29,6 +29,7 @@ const PEEK = 24 // px each deeper card peeks out below the one in front
 const SCALE_STEP = 0.05 // scale lost per unit of depth
 const HOLD_MS = 2800 // rest time with a card at the front
 const FLIGHT_MS = 950 // duration of the up-and-over flight
+const FADE = 0.92 // opacity the flying card sheds at the apex of its arc
 
 export default function useCardStack(count) {
   const sectionRef = useRef(null)
@@ -59,22 +60,30 @@ export default function useCardStack(count) {
       const lift = cardH * 0.6 + 40 // apex clears the stack's top edge
       cards.forEach((el, i) => {
         const raw = (i - base + count * 2) % count // 0 = front slot
-        let y, s, z
+        let y, s, z, o
         if (raw === 0 && t > 0) {
-          // in flight: up and over the top, then down behind the deck
+          // in flight: up and over the top, then down behind the deck. The card
+          // thins out to a ghost across the arc — at the apex it overlaps the
+          // card that has just slid into the front slot almost exactly, and two
+          // opaque quotes on screen at once read as a duplicated section rather
+          // than as one card moving. Opacity is back at 1 by the landing, where
+          // it is the deepest card and only peeking out below the deck anyway.
           const landDepth = count - 1
           y = landDepth * PEEK * t - lift * Math.sin(Math.PI * t)
           s = 1 - landDepth * SCALE_STEP * t
           z = t < 0.5 ? count * 2 + 1 : 1
+          o = 1 - FADE * Math.sin(Math.PI * t)
         } else {
           // resting in the stack, sliding one slot forward during a flight
           const d = Math.max(0, raw - t)
           y = d * PEEK
           s = 1 - d * SCALE_STEP
           z = count * 2 - Math.round(d)
+          o = 1
         }
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${s.toFixed(4)})`
         el.style.zIndex = z
+        el.style.opacity = o.toFixed(3)
       })
     }
 
@@ -133,7 +142,7 @@ export default function useCardStack(count) {
     stack.addEventListener('pointerleave', onLeave)
 
     cards.forEach((el) => {
-      el.style.willChange = 'transform'
+      el.style.willChange = 'transform, opacity'
     })
     render(0)
     raf = requestAnimationFrame(tick)
@@ -147,6 +156,7 @@ export default function useCardStack(count) {
       cards.forEach((el) => {
         el.style.transform = ''
         el.style.zIndex = ''
+        el.style.opacity = ''
         el.style.willChange = ''
       })
     }

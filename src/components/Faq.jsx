@@ -3,8 +3,8 @@ import useSectionZoom from '../hooks/useSectionZoom'
 
 const FAQS = [
   {
-    q: 'How do I get access to FinSynth?',
-    a: "FinSynth is currently available to select funds. Book a demo and we'll walk you through access for your team.",
+    q: 'How do I get access, and what does it cost?',
+    a: "FinSynth is currently available to select funds. Talk to us and we'll walk you through access for your team.",
   },
   {
     q: 'Does FinSynth make up numbers?',
@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: 'Does FinSynth work with my existing models?',
-    a: 'Yes, FinSynth works inside your existing Excel workbooks. No template, no rebuild required.',
+    a: 'Yes. FinSynth works inside your existing Excel workbooks, no template, no rebuild required.',
   },
   {
     q: 'Which surfaces does FinSynth run on?',
@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'What data does FinSynth cover?',
-    a: 'Filings, transcripts, reports, and presentations across 12k+ global companies.',
+    a: 'Filings, transcripts, reports, and presentations across 12,000+ global companies.',
   },
   {
     q: 'How is FinSynth different from a general AI assistant?',

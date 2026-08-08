@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 
-// Black-and-white pixelation of the Wall Street photo — the NYSE facade, its
-// flag, and the towers behind it — over a plain white background. Before the
-// reveal the hero is simply white paper.
+// Black-and-white pixelation of the Wall Street photo — the canyon looking
+// down the street, the NYSE colonnade and its flags on the right — over a
+// plain white background. Before the reveal the hero is simply white paper.
 //
 // On scroll into view the mosaic assembles piece-by-piece: individual tiles drop
 // and pop into their slots on scattered, staggered beats — like Lego bricks
@@ -11,16 +11,41 @@ import { useEffect, useRef } from 'react'
 // greyscale photo, so the pixels are only ever the way in — what's left on
 // screen is the real photograph. Reduced motion → the resolved photo, once.
 //
-// Whole sequence runs ~2.4s (delay + duration + HOLD_MS + RESOLVE_MS). The
-// bricks are the slow part by design, but the payoff is the sharp photo, so the
-// assemble is kept short enough to reach it before attention moves on.
-const SRC = '/assets/img/wall-street.png'
+// The photo is fully sharp ~0.74s in (delay + duration + HOLD_MS + RESOLVE_MS),
+// then an endless push-in keeps it breathing while the hero is on screen.
+// The bricks are the slow part by design, but the payoff is the sharp photo,
+// so the assemble stays short.
+// already greyscale at source, so the luminance sampling below is a no-op on it
+const SRC = '/assets/img/wall-street-bw.jpg'
 
 // fraction of the assemble timeline a single tile takes to drop + settle
 const REVEAL_WINDOW = 0.16
 // after the last brick lands: beat of stillness, then the de-pixelate crossfade
-const HOLD_MS = 180
-const RESOLVE_MS = 650
+const HOLD_MS = 70
+const RESOLVE_MS = 150
+// Once the photo is sharp: an endless push-in that never pulls back. Two copies
+// of the plate run one ZOOM_RATIO step apart and both scale up together; the
+// nearer one fades out as it overruns the frame while the farther one takes
+// over, so after ZOOM_MS the pair is arranged exactly as it was a step earlier
+// and the loop closes on itself. Every feature on screen is always travelling
+// away from the anchor and never back toward it, which is the whole point — the
+// old triangle-wave zoom reversed every second and read as zooming in and out.
+//
+// The fade has to be linear. The blend's centre in log-scale is
+// (1-a)·u + a·(u+1) with a = 1-u, which is constant only while `a` falls at a
+// constant rate; ease it and the hand-off smuggles a stretch of reverse drift
+// back in. Cost of the trick is a permanent soft double image, and how far apart
+// the two copies sit is exactly ZOOM_RATIO. Drift speed is ZOOM_RATIO per
+// ZOOM_MS, though, so a small step on a short cycle buys the same motion for a
+// fraction of the ghost: at 4% the copies are close enough to pass for a faint
+// radial blur on a photo already sitting behind a scrim. A 1.22 step was tried
+// first and the hand-off was plainly a cross-dissolve.
+//
+// The first cycle runs single-layer, so the mosaic resolves into the photo at
+// its own 1:1 scale before the second copy joins. Anchored to the bottom edge so
+// the street level stays put and the zoom reads as leaning into the scene.
+const ZOOM_MS = 2600
+const ZOOM_RATIO = 1.04
 // ease-out-back overshoot so each brick snaps in with a tiny bounce
 const BACK_C1 = 1.70158
 const BACK_C3 = BACK_C1 + 1
@@ -36,12 +61,13 @@ const PixelBayBridge = ({
   tile = 10,          // approximate pixel size of one chunky tile (css px)
   // Horizontal anchor of the crop (0 = left edge of the photo, 1 = right).
   focusX = 0.5,
-  // Vertical anchor (0 = top of the photo, 1 = bottom). Tuned so the columns and
-  // the flag — the parts that actually read as Wall Street once pixelated — sit
-  // in the lower, unfaded half of the hero rather than behind the top fade.
-  focusY = 0.55,
-  duration = 1500,    // full assemble time (ms) — last brick lands here
-  delay = 100,        // hold on white after scroll-in before bricks start (ms)
+  // Vertical anchor (0 = top of the photo, 1 = bottom). The hero is far wider
+  // than the photo, so cover crops vertically: this pushes the crop down to the
+  // street — colonnade, flags, the Wall St sign, people — and lets the sky and
+  // upper towers, which pixelate into flat grey, fall away above the fade.
+  focusY = 0.68,
+  duration = 480,     // full assemble time (ms) — last brick lands here
+  delay = 40,         // hold on white after scroll-in before bricks start (ms)
   paused = false,     // freeze mid-reveal (ask popup open)
   onRevealDone,       // fired once when the mosaic has fully settled
 }) => {
@@ -166,7 +192,8 @@ const PixelBayBridge = ({
     }
 
     // pA: mosaic assembly 0→1. pR: de-pixelate crossfade 0→1 (mosaic → photo).
-    const draw = (pA, pR) => {
+    // pZ: post-resolve push-in, counted in ZOOM_RATIO steps and never reset.
+    const draw = (pA, pR, pZ = 0) => {
       // white paper base
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, cv.width, cv.height)
@@ -210,9 +237,19 @@ const PixelBayBridge = ({
       // the average tone of the patch it covers, so the fade reads as the image
       // pulling into focus rather than as one picture swapping for another.
       if (pR > 0 && sharp) {
-        ctx.globalAlpha = pR < 1 ? pR * pR * (3 - 2 * pR) : 1   // smoothstep
-        ctx.setTransform(1, 0, 0, 1, 0, 0)
-        ctx.drawImage(sharp, 0, 0)
+        const base = pR < 1 ? pR * pR * (3 - 2 * pR) : 1        // smoothstep
+        const u = pZ - Math.floor(pZ)                           // 0→1 within a step
+        // scale about bottom-center: x stays centered, bottom edge stays pinned
+        const plate = (z, a) => {
+          if (a <= 0) return
+          ctx.globalAlpha = a
+          ctx.setTransform(z, 0, 0, z, (cv.width * (1 - z)) / 2, cv.height * (1 - z))
+          ctx.drawImage(sharp, 0, 0)
+        }
+        plate(Math.pow(ZOOM_RATIO, u), base)                    // the copy being flown into
+        // the copy a step ahead, on its way out of frame. Held back on the first
+        // pass so the mosaic hands over to an unscaled photo.
+        if (pZ >= 1) plate(Math.pow(ZOOM_RATIO, u + 1), base * (1 - u))
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       }
       ctx.globalAlpha = 1
@@ -236,22 +273,28 @@ const PixelBayBridge = ({
       const e = now - t0 - delay
       const pA = Math.min(1, Math.max(0, e / duration))
       const pR = Math.min(1, Math.max(0, (e - duration - HOLD_MS) / RESOLVE_MS))
-      return [pA, pR]
+      // the zoom just counts up forever — one whole number per ZOOM_RATIO step.
+      // draw() takes the fractional part; the integer part only says whether the
+      // first single-layer pass is over.
+      const pZ = Math.max(0, e - duration - HOLD_MS - RESOLVE_MS) / ZOOM_MS
+      return [pA, pR, pZ]
     }
 
     const redraw = () => {
-      if (reduce || done) { draw(1, 1); return }
-      if (t0 == null) { draw(0, 0); return }
-      const [pA, pR] = prog(performance.now())
-      draw(pA, pR)
+      if (reduce || done) { draw(1, 1, 0); return }
+      if (t0 == null) { draw(0, 0, 0); return }
+      draw(...prog(performance.now()))
     }
 
+    let revealed = false
     const frame = (now) => {
       if (!running) return
       if (t0 == null) t0 = now
-      const [pA, pR] = prog(now)
-      draw(pA, pR)
-      if (pR >= 1) { running = false; done = true; doneCbRef.current?.(); return }
+      const [pA, pR, pZ] = prog(now)
+      draw(pA, pR, pZ)
+      if (pR >= 1 && !revealed) { revealed = true; doneCbRef.current?.() }
+      // no terminal state: the zoom loop keeps breathing until the hero
+      // scrolls out of view (the IntersectionObserver stops us) or unmount
       raf = requestAnimationFrame(frame)
     }
 
@@ -270,7 +313,7 @@ const PixelBayBridge = ({
     controlsRef.current = { start, stop }
 
     build()
-    draw(reduce ? 1 : 0, reduce ? 1 : 0)
+    draw(reduce ? 1 : 0, reduce ? 1 : 0, 0)
     if (reduce) { done = true; doneCbRef.current?.() }
 
     img.onload = () => { imgReady = true; build(); redraw() }

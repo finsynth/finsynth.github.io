@@ -35,12 +35,13 @@ export function PromptIcon({ name }) {
   )
 }
 
-// The workbook bar beneath a result table: just the Excel icon and the file
-// name. The booking CTA lives once, pinned at the bottom of the answer, rather
-// than repeated here inside the table.
-export function XlsDownload({ file }) {
-  return (
-    <div className="hero-answer__xls-bar">
+// The workbook bar beneath a result table: the Excel icon, the file name and —
+// when the example ships a real workbook under /assets/xlsx — a download link.
+// The booking CTA lives once, pinned at the bottom of the answer, rather than
+// repeated here inside the table.
+export function XlsDownload({ file, href }) {
+  const inner = (
+    <>
       <span className="hero-answer__xls-ic" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 32 32">
           <rect x="1" y="7" width="17" height="18" rx="1.8" fill="#107C41" />
@@ -51,7 +52,19 @@ export function XlsDownload({ file }) {
         </svg>
       </span>
       <span className="hero-answer__xls-name">{file}</span>
-    </div>
+    </>
+  )
+  if (!href) return <div className="hero-answer__xls-bar">{inner}</div>
+  return (
+    <a className="hero-answer__xls-bar hero-answer__xls-bar--link" href={href} download>
+      {inner}
+      <span className="hero-answer__xls-dl">
+        Download
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 2.5v8M4.5 7l3.5 3.5L11.5 7M3 13.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </a>
   )
 }
 
@@ -75,7 +88,7 @@ export function AnswerResult({ result }) {
       <div className="hero-answer__after">
         {result.table && (
           <div className="hero-answer__xls">
-            <XlsDownload key={result.file} file={result.file} />
+            <XlsDownload key={result.file} file={result.file} href={result.download} />
             {result.table.note && (
               <p className="hero-answer__xls-note">{result.table.note}</p>
             )}
