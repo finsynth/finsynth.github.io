@@ -1871,168 +1871,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   0%, 100% { opacity: .3; transform: translateY(0); }
   40%      { opacity: 1;  transform: translateY(-3px); }
 }
-.hero-answer__body {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--ink);
-}
-
-/* Revealed once the answer finishes streaming: the deliverable + reassurance. */
-.hero-answer__after {
-  margin-top: 16px;
-  animation: heroAfterIn .4s cubic-bezier(.22, 1, .36, 1) both;
-}
-@keyframes heroAfterIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.hero-answer__cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  /* pinned to the bottom of the scrolling answer: negative side margins let the
-     bar span edge-to-edge and its opaque background covers the table scrolling
-     behind it; the container's bottom padding keeps its original base spacing */
-  position: sticky;
-  bottom: -22px;
-  z-index: 2;
-  margin: 15px -30px 0;
-  padding: 13px 30px 0;
-  background: var(--bg);
-  border-top: 1px solid var(--hair);
-  box-shadow: 0 -10px 18px -14px rgba(20, 36, 46, .22);
-}
-.hero-answer__cta-copy {
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--ink);
-}
-.hero-answer__cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex: none;
-  padding: 9px 15px;
-  border-radius: 9px;
-  background: var(--ink);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background .15s ease, transform .15s ease;
-}
-.hero-answer__cta-btn:hover { background: var(--btn-blue-grad); transform: translateY(-1px); }
-
-/* Excel-style deliverable table — the worked result for the asked prompt. The
-   header bar shows just the workbook name; booking lives at the pinned bottom. */
-.hero-answer__xls {
-  margin-bottom: 14px;
-  border: 1px solid var(--hair-strong);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--bg);
-}
-.hero-answer__xls-bar {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 10px 9px 12px;
-  background: rgba(16, 124, 65, .06);
-  border-bottom: 1px solid var(--hair);
-}
-/* the bar as a download link: same look, plus the affordance on the right */
-.hero-answer__xls-bar--link { text-decoration: none; color: inherit; cursor: pointer; }
-.hero-answer__xls-bar--link:hover { background: rgba(16, 124, 65, .11); }
-.hero-answer__xls-dl {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: auto;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  color: #107C41;
-}
-.hero-answer__xls-bar--link:hover .hero-answer__xls-dl { text-decoration: underline; }
-.hero-answer__xls-ic { display: inline-flex; flex: none; }
-.hero-answer__xls-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* contact-email capture that slides in under the workbook bar when the user
-   asks for the download */
-.hero-answer__xls-dl {
-  display: flex;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--hair);
-  background: rgba(16, 124, 65, .04);
-}
-.hero-answer__xls-note {
-  margin: 0;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--hair);
-  font-family: var(--font-body);
-  font-size: 11.5px;
-  font-style: italic;
-  line-height: 1.4;
-  color: var(--muted);
-}
-.hero-answer__xls-scroll { overflow-x: auto; }
-.hero-answer__xls-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-}
-.hero-answer__xls-tbl th,
-.hero-answer__xls-tbl td {
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--hair);
-  border-right: 1px solid var(--hair);
-  white-space: nowrap;
-}
-.hero-answer__xls-tbl th:last-child,
-.hero-answer__xls-tbl td:last-child { border-right: none; }
-.hero-answer__xls-tbl tbody tr:last-child td { border-bottom: none; }
-.hero-answer__xls-tbl thead th {
-  background: rgba(20, 36, 46, .035);
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.hero-answer__xls-tbl tbody td:first-child { font-weight: 600; color: var(--ink); }
-.hero-answer__xls-tbl tbody td { color: var(--body-gray, var(--muted)); }
-.hero-answer__xls-tbl tbody tr:hover td { background: rgba(16, 124, 65, .04); }
-/* source-pulled figures shown as Excel hyperlink-blue cited cells (inert — no click action) */
-.hero-answer__cell-link {
-  color: #0563C1;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-thickness: 1px;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-answer { animation: none; }
   .hero-answer__dots i { animation: none; opacity: .6; }
-  .hero-answer__after { animation: none; }
 }
 
 /* ── "Try It" modal ─────────────────────────────────────────────────────────
@@ -2040,8 +1881,8 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
    (--bg on --hair-strong, deep soft shadow) but lifted to a real full-page
    dialog at the .hero-desktop-modal layer, so it clears the sticky navbar and
    the formula bar. It reuses .hero-suggest__row for the sample prompts and the
-   whole .hero-answer__* block for a played sample, so those need no new rules
-   here — only the shell, the composer, the email step and the confirmation. */
+   .hero-answer query/thinking beats, so those need no new rules here — only the
+   shell, the composer, the email step and the confirmation. */
 .hero-try {
   position: fixed;
   inset: 0;
@@ -2249,13 +2090,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
      wide enough to clear them would instead narrow every line of the query. */
   margin-top: 22px;
 }
-.hero-try__answer .hero-answer__cta {
-  position: static;
-  margin: 15px 0 0;
-  padding: 13px 0 0;
-  box-shadow: none;
-}
-
 /* ── the ready card: what was built, and the one way to get it ──
    The output itself never renders in the modal, so this is the whole payoff
    screen — it has to feel finished rather than withheld: a settled green tick,
