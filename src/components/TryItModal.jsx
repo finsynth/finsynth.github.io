@@ -327,7 +327,7 @@ function TryItModal({ onClose }) {
                   className={`hero-try__textarea${typing ? ' is-typing' : ''}`}
                   rows={4}
                   value={draft}
-                  placeholder="Build a comparables table for the ten largest semiconductor names on EV/EBITDA, P/E, and revenue growth…"
+                  placeholder="Build a full revenue decomposition for HEICO Corporation for the last 6 quarters…"
                   aria-label="Give us your most complex problem"
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={(e) => {
