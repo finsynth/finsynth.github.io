@@ -4,9 +4,8 @@
 // is only ever edited once.
 //
 // Each example is a full sheet: the prompt the user asks, the answer FinSynth
-// streams back (`response`), the workbook it hands off (`file`), a tailored
-// closing CTA, the table itself, and `download` — the real cited .xlsx under
-// /assets/xlsx, generated from `table` by scripts/build-xlsx.mjs.
+// streams back (`response`), the workbook name it hands off (`file`), a
+// tailored closing CTA, and the table itself.
 
 export const PROMPTS = [
   {
@@ -18,7 +17,6 @@ export const PROMPTS = [
     response:
       "Nine quarters, checked one by one against a real threshold. Nothing here crossed 200bps, and FinSynth says so instead of manufacturing a story that isn't there.",
     file: 'Apple_Gross_Margin.xlsx',
-    download: '/assets/xlsx/Apple_Gross_Margin.xlsx',
     cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD millions unless noted · fiscal year Oct–Sep · as-of 2026-07-22',
@@ -47,7 +45,6 @@ export const PROMPTS = [
     response:
       "Ten names, median and mean calculated automatically. It also catches the details an analyst would: SK hynix flagged as KRW-listed, Intel's P/E marked n/a on negative earnings, not left as a broken number.",
     file: 'Semiconductor_Comps.xlsx',
-    download: '/assets/xlsx/Semiconductor_Comps.xlsx',
     cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD · Mkt Cap in $B · P/E and EV/EBITDA trailing (TTM) · Rev growth = latest completed FY (YoY) · as-of 2026-07-22',
@@ -79,7 +76,6 @@ export const PROMPTS = [
     response:
       'Twelve quarters of guidance versus actuals, categorized and summarized: 7 quarters beat the top of the range, 5 landed inside it, 0 missed. A track record, not just a data pull.',
     file: 'Meta_Guidance_vs_Actual.xlsx',
-    download: '/assets/xlsx/Meta_Guidance_vs_Actual.xlsx',
     cta: 'Click any number to cross-check and our webapp takes you straight to the source, the relevant passage highlighted.',
     table: {
       note: 'USD millions · Guidance = next-quarter revenue range (stated in $B, shown here in $M) · Actual = reported total revenue · as-of 2026-07-22',
