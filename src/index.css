@@ -1,0 +1,4729 @@
+:root {
+  --navbar-height: 60px;
+  --bg:           #F7F7F7;
+  --surface:      #FFFFFF;
+  --ink:          #14242E;
+  --secondary:    #475467;
+  --muted:        #98A2B3;
+  --accent:       #3550C8;
+  --accent-deep:  #2438A8;
+  --accent-soft:  rgba(53,80,200,.08);
+  --accent-soft2: rgba(53,80,200,.14);
+  --positive:     #0E9F6E;
+  --negative:     #E02D3C;
+  --hair:         #E5E5E5;
+  --hair-strong:  #DBDBDB;
+  --blue:         #3550C8;
+  --blue-light:   #6B84E8;
+
+  /* section design tokens — legacy green names now resolve to FinSynth blue */
+  --green-deep: #16244E;
+  --green-btn:  #2438A8;
+  --green-icon: #3550C8;
+  --green-bar:  #3550C8;
+  --green-num:  #6B84E8;
+  --paper:      #F4F2EC;
+  --body-gray:  #3D4A52;
+  --body-2:     #5C6970;
+  --black:      #000000;
+
+  /* ── TYPE SYSTEM — Geist everywhere (costory.io model) ──
+     1. display  → Geist regular weight, tight -0.04em tracking, h1 ONLY
+     2. body     → Geist, EVERYTHING else (h2/h3/nav/p/labels), weight 400|500
+     3. mono     → Geist Mono, eyebrows / chips / tool-call text
+     4. proof     → Geist, verifiable stats ONLY (never decorative)
+     Hierarchy comes from the headline→body size jump + weight + color,
+     not from a cascading h1/h2/h3/h4 scale. */
+  --font-display: 'Geist', -apple-system, system-ui, sans-serif;
+  --font-body:    'Geist', -apple-system, system-ui, sans-serif;
+  --font-mono:    'Geist Mono', ui-monospace, monospace;
+
+  /* legacy aliases resolve to the new system: every var(--serif) use was a
+     heading/lede/footer that now becomes Geist body; every var(--mono) use
+     becomes Geist Mono. */
+  --serif: var(--font-body);
+  --mono:  var(--font-mono);
+
+  --fs-display: clamp(40px, 6vw, 72px);  /* h1 only */
+  --fs-body:    15px;                     /* everything else */
+  --fs-mono:    10.5px;                   /* mono labels */
+  --fs-proof:   clamp(52px, 5vw, 64px);   /* verifiable stats only */
+
+  --ls-display: -0.04em;
+  --ls-mono:    0.06em;
+  --lh-body:    1.7;
+
+  /* Proportional gutter: content spans 79vw (≈200px gutter each side at 1908px)
+     so the outer gap stays generous on narrower screens instead of collapsing,
+     capped at 1560px on very wide monitors. Rails + all sections derive from this.
+
+     The 79vw ratio is a desktop idea: a proportional gutter reads as composure at
+     1900px and as waste at 390px, where it spends 82px — a fifth of the screen —
+     before .wrap's own 20px padding has even applied. The max(760px) floor stops
+     the ratio taking over below ~962px viewport, so phones and tablets get the
+     full width minus padding while everything wider is untouched (at 962px+,
+     79vw already exceeds 760px and the floor drops out). .wrap and the rails both
+     clamp against `100% - 32px` on their own, so nothing runs to the bare edge. */
+  --maxw:       min(1560px, max(760px, 79vw));
+  /* .wrap's side gutter. Anything drawing a decorative panel behind wrap content
+     has to subtract the same figure, so it lives here rather than as a literal in
+     each rule — see .testi-pin::before, which had 64px baked in and so sat 28px
+     short on each side once the mobile gutter dropped to 20px. */
+  --wrap-pad:   32px;
+
+  /* shared dark-shade gradient (CTA band, video card, hero portrait) */
+  --grad-dark:  radial-gradient(120% 140% at 50% 0%, #20336e 0%, #16244e 50%, #0E1A3A 100%);
+
+  /* Embossed button treatment (shared by all CTAs) */
+  --btn-radius:     11px;
+  --btn-blue-grad:  linear-gradient(180deg, #4D74F2 0%, #2E51D4 100%);
+  --btn-blue-grad-h:linear-gradient(180deg, #5A7FF4 0%, #3559DC 100%);
+  --btn-blue-line:  #1E3AA8;
+  --btn-blue-glow:  inset 0 1px 0 rgba(255,255,255,.35), 0 2px 5px rgba(6,16,50,.4);
+  --btn-white-grad: linear-gradient(180deg, #FFFFFF 0%, #F3F5F9 100%);
+  --btn-white-line: #D5DBE7;
+  --btn-white-glow: inset 0 1px 0 rgba(255,255,255,.9), 0 2px 3px rgba(10,20,40,.14);
+  --btn-dark-grad:  linear-gradient(180deg, #23333F 0%, #0E1A22 100%);
+  --btn-dark-line:  #04090D;
+  --btn-dark-glow:  inset 0 1px 0 rgba(255,255,255,.14), 0 2px 5px rgba(4,10,16,.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+
+/* Keyboard focus: visible ring for all interactive elements (a11y).
+   Uses the single blue accent; mouse clicks stay clean via :focus-visible. */
+/* On dark navy surfaces, brighten the ring so it stays legible. */
+
+.footer-new :focus-visible {
+  outline-color: #8FA2F0;
+}
+
+body {
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-feature-settings: 'cv03','cv04','cv09','cv11','tnum';
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background-color: var(--bg);
+  color: var(--ink);
+  height: auto;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* Text selection: white wash behind, accent-blue text — instead of the
+   browser's default light-blue band over dark ink. */
+::selection { background: #fff; color: var(--accent); }
+::-moz-selection { background: #fff; color: var(--accent); }
+
+.mainContainer {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Announcement bar ── */
+
+/* ── Navbar ── */
+.navbar {
+  width: 100%;
+  height: var(--navbar-height);
+  display: flex;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(228, 233, 242, 0.7);
+  box-shadow: 0 1px 3px rgba(20, 36, 46, 0.04), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.navbar.nav-hidden {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar { transition: none; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar { background: rgba(255, 255, 255, 0.95); }
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navbar-logo {
+  height: 1.5rem;
+  width: fit-content;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--secondary);
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+/* ── Product dropdown ── */
+.nav-drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-drop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: inherit;
+}
+
+.nav-drop.is-open .nav-drop-btn {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.nav-drop-caret {
+  width: 12px;
+  height: 12px;
+  margin-top: 1px;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-drop.is-open .nav-drop-caret {
+  transform: rotate(180deg);
+}
+
+/* The wrapper's own box stops at the trigger, so the menu's padding-top is what
+   bridges the visual gap and keeps hover alive on the way down to the card. */
+.nav-drop-menu {
+  position: absolute;
+  top: 100%;
+  left: -0.25rem;
+  padding-top: 0.6rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s linear 0.16s;
+}
+
+.nav-drop.is-open .nav-drop-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0s;
+}
+
+.nav-drop-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 12.5rem;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(228, 233, 242, 0.9);
+  box-shadow: 0 18px 40px -18px rgba(20, 36, 46, 0.28), 0 1px 2px rgba(20, 36, 46, 0.06);
+}
+
+.nav-drop-item {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--secondary);
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-drop-item:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-drop-menu, .nav-drop-caret, .nav-drop-item { transition: none; }
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Both nav buttons carry a raised, 3D read: a vertical face gradient, a light
+   inset ridge on top, a darker inset edge along the bottom, and a drop shadow
+   under the whole thing. Hover lifts them a hair; :active presses them in
+   (shadow collapses to an inset so the face reads as pushed down). */
+.nav-signin {
+  padding: 0.55rem 0.875rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffffff 0%, #eef1f8 100%);
+  border: 1px solid var(--hair-strong);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(9, 20, 52, 0.07),
+    0 1px 2px rgba(9, 20, 52, 0.12),
+    0 2px 6px rgba(9, 20, 52, 0.07);
+  transition: color 0.15s, background 0.15s, border-color 0.15s,
+    box-shadow 0.15s, transform 0.12s ease;
+}
+
+.nav-signin:hover {
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffffff 0%, #e7edff 100%);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(9, 20, 52, 0.07),
+    0 2px 4px rgba(9, 20, 52, 0.12),
+    0 4px 10px rgba(9, 20, 52, 0.09);
+}
+
+.nav-signin:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 3px rgba(9, 20, 52, 0.12),
+    0 1px 1px rgba(9, 20, 52, 0.08);
+}
+
+.nav-demo {
+  padding: 0.55rem 0.875rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: #fff;
+  background: var(--btn-blue-grad);
+  border: 1px solid var(--btn-blue-line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(10, 22, 74, 0.4),
+    0 2px 5px rgba(6, 16, 50, 0.4);
+  border-radius: 8px;
+  transition: background 0.15s, transform 0.12s ease, box-shadow 0.15s;
+}
+
+.nav-demo:hover {
+  background: var(--btn-blue-grad-h);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(10, 22, 74, 0.4),
+    0 4px 10px rgba(6, 16, 50, 0.45);
+}
+
+.nav-demo:active {
+  transform: translateY(1px) scale(.985);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 2px 4px rgba(6, 16, 50, 0.35),
+    0 1px 2px rgba(6, 16, 50, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-signin:hover, .nav-signin:active,
+  .nav-demo:hover, .nav-demo:active { transform: none; }
+}
+
+/* ── Formula Bar ── */
+
+.formula-bar-namebox {
+  width: 60px;
+  min-width: 60px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--hair);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.formula-bar-formula {
+  padding: 0 12px;
+  flex: 1;
+  color: var(--accent);
+  font-size: 12px;
+  font-family: var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Buttons ── */
+
+/* ── Hero ── */
+.hero {
+  width: 100%;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  min-height: 580px;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 220px;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: cell;
+  touch-action: pan-y;
+  opacity: 0.9;
+}
+
+.stat-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  display: flex;
+  gap: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+  box-shadow: 0 6px 20px -6px rgba(16,24,40,.2);
+  border: 1px solid rgba(255,255,255,.08);
+  z-index: 3;
+}
+
+.stat-pill.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.stat-pill b { font-weight: 500; color: var(--blue-light); margin-right: 5px; }
+
+/* ════════ PLUG-IN BANNER ════════ */
+.plug { background: #fff; padding: 120px 0 110px; border-bottom: 1px solid var(--hair) }
+
+/* ════════ SECURITY ════════ */
+.crop { position: absolute; width: 44px; height: 44px; border: 0 solid var(--ink) }
+.crop.tl { left: 0; top: 0; border-left-width: 2.5px; border-top-width: 2.5px }
+.crop.br { right: 0; bottom: 0; border-right-width: 2.5px; border-bottom-width: 2.5px }
+.seal { width: 88px; height: 88px }
+
+/* ════════ PILLAR HEADER BAND + NAV (Hex-style, light) ════════ */
+/* Spreadsheet tab strip: full-width row of hairline-separated cells, active = bold ink */
+
+/* ════════ PILLAR SECTIONS ════════ */
+/* pane framed as one big spreadsheet cell, matching the page edge motif */
+@keyframes pillar-fade { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+.points { margin-top: 54px }
+.point { display: flex; gap: 22px; padding: 34px 0; border-top: 1px solid var(--hair) }
+.point:last-child { border-bottom: 1px solid var(--hair) }
+.point .n { font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--green-num); font-weight: 500; padding-top: 5px }
+.point h3 { font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500; letter-spacing: 0; color: var(--ink) }
+.point p { font-family: var(--font-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--body-gray); margin-top: 6px; letter-spacing: 0 }
+/* pillar pane: points read as rows of a contained card, echoing the workbook visual */
+
+/* Accuracy workbook — features as sheet tabs */
+
+/* Benchmark card */
+.bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100% }
+.bar .name { font-family: var(--font-body); font-size: var(--fs-body); line-height: 1.35; color: var(--body-gray); text-align: center; margin-top: 14px; letter-spacing: 0 }
+
+/* ── Video demo card (rendered in .pos-block "Why FinSynth") ── */
+.play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 84px; height: 58px; border-radius: 14px; background: rgba(20,20,20,.85);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s;
+}
+.play:hover { background: #f00 }
+.play i { width: 0; height: 0; border-left: 22px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 5px }
+button.play { border: none; padding: 0; appearance: none }
+
+/* ════════ HOW IT WORKS ════════ */
+/* The panel used to be pinned inside a 260vh scroll track, which is how the
+   beats were stepped. The beats run on their own clock now (see BEATS in
+   HowItWorks.jsx), so the section is simply as tall as its content. */
+
+/* Backdrop = the testimonial glass-column wash (Figma export, rasterized):
+   royal-blue glow behind frosted vertical panels dissolving unevenly to white,
+   floating on a white ground — same treatment as .testi-pin::before. */
+/* title sits on the blue glass field — invert to white, and lift the
+   highlight span to white too (as .testi-head does) */
+/* entrance: the title lands first, the panel follows (see .is-in below) */
+.hiw-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono); font-weight: 400; letter-spacing: var(--ls-mono);
+  color: #3550C8; text-transform: uppercase; margin-bottom: 16px;
+}
+
+/* Per design feedback: drop the small uppercase kicker labels above every
+   section heading (Before & after, FinSynth does it all, Security & compliance,
+   Frequently Asked Questions, HOW IT WORKS, FEATURES, etc.). Hidden globally in
+   one place so the DOM/reveal wiring stays intact and this is easy to revert. */
+.hiw-eyebrow,
+.secx-eyebrow,
+.faq-eyebrow { display: none !important; }
+
+@keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
+/* hiwPulse went with the live tool-call row's blinking dot — nothing pulses here now */
+
+/* One bordered panel holding the chat pane. Narrower since the beat rail beside
+   it went — the chat is the whole panel now. */
+
+/* ════════ Right pane — chat (fixed height so beats don't shift it) ════════ */
+/* Fixed height so the beats never resize the panel under the reader, but taken
+   from the viewport: the finished thread runs ~820px of content, so a short box
+   scrolls most of the cited answer out of sight. */
+/* The approval overlay that used to sit over the composer (.hiwc-permit, with
+   its deny/approve pair and the hiwcPermitIn keyframes) is gone with the beat
+   that drove it — the approval claim is made in <Differentiator /> instead. */
+
+/* header bar — window dots · agent · live label */
+
+/* conversation */
+/* The thread sits on its floor, not its ceiling: the pane is tall enough now that
+   top-anchored early beats left a void between the task card and the composer.
+   Growing upward from the composer is what a chat client does. An auto margin
+   rather than justify-content: flex-end — the margin collapses once the thread
+   overflows, so the top of a long answer stays scrollable. */
+@keyframes hiwcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* the spinner on "Sending…" in the ask form */
+@keyframes hiwcSpin { to { transform: rotate(360deg); } }
+
+/* The reel's tool-call card is gone, and with it .hiwc-tasks / .hiwc-task and
+   its --live / --wrote states — so is the written answer that used to stream in
+   under it (.hiwc-answer / .hiwc-p / .hiwc-table / .hiwc-bullets / .hiwc-cx and
+   the reaction row). Nothing else on the page used any of them. */
+
+/* .hiwc-delivered and .hiw-approve went with the approval overlay too: the
+   confirmation line and its primary button had no other user on the page. */
+
+/* input bar */
+/* Composer card (Instacart-style): attachment chips · multi-line prompt ·
+   toolbar row (+ / context chips / round submit) */
+/* Beat 1: the brief is typed live into the prompt area */
+@keyframes hiwcCaret { 50% { opacity: 0; } }
+/* the composer is a real form now — reset the button/textarea defaults it
+   inherits so it still reads as the mock it replaced */
+
+/* the live field, with the walkthrough's self-typing brief laid over it */
+
+/* example chips above the composer — seed the field, or take the workbook */
+
+/* ── ask mode: the honest reply to a live question ── */
+
+/* Mail-to fallback: shown when the ask could not be delivered automatically,
+   so the visitor can still send it themselves in one tap. */
+
+/* "try it on one of these" — compare against whatever they already run */
+
+/* the workbooks themselves */
+/* the sheet that answers what they actually asked, called out from the rest */
+
+/* ════════ An answered example, in the chat ════════ */
+/* "FinSynth is working" — held for a beat before a known answer lands */
+
+/* the workbook: file bar, as-of note, then the cited table */
+
+/* a sourced figure — an Excel hyperlink that really does open its source */
+/* the figure whose document is currently open */
+
+/* ════════ Source document, over the chat ════════ */
+@keyframes hiwcDocFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hiwcDocIn {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* the excerpt itself, set like the page it came off */
+/* the cited figure, marked the way the webapp highlights the passage */
+
+/* ════════ CLI ════════ */
+.term { background: #0D1410; border: 1px solid rgba(127,231,178,.25); border-radius: 8px; overflow: hidden }
+.cursor { display: inline-block; width: 7px; height: 13px; background: #7FE7B2; vertical-align: -2px; animation: blink-cur 1.1s steps(1) infinite }
+@keyframes blink-cur { 50% { opacity: 0 } }
+
+/* ════════ FOOTER (new style) ════════ */
+.footer-new {
+  /* deep base — the interactive perspective grid (GridReveal, rendered as a
+     backdrop layer) now supplies the colour; it fills blue on hover */
+  background: #03050e;
+  color: #E7ECE9; padding: 96px 0 0;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, rgba(255,255,255,.16) 50%, transparent) 1;
+  position: relative; overflow: hidden; z-index: 6 /* covers the page rails */
+}
+/* bright focal bloom — the luminous highlight in the aurora */
+.footer-new::before {
+  content: ''; position: absolute; top: -34%; left: 46%; width: 1040px; height: 680px;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(122,146,240,.20), rgba(107,132,232,.07) 45%, transparent 72%);
+  pointer-events: none;
+}
+/* fractal-noise grain — color-burn over the aurora, beneath the content */
+.footer-new::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  opacity: 1; mix-blend-mode: color-burn;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.3'/%3E%3C/svg%3E");
+}
+/* interactive perspective grid as footer backdrop — GridReveal in asBackground
+   mode. Fills the footer, fades at the edges so it reads as depth (not a boxed
+   plate), and its cells light up blue as the cursor moves across the footer. */
+.gridreveal--bg {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 100%),
+    linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 100%),
+    linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+.gridreveal--bg .gridreveal__svg {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+}
+/* faint cool wireframe over the deep base */
+.gridreveal--bg .gridreveal__lines path { stroke: rgba(150, 175, 255, .16); }
+/* blue fills glow over the dark footer — the hover "switch" shows clearly */
+.gridreveal--bg .gridreveal__cells path { mix-blend-mode: screen; }
+.footer-new .wrap { position: relative; z-index: 1 }
+.foot-brand img { height: 30px; width: auto; display: block }
+
+/* two columns — brand lockup (left) + nav / Ask-AI stack (right), tops aligned */
+.foot-cols {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 64px;
+  padding-bottom: 8px; margin-bottom: 8px;
+}
+/* LEFT — logo, headline and CTA as one aligned lockup */
+.foot-lockup {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 28px;
+  flex-shrink: 0;
+}
+.foot-lockup .foot-brand img { position: relative; top: 0 }
+/* RIGHT — nav columns above, Ask-AI below */
+.foot-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 56px;
+}
+/* Ask your AI — single dropdown button at the left of the bottom legal bar */
+.foot-askai { position: relative; display: inline-flex; flex-shrink: 0 }
+.foot-askai-btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-body); font-size: 14px; color: #C6CCD6;
+  padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+  background: rgba(255,255,255,.02); cursor: pointer;
+  transition: color .5s cubic-bezier(.32,.72,0,1), border-color .5s cubic-bezier(.32,.72,0,1),
+              background .5s cubic-bezier(.32,.72,0,1);
+}
+/* slight glassmorph fill on hover: translucent white over a backdrop blur,
+   with a faint inner highlight so the pill reads as frosted glass */
+.foot-askai-btn:hover,
+.foot-askai-btn[aria-expanded="true"] {
+  color: #fff; border-color: rgba(255,255,255,.45);
+  background: rgba(255,255,255,.16);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(22px) saturate(1.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 4px 18px rgba(255,255,255,.08);
+}
+.foot-askai-btn-label { text-decoration: none }
+.foot-askai-btn-icon { width: 13px; height: 13px; flex-shrink: 0; display: block }
+
+.foot-askai-menu {
+  position: absolute; top: calc(100% + 10px); left: 0; z-index: 5;
+  min-width: 194px; padding: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: #14161c; border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,.6);
+  animation: footAskaiIn .18s cubic-bezier(.32,.72,0,1);
+}
+@keyframes footAskaiIn { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: translateY(0) } }
+.foot-askai-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; border-radius: 8px; border: none; background: none;
+  font-family: var(--font-body); font-size: 14px; color: #C6CCD6; text-decoration: none;
+  text-align: left; cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.foot-askai-item:hover { background: rgba(255,255,255,.06); color: #fff }
+.foot-askai-copy {
+  margin-top: 4px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.08); border-radius: 0 0 8px 8px;
+  color: #7F8BA3;
+}
+.foot-askai-copy:hover { color: #fff }
+.foot-askai-logo { width: 16px; height: 16px; flex-shrink: 0; display: block }
+@media (prefers-reduced-motion: reduce) { .foot-askai-menu { animation: none } }
+/* merged CTA lockup — copy stacked above the button */
+.foot-cta-copy h2 {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08;
+  letter-spacing: var(--ls-display); color: #fff;
+}
+.foot-cta-copy p {
+  font-family: var(--font-body); font-size: 16px; line-height: 1.55;
+  color: #A8AFAA; margin-top: 18px; max-width: 420px;
+}
+/* Setup-a-call + Ask-your-AI sit side by side under the headline —
+   stretch so both pills share the same (taller) height */
+.foot-cta-actions { display: flex; align-items: stretch; flex-wrap: wrap; gap: 14px }
+.foot-cta-actions .foot-askai-btn { height: 100% }
+.foot-grid-new {
+  display: flex; flex-wrap: wrap; justify-content: flex-end;
+}
+.foot-grid-new > div { padding: 0 52px; border-left: 1px solid rgba(255,255,255,.08); min-width: 200px }
+.foot-grid-new > div:first-child { border-left: none }
+.foot-grid-new > div:last-child { padding-right: 0 }
+.foot-grid-new h4 {
+  font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: .18em; color: #fff; margin-bottom: 22px;
+}
+.foot-grid-new a {
+  display: block; width: max-content; font-family: var(--font-body); font-size: var(--fs-body);
+  color: #fff; text-decoration: none; margin-bottom: 15px;
+  transition: color .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
+}
+.foot-grid-new a:hover { color: #fff; transform: translateX(4px) }
+/* social — bare icons only, no label, no bezel */
+.foot-social-row { display: flex; align-items: center; gap: 22px }
+.foot-social-row a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: auto; margin: 0; color: #A8AFAA;
+  transition: color .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
+}
+.foot-social-row a:hover { color: #fff; transform: translateY(-2px) }
+.foot-legal {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;
+  margin-top: 40px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px;
+  padding-bottom: 8px;
+  font-family: var(--font-body); font-size: 13px; letter-spacing: .01em; color: #7F8BA3;
+}
+/* © line pinned to the right corner of the legal bar */
+.foot-copyright { margin-left: auto; text-align: right; white-space: nowrap; }
+/* full-bleed FINSYNTH wordmark — bleeds across the footer's bottom margin */
+.foot-wordmark {
+  position: relative; z-index: 1;
+  width: 100%; margin-top: 8px; overflow: hidden;
+  line-height: 0; text-align: center;
+  pointer-events: none;
+}
+.foot-wordmark span {
+  position: relative; z-index: 1;
+  display: block;
+  font-family: var(--font-display, var(--font-body));
+  font-weight: 800;
+  font-size: 15vw;
+  line-height: .82;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+  /* muted blue fill (rgba carries its own alpha so the reveal still fades to
+     opacity:1) — recedes softly into the light grid backdrop */
+  color: rgba(126, 150, 226, .40);
+  /* seat the baseline below the edge so the wordmark bleeds off the bottom */
+  transform: translateY(1.1em);
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(.22,.61,.36,1) .34s,
+    opacity 1.1s cubic-bezier(.22,.61,.36,1) .34s;
+  user-select: none;
+}
+.footer-new.is-in .foot-wordmark span { transform: translateY(.34em); opacity: 1 }
+@media (max-width: 640px) {
+  .foot-wordmark span { font-size: 18vw }
+}
+/* staggered scroll-reveal (transform/opacity only) */
+.foot-reveal {
+  opacity: 0; transform: translateY(24px); filter: blur(6px);
+  transition: opacity .8s cubic-bezier(.32,.72,0,1), transform .8s cubic-bezier(.32,.72,0,1),
+    filter .8s cubic-bezier(.32,.72,0,1);
+}
+.footer-new.is-in .foot-reveal { opacity: 1; transform: none; filter: none }
+.footer-new.is-in .foot-grid-new > div:nth-child(1) { transition-delay: 80ms }
+.footer-new.is-in .foot-grid-new > div:nth-child(2) { transition-delay: 140ms }
+.footer-new.is-in .foot-grid-new > div:nth-child(3) { transition-delay: 200ms }
+.footer-new.is-in .foot-legal { transition-delay: 260ms }
+@media (prefers-reduced-motion: reduce) {
+  .foot-reveal { opacity: 1; transform: none; filter: none; transition: none }
+  .foot-grid-new a, .foot-social-row a { transition: none }
+  .foot-wordmark span { opacity: 1; transform: translateY(.34em); transition: none }
+}
+
+/* ════════ SETUP (3-STEP) ════════ */
+/* Scroll-driven horizontal timeline — line draws left→right, steps ignite (vertical again ≤900px) */
+
+/* Animated step visuals */
+@keyframes sv-fade { 0%, 55% { opacity: 0 } 68%, 94% { opacity: 1 } 100% { opacity: 0 } }
+@keyframes sv-load { 0% { transform: scaleX(0) } 60%, 94% { transform: scaleX(1) } 100% { transform: scaleX(0) } }
+@keyframes sv-pop { 0%, 28% { transform: scale(0); opacity: 0 } 44%, 100% { transform: scale(1); opacity: 1 } }
+@keyframes sv-type { 0% { width: 0 } 60%, 100% { width: 23ch } }
+@keyframes sv-blink { 50% { opacity: 0 } }
+
+/* ════════ PILLAR VISUALS ════════ */
+
+/* Audit visual */
+
+/* Data coverage visual */
+
+/* Speed visual */
+
+/* ════════ AUDITABILITY ════════ */
+/* typography hierarchy: point titles step up from body copy */
+
+/* Scroll-driven stage — sticky panel that swaps scenes per active point */
+
+/* ════════ SECURITY (enterprise bento) ════════ */
+.secx { background: var(--bg); padding: 120px 0 130px }
+.secx-frame { position: relative; border: 1px solid var(--hair) }
+
+/* header */
+.secx-head {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  text-align: left; gap: 40px; padding: 60px 72px 80px;
+}
+.secx-head-copy { min-width: 0; text-align: left }
+.secx-eyebrow {
+  font-family: var(--font-mono); font-size: 11.5px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .18em; color: var(--accent);
+}
+.secx-head h2 {
+  font-family: var(--font-display); font-weight: 450; margin-top: 16px;
+  font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
+  letter-spacing: var(--ls-display); color: var(--ink);
+}
+
+/* The certification seals dress the band's second column — the .xvs-certs row
+   in its compact size, so it reads as the heading's evidence rather than
+   competing with it. The seal design itself lives with .xvs-certs. */
+.secx-head .xvs-certs {
+  margin: 0;
+  flex: none;
+  justify-content: flex-end;
+}
+
+/* equal-weight checklist grid */
+.secx-grid {
+  list-style: none; display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--hair);
+}
+/* ten points over five rows: tighter cells than the old four-point grid so the
+   section stays a scannable table rather than a page of its own */
+.secx-point {
+  display: flex; gap: 16px; padding: 30px clamp(28px, 3.4vw, 48px) 32px;
+  border-top: 1px solid var(--hair); border-right: 1px solid var(--hair);
+  transition: background .4s cubic-bezier(.32,.72,0,1);
+}
+.secx-point:nth-child(-n+2) { border-top: none }
+.secx-point:nth-child(2n) { border-right: none }
+.secx-point:hover { background: var(--bg) }
+.secx-point:hover .secx-point-ic { transform: translateY(-2px) }
+.secx-point-ic {
+  transition: transform .4s cubic-bezier(.32,.72,0,1);
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent);
+}
+.secx-point-ic svg { width: 15px; height: 15px }
+.secx-point-body { display: flex; flex-direction: column; gap: 6px; min-width: 0 }
+.secx-point-title {
+  margin: 0; font-family: var(--font-display); font-weight: 450; font-size: 18px;
+  line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
+}
+.secx-point-body p {
+  font-family: var(--font-body); font-size: 14px; line-height: 1.55; color: var(--body-gray);
+}
+
+/* scroll reveal */
+.secx-reveal { opacity: 0; transform: translateY(24px); filter: blur(6px) }
+.secx-frame.is-in .secx-reveal {
+  opacity: 1; transform: none; filter: none;
+  transition: opacity .8s cubic-bezier(.32,.72,0,1), transform .8s cubic-bezier(.32,.72,0,1), filter .8s cubic-bezier(.32,.72,0,1);
+  transition-delay: var(--d, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .secx-reveal { opacity: 1; transform: none; filter: none; transition: none }
+}
+
+@media (max-width: 960px) {
+  .secx-head { flex-direction: column; align-items: center; text-align: center; gap: 28px; padding: 44px 30px 60px }
+  .secx-head-copy { text-align: center }
+  .secx-grid { grid-template-columns: 1fr }
+  .secx-point { padding: 32px 30px; border-right: none }
+  .secx-point:nth-child(2) { border-top: 1px solid var(--hair) }
+}
+
+/* ════════ TESTIMONIAL ════════ */
+.testi-sec {
+  position: relative;
+}
+/* the deck cycles on an automatic timer (useCardStack) — normal-height section */
+.testi-pin {
+  position: relative;
+  padding: 110px 0 96px;
+  display: flex; align-items: center;
+  overflow: clip;
+  background: #fff;
+}
+/* glass-column wash (Figma export, rasterized): royal-blue glow behind frosted
+   vertical panels dissolving unevenly to white. Contained block that stays
+   inside the page rails, white breathing room above and below */
+.testi-pin::before {
+  content: '';
+  position: absolute;
+  top: 9%; bottom: 26%;
+  left: 50%; transform: translateX(-50%);
+  /* match .wrap's content box exactly: the headline is white and sits on this
+     panel, so any shortfall here silently paints white glyphs on white ground.
+     The old `min(100% - 32px, ...) - 64px` only agreed with .wrap while --maxw
+     was the binding constraint and the gutter was 32px — on a phone it came out
+     56px narrow and clipped "Hear what the analysts" at both ends. */
+  width: calc(min(100%, var(--maxw)) - var(--wrap-pad) * 2);
+  border-radius: 10px;
+  background: url('/assets/img/testi-glass-bg.webp') top center / 100% 100% no-repeat;
+}
+.testi-sec .wrap { position: relative; z-index: 1; width: 100% }
+/* header sits on the blue field now — invert to white */
+.testi-sec .hiw-eyebrow { color: rgba(255,255,255,.85) }
+.testi-sec .testi-head h2 { color: #fff }
+
+.testi-head { text-align: center; max-width: 760px; margin: 0 auto 112px }
+.testi-head h2 {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
+  color: var(--ink); letter-spacing: var(--ls-display);
+}
+
+/* iOS-style card stack — every card occupies the same grid cell, useCardStack
+   drives translate/scale/z-index on an automatic timer.
+   Room below for the deeper cards peeking out (2 × PEEK). */
+.testi-deck { position: relative; width: min(680px, 100%); margin: 0 auto }
+.testi-stack {
+  display: grid;
+  width: 100%;
+  padding-bottom: 56px;
+}
+
+/* Deck controls — bottom-right on the front card, flush with the card's own
+   content box so they read as one row with the author block opposite them.
+   The offsets are the deck's own measurements: 56px is the stack's bottom
+   padding (where the deeper cards peek out), 36px/48px the card's padding.
+   They sit above every card rather than under the front one — a control the
+   deck can cover is a control that can't be clicked. */
+.testi-nav {
+  position: absolute;
+  right: 48px; bottom: calc(56px + 36px);
+  display: flex; gap: 8px; z-index: 20;
+}
+.testi-navbtn {
+  width: 38px; height: 38px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--hair); border-radius: 50%;
+  background: #fff; color: var(--ink); cursor: pointer;
+  transition: background .25s ease, border-color .25s ease, color .25s ease, transform .2s ease;
+}
+.testi-navbtn:hover { background: var(--accent); border-color: var(--accent); color: #fff }
+.testi-navbtn:active { transform: scale(.93) }
+.testi-navbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.testi-navbtn svg { width: 16px; height: 16px }
+.testi-card {
+  grid-area: 1 / 1;
+  transform-origin: top center;
+  border: 1px solid var(--hair); border-radius: 18px; background: #fff;
+  padding: 44px 48px 36px; box-shadow: 0 24px 48px -28px rgba(20,36,46,.35);
+  display: flex; flex-direction: column;
+}
+.testi-quote {
+  font-family: var(--font-body); font-size: clamp(18px, 1.5vw, 22px); line-height: 1.5;
+  color: var(--ink); padding-bottom: 28px; border-bottom: 1px solid var(--hair);
+}
+.testi-card .testi-author { margin-top: auto; padding-top: 22px }
+
+/* Author row (shared) */
+.testi-author { display: flex; align-items: center; gap: 12px }
+.testi-meta { text-align: left }
+.testi-name { display: block; font-family: var(--font-body); font-size: var(--fs-body); font-weight: 600; color: var(--ink) }
+
+@media (max-width: 900px) {
+  .testi-nav { display: none }
+  .testi-card { padding: 30px 28px 26px }
+  .testi-head { margin-bottom: 80px }
+}
+
+/* Reduced motion: no deck animation — show the quotes as a plain column */
+@media (prefers-reduced-motion: reduce) {
+  .testi-stack { display: flex; flex-direction: column; gap: 24px; padding-bottom: 0 }
+  .testi-card { grid-area: auto }
+  /* every quote is already on screen and the hook no-ops here, so the arrows
+     would be dead controls */
+  .testi-nav { display: none }
+}
+
+/* ════════ CTA BAND ════════ */
+
+/* Magnetic pill CTA with nested button-in-button arrow */
+.cta-cta {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 9px 9px 9px 26px; border-radius: 999px;
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255,255,255,.6); box-shadow: none;
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
+  transition: background .5s cubic-bezier(.32,.72,0,1),
+              border-color .5s cubic-bezier(.32,.72,0,1),
+              transform .5s cubic-bezier(.32,.72,0,1),
+              box-shadow .5s cubic-bezier(.32,.72,0,1);
+  will-change: transform;
+}
+.cta-cta-label { line-height: 1 }
+.cta-cta-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  transition: transform .5s cubic-bezier(.32,.72,0,1),
+              background .5s cubic-bezier(.32,.72,0,1);
+}
+.cta-cta-icon svg { width: 15px; height: 15px }
+/* matches the Ask-your-AI hover: slight glassmorph fill instead of the blue
+   gradient (feedback: "slight glassmorph fill on hover") */
+.cta-cta:hover {
+  background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.9);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  backdrop-filter: blur(22px) saturate(1.8);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 8px 24px rgba(255,255,255,.08);
+}
+.cta-cta:hover .cta-cta-icon {
+  background: rgba(255,255,255,.26);
+  transform: translate(3px,-3px) scale(1.06);
+}
+.cta-cta:active { transform: translateY(-1px) scale(.98) }
+
+/* Scroll-entry reveal */
+@media (prefers-reduced-motion: reduce) {
+  .cta-cta, .cta-cta-icon { transition: none }
+}
+
+/* ════════ POSITIONING BLOCK ════════ */
+
+/* Citation visual — cursor clicks the source icon, dialog opens */
+@keyframes posv-ic-press {
+  0%, 30%, 44%, 100% { transform: none; box-shadow: none }
+  34%, 40% { transform: scale(.88); box-shadow: 0 0 0 4px rgba(53,80,200,.18) }
+}
+@keyframes posv-cur-move {
+  0% { transform: translate(30px, 48px); opacity: 0 }
+  8% { opacity: 1 }
+  28%, 60% { transform: translate(0, 0); opacity: 1 }
+  74% { transform: translate(12px, 26px); opacity: 0 }
+  100% { transform: translate(30px, 48px); opacity: 0 }
+}
+@keyframes posv-pop {
+  0%, 40% { opacity: 0; transform: scale(.92) translateY(-6px) }
+  46%, 90% { opacity: 1; transform: none }
+  97%, 100% { opacity: 0; transform: scale(.95) translateY(-4px) }
+}
+
+/* Coverage visual */
+
+/* Excel visual */
+@keyframes posv-press {
+  0%, 55%, 100% { transform: none; box-shadow: none }
+  62%, 70% { transform: scale(.96); box-shadow: 0 0 0 3px rgba(53,80,200,.15) }
+}
+@keyframes posv-ripple {
+  0%, 60% { box-shadow: 0 0 0 0 rgba(53,80,200,.35); opacity: 1 }
+  90%, 100% { box-shadow: 0 0 0 16px rgba(53,80,200,0); opacity: 0 }
+}
+@keyframes posv-cursor {
+  0% { transform: translate(26px, 22px) }
+  45%, 75% { transform: translate(0, 0) }
+  100% { transform: translate(26px, 22px) }
+}
+
+/* ════════ USE CASES ════════ */
+
+/* Shared visual chrome — mini app-window frame */
+@keyframes ucv-pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+
+/* Comps table */
+@keyframes ucv-flash { 0%,100% { background: var(--accent-soft) } 50% { background: var(--accent-soft2) } }
+
+/* Populate cells */
+@keyframes ucv-fillin { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+/* DCF */
+
+/* Briefing */
+
+/* Quarter update */
+
+/* ════════ FAQ ════════ */
+.faq { background: var(--bg); padding: 120px 0 }
+.faq-grid {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 80px; align-items: start;
+}
+.faq-intro { display: flex; flex-direction: column; align-self: stretch }
+.faq-eyebrow {
+  font-family: var(--font-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); text-transform: uppercase;
+  color: var(--accent); margin-bottom: 18px;
+}
+.faq-title {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
+  color: var(--ink); letter-spacing: var(--ls-display);
+  margin-bottom: 28px; max-width: 460px;
+}
+.faq-contact { margin-top: auto; padding-top: 64px }
+.faq-contact-line { display: block; width: 1.5px; height: 56px; background: var(--ink); margin-left: 16px }
+.faq-contact-chip {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--ink); color: var(--bg); text-decoration: none;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em;
+  padding: 9px 16px;
+  border: none; cursor: pointer; appearance: none; user-select: none;
+  transition: background .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
+}
+.faq-contact-chip:hover { background: var(--accent); transform: translateY(-2px) }
+.faq-contact-chip.is-copied { background: var(--accent); }
+/* the Copy / Copied label unfurls from the right edge on hover (or while the
+   copied confirmation is showing) so the resting chip stays just the address */
+.faq-contact-action {
+  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  max-width: 0; opacity: 0; overflow: hidden; margin-left: -9px;
+  border: none; background: none; color: inherit; font: inherit;
+  letter-spacing: inherit; padding: 0; cursor: pointer; appearance: none;
+  transition: max-width .45s cubic-bezier(.32,.72,0,1), opacity .3s ease,
+    margin-left .45s cubic-bezier(.32,.72,0,1);
+}
+.faq-contact-chip:hover .faq-contact-action,
+.faq-contact-chip.is-copied .faq-contact-action {
+  max-width: 90px; opacity: 1; margin-left: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-contact-action { transition: opacity .2s ease; }
+}
+/* continuous left rail with a shifting accent segment */
+.faq-list { position: relative; display: flex; flex-direction: column; max-width: 700px; margin-left: auto; width: 100% }
+.faq-list::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 1px; background: var(--hair);
+}
+/* mirrored right rail so each question row is bounded on both edges */
+.faq-list::after {
+  content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+  width: 1px; background: var(--hair);
+}
+.faq-rail {
+  position: absolute; left: -0.5px; width: 2px; border-radius: 2px;
+  background: var(--accent); transform-origin: top;
+  top: var(--rail-top, 0); height: var(--rail-h, 0);
+  opacity: 0; transform: scaleY(.4);
+  transition: top .5s cubic-bezier(.32,.72,0,1), height .5s cubic-bezier(.32,.72,0,1),
+    opacity .35s ease, transform .5s cubic-bezier(.32,.72,0,1);
+}
+.faq-rail.on { opacity: 1; transform: scaleY(1) }
+.faq-item {
+  border-top: 1px solid var(--hair); background: none;
+}
+.faq-item:first-child { border-top: none }
+.faq-q {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: none; border: none;
+  padding: 26px 28px; cursor: pointer; text-align: left;
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
+  color: var(--ink); letter-spacing: 0; line-height: 1.5;
+  transition: color .3s cubic-bezier(.32,.72,0,1);
+}
+.faq-q:hover { color: var(--accent) }
+.faq-item.open .faq-q { color: var(--accent) }
+/* morphing +/− toggle */
+.faq-toggle { position: relative; width: 16px; height: 16px; flex-shrink: 0; color: var(--secondary) }
+.faq-toggle::before, .faq-toggle::after {
+  content: ''; position: absolute; background: currentColor; border-radius: 2px;
+  transition: transform .5s cubic-bezier(.32,.72,0,1), opacity .5s cubic-bezier(.32,.72,0,1);
+}
+.faq-toggle::before { top: 7.25px; left: 0; width: 16px; height: 1.5px }
+.faq-toggle::after { left: 7.25px; top: 0; width: 1.5px; height: 16px }
+.faq-item.open .faq-toggle { color: var(--accent) }
+.faq-item.open .faq-toggle::after { transform: rotate(90deg); opacity: 0 }
+/* smooth height accordion (grid 0fr → 1fr, GPU-safe) */
+.faq-a {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows .5s cubic-bezier(.32,.72,0,1);
+}
+.faq-item.open .faq-a { grid-template-rows: 1fr }
+.faq-a-inner { overflow: hidden }
+.faq-a-inner p {
+  font-family: var(--font-body); font-size: var(--fs-body); line-height: 1.6;
+  color: var(--secondary); letter-spacing: 0;
+  padding: 0 28px 26px;
+}
+/* staggered scroll-reveal (keyframe so it doesn't consume the item's transition) */
+.faq .faq-intro, .faq .faq-item { opacity: 0 }
+@keyframes faqReveal {
+  from { opacity: 0; transform: translateY(24px); filter: blur(6px) }
+  to { opacity: 1; transform: none; filter: none }
+}
+.faq.is-in .faq-intro, .faq.is-in .faq-item {
+  animation: faqReveal .8s cubic-bezier(.32,.72,0,1) both;
+}
+.faq.is-in .faq-item:nth-child(1) { animation-delay: 60ms }
+.faq.is-in .faq-item:nth-child(2) { animation-delay: 110ms }
+.faq.is-in .faq-item:nth-child(3) { animation-delay: 160ms }
+.faq.is-in .faq-item:nth-child(4) { animation-delay: 210ms }
+.faq.is-in .faq-item:nth-child(5) { animation-delay: 260ms }
+.faq.is-in .faq-item:nth-child(6) { animation-delay: 310ms }
+.faq.is-in .faq-item:nth-child(7) { animation-delay: 360ms }
+@media (prefers-reduced-motion: reduce) {
+  .faq .faq-intro, .faq .faq-item { opacity: 1; animation: none }
+  .faq-a, .faq-toggle::before, .faq-toggle::after, .faq-item, .faq-q, .faq-contact-chip, .faq-rail { transition: none }
+}
+
+/* ════════ WRAP UTILITY ════════ */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--wrap-pad) }
+
+/* ════════ RESPONSIVE ════════ */
+@media (max-width: 900px) {
+  .navbar-links { display: none; }
+  .faq-grid { grid-template-columns: 1fr; gap: 48px }
+  .faq-contact { padding-top: 32px }
+  .foot-cols { flex-direction: column; gap: 56px }
+  .foot-right { align-items: flex-start; gap: 44px; width: 100% }
+  .foot-grid-new { justify-content: flex-start }
+  .foot-grid-new > div { padding: 0 20px 24px }
+  .foot-grid-new > div:first-child { padding-left: 20px; border-left: 1px solid rgba(255,255,255,.1) }
+  .foot-grid-new > div:nth-child(odd) { padding-left: 0; border-left: none }
+}
+
+/* Mobile "best on desktop" popup — rendered only on small screens (gated in JS),
+   so no media query is needed here. */
+.hero-desktop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.hero-desktop-modal__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 18, 34, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: heroModalFade 0.24s ease both;
+}
+.hero-desktop-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px 26px 26px;
+  text-align: center;
+  box-shadow: 0 24px 60px -20px rgba(10, 18, 34, 0.5);
+  animation: heroModalIn 0.28s cubic-bezier(0.2, 0.82, 0.24, 1) both;
+}
+.hero-desktop-modal__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hero-desktop-modal__icon svg { width: 26px; height: 26px; }
+.hero-desktop-modal__title {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.hero-desktop-modal__btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--btn-blue-grad);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+.hero-desktop-modal__btn:hover { background: var(--btn-blue-grad-h); }
+.hero-desktop-modal__btn:active { transform: translateY(1px); }
+@keyframes heroModalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes heroModalIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-desktop-modal__scrim, .hero-desktop-modal__card { animation: none; }
+  .hero-desktop-modal__btn:active { transform: none; }
+}
+
+/* Mobile advisory banner — hidden on laptop/desktop, shown on tablets & phones.
+   Sits at the very top of the hero, just under the sticky navbar. */
+.hero-mobile-banner { display: none; }
+
+@media (max-width: 768px) {
+  .hero-mobile-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 20px;
+    background: var(--btn-blue-grad);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-align: center;
+    box-shadow: 0 1px 6px -2px rgba(20, 36, 46, 0.25);
+  }
+  .hero-mobile-banner svg { flex: none; width: 15px; height: 15px; }
+}
+
+/* ════════ MOBILE — phones & small tablets ════════ */
+@media (max-width: 640px) {
+  /* tighter gutters so full-bleed content isn't cramped against the edges.
+     Set on the token, not on .wrap, so decorative panels sized off --wrap-pad
+     narrow by the same amount instead of drifting out of register. */
+  :root { --wrap-pad: 20px }
+
+  /* navbar: shrink padding, gap and buttons so "Book a demo" always fits */
+  .navbar-inner { padding: 0 1rem; gap: 0.75rem; }
+  .navbar-logo { height: 1.35rem; }
+  .navbar-right { gap: 0.4rem; }
+  .nav-signin, .nav-demo { padding: 0.5rem 0.7rem; font-size: 0.9rem; }
+
+  /* WhatSection: the tall min-height leaves a big empty band on phones —
+     let the section size to its content instead, and shrink the scrolling
+     checklist viewport so it reads as a dense list, not a mostly-empty pane */
+  .what-list-viewport { height: clamp(300px, 42vh, 380px); }
+
+  /* HowItWorks: keep the chat header from forcing horizontal overflow */
+}
+
+/* ════════ MOBILE — narrow phones ════════ */
+@media (max-width: 480px) {
+  /* stack the hero CTAs full-width so long labels never wrap or clip */
+  .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-s2-ctas .hero-s2-cta { width: 100%; }
+
+  /* footer CTAs stack too, filling the row */
+  .foot-cta-actions { width: 100%; }
+  .foot-cta-actions .cta-cta,
+  .foot-cta-actions .foot-askai { flex: 1 1 auto; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important }
+}
+
+/* ════════════════════════════════════════════════
+   HERO SPLIT (hero-s2)
+   Two-column hero: left content stack + right portrait card
+   ════════════════════════════════════════════════ */
+
+.hero-s2 {
+  width: 100%;
+  background: var(--bg);
+  padding: 88px 0 72px;
+  position: relative;
+  z-index: 6; /* covers the page rails */
+  overflow: hidden;
+}
+
+/* Animated Excel-grid background (restored) */
+.hero-s2-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: cell;
+  touch-action: pan-y;
+  opacity: 0.85;
+  z-index: 0;
+}
+
+/* Mosaic (dithered halftone) background variant — replaces the Excel grid */
+.hero-s2-mosaic {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  pointer-events: none;
+  opacity: 0.9;
+}
+/* Cover the whole section — no white band above the skyline. The canvas is
+   generated at its native width×aspect, then scaled to fill; the denser
+   structure stays anchored to the bottom, sparse sky drifts up behind the copy. */
+.hero-s2-mosaic .sf-mosaic__canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  cursor: crosshair;
+  pointer-events: auto;
+}
+
+.hero-s2::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Pixel-art skyline image backdrop (duplicated tiles hero). Cover the stage,
+   anchored to the bottom so the skyline sits along the base and the sky fills
+   up behind the copy. A soft top scrim keeps the dark heading readable over
+   the bright sky. */
+.hero-s2-imgbg {
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+.hero-s2-imgbg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.34) 34%,
+    rgba(255, 255, 255, 0) 62%);
+  pointer-events: none;
+}
+
+/* Duplicated hero riding the how-it-works glass wash (testi-glass-bg.png)
+   instead of the bridge photo. The png is authored to stretch edge-to-edge
+   (same treatment as .hiw-pin::before) and already dissolves to white at its
+   top and bottom, so the imgbg's white readability scrim is dropped. */
+.hero-s2--glass .hero-s2-imgbg {
+  background-size: 100% 100%;
+  background-position: top center;
+}
+.hero-s2--glass .hero-s2-imgbg::after { content: none; }
+
+/* ── side replicas ── small square echoes of the hero photo flanking the
+   copy (Exa-style): two loose columns a side, the outermost flush with the
+   section edge and cut by it. Purely decorative. */
+.hero-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  overflow: hidden; /* cuts the edge-flush tiles instead of widening the page */
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-side--left { left: 0; }
+.hero-side--right { right: 0; }
+
+.hero-tile {
+  position: absolute;
+  border-radius: 5px;
+  /* same plate the hero mosaic resolves into, so the tiles read as chips off
+     the hero photo rather than a second, warmer picture of the same street */
+  background-image: url('/assets/img/wall-street-bw.webp');
+  background-size: 340% auto;
+  background-repeat: no-repeat;
+  animation: heroTileIn .9s cubic-bezier(.32, .72, 0, 1) both;
+}
+.hero-tile:nth-child(2n) { animation-delay: .12s; }
+.hero-tile:nth-child(3n) { animation-delay: .22s; }
+
+@keyframes heroTileIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-tile { animation: none; }
+}
+/* under 1280px the gap beside the 720px cell can't hold the columns */
+@media (max-width: 1280px) {
+  .hero-side { display: none; }
+}
+
+/* ── Pixel-bridge scroll reveal hero ───────────────────────────────────── */
+/* A tall pinned track: the first ~2 screens scrub the bridge assemble, the
+   next ~2 dolly-zoom into the pixels while the copy fades out. */
+
+/* bare hero: content only, no backdrop art. It still paints the page colour
+   and sits above .page-rails (z-index 5) so the two vertical hairlines don't
+   run through the section — with nothing behind them here they read as stray
+   dividers rather than page structure. */
+.hero-s2--bare {
+  background: var(--bg);
+  overflow: visible;
+  position: relative;
+  z-index: 6;
+}
+.hero-s2--bare::after { display: none; }
+/* inside the pixel-bridge scroll scene the bare hero is an overlay on the
+   canvas — it must stay see-through there, rails or no rails */
+
+/* ── Outline hero variant — pixel-art bridge that assembles bottom-up ───── */
+/* the canvas paints its own sunset backdrop + top readability fade, so the
+   stage sits at full opacity */
+.hero-s2-pixel-canvas { width: 100%; height: 100%; display: block }
+
+/* ── Photo hero variant — the Bay Bridge sunset photo pixelated in full colour.
+   The canvas is the whole scene (no separate backdrop) and paints its own top
+   readability fade, so the stage runs at full opacity and the section drops its
+   own bottom fade. */
+.hero-s2--photo .hero-s2-mosaic { opacity: 1 }
+.hero-s2--photo.hero-s2::after { display: none; }
+/* The photo hero fills whatever is left of the first screen under the sticky
+   navbar, so the fold lands on the hero's own edge at any window height. The
+   copy re-centres in the extra room; the paddings above stay as the minimum
+   breathing space on short windows. */
+.hero-s2--photo {
+  min-height: calc(100vh - var(--navbar-height));
+  min-height: calc(100svh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── Dot-matrix globe hero (Antimetal-style) ───────────────────────────── */
+.hero-s2--globe {
+  /* bright daylight wash: warm sunset cream at the base → soft peach → airy
+     sky-blue at the top, so the photo dots read as a luminous mosaic rather
+     than glowing embers on a dark ground */
+  background:
+    radial-gradient(135% 120% at 50% 125%,
+      #fff6ea 0%, #ffe9cf 13%, #ffd8ac 25%, #f0dccd 42%,
+      #dde8f1 62%, #d1e3ef 82%, #cfe3ef 100%);
+}
+.hero-s2--globe.hero-s2::after { display: none; } /* the wash already fades up */
+
+.hero-s2-globe { opacity: 1; }
+.hero-s2-globe .dot-globe__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  cursor: crosshair;
+  pointer-events: auto;
+}
+
+/* dark ink copy on frosted glass strips — each text row carries its own
+   glass pill, so the photo mosaic stays visible between them */
+.hero-s2--globe .hero-cell--mosaic {
+  margin: 48px auto 140px;
+  padding: 8px 24px 56px;
+}
+.hero-s2--globe .hero-s2-title {
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 18px 48px -24px rgba(14, 26, 46, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.hero-s2--globe .hero-s2-title {
+  color: var(--ink);
+  font-weight: 700;
+  border-radius: 28px;
+  padding: 14px 40px 20px;
+}
+.hero-s2--globe .hero-s2-title .hero-s2-accent {
+  color: var(--accent);
+  font-weight: 700;
+}
+.hero-s2--globe .hero-excel-pill {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+/* primary CTA goes black on the glass panel (secondary stays ghost) */
+.hero-s2--globe .hero-s2-cta:not(.hero-s2-cta--ghost) {
+  background: linear-gradient(180deg, #1b2130, #0b0f1a);
+  border-color: #05070d;
+  box-shadow: 0 14px 30px -14px rgba(9, 14, 28, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.hero-s2--globe .hero-s2-cta:not(.hero-s2-cta--ghost):hover {
+  background: linear-gradient(180deg, #232a3c, #10151f);
+}
+
+.hero-s2-wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-s2-wrap a,
+.hero-s2-wrap button,
+.hero-s2-wrap input,
+.hero-s2-wrap .hero-rotate { pointer-events: auto; }
+
+/* ── Hero content block — "one big cell" ── */
+.hero-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 44px 52px 38px;
+  background: var(--bg);
+  border: 1px solid var(--hair-strong);
+  border-radius: 6px;
+  box-shadow: 0 24px 64px -24px rgba(14, 26, 46, 0.1);
+}
+
+/* Soft white halo sitting behind the hero copy (photo hero). The cell is an
+   isolated stacking context above the pixel mosaic, so z-index:-1 keeps the
+   glow over the image but behind the title/CTAs/trust line.
+   Boxed to the copy block (pill → trust line) and capped at 100% of the cell,
+   so the wash never spills past the hero or over the ask composer.
+   The paint is hero-glow.svg — a blurred white blob with film grain — rather
+   than a CSS radial-gradient: the blurred falloff is squarer, so it covers the
+   copy without the core reading as a spotlight, and the grain stops it banding
+   across wide flat screens. It reaches full transparency inside its own box,
+   so there's no visible edge on the photo. Held at partial opacity so the
+   skyline still reads through the wash behind the copy. */
+.hero-glow {
+  opacity: .9;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1180px, 100%);
+  height: 660px;
+  max-height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/assets/img/hero-glow.svg') center / 100% 100% no-repeat;
+}
+
+/* Mosaic hero: drop the card chrome so content floats over the skyline */
+.hero-cell--mosaic {
+  position: relative;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  max-width: 1280px;
+  margin: 8px auto 0;
+  padding: 8px 24px 96px;
+  isolation: isolate;
+}
+/* Tiles hero: no glass wash and no fill layers — the content sits directly
+   on the tile mosaic. Legibility comes from the canvas's baked-in centre
+   wash plus a heavier type weight. */
+.hero-cell--tiles::before { content: none; }
+.hero-cell--tiles .hero-s2-title {
+  font-weight: 700;
+}
+.hero-cell--tiles .hero-s2-title .hero-s2-accent {
+  font-weight: 700;
+}
+
+/* ── Suggestion palette: a command-palette popover that pops over the input
+   on focus (3D zoom-in) atop a dimmed, blurred scrim. Replaces the old
+   always-visible prompt pills. ── */
+@keyframes heroScrimIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes heroPopIn {
+  from { opacity: 0; transform: perspective(1500px) rotateX(-11deg) scale(.9) translateY(-14px); }
+  to   { opacity: 1; transform: perspective(1500px) rotateX(0) scale(1) translateY(0); }
+}
+.hero-suggest__label {
+  display: block;
+  padding: 8px 12px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero-suggest__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background .14s ease;
+}
+.hero-suggest__row:hover,
+.hero-suggest__row:focus-visible {
+  background: rgba(66, 101, 204, 0.09);
+  outline: none;
+}
+.hero-suggest__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(66, 101, 204, 0.10);
+  color: var(--accent);
+}
+/* the try-it modal numbers its samples 1 2 3 instead of drawing icons */
+.hero-suggest__icon--num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+}
+.hero-suggest__text { flex: 1 1 auto; min-width: 0; }
+.hero-suggest__go {
+  display: inline-flex;
+  flex: none;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity .14s ease, transform .14s ease;
+}
+.hero-suggest__row:hover .hero-suggest__go,
+.hero-suggest__row:focus-visible .hero-suggest__go {
+  opacity: 1;
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-suggest__go { transition: none; }
+}
+
+/* While an ask popup is open (body.ask-freeze, set by Home) the whole page
+   holds still: the scrim is viewport-fixed and only blurs, so any animation
+   behind it — other sections' CSS loops, blinking carets — reads as motion.
+   The popup's own elements (.hero-ask and .hero-try subtrees: scrim fade,
+   palette pop-in, thinking dots, the modal's spinner) are exempt so they still
+   enter and respond normally. */
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *),
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::before,
+body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
+  animation-play-state: paused !important;
+}
+
+/* ── Command box — mosaic hero only. Collapsed single row, pinned to the
+   bottom of the viewport while the hero is on screen (sticky within hero). ── */
+/* The command box is a shell that morphs into the answer overlay: closed it is
+   a single input row; open it grows to hold the response above that same row. */
+/* the answer holds wide result tables (up to 9 columns) — widen the box past
+   the compact input width so the whole table shows without side-scrolling.
+   only applied once the table renders (see `wide` in HeroAsk), so the thinking
+   / streaming loading state keeps the compact width */
+/* input box + prompts grouped together — sits over the skyline after a gap,
+   in place of the old browser-window card */
+
+/* ── Interactive ask: the answer content that unfolds inside the input shell,
+   directly above the input row (the box itself becomes the overlay) ── */
+.hero-answer {
+  position: relative;
+  width: 100%;
+  max-height: min(82vh, 680px);
+  overflow-y: auto;
+  padding: 26px 30px 22px;
+  text-align: left;
+  transform-origin: top center;
+  animation: heroAnswerUp .34s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes heroAnswerUp {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-answer__query {
+  margin: 0 32px 14px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--ink);
+}
+.hero-answer__thinking {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-answer__brand {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hero-answer__dots { display: inline-flex; gap: 5px; }
+.hero-answer__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .35;
+  animation: heroDot 1.1s ease-in-out infinite;
+}
+.hero-answer__dots i:nth-child(2) { animation-delay: .18s; }
+.hero-answer__dots i:nth-child(3) { animation-delay: .36s; }
+@keyframes heroDot {
+  0%, 100% { opacity: .3; transform: translateY(0); }
+  40%      { opacity: 1;  transform: translateY(-3px); }
+}
+.hero-answer__body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* Revealed once the answer finishes streaming: the deliverable + reassurance. */
+.hero-answer__after {
+  margin-top: 16px;
+  animation: heroAfterIn .4s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes heroAfterIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-answer__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  /* pinned to the bottom of the scrolling answer: negative side margins let the
+     bar span edge-to-edge and its opaque background covers the table scrolling
+     behind it; the container's bottom padding keeps its original base spacing */
+  position: sticky;
+  bottom: -22px;
+  z-index: 2;
+  margin: 15px -30px 0;
+  padding: 13px 30px 0;
+  background: var(--bg);
+  border-top: 1px solid var(--hair);
+  box-shadow: 0 -10px 18px -14px rgba(20, 36, 46, .22);
+}
+.hero-answer__cta-copy {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.hero-answer__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  padding: 9px 15px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s ease, transform .15s ease;
+}
+.hero-answer__cta-btn:hover { background: var(--btn-blue-grad); transform: translateY(-1px); }
+
+/* Excel-style deliverable table — the worked result for the asked prompt. The
+   header bar shows just the workbook name; booking lives at the pinned bottom. */
+.hero-answer__xls {
+  margin-bottom: 14px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.hero-answer__xls-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px 9px 12px;
+  background: rgba(16, 124, 65, .06);
+  border-bottom: 1px solid var(--hair);
+}
+/* the bar as a download link: same look, plus the affordance on the right */
+.hero-answer__xls-bar--link { text-decoration: none; color: inherit; cursor: pointer; }
+.hero-answer__xls-bar--link:hover { background: rgba(16, 124, 65, .11); }
+.hero-answer__xls-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: #107C41;
+}
+.hero-answer__xls-bar--link:hover .hero-answer__xls-dl { text-decoration: underline; }
+.hero-answer__xls-ic { display: inline-flex; flex: none; }
+.hero-answer__xls-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* contact-email capture that slides in under the workbook bar when the user
+   asks for the download */
+.hero-answer__xls-dl {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--hair);
+  background: rgba(16, 124, 65, .04);
+}
+.hero-answer__xls-note {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.hero-answer__xls-scroll { overflow-x: auto; }
+.hero-answer__xls-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.hero-answer__xls-tbl th,
+.hero-answer__xls-tbl td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--hair);
+  border-right: 1px solid var(--hair);
+  white-space: nowrap;
+}
+.hero-answer__xls-tbl th:last-child,
+.hero-answer__xls-tbl td:last-child { border-right: none; }
+.hero-answer__xls-tbl tbody tr:last-child td { border-bottom: none; }
+.hero-answer__xls-tbl thead th {
+  background: rgba(20, 36, 46, .035);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero-answer__xls-tbl tbody td:first-child { font-weight: 600; color: var(--ink); }
+.hero-answer__xls-tbl tbody td { color: var(--body-gray, var(--muted)); }
+.hero-answer__xls-tbl tbody tr:hover td { background: rgba(16, 124, 65, .04); }
+/* source-pulled figures shown as Excel hyperlink-blue cited cells (inert — no click action) */
+.hero-answer__cell-link {
+  color: #0563C1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-answer { animation: none; }
+  .hero-answer__dots i { animation: none; opacity: .6; }
+  .hero-answer__after { animation: none; }
+}
+
+/* ── "Try It" modal ─────────────────────────────────────────────────────────
+   The hero's second primary CTA. Same page-idiom surface as the command box
+   (--bg on --hair-strong, deep soft shadow) but lifted to a real full-page
+   dialog at the .hero-desktop-modal layer, so it clears the sticky navbar and
+   the formula bar. It reuses .hero-suggest__row for the sample prompts and the
+   whole .hero-answer__* block for a played sample, so those need no new rules
+   here — only the shell, the composer, the email step and the confirmation. */
+.hero-try {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.hero-try__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 14, 28, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: heroScrimIn .28s ease both;
+}
+
+.hero-try__card {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 38px 40px 34px;
+  background: var(--bg);
+  border: 1px solid var(--hair-strong);
+  border-radius: 18px;
+  text-align: left;
+  box-shadow:
+    0 1px 2px rgba(14, 26, 46, 0.05),
+    0 42px 90px -30px rgba(9, 14, 28, 0.55);
+  animation: heroModalIn .3s cubic-bezier(.2, .82, .24, 1) both;
+  /* only the played answer needs the table's full width */
+  transition: max-width .4s cubic-bezier(.22, .9, .26, 1);
+}
+
+.hero-try__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.hero-try__close:hover { color: var(--ink); border-color: var(--accent); }
+
+/* "Edit your query" sits beside the close button on the email step */
+.hero-try__edit {
+  position: absolute;
+  top: 14px;
+  right: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.hero-try__edit:hover { color: var(--ink); border-color: var(--accent); }
+
+.hero-try__head { margin: 0 40px 24px 0; }
+/* The email step's heading starts below the "Edit your query" / close pair,
+   so it can run the card's full width without sliding under them. */
+.hero-try__head.is-ask { margin: 34px 0 18px; }
+
+.hero-try__title {
+  margin: 0 0 7px;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.hero-try__sub {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--secondary);
+}
+
+/* ── the prompt box ── */
+.hero-try__composer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  background: var(--surface);
+  border: 1px solid var(--hair-strong);
+  border-radius: 14px;
+  box-shadow: 0 10px 28px -20px rgba(14, 26, 46, 0.3);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hero-try__composer:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.hero-try__textarea {
+  display: block;
+  width: 100%;
+  min-height: 116px;
+  max-height: 190px;
+  padding: 0 2px;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  resize: none;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.hero-try__textarea::placeholder { color: var(--muted); }
+
+/* while a sample types itself in, the caret is the animation — keep hands off */
+.hero-try__textarea.is-typing { caret-color: var(--accent); }
+
+.hero-try__composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-try__hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--muted);
+}
+.hero-try__hint kbd {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 5px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--secondary);
+}
+
+.hero-try__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: none;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--btn-blue-line);
+  border-radius: 11px;
+  background: var(--btn-blue-grad);
+  box-shadow: var(--btn-blue-glow);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s ease, transform .12s ease, opacity .15s ease;
+}
+.hero-try__send:hover:not(:disabled) { background: var(--btn-blue-grad-h); transform: translateY(-1px); }
+.hero-try__send:disabled { opacity: .45; cursor: default; box-shadow: none; }
+
+.hero-try__spin { animation: heroTrySpin .7s linear infinite; }
+@keyframes heroTrySpin { to { transform: rotate(360deg); } }
+
+/* ── the sample prompts (rows borrow .hero-suggest__* wholesale) ── */
+.hero-try__samples { margin-top: 26px; }
+.hero-try__samples .hero-suggest__label { padding: 0 0 10px; }
+.hero-try__samples .hero-suggest__row { padding: 12px 12px 12px 10px; }
+
+/* ── a played sample answer, inside the card ── */
+.hero-try__answer {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+  /* starts below the header pair ("Ask something else" + close), the same way
+     .hero-try__head.is-ask does. The echoed query runs the card's full width,
+     so without this its first line slides under the buttons — a right margin
+     wide enough to clear them would instead narrow every line of the query. */
+  margin-top: 22px;
+}
+.hero-try__answer .hero-answer__cta {
+  position: static;
+  margin: 15px 0 0;
+  padding: 13px 0 0;
+  box-shadow: none;
+}
+
+/* ── the ready card: what was built, and the one way to get it ──
+   The output itself never renders in the modal, so this is the whole payoff
+   screen — it has to feel finished rather than withheld: a settled green tick,
+   the real file name, and the Download button carrying the card's only weight. */
+.hero-try__ready { margin-top: 14px; }
+
+.hero-try__ready-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.hero-try__ready-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(16, 124, 65, .1);
+  color: #107C41;
+}
+
+.hero-try__file {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 13px 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 11px;
+}
+.hero-try__file-ic {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+.hero-try__file-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.hero-try__file-name {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero-try__dl { flex: none; }
+
+.hero-try__ready-note {
+  margin: 11px 0 0;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--secondary);
+}
+
+/* the workbook echoed back on the email step, in place of a typed query */
+.hero-try__echo-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+/* ── the email step ── */
+.hero-try__echo-label {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hero-try__echo {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 13px 46px 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-left: 2px solid var(--accent);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+/* pencil revealed when the visitor hovers their echoed query */
+.hero-try__echo-edit {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s ease, color .15s ease, border-color .15s ease;
+}
+.hero-try__echo:hover .hero-try__echo-edit,
+.hero-try__echo-edit:focus-visible { opacity: 1; }
+.hero-try__echo-edit:hover { color: var(--accent); border-color: var(--accent); }
+
+/* why we're asking — sits directly on the input it explains */
+.hero-try__ask-note {
+  margin: 0 0 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--secondary);
+}
+
+.hero-try__ask-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-try__email {
+  flex: 1 1 220px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--hair-strong);
+  border-radius: 11px;
+  background: var(--surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.hero-try__email::placeholder { color: var(--muted); }
+.hero-try__email:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hero-try__email.has-err { border-color: #C0392B; }
+.hero-try__email:disabled { opacity: .6; }
+
+.hero-try__err {
+  margin: 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #C0392B;
+}
+
+/* why we're asking for the email — sits quietly under the form */
+.hero-try__ask-note {
+  margin: 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ── the confirmation ── */
+.hero-try__done { text-align: left; }
+
+.hero-try__done-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hero-try__done-ic.is-ok {
+  background: rgba(14, 159, 110, .1);
+  color: var(--positive);
+}
+
+/* the confirmation heading and copy sit on the same type scale as the
+   modal's compose/email head (.hero-try__title / .hero-try__sub) — one
+   heading voice per card, not a second display face */
+.hero-try__done-title {
+  margin: 0 0 7px;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.hero-try__done-copy {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--secondary);
+}
+/* the address the output is going to — the one detail worth checking */
+.hero-try__done-addr {
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.hero-try__done-note {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+/* the same note as its own line rather than inline beside a button */
+
+/* the closing note boxed as a note — neutral grey fill on the white card.
+   It held the note on the left and a booking link on the right, hence the
+   space-between; the link was cut on request and the row is a single child
+   now, but the flex is kept so the note stays vertically centred in the fill */
+.hero-try__done-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+@media (max-width: 768px) {
+  .hero-try { padding: 14px; align-items: flex-start; }
+  .hero-try__card {
+    padding: 24px 20px 22px;
+    max-height: calc(100vh - 28px);
+    margin-top: 8px;
+  }
+  .hero-try__title { font-size: 19px; }
+  .hero-try__hint { display: none; }
+  .hero-try__composer-foot { justify-content: flex-end; }
+  .hero-try__ask-form { flex-direction: column; align-items: stretch; }
+  .hero-try__send { width: 100%; }
+  /* the file row drops its Download button onto its own line rather than
+     squeezing the name — .hero-try__send above already stretches it */
+  .hero-try__file { flex-wrap: wrap; align-items: flex-start; }
+  .hero-try__file-ic { margin-top: 1px; }
+  .hero-try__file-txt { flex-basis: calc(100% - 31px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-try__scrim, .hero-try__card { animation: none; }
+  .hero-try__card { transition: none; }
+  .hero-try__send:hover:not(:disabled) { transform: none; }
+  .hero-try__spin { animation: none; }
+}
+
+/* once the pixel mosaic has settled, the trust line reads over it in solid ink */
+
+.hero-excel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* 1.5× the original chip (feedback: "increase the size by .5x") */
+  padding: 5px 14px 5px 11px;
+  margin-bottom: 28px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  /* white fill + soft lift so the badge reads as a distinct chip over the
+     pixelated hero (feedback: "give a fill like this for backed by Accel") */
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 16px -8px rgba(16, 24, 40, .16);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+/* logo sized up so the Accel wordmark reads clearly (feedback: "barely
+   visible, increase the size a bit") */
+.hero-excel-pill img { height: 22px; width: auto; }
+
+/* ── Heading ── */
+/* The whole copy stack — title, lede, CTAs, trust line — scales as one unit, type
+   and rhythm together so the proportions hold at any size. Every value below is
+   written as its launch figure times --hero-scale, so re-sizing the stack is a
+   one-number change here rather than a dozen hand-recomputed literals (it has
+   moved four times now: 0.75×, 1.5×, 1.25×, 1.125×) and the launch baseline
+   stays readable in the source.
+
+   Scoped to .hero-s2 so nothing leaks to the "See it on your workflow" button in
+   <WhyAnalysts />, which borrows .hero-s2-cta and keeps base size. */
+.hero-s2 { --hero-scale: 1.125; }
+
+/* The min-height below is in em, so it follows the font size on its own. */
+.hero-s2-title {
+  font-family: var(--font-body);
+  font-size: clamp(
+    calc(42px * var(--hero-scale)),
+    calc(3.9vw * var(--hero-scale)),
+    calc(62px * var(--hero-scale))
+  );
+  font-weight: 500;
+  line-height: 1.18;
+  color: var(--ink);
+  letter-spacing: var(--ls-display);
+  margin-bottom: calc(22px * var(--hero-scale));
+  text-wrap: balance;
+  /* Reserve every row the headline can occupy, so the CTA and ask input below
+     never jump while the rotating segment types/deletes — they were impossible
+     to click mid-cycle. Two things move: at the empty frame of the cycle the
+     last row holds only the caret (0.82em), and the segments differ in width by
+     ~3em, which can push row two into wrapping. Bumped ~5% so the rows always
+     sit with a little more room. */
+  min-height: 2.48em; /* 2 rows × 1.03 line-height + 0.42em row gap */
+}
+
+/* Each headline row is a block with a tight internal line-height; the leading
+   lives in the margin between rows. ::selection never paints margins, so
+   selecting the headline shows two separate white strips with the photo
+   visible between them — but Chrome paints each strip at the font's full
+   ascent+descent (1.30em for Geist), not the 1.03 line box, so the margin
+   must clear that overflow before any gap shows: 0.42 − (1.30 − 1.03) ≈
+   0.15em of visible photo between the strips. */
+.hero-title-row { display: block; line-height: 1.03; }
+.hero-title-row + .hero-title-row { margin-top: 0.42em; }
+
+/* Below ~1125px the headline no longer holds two rows: row one
+   ("Auditable AI research infrastructure,") needs ~15.4em, and the measure
+   drops under that as the 79vw page rail closes in faster than the type
+   shrinks — so row one wraps and the headline runs to three rows. Reserve the
+   third here. Boundary is measured, not derived: 1125px renders two rows,
+   1120px renders three; the extra few px keep the reservation on the safe side
+   of the flip. Any higher and this would leave a dead row above the flip. */
+@media (max-width: 1129px) {
+  .hero-s2-title { min-height: 3.72em; } /* 3 rows × line-height 1.18, +5% */
+}
+
+/* Inline avatar cluster */
+
+/* Accent keyword — same weight, brand color */
+.hero-s2-accent {
+  font-style: normal;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+/* ── Rotating headline word — cell-selection micro-interaction ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero-rotate {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0 4px;
+  margin: 0 -4px;
+}
+
+.hero-rotate .hero-s2-accent {
+  position: relative;
+  z-index: 1;
+  border-radius: 2px;
+  transition: background-color 0.18s ease;
+}
+
+/* The white cell fill comes from .hr-frame's background, not the word itself —
+   the word sits at z-index 1 above the frame, so any opaque background here
+   would paint over the frame's border edges. */
+
+/* selection frame — like a selected cell / Figma frame */
+.hr-frame {
+  position: absolute;
+  inset: 0.06em -2px 0 -2px;
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  background: #fff;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.hero-rotate.hold .hr-frame,
+.hero-rotate.selected .hr-frame {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* corner handles */
+.hr-handle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  border-radius: 1.5px;
+}
+
+.hr-handle.tl { left: -4px; top: -4px; }
+.hr-handle.tr { right: -4px; top: -4px; }
+.hr-handle.bl { left: -4px; bottom: -4px; }
+.hr-handle.br { right: -4px; bottom: -4px; }
+
+/* While the user's own text selection sweeps over the word (.is-hl, toggled
+   from a selectionchange listener), the selected text itself turns accent
+   blue — so the cell frame flips to black to stay distinct. */
+.hero-rotate.is-hl .hr-frame,
+.hero-rotate.is-hl .hr-handle { border-color: #111; }
+.hero-rotate.is-hl .hr-caret { background: #111; }
+
+/* typing caret */
+.hr-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.82em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: -0.08em;
+  opacity: 0;
+}
+
+.hero-rotate.typing .hr-caret {
+  opacity: 1;
+  animation: hr-blink 0.9s step-end infinite;
+}
+
+@keyframes hr-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-frame,
+  .hr-caret {
+    display: none;
+  }
+}
+
+/* ── Supporting paragraph ── */
+
+/* ── Secondary line under the headline (photo hero) ──
+   Set in ink rather than the usual secondary grey: it sits over the pixelated
+   photo, and at this size grey-on-mosaic loses the line. */
+.hero-s2-lede {
+  font-family: var(--font-body);
+  font-size: clamp(
+    calc(17.33px * var(--hero-scale)),
+    calc(1.353vw * var(--hero-scale)),
+    calc(21.33px * var(--hero-scale))
+  );
+  font-weight: 500;
+  line-height: 1.5;
+  /* true black, not the softer body ink: this line sits directly on the
+     pixelated photo, where muted grey drops out of the mosaic */
+  color: #000;
+  letter-spacing: 0;
+  /* in ch, so the measure follows the type: two lines at any --hero-scale */
+  max-width: 34ch;
+  margin: 0 auto calc(48px * var(--hero-scale));
+  text-wrap: balance;
+}
+
+/* Phones: at scales above ~1 the clamp floors are wider than a phone — the
+   headline's lead clause overflows. Below 560px both switch
+   to a viewport-relative size that meets those floors exactly at 560px, so the
+   step-up is continuous and nothing overflows the screen. Scaled by the same
+   factor, so that stays true wherever --hero-scale is set. */
+@media (max-width: 560px) {
+  .hero-s2-title { font-size: calc(7.5vw * var(--hero-scale)); }
+  .hero-s2-lede {
+    font-size: calc(3.1vw * var(--hero-scale));
+    max-width: 30ch;
+    margin-bottom: calc(38px * var(--hero-scale));
+  }
+}
+
+/* ── CTA button — embossed, brand color ── */
+.hero-s2-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--btn-blue-grad);
+  border: 1px solid var(--btn-blue-line);
+  box-shadow: var(--btn-blue-glow);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
+  padding: 15px 40px;
+  border-radius: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 0.15s, transform 0.12s;
+  margin-bottom: 28px;
+}
+
+.hero-s2-cta:hover {
+  background: var(--btn-blue-grad-h);
+  transform: translateY(-1px);
+}
+
+/* CTA row — primary + secondary side by side */
+.hero-s2-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(14px * var(--hero-scale));
+  margin-bottom: calc(18px * var(--hero-scale));
+}
+.hero-s2-ctas .hero-s2-cta { margin-bottom: 0; }
+
+/* The hero's own pair of buttons scales with the rest of the copy stack — the
+   base values above, times --hero-scale. Scoped to .hero-s2, because
+   .hero-s2-cta is borrowed by the "See it on your workflow" button in
+   Why-analysts, which keeps base size. */
+.hero-s2 .hero-s2-cta {
+  gap: calc(6px * var(--hero-scale));
+  font-size: calc(18px * var(--hero-scale));
+  padding: calc(15px * var(--hero-scale)) calc(40px * var(--hero-scale));
+  border-radius: calc(12px * var(--hero-scale));
+}
+
+/* "Try It" — the second primary. A button, not a link, so it needs the form
+   resets .hero-s2-cta never had to carry; white like the ghost but drawn in
+   accent so it reads as the other half of the pair rather than a third
+   afterthought behind Sign in. */
+.hero-s2-cta.hero-s2-cta--try {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-body);
+  cursor: pointer;
+  background: var(--btn-white-grad);
+  border: 1px solid var(--accent);
+  box-shadow: var(--btn-white-glow);
+  color: var(--accent-deep);
+}
+.hero-s2-cta.hero-s2-cta--try:hover {
+  background: var(--btn-white-grad);
+  border-color: var(--accent-deep);
+  transform: translateY(-1px);
+}
+/* The shared --btn-white-glow is a 3px contact shadow, which reads as flat next
+   to the blue CTA beside it. In the hero the pair has to carry equal weight, so
+   Explore gets a real cast shadow of its own — scoped to .hero-s2 so the token
+   stays as-is everywhere else it's used. */
+.hero-s2 .hero-s2-cta.hero-s2-cta--try {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    0 1px 2px rgba(10, 20, 40, .10),
+    0 6px 16px rgba(10, 20, 40, .16);
+  transition: background .15s, border-color .15s, transform .12s, box-shadow .2s;
+}
+.hero-s2 .hero-s2-cta.hero-s2-cta--try:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    0 2px 4px rgba(10, 20, 40, .12),
+    0 10px 24px rgba(10, 20, 40, .20);
+}
+
+/* secondary (Sign in) — outline / glass */
+
+/* primary CTA carries a sub-label ("Set up a call") stacked under the main
+   copy — switch that button to a tight two-line column */
+.hero-s2-cta:has(.hero-s2-cta__sub) {
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 1.18;
+}
+
+
+/* ── Dashboard interior ── */
+/* ════════════════════════════════════════════════
+   HERO SPLIT — RESPONSIVE
+   ════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .hero-s2 { padding: 64px 0 56px; }
+
+  .hero-s2-wrap { padding: 0 1.25rem; }
+}
+
+/* ════════════════════════════════════════════════
+   TRUSTED BY — full-bleed dark strip
+   ════════════════════════════════════════════════ */
+
+@keyframes trusted-strip-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ═══ Take Control (Speakeasy-style dark CTA) ═══ */
+
+/* rainbow ring: gradient layer under a black pill via padding trick */
+
+/* ════════════════════════════════════════════════
+   BEFORE / AFTER SPLIT (bsp) — after auditability
+   ════════════════════════════════════════════════ */
+
+/* Pinned scroll-driven stepper (Parker-style "how it works").
+   The tall track gives scroll room; the pin sticks and the active tab
+   advances as you scroll through it. --bsp-steps segments the scroll. */
+
+/* The pinned content is scaled per-scroll (dolly zoom) from JS. Origin centre
+   so it grows/shrinks toward the middle of the viewport; will-change keeps the
+   transform on the compositor. */
+
+/* Section-title accent: a blue emphasis word mixed into each otherwise-ink
+   heading, so every section title reads as a black + blue blend (design
+   feedback). On the dark testimonial panel the accent lightens for contrast. */
+.ttl-hl { color: var(--accent); }
+.testi-head .ttl-hl { color: #fff; }
+
+/* ── Panel ── */
+
+/* Tab strip — Parker-style docking steps. Tabs are collapsed to zero width
+   until the scroll reaches their step, then each slides open and docks to the
+   right of the ones before it, accumulating left→right on a dashed rail. */
+/* Every step is docked in and clickable — a persistent tab rail so a reader
+   can jump straight to any use case without scrolling the whole section. */
+/* Steps not yet reached read as a light "wireframe" preview — dashed, muted,
+   but fully clickable so they act as a jump-to nav. */
+/* The newest-arrived step is emphasised; earlier ones sit back in a tint. */
+
+/* Cross-fading stage: sheets stacked, active one relative (sizes the box),
+   the rest absolute + faded so there is no height jump between steps. */
+
+/* Overlapping action: when a step becomes active its label + rows rise in a
+   short cascade rather than snapping as one flat block. */
+@keyframes whywb-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Cards rise + fade as the sheet becomes active. */
+@keyframes ba-node-in { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+
+/* Typed outro — echoes Parker's closing typewriter line. Space is reserved
+   at every step (min-height) so reaching the last step doesn't shift the pin. */
+@keyframes whywb-blink { 0%, 50% { opacity: 1 } 50.01%, 100% { opacity: 0 } }
+
+/* Option B: per-tab node diagrams. Old way = tasks scattered to separate
+   tools; FinSynth way = the same work orbiting one hub. Two panels split by
+   a single hairline, echoing the reference before/after treatment. */
+
+/* ── Tab tones — each tab carries its own accent + soft gradient ── */
+
+/* per-tone "after" kick + dot pick up the tab accent */
+
+/* panel grounds — "before" stays a cool neutral, "after" glows in the tab tone */
+
+/* ── Before: fragmented manual flow ── */
+
+/* ── Before · manual-pull vignette (tab 1): browser → sheet, by hand ── */
+/* the blank workbook: a bare 3×3 cell grid */
+/* dashed flight path spanning the gap between the two windows */
+/* the value, dragged across on loop */
+@keyframes baPull {
+  0%, 6%   { left: 12%; top: 58%; opacity: 0; transform: scale(.85); }
+  12%      { opacity: 1; transform: scale(1); }
+  32%      { top: 16%; }
+  52%      { left: 66%; top: 34%; opacity: 1; transform: scale(1); }
+  58%, 100%{ left: 68%; top: 42%; opacity: 0; transform: scale(.7); }
+}
+@keyframes baCellFill {
+  0%, 54%  { opacity: 0; }
+  60%, 88% { opacity: 1; }
+  97%, 100%{ opacity: 0; }
+}
+@keyframes baLinkPulse {
+  0%, 4%, 16%, 100% { background: transparent; }
+  8% { background: rgba(53,80,200,.14); }
+}
+
+/* ── After: shared shell ── */
+
+/* after · grid (model build) */
+
+/* after · tiles (coverage) */
+
+/* after · highlight (cited answer) */
+
+/* after · diff (live update) */
+@keyframes ba-live {
+  0% { box-shadow: 0 0 0 0 var(--ba-soft); }
+  70% { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@media (max-width: 760px) {
+  /* No pinning on narrow screens — the section flows normally and tabs
+     are click-only (the scroll listener bails on this breakpoint). */
+  /* No scroll-docking on mobile: all tabs are visible, tappable, and wrap. */
+}
+
+/* ════════ SPREADSHEET-HANDLE SEPARATORS + SIDE RAILS ════════
+   Selection-handle motif: hairline rules between sections with small
+   square caps that sit on two vertical rails at the content edges. */
+:root {
+  /* x-offset of each rail from the viewport edge. Derived from --maxw so the rails
+     stay locked 10px outboard of the content column: move --maxw and every section's
+     content + the rails shift together, keeping a constant separator-to-content gap. */
+  --rail-gap: 10px;
+  --rail-x: calc((100% - min(100% - 32px, var(--maxw))) / 2 - var(--rail-gap));
+  /* rails collapsed to a single content-edge hairline (hatched gutter band
+     removed per design feedback) — band width 0 so separators + guide nodes
+     retract to the rail line at --rail-x */
+  --rail-band: 0px;
+}
+
+.page-rails {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: clip;
+}
+/* each rail is a diagonal-hatched band bounded by hairlines; its inner
+   border sits where the old 1px rail was, so the gap to content holds */
+.rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--hair);
+}
+.rail-left  { left: var(--rail-x); }
+.rail-right { right: var(--rail-x); }
+
+@media (max-width: 720px) {
+  .rail { width: 1px; border: none; background: var(--hair) }
+  .rail-left  { left: var(--rail-x); }
+  .rail-right { right: var(--rail-x); }
+}
+
+.section-rule {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  margin: -1px 0;
+  z-index: 7; /* above the z-6 sections so corner tiles never get covered */
+  pointer-events: none;
+}
+/* break lines run the full frame width — through both hatch bands — so
+   every section closes into a border box; a label chip joins it only when
+   a larger section has distinct parts */
+.sr-track {
+  position: absolute;
+  left: calc(var(--rail-x) - var(--rail-band));
+  right: calc(var(--rail-x) - var(--rail-band));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.sr-line {
+  flex: 1;
+  height: 1px;
+  background: var(--hair);
+}
+.sr-label {
+  background: var(--bg);
+  border: 1px solid var(--hair-strong);
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ── Guide nodes (design-guide separator style) ─────────────────
+   Small rounded squares that sit on the ends and crossings of hairline
+   separators, like the handles/anchors in a design tool's layout guides.
+   Filled with the page bg so the line reads as passing "under" them. */
+.guide-node {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  box-sizing: border-box;
+  border: 1px solid var(--hair-strong);
+  border-radius: 2.5px;
+  background: var(--bg);
+  pointer-events: none;
+}
+/* section rules: a node where the rule meets each vertical rail */
+.section-rule .guide-node { top: 50%; }
+.sr-node--l { left: calc(var(--rail-x) - var(--rail-band)); transform: translate(-50%, -50%); }
+.sr-node--r { right: calc(var(--rail-x) - var(--rail-band)); transform: translate(50%, -50%); }
+
+@media (max-width: 720px) {
+  .sr-node--l { left: var(--rail-x); }
+  .sr-node--r { right: var(--rail-x); }
+}
+
+/* ── Lightdash-style pixel accents ─────────────────────────────
+   Small green tiles tucked into the inner corners of each section —
+   fully inside the content column, hugging the separator from within
+   (never hanging out into the gutters). Solid gradient tiles carry a
+   stepped companion pixel; striped tiles float alongside, forming the
+   checker clusters from the reference. nth-of-type nudges vary the
+   arrangement per rule so the scatter feels hand-placed. */
+:root {
+  /* inner edge of the content column, where section corners live */
+  --content-x: calc(var(--rail-x) + var(--rail-gap));
+}
+.sr-box {
+  /* green pixel-square clusters removed site-wide per design feedback — the
+     bare separator line now carries the section break on its own */
+  display: none;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.sr-box--solid {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .16) 0 2px, transparent 2px 4px),
+    linear-gradient(135deg, #47A362 0%, #175A30 80%);
+}
+/* the stepped companion pixel every solid tile carries (checker motif);
+   its direction is set per-position below so it always points deeper
+   into the section, never across the separator */
+.sr-box--solid::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #7CC98F 0%, #2E7D46 85%);
+}
+.sr-box--stripe {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(52, 178, 134, .55) 0 2px,
+    rgba(214, 244, 232, 1) 2px 4px
+  );
+  border: 1px solid rgba(52, 178, 134, .45);
+}
+/* default: solid cluster in the top-left corner of the section BELOW the
+   rule; mirrored cluster in the bottom-right corner of the section ABOVE */
+.sr-box--l1 { left: var(--content-x); top: 4px; }
+.sr-box--l1::after { right: -10px; bottom: -10px; }
+.sr-box--l2 { left: calc(var(--content-x) + 28px); top: 12px; width: 12px; height: 12px; }
+.sr-box--r1 { right: var(--content-x); top: -22px; }
+.sr-box--r1::after { left: -10px; top: -10px; }
+.sr-box--r2 { right: calc(var(--content-x) + 28px); top: -14px; width: 12px; height: 12px; }
+/* every other rule flips the clusters to the opposite corners */
+.section-rule:nth-of-type(even) .sr-box--l1 { top: -22px; }
+.section-rule:nth-of-type(even) .sr-box--l1::after { bottom: auto; top: -10px; }
+.section-rule:nth-of-type(even) .sr-box--l2 { top: -14px; }
+.section-rule:nth-of-type(even) .sr-box--r1 { top: 4px; }
+.section-rule:nth-of-type(even) .sr-box--r1::after { top: auto; bottom: -10px; }
+.section-rule:nth-of-type(even) .sr-box--r2 { top: 12px; }
+/* every third rule goes quieter: single tile per side */
+.section-rule:nth-of-type(3n) .sr-box--l2,
+.section-rule:nth-of-type(3n) .sr-box--r2 { display: none; }
+
+@media (max-width: 720px) {
+  .sr-box { display: none; }
+}
+
+/* ── Scroll-reveal entrances ───────────────────────────────────
+   Sections fade + rise into place once scrolled into view (`is-in`
+   added by useReveal). Entrances use the house ease-out curve so
+   they arrive fast and settle gently. Cards use keyframe animations
+   (not transitions) so the reveal never fights their hover translate.
+   Reduced-motion is fully honored below. */
+@keyframes sectionRise {
+  from { opacity: 0; transform: translateY(16px) }
+  to   { opacity: 1; transform: none }
+}
+
+/* Positioning block — head, three cards, then the video */
+
+/* Auditability — copy column staggers, stage panel arrives alongside */
+
+/* Before / After — head, then the panel. The heading itself scales up from
+   smaller to full size as the section slides in (feedback: "text size to inc
+   on section slide in"). */
+/* Content holds hidden until the title has landed, so the heading reads first
+   and the panel rises in after it (feedback: "on scroll the titles need to
+   appear first not the content"). Both the tab rail AND the comparison sheet are
+   gated — the rail is ungated content that would otherwise peek into view during
+   the scroll approach, before is-in fires, while the title is still hidden. */
+@keyframes bspHeadZoom {
+  from { opacity: 0; transform: scale(.78); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Testimonials — head, then the stack rises as one (the cards themselves
+   carry inline scroll-driven transforms, so only the container may animate) */
+.testi-head, .testi-deck { opacity: 0 }
+.testi-pin.is-in .testi-head { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.testi-pin.is-in .testi-deck { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .14s both }
+
+@media (prefers-reduced-motion: reduce) {
+  
+  .testi-head, .testi-deck { opacity: 1 }
+  
+  .testi-pin.is-in .testi-head, .testi-pin.is-in .testi-deck {
+    animation: none;
+  }
+  /* the deck is a plain column here — there is no stack to step through */
+  .testi-nav { display: none }
+}
+
+/* ── SF Mosaic band (ported from Claude Design "SF Mosaic Hero") ── */
+.sf-mosaic__stage {
+  max-width: 1160px;
+  margin: clamp(28px, 4vh, 48px) auto 0;
+  width: 100%;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+.sf-mosaic__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+}
+@media (max-width: 720px) {
+  .sf-mosaic__stage { padding: 0 20px; }
+}
+
+/* ════════════════════════════════════════════════
+   WHAT — infinite vertical focus carousel
+   ════════════════════════════════════════════════ */
+/* heading column sits parallel to the scrolling checklist */
+
+/* Section heading — "One agent, every workflow" (left-aligned) */
+
+/* the checklist sits on the right, beside the heading */
+.what-list-viewport { margin-left: auto; margin-right: 0; }
+
+/* Center checklist — an auto-scrolling column of workflows that loops on its
+   own; the viewport is short and masked top/bottom so only a few rows show at
+   once (see WhatSection.jsx). */
+.what-list-viewport {
+  position: relative;
+  height: clamp(420px, 62vh, 680px);
+  overflow: hidden;
+  width: max-content;
+  max-width: 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+.what-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(9px, 1.4vh, 16px);
+  will-change: transform;
+  animation: whatMarquee 26s linear infinite;
+}
+@keyframes whatMarquee { to { transform: translateY(-50%); } }
+
+.what-item {
+  display: flex;
+  align-items: center;
+  /* checkbox leads on the left, text follows */
+  flex-direction: row;
+  text-align: left;
+  gap: clamp(16px, 1.3vw, 24px);
+  font-family: var(--font-body);
+  /* enlarged ~1.5x per design */
+  font-size: clamp(33px, 4vw, 54px);
+  line-height: 1.2;
+  letter-spacing: var(--ls-display);
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color .4s ease, font-weight .2s ease;
+}
+
+/* the tick box: an outline square that fills with the accent when checked */
+.what-check {
+  flex: none;
+  width: .92em;
+  height: .92em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: .22em;
+  border: 2px solid var(--hair-strong);
+  color: #fff;
+  background: transparent;
+  transition:
+    background .4s cubic-bezier(.32,.72,0,1),
+    border-color .4s ease,
+    transform .4s cubic-bezier(.32,.72,0,1);
+}
+.what-tick {
+  width: 66%;
+  height: 66%;
+  opacity: 0;
+  transform: scale(.4);
+  transition:
+    opacity .28s ease .05s,
+    transform .38s cubic-bezier(.32,.72,0,1) .05s;
+}
+.what-item.is-checked {
+  color: var(--ink);
+  font-weight: 500;
+}
+.what-item.is-checked .what-check {
+  background: var(--accent);
+  border-color: transparent;
+}
+.what-item.is-checked .what-tick {
+  opacity: 1;
+  transform: none;
+}
+
+/* Entrance: eyebrow + heading rise + fade when the section arrives. The center
+   list runs its own marquee, so it is left out of the entrance. */
+@keyframes whatRise { to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .what-list { animation: none; transform: none; }
+}
+
+/* Narrow screens */
+@media (max-width: 820px) {
+  .what-list-viewport { width: 100%; max-width: 360px; margin-inline: 0; }
+  .what-list { align-items: flex-start; }
+  .what-item {
+    flex-direction: row;
+    text-align: left;
+    font-size: clamp(22px, 6vw, 32px);
+    line-height: 1.4;
+  }
+}
+
+/* ── STEPS STACK — scroll-driven stacking step panels (Parker.ai replica) ──
+   Each panel is sticky at the same dock point; the next panel scrolls up and
+   covers the previous one. The tab band above each panel's dashed rule is
+   transparent, so earlier docked tabs stay visible while newer panels stack.
+   All motion is scrubbed by scroll — no keyframes, reduced-motion safe. */
+/* in-flow spacer (NOT padding — sticky panels release at the container's
+   content edge, so padding would unpin the stack before it was consumed) */
+
+/* media cards — black border + hard offset shadow, like the tabs */
+
+/* step 1 — research flow */
+
+/* step 2 — chat greeting + typewriter input */
+
+/* step 3 — document skeleton */
+
+/* ── BEFORE/AFTER STACK — the steps-stack docking mechanic, in the section's
+   own UI language. Full-page sticky panels dock below the navbar; each new
+   panel covers the previous while its tab pill clicks into the accumulating
+   rail. Scroll-scrubbed only — no keyframes, reduced-motion safe. */
+/* This section's opaque, full-width sliding panels sit above the global page
+   rails (z-5) and hide them, so the vertical content-edge separators go
+   missing here. Redraw them as a non-interactive overlay pinned above the
+   panels, matching the page rails exactly (1px --hair at --rail-x). */
+/* the heading scrolls away normally (not sticky); the panels dock just below
+   the navbar once the title has passed. */
+/* Extra top gap so there's a beat of empty scroll between the hero and this
+   title — you scroll a notch or two through open space, then the section slides
+   in (feedback: "increase the gap btw the hero section and this title text… 1-2
+   scroll and then the next section slides in"). */
+
+/* Once the last panel docks and the outro line ("None of this required
+   hiring…") has typed out, its lower edge dissolves into a soft blurred band
+   so the section doesn't hard-cut — the next section blends up through it. */
+
+/* zero-height, non-sticky flow marker before each panel — measured by goTo so
+   tab clicks dock the right panel from any scroll position */
+/* transparent band — earlier docked tabs stay visible through it; only the
+   tab itself takes pointer events */
+/* active tab reads as the primary CTA (matches the "Book a demo" button):
+   same blue gradient, hairline, inner highlight, and lifted glow */
+/* tabs whose panels haven't merged into the stack yet read as placeholders:
+   a dotted outline instead of the solid hairline */
+/* the sheet sits open on the page — no card box; a hairline rule with a
+   centered BEFORE/AFTER pill labels the split, and each half carries its
+   own glass-gradient canvas (per Figma reference). Per-tab tones
+   (.ba-tone--*) still flow through chips, hot cells, and highlights. */
+/* guide nodes cap both ends of the rule */
+
+/* ── Before → After comparison rows ──────────────────────────────────
+   Each panel is a short list of paired lines: the manual "Old way" on the
+   left, the FinSynth outcome on the right, split by a tone-coloured arrow.
+   Rows are centred in the docked panel and divided by hairlines. */
+/* one full-height separator between the old and new columns */
+/* guide nodes cap the vertical separator's ends */
+/* a node marks where each row divider crosses the vertical separator */
+/* bullets lead every line on the left */
+/* bullet marker leading each line */
+
+/* the two halves share a plain field with a hairline splitting the columns;
+   the dotted grid is confined to each visual's canvas (see .ba-canvas below),
+   so it sits behind the image area only — not the captions. */
+/* visual-first: the canvas caps each column, the caption reads underneath */
+
+/* the dotted grid lives here — behind the image area only, with drafting
+   crosshair ticks at the canvas corners; the visual floats on top, no box. */
+/* center the sketch cluster in the canvas — the stagger offsets still drift
+   each paper off-axis around the middle */
+
+/* ── Draft vs. built — the two sides speak different materials. The "before"
+   diagrams stay hand-drawn: dashed hairlines, drafting corner-ticks in the
+   old-way rust, papers sitting a few degrees off-axis, depth from flat
+   offset underlays. The "after" diagrams square up straight with solid
+   hairlines and soft shadows — the composed product, in the tab's accent.
+   Scoped to .bstk-sheet so the whywb section keeps its original cards. ── */
+
+/* the paper chain drifts off-axis and slides right as it grows */
+
+/* before surfaces: dashed hairlines + flat offset underlays (no soft blur) */
+
+/* drafting corner ticks — opposite-corner L brackets, old-way rust */
+
+/* the cost annotation under the sketch cluster */
+
+/* after side floats the built product on the glass canvas */
+/* translucent accent tints go muddy over the blue — back them with white */
+/* chips land in the white dissolve — frost them so they read either way */
+
+@media (max-width: 900px) {
+  /* flatten the scatter on small screens — the drift cramps narrow panels */
+}
+
+@media (max-width: 760px) {
+  /* narrow screens: plain scroll, tabs full-width above their panel */
+  /* stacked halves: the kicks come back to label each one */
+  /* comparison rows stack vertically; no room for the centre separator */
+}
+
+/* ── Floating next-section button — fixed bottom-right, button accent ── */
+.scroll-next {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 90;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  appearance: none;
+  transition: color .25s, border-color .25s, background .25s, transform .25s;
+}
+.scroll-next svg { width: 18px; height: 18px; }
+/* Over a dark section: white outline + icon so it stays visible */
+.scroll-next--on-dark {
+  border-color: rgba(255, 255, 255, .9);
+  color: #fff;
+}
+.scroll-next:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  .scroll-next { transition: none; }
+}
+
+/* ── Grid Reveal — tars.pro hover-fill perspective grid ─────────────
+   Faint always-on wireframe; warped cells fade in under a cursor
+   spotlight (opacity driven in JS, softened by the transition here). */
+.gridreveal {
+  position: relative;
+  background: var(--bg);
+  padding: 96px 0 104px;
+  overflow: hidden;
+}
+.gridreveal::before {
+  /* soft blue bloom behind the grid so the fill reads as depth, not a flat plate */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: min(1200px, 92vw);
+  height: 620px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(60% 60% at 50% 42%, rgba(53,80,200,.10), rgba(53,80,200,0) 72%);
+  pointer-events: none;
+}
+.gridreveal__stage {
+  position: relative;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: center;
+}
+.gridreveal__svg {
+  width: min(1350px, 100%);
+  height: auto;
+  display: block;
+}
+.gridreveal__lines path {
+  stroke: rgba(53, 80, 200, .18);
+  stroke-width: .75;
+  fill: none;
+}
+.gridreveal__cells path {
+  opacity: 0;
+  transition: opacity .34s cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gridreveal__cells path { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   WHY ANALYSTS CHOOSE FINSYNTH
+   The verifiable stats as a metrics band hung off the bottom of the Excel
+   section: same .wrap, so it lands exactly on that frame's edges, and no
+   border of its own on top — the frame's bottom hairline is the only line
+   between the two. Just the figures, left-aligned on the frame's text inset;
+   the claim and sub that sat over the row were dropped on request. Home.jsx
+   runs it with no <SectionRule /> on either side.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* the band and the frame have to touch, so the section above gives up its
+   bottom padding when this one follows it. Only the first <ExcelSection />
+   does — the FIA Agent teaser is followed by a rule and keeps its padding. */
+.x4e-sec:has(+ .wac-sec) { padding-bottom: 0 }
+
+.wac-sec {
+  position: relative;
+  background: var(--bg);
+  /* top edge belongs to the frame above; the bottom is the section's own */
+  padding: 0 0 clamp(72px, 9vh, 104px);
+}
+
+.wac-band {
+  position: relative;
+  /* three sides only — the frame's bottom border is this box's top border, and
+     doubling it would draw a 2px seam right where the two are meant to join */
+  border: 1px solid var(--hair);
+  border-top: 0;
+  /* White, matching the frame above — the band ran a pale blue wash before,
+     cleared on request; the hairline border is what marks it off now. */
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* ── proof, by the numbers ── four equal cells divided by hairlines, filling
+   the band edge to edge. Nothing is filled or floated: the figures were briefly
+   white cards on the tint, and a card is a thing on a background where a metric
+   should just be a division of one. A rule between cells says the same thing
+   with no second surface.
+   The padding belongs to the cells, not to the row — put it on the row and the
+   last figure trails a band's worth of empty tint after it, since a short value
+   like "0" can't fill a quarter of the width on its own. Each cell's inset is
+   .x4e-head's, so the first figure starts directly under that section's
+   headline and all four cells still match. The figure carries the weight; its
+   label sits under it small, mono and uppercase, so it reads as a caption
+   rather than a competing line. */
+.wac-nums {
+  position: relative;   /* lifts the figures over the dot grid */
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+}
+
+.wac-num {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* figure up top, label down at the cell's foot — the drop is what makes the
+     cell read as a cell rather than as a two-line stack floating in one */
+  gap: clamp(26px, 3.2vh, 42px);
+  padding: clamp(38px, 4.6vh, 52px) clamp(32px, 3.8vw, 60px);
+  border-left: 1px solid var(--hair);
+}
+.wac-num:first-child { border-left: 0; }
+
+/* With the heading gone the figures are the whole band, so they step up past
+   the page's largest section heading (52px) — a metrics row reads as a figure
+   first and a typographic line second. Weight and tracking are the display
+   tokens every other heading uses, not a one-off. */
+.wac-num-value {
+  font-family: var(--font-body);
+  font-size: clamp(44px, 4.6vw, 64px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* the site's mono caption, unmodified: --font-mono / --fs-mono / --ls-mono,
+   uppercase, --accent — same as .hiw-eyebrow and .setup-eyebrow. It used to
+   run a dimmed one-off accent, which read as a third type style on a page that
+   only has two caption treatments. */
+.wac-num-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ── reveal staging ── the figures rise left to right */
+.wac-num { opacity: 0; }
+.wac-sec.is-in .wac-num { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
+
+@media (prefers-reduced-motion: reduce) {
+  .wac-num {
+    opacity: 1; transform: none; animation: none;
+  }
+}
+
+/* Four abreast stops fitting once the cells are narrower than the figures, so
+   the row folds to a 2×2 grid — the vertical rule stays between the pairs, and
+   the second row picks up a horizontal one so the grid still reads as cells. */
+@media (max-width: 860px) {
+  .wac-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wac-num:nth-child(odd) { border-left: 0; }
+  .wac-num:nth-child(n+3) { border-top: 1px solid var(--hair); }
+}
+
+/* One-up, and the vertical rule goes altogether — every cell but the first is
+   divided from the one above it instead. */
+@media (max-width: 460px) {
+  .wac-nums { grid-template-columns: minmax(0, 1fr); }
+  .wac-num { border-left: 0; }
+  .wac-num:nth-child(n+2) { border-top: 1px solid var(--hair); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   DIFFERENTIATOR — "the difference", first informative section under the
+   hero. One job: stake the claim on auditability against the accuracy
+   claim everyone else leads with. Hairline spec-sheet language (same as
+   .secx / .wac), no stat row, no card grid.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── head: the section title with its secondary line stacked under it ──
+   THE PAGE'S SECTION-HEAD FORMAT. Every section head follows this shape: title,
+   secondary line directly beneath it, both flush left, and no full stop on
+   either. Two earlier layouts are gone — a two-column grid (which parked the
+   secondary line in a right-hand column, so a short title left ~470px of white
+   between them and it read as an unrelated column) and a baseline row hugging
+   the title. Stacked is the format; it holds at every width, and it matches the
+   claim/detail pairs inside the sections below.
+   Shared by .dfx (#difference) and .dfx.vsx (#comparison). */
+
+/* the two sentences each own a line, so no balancing — it would re-break them */
+
+/* ── proof columns ──
+   Three abreast rather than stacked: the proofs are peers, not an ordered
+   sequence, so side by side they scan as one set. Vertical hairlines divide the
+   columns the way the row rules used to divide the rows. */
+
+/* takes the slack so the three diagrams sit on one line at the foot of the
+   columns however unevenly the claims above them wrap */
+
+/* ── row diagrams ──
+   Schematics, not screenshots: each states the mechanics of its claim. Colour
+   lives here rather than on the SVG attributes so the :root tokens stay the
+   single source, and so the whole set restyles from one place. */
+/* set on both the <g> wrappers and bare lines — stroke/fill inherit either way */
+
+/* the reference link reads dashed — it points at a source, it isn't a data flow */
+
+/* The outro line and its link out are gone, and with them .dfx-outro /
+   .dfx-outro-link — the section ends on the three proofs. */
+
+/* ── reveal staging ── */
+
+@media (max-width: 1000px) {
+  /* the head is already stacked; the title just narrows its measure */
+}
+
+/* Below this the three columns can't hold a readable measure — a 15px paragraph
+   in a ~280px column sets to four ragged words a line — so they stack. */
+@media (max-width: 900px) {
+  /* stacked, the diagram no longer has to align across columns, so it holds a
+     sensible size instead of stretching the full width */
+}
+
+@media (max-width: 640px) {
+  /* the svg scales down with the column, so the micro-labels are bumped in user
+     units here to land back at a readable size on a phone */
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMPARISON — three-way: a generic copilot, Claude, and us. A duplicate
+   of the .dfx section: it reuses .dfx-head / .dfx-title / .dfx-lede /
+   .dfx-frame and only adds the table internals, so the pair reads as one
+   system.
+
+   Lanes, left to right: the two alternatives sit recessed on the page grey
+   as one group, ours comes forward on white. That grouping is the argument
+   — "whatever you already run" against "this" — and it also keeps the
+   table to two tones, so a third background never has to be invented.
+   ══════════════════════════════════════════════════════════════════════ */
+/* the category column gives up width to the third lane; the remaining three
+   split what's left evenly under table-layout: fixed */
+
+/* the row header reads as a label, not as a competing claim */
+
+/* ── the rating pills ──
+   Tier sets colour only. No traffic-light palette: the page is grey plus one
+   blue, so a weak rating recedes and a strong one comes forward instead. */
+/* nothing there yet — dashed, so the gap reads as absence rather than a score */
+
+/* ── reveal staging: rows rise in sequence once the frame is in view ── */
+
+/* Four columns need ~1100px to hold a pill and its line without three-word
+   wraps, so the table collapses earlier than the two-lane version did: the
+   category becomes a heading and its three ratings stack under it, each named
+   by its own lane label. Stacked rather than three-up — a third of a tablet
+   width is narrower than the pills themselves. */
+@media (max-width: 1100px) {
+
+  /* stays body type: the lane labels below it are already mono, and a second
+     mono line would read as competing micro-labels */
+  /* the lane label moves inline with the pill: three stacked rows each need
+     naming, and a label line above every one of them would treble the height */
+  /* the note sits under the pill, indented to the label's column so the three
+     ratings still line up as a comparison */
+}
+
+@media (max-width: 520px) {
+  /* a phone can't hold the label and the pill on one line, so the label goes
+     back above it and the note loses its indent */
+}
+
+/* ══ FinSynth for Excel — the Security section's bordered frame and headline.
+      All four claims sit in a rail on the left, always visible; each rail row
+      is a button, and only the visuals on the right crossfade. The pane used
+      to be pinned inside a multi-screen scroll budget; it's a plain block now,
+      so the section reads the same short height as every other one ══ */
+.x4e-sec { background: var(--bg); padding: clamp(72px, 9vh, 104px) 0 }
+/* white inside the hairline, so the head and rail sit on the same ground as
+   the stage's white panel rather than the section's gray */
+.x4e-frame { position: relative; border: 1px solid var(--hair); background: #fff }
+
+/* header — same measures as .secx-head */
+.x4e-head {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  text-align: left; gap: 40px;
+  padding: clamp(38px, 5vh, 54px) clamp(32px, 3.8vw, 60px) clamp(34px, 4.5vh, 48px);
+}
+.x4e-head-copy { min-width: 0; text-align: left }
+.x4e-head h2 {
+  font-family: var(--font-display); font-weight: 450;
+  font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
+  letter-spacing: var(--ls-display); color: var(--ink);
+}
+/* "Coming soon" pill riding the headline (the FIA Agent teaser) */
+.x4e-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-left: 18px; vertical-align: middle;
+  padding: 7px 14px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.x4e-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+
+/* Rail of all four claims on the left — always visible — and the stage on the
+   right, where only the visuals crossfade. The stage's min-height sets the
+   section's scale; the rail rows split that height between them. */
+.x4e-pane {
+  position: relative;
+  border-top: 1px solid var(--hair);
+  display: grid;
+  grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+  overflow: hidden;
+}
+/* pane with no rail — the stage takes the full frame width (Fia) */
+
+/* the rail — every claim is a row, and every row is the button that brings
+   its visual on stage. Equal rows, so the four split the pane evenly. */
+.x4e-rail {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-auto-rows: 1fr;
+  border-right: 1px solid var(--hair);
+  background: #fff;
+}
+.x4e-rail li + li { border-top: 1px solid var(--hair) }
+.x4e-item {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  padding: 18px clamp(22px, 2.6vw, 36px);
+  border: 0; background: none; cursor: pointer;
+  font: inherit; color: inherit;
+}
+/* the active marker — a hairline of accent down the row's left edge */
+.x4e-item::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity .35s cubic-bezier(.32,.72,0,1);
+}
+/* the wait — a hairline across the foot of the active row that fills over that
+   claim's dwell. Sits on the divider the next row draws, so it costs no height
+   and reads as that hairline turning accent rather than as a new part. scaleX
+   off a left origin, so the fill is compositor work and never lays out. */
+.x4e-item-tick {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: left center;
+  animation: x4e-tick linear forwards;
+}
+@keyframes x4e-tick { to { transform: scaleX(1) } }
+
+.x4e-item:hover { background: #F7F8FA }
+.x4e-item.is-active { background: #F7F8FA }
+.x4e-item.is-active::before { opacity: 1 }
+.x4e-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.x4e-item-body { display: block; min-width: 0 }
+.x4e-item-title {
+  display: block;
+  font-family: var(--font-display); font-weight: 450;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
+}
+.x4e-item-p {
+  display: block; margin-top: 6px;
+  font-family: var(--font-body); font-size: 13.5px; line-height: 1.55;
+  color: var(--body-gray);
+  max-width: 48ch;
+}
+
+/* The stage the visuals share — a white panel on grainy blue. All four visuals
+   occupy the same cell; only opacity separates them. The panel they land on is
+   still white, so the drawn visuals keep their light-ground defaults (the
+   .xv-*, .xvi-* and .what-* rules further down) with no re-pointing.
+
+   100% 100% rather than cover: the card's inset is part of the image, and cover
+   would crop it away on the long edges. The file carries preserveAspectRatio=
+   "none" to go with it — left at the default the SVG fits itself inside the
+   stage at its own ratio and letterboxes, which reads as a blue band under the
+   card. Its viewBox is authored at this stage's ratio, so "none" has only a
+   couple of percent to stretch out and the corners stay round. */
+.x4e-stage {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  /* Grainy blue ground, white card floating on it. Four layers, top down:
+     the card (an SVG cut-out so it needs no element of its own — a
+     pseudo-element card would have to sit above the visuals or force a
+     stacking context on them), the grain,
+     a corner light, and the blue itself.
+
+     The grain is a repeating 320px tile rather than a stretched sheet: at this
+     stage's size a stretched noise smears into streaks, and the tile stitches
+     so the repeat leaves no grid. `overlay` is what makes it read as tooth in
+     the blue instead of grey confetti on top of it — it lightens the light end
+     and darkens the dark end of whatever is under it.
+
+     x4e-stage-frame.svg (flat blue border, no grain) and x4e-stage-mosaic.svg
+     (the gradient cells) are the two earlier grounds, both still on disk. */
+  background-color: #1B34A6;
+  background-image:
+    url('/assets/img/x4e-stage-card.svg'),
+    url('/assets/img/grain.svg'),
+    radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
+  background-size: 100% 100%, 320px 320px, auto, auto;
+  background-repeat: no-repeat, repeat, no-repeat, no-repeat;
+  background-position: center, 0 0, center, center;
+  background-blend-mode: normal, overlay, normal, normal;
+  /* what keeps the pane from collapsing — and what sets the section's scale.
+     The add-in is the page's lead product section, so it is the tall one; Fia
+     below it is the compact one (.fiag-stage keeps the shorter floor) */
+  min-height: clamp(440px, 70vh, 680px);
+}
+.x4e-visual {
+  grid-area: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  /* the ground image paints its own frame ~9.5% into each edge (glow included),
+     so the padding has to clear it or the visuals sit on the border. % padding
+     resolves against the stage's width on every side, which tracks the frame
+     because the image is stretched to the stage. */
+  padding: clamp(40px, 8.5%, 72px) clamp(48px, 9.5%, 88px);
+  min-width: 0;
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s cubic-bezier(.32,.72,0,1), visibility 0s linear .5s;
+}
+.x4e-visual.is-active {
+  opacity: 1; visibility: visible;
+  transition: opacity .5s cubic-bezier(.32,.72,0,1), visibility 0s;
+}
+.x4e-visual > * { width: 100%; max-width: 660px }
+
+/* Every visual is mounted the whole time — only opacity separates them — so
+   left alone each one's animation runs its course off stage: the pill stagger
+   has long finished by the time you see it, and the citation trace is caught
+   wherever its 9s loop happens to be, often on the dark beat between two
+   sources, so the claim arrives as a dead grey spreadsheet.
+
+   Keep this list in step with the animation names the visuals actually use.
+   It listed .xv-cite / .xv-fx, which the audit visual stopped using when it
+   was rebuilt on .xvq-*, so the gate silently covered nothing and the trace
+   went back to being caught mid-cycle — the exact fault this rule exists for.
+   A stale selector here fails quietly: nothing errors, the animation simply
+   stops being restarted.
+
+   Cutting the animation off the inactive visuals and leaving it declared only
+   on the active one restarts it from frame one every time a visual reaches the
+   stage: an animation whose name computes to `none` is removed outright, and
+   re-declaring it creates a new one starting at zero. `paused` would not do —
+   it freezes mid-cycle and resumes there. */
+.x4e-visual:not(.is-active) .xvq-trace,
+.x4e-visual:not(.is-active) .xvi-slot,
+.x4e-visual:not(.is-active) .xvi-pill,
+.x4e-visual:not(.is-active) .xvi-cursor,
+.x4e-visual:not(.is-active) .xvi-click { animation: none }
+
+/* scroll reveal — mirrors .secx-reveal */
+.x4e-reveal { opacity: 0; transform: translateY(24px); filter: blur(6px) }
+.x4e-frame.is-in .x4e-reveal {
+  opacity: 1; transform: none; filter: none;
+  transition: opacity .8s cubic-bezier(.32,.72,0,1), transform .8s cubic-bezier(.32,.72,0,1), filter .8s cubic-bezier(.32,.72,0,1);
+  transition-delay: var(--d, 0s);
+}
+@keyframes x4eSwap {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* the drawn visuals — all four share the palette so swaps read as one scene */
+.xv { width: 100%; height: auto; display: block; }
+.xv text { font-family: var(--font-body); }
+.xv-panel { fill: #fff; stroke: #E4E1DA; }
+.xv-grid { stroke: #EEEBE4; stroke-width: 1; }
+.xv-bar { fill: #E9E6DF; }
+.xv-bar-hit { fill: var(--accent); opacity: .55; }
+.xv-ink { fill: var(--ink); font-size: 13px; font-weight: 500; }
+.xv-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  fill: #9B968C;
+  text-transform: uppercase;
+}
+.xv-tag { fill: #F1EFE9; }
+/* 04 · Enterprise ready — a label over the row of certification seals, and
+   nothing else. A ticked SVG dial ran here first, then a supplied shield
+   render; both were pictures standing in for the claim, and the seals are the
+   claim's own evidence, so they hold the cell alone.
+
+   A column laid out in normal flow inside .x4e-visual's padding, like the drawn
+   visuals. It used to be absolute against the whole stage (inset: 0) because
+   the render carried its own near-black plate and any inset framed that plate
+   as a rectangle pasted onto the ground. With the art gone there is nothing
+   left to bleed — and in flow the visual contributes its own height, which is
+   what lets the stage grow for the seals on narrow screens where its min-height
+   is only 240px. */
+.xvs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* was SVG <text> centred over the dial, then the shield's caption; with the
+   artwork gone it is the seal row's label, and the column centres the pair in
+   the cell */
+.xvs-eyebrow {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: .78;
+}
+
+/* The certification seals, moved here from the Security section's head band —
+   this is the claim they are evidence for. Same seal design they had there:
+   white plate, mono issuer over a display name, dashed and pilled for the ones
+   not yet awarded. */
+.xvs-certs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 1.6vw, 22px);
+  /* tighter than it was under the shield: the label is the only thing above the
+     row now, and it is its caption rather than a separate beat */
+  margin: clamp(18px, 3%, 28px) 0 0;
+  /* the pending pills straddle the seals' lower edge — pad so the row keeps
+     them clear of the card's lower inset */
+  padding-bottom: 12px;
+}
+.xvs-seal {
+  position: relative;
+  /* the seals are the whole visual now, so they carry the cell at the size the
+     drawn visuals fill it at, rather than the badge size they had beside the
+     Security heading */
+  width: clamp(104px, 11vw, 148px); aspect-ratio: 1; border-radius: 22px;
+  flex: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: #fff; border: 1px solid var(--hair); color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 18px 40px -24px rgba(20,36,46,.35), 0 1px 2px rgba(20,36,46,.05);
+}
+/* sits back from the awarded seals: dashed edge, no lift, slightly muted name */
+.xvs-seal--pending {
+  border-style: dashed;
+  border-color: var(--hair-strong);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+  color: var(--body-2);
+}
+/* the pill, straddling the seal's lower edge */
+.xvs-seal-pill {
+  position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px; white-space: nowrap;
+  background: #fff; border: 1px solid var(--accent-soft2);
+  box-shadow: 0 1px 2px rgba(20,36,46,.06);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
+}
+/* hollow ring — reads as pending next to the certified seals beside it */
+.xvs-seal-pill::before {
+  content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%;
+  border: 1.5px solid var(--accent); opacity: .55;
+}
+.xvs-seal-top {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--body-2);
+}
+.xvs-seal-rule { width: 46px; height: 1px; background: var(--hair-strong) }
+.xvs-seal-name {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(21px, 2.1vw, 28px); letter-spacing: -.01em;
+}
+
+/* Compact — the size the seals wear beside a heading rather than alone on a
+   stage. Everything else about them is unchanged, so the two rows on the page
+   read as the same object at two sizes. */
+.xvs-certs--compact { gap: 12px; padding-bottom: 14px }
+.xvs-certs--compact .xvs-seal { width: clamp(84px, 8vw, 104px); border-radius: 16px; gap: 6px }
+.xvs-certs--compact .xvs-seal-top { font-size: 9.5px; letter-spacing: .13em }
+.xvs-certs--compact .xvs-seal-rule { width: 30px }
+.xvs-certs--compact .xvs-seal-name { font-size: clamp(16px, 1.4vw, 19px) }
+.xvs-certs--compact .xvs-seal-pill {
+  bottom: -11px; padding: 3px 9px; font-size: 9px;
+}
+
+/* the source card the citation is currently coming from */
+.xv-panel--hit { stroke: var(--accent); }
+/* small mono sub-line inside a chip (coverage counts, provider lists) */
+
+/* 01 · Complex workflows borrows the self-completing checklist marquee
+   (WorkflowMarquee.jsx, styled by the .what-* rules) — centred on the light
+   stage and scaled down from its full-section size. */
+.xv-marquee { display: flex; justify-content: center; }
+.xv-marquee .what-list-viewport {
+  /* 5% shorter than it was (228/32.3vh/314): the window shows a little less of
+     the column, the rows themselves are unchanged */
+  height: clamp(217px, 30.7vh, 298px);
+  margin-inline: 0;
+}
+.xv-marquee .what-item { font-size: clamp(22px, 2vw, 32px); }
+
+/* 02 · Fully auditable — the trace drawing, with the rest of the source shelf
+   following as pills so "anything" reads as a real list. */
+.xvc { width: 100%; }
+.xvc .xv { max-width: 640px; margin: 0 auto; }
+
+/* The citation loop. Three source cards rest on the left and three empty cells
+   on the right; one pair at a time lights up — the card takes an accent ring
+   and a badge on its edge, the connector runs across, and the cell fills with
+   the value and, under it, the source it came from.
+
+   Strictly one at a time. Three connectors crossing at once would read as a
+   diagram of a system; one at a time reads as a thing happening, and it also
+   keeps the reader's eye on the pairing, which is the whole claim.
+
+   9s, three beats of 3s. Negative delays put each trace on its own beat: a
+   trace with --xvd: -6s starts 6s into the cycle, so its window (the first
+   third) has already gone by and it next plays at t=3s. */
+.xvq-trace {
+  opacity: 0;
+  animation: xvqBeat 9s cubic-bezier(.4, 0, .2, 1) infinite;
+  animation-delay: var(--xvd, 0s);
+}
+.xvq-trace--1 { --xvd: -6s; }
+.xvq-trace--2 { --xvd: -3s; }
+
+/* the badge straddling the card's right edge, the way the reference does it —
+   the white ring is what lets it sit on the edge without merging into it */
+.xvq-badge { fill: var(--accent); stroke: #fff; stroke-width: 2.5; }
+.xvq-mark { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* dashed, so it reads as a reference rather than as a pipe carrying data */
+.xvq-conn { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+
+/* the kind mark on a source card — drawn rather than lettered, so the only
+   words on the card are its title */
+.xvq-gl {
+  fill: none;
+  stroke: #8A8479;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.xvq-gl--on { stroke: var(--accent); }
+
+/* the open card is drawn over an opaque ground rather than pushing the shut
+   cards aside, so this has to be the stage card's own white, not a tint */
+.xvq-back { fill: #fff; }
+/* the passage inside an open card, with the line the figure was read off */
+.xvq-band { fill: rgba(53, 80, 200, .1); }
+.xvq-quote { fill: var(--accent); }
+.xvq-found {
+  fill: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* The sheet at rest: a full worksheet, column heads and row numbers and nine
+   rows of figures already in it, quiet and uncited. It matters that these are
+   not empty — an empty grid reads as "FinSynth will fill this in", and the
+   claim is about the numbers you already have. */
+.xvq-head {
+  fill: #9A9488;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .06em;
+}
+.xvq-rn {
+  fill: #A9A396;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+}
+.xvq-cl { fill: #6E6960; font-size: 11px; font-weight: 500; }
+.xvq-cn {
+  fill: #55514A;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+/* The cited cells, drawn the way a spreadsheet draws a selected range rather
+   than as a panel dropped on top of the sheet: the row keeps its own text at
+   its own position and size, and what changes is that A:B are washed, ringed
+   and re-inked in the accent. Nothing moves, nothing is covered, so the reader
+   sees FinSynth pointing at a cell that was already there.
+
+   These are stacked in paint order and each one is load-bearing:
+   rowlit  the number gutter, so the whole row reads as picked out
+   clear   an opaque patch — the resting row's grey text is painted underneath
+           this group, and the wash alone would leave it showing through
+   sel     the wash itself
+   seldiv  the A|B edge, redrawn over the wash; a selected range still shows
+           its inner gridlines and without this the two cells merge into one
+   selbox  the range border
+   lit     the label and figure re-inked, drawn last so they sit above it all */
+.xvq-rowlit { fill: rgba(53, 80, 200, .07); }
+.xvq-clear { fill: #fff; }
+.xvq-sel { fill: rgba(53, 80, 200, .13); }
+.xvq-seldiv { stroke: rgba(53, 80, 200, .22); stroke-width: 1; }
+.xvq-selbox { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+/* after .xvq-cl/.xvq-cn, which it has to beat at equal specificity */
+.xvq-lit { fill: var(--accent); font-weight: 600; }
+
+/* The citation sits on its own line under the grid, with a small accent square
+   for a key. It used to ride inside the cell, which only worked while the cell
+   was an opaque block big enough to hold two lines of type — on a real row
+   there is nowhere to put it that isn't on top of the row below. */
+.xvq-citemark { fill: var(--accent); }
+.xvq-cite {
+  fill: rgba(53, 80, 200, .82);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+
+/* in fast, hold, out — the gap at the end of each third is the pause that keeps
+   the loop from reading as a strobe */
+@keyframes xvqBeat {
+  0% { opacity: 0 }
+  4%, 27% { opacity: 1 }
+  32%, 100% { opacity: 0 }
+}
+/* still frame: the first pair lit, the other two left as empty cells — which is
+   the honest still, since only one source can be shown landing at a time */
+@media (prefers-reduced-motion: reduce) {
+  .xvq-trace { animation: none; opacity: 0 }
+  .xvq-trace--0 { opacity: 1 }
+}
+/* Set off the source kinds from the trace diagram above them. This has to beat
+   .xvi-grid's own `margin: 0`, which is declared further down the file at the
+   same specificity — a bare .xvi-grid--tight loses to it, so the 20px that used
+   to sit here never applied and the row has been sitting flush against the
+   drawing. (A `gap: 8px 9px` was dead here for the same reason; dropped rather
+   than revived, since .xvi-grid's 11/12 is what has been on screen.) */
+.xvc .xvi-grid--tight { margin-top: 56px; }
+
+.xvi-grid--tight .xvi-pill { padding: 5px 14px 5px 5px; gap: 7px; }
+.xvi-grid--tight .xvi-badge { width: 21px; height: 21px; }
+.xvi-grid--tight .xvi-badge--glyph svg { width: 16px; height: 16px; }
+.xvi-grid--tight .xvi-label { font-size: 12.5px; }
+
+/* 03 · Integrated — the connector shelf scattered across a field, with the one
+   thing left to do held in the middle. Real DOM rather than SVG so the labels
+   stay selectable text and the pills keep the same styling the audit visual's
+   list uses. */
+.xvi { width: 100%; }
+.xvi-field {
+  position: relative;
+  /* a fixed ratio, so the hand-set percentage placements hold their
+     composition at every stage width instead of squashing together */
+  aspect-ratio: 16 / 11;
+  /* lit from the middle: the blue is strongest under the focal pill and gone
+     by the edges, the way the reference wash falls */
+  background: radial-gradient(58% 62% at 50% 50%,
+    rgba(84, 131, 240, .20) 0%, rgba(84, 131, 240, .07) 45%, rgba(255, 255, 255, 0) 74%);
+  /* a vignette: the outermost pills sit further back than the ones near the
+     focal pill, so the shelf reads as depth rather than as a flat ring. It
+     bottoms out at .58 rather than at transparent — running it to zero took the
+     corner pills' outer edges off with it, and a source that fades out of the
+     picture is the opposite of the claim the field is making. */
+  -webkit-mask-image: radial-gradient(94% 96% at 50% 50%, #000 74%, rgba(0, 0, 0, .58) 100%);
+  mask-image: radial-gradient(94% 96% at 50% 50%, #000 74%, rgba(0, 0, 0, .58) 100%);
+}
+/* placement and drift. `--ax` is the horizontal anchor: 0 hangs the pill's left
+   edge on `--x`, -100% its right edge, which is what keeps a long label inside
+   the card at any width. The slow float is desynced by index so the field
+   breathes rather than pulsing in unison; `translate` rather than `transform`
+   keeps it clear of the slot's own placement transform */
+.xvi-slot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(var(--ax, -50%), -50%) rotate(var(--r));
+  animation: xviDrift 9s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -830ms);
+}
+@keyframes xviDrift {
+  0%, 100% { translate: 0 0 }
+  50% { translate: 0 -5px }
+}
+/* The shelf sits behind the focal pill, but it has to be readable — these are
+   the names of the sources FinSynth already connects to, and a reader who can't
+   make out "Global Filings" or "Capital IQ" gets none of the claim. .38 held
+   them back so far they read as decoration. .78 keeps the ranking without
+   costing the words: the focal pill still wins on ground, type size, weight,
+   the accent badge and the shadow, none of which the shelf has. */
+.xvi-field .xvi-pill--ghost {
+  opacity: .78;
+  white-space: nowrap;
+  animation: xviGhostIn .55s cubic-bezier(.32, .72, 0, 1) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+@keyframes xviGhostIn {
+  from { opacity: 0; translate: 0 10px }
+  to { opacity: .78; translate: 0 0 }
+}
+/* the offer: same pill, held in the centre and lifted off the field. It lands
+   after the shelf has settled, so the field reads as the ground it arrives on */
+.xvi-field .xvi-pill--focal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 10px 24px 10px 10px;
+  gap: 11px;
+  white-space: nowrap;
+  border-color: rgba(53, 80, 200, .3);
+  box-shadow: 0 20px 44px -20px rgba(16, 30, 90, .45), 0 2px 6px rgba(16, 30, 90, .06);
+  animation: xviFocalIn .7s cubic-bezier(.2, .82, .24, 1) .34s both;
+}
+@keyframes xviFocalIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.9) }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1) }
+}
+.xvi-pill--focal .xvi-label { font-size: 15px; font-weight: 550; }
+.xvi-badge--focal {
+  width: 27px;
+  height: 27px;
+  background: var(--accent);
+  color: #fff;
+}
+.xvi-badge--focal svg { width: 17px; height: 17px; }
+
+/* The pointer, hanging off the pill's lower-right the way a real cursor sits on
+   a button it's about to press. It comes in from below-right, presses, holds,
+   and leaves the way it came, on a loop that starts once the pill has landed.
+   Movement lives in `translate` / `scale` rather than `transform` so it never
+   fights the pill's own centring transform. */
+.xvi-cursor {
+  position: absolute;
+  /* the tip lands inside the pill's bottom-right padding: on the button, but
+     clear of the label */
+  right: 14px;
+  bottom: -14px;
+  width: 20px;
+  height: 22px;
+  animation: xviPoint 3.6s cubic-bezier(.32, .72, 0, 1) 1.1s infinite;
+}
+.xvi-cursor svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: #fff;
+  stroke: rgba(18, 24, 46, .82);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 4px rgba(16, 30, 90, .3));
+}
+/* the click, ringing out from the arrow's tip — inside the cursor so it rides
+   along with it instead of needing its own placement */
+.xvi-click {
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border: 2px solid var(--accent);
+  background: rgba(53, 80, 200, .14);
+  border-radius: 50%;
+  opacity: 0;
+  animation: xviClick 3.6s ease-out 1.1s infinite;
+}
+@keyframes xviPoint {
+  0% { translate: 16px 14px; opacity: 0; scale: 1 }
+  10% { opacity: 1 }
+  26% { translate: 0 0; scale: 1 }
+  31% { scale: .86 }
+  37% { scale: 1 }
+  80% { translate: 0 0; opacity: 1 }
+  96%, 100% { translate: 16px 14px; opacity: 0 }
+}
+@keyframes xviClick {
+  0%, 29% { opacity: 0; scale: .3 }
+  33% { opacity: .85; scale: .5 }
+  70%, 100% { opacity: 0; scale: 2.6 }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xvi-slot { animation: none }
+  .xvi-field .xvi-pill--ghost { animation: none; opacity: .78 }
+  .xvi-field .xvi-pill--focal { animation: none; opacity: 1; transform: translate(-50%, -50%) }
+  /* the still: the pointer resting on the pill, no press */
+  .xvi-cursor { animation: none }
+  .xvi-click { animation: none }
+}
+.xvi-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 11px 12px;
+}
+.xvi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 18px 7px 7px;
+  border: 1px solid #E4E1DA;
+  border-radius: 999px;
+  background: #fff;
+  animation: x4eSwap .5s cubic-bezier(.32, .72, 0, 1) both;
+  animation-delay: calc(var(--i) * 18ms);
+}
+.xvi-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* a coverage count riding along inside the pill, e.g. "12,000+ companies" */
+.xvi-sub {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #9B968C;
+}
+.xvi-badge {
+  flex: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.xvi-badge svg { width: 100%; height: 100%; display: block; }
+.xvi-badge img { width: 100%; height: 100%; object-fit: contain; }
+/* categorical sources — a drawn outline mark, no disc behind it */
+.xvi-badge--glyph { color: #7C776D; }
+.xvi-badge--glyph svg { width: 19px; height: 19px; }
+/* a brand shape on a white disc, the way the real logos sit */
+.xvi-badge--mark {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #E7E4DD;
+}
+.xvi-badge--mark svg,
+.xvi-badge--mark img { width: 16px; height: 16px; }
+/* wordmark brands — their letters on a brand-tinted disc */
+.xvi-badge--mono {
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  line-height: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .xvi-pill { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x4e-reveal { opacity: 1; transform: none; filter: none; transition: none }
+  .x4e-visual { transition: none }
+  .x4e-item::before { transition: none }
+  /* the clock stands down under reduced motion, so there is no wait to draw */
+  .x4e-item-tick { display: none }
+}
+
+@media (max-width: 1100px) {
+  .x4e-head { padding: 48px 44px 60px }
+  .x4e-visual { padding: 32px 28px }
+}
+
+/* Narrow: the rail and the stage stack — all four claims still visible on
+   top, the crossfading stage under them. */
+@media (max-width: 900px) {
+  .x4e-pane { grid-template-columns: 1fr }
+  .x4e-rail { border-right: none; border-bottom: 1px solid var(--hair) }
+
+  .x4e-sec { padding: 72px 0 80px }
+  .x4e-head { flex-direction: column; align-items: flex-start; gap: 24px; padding: 40px 28px 44px }
+  .x4e-item { padding: 20px 28px }
+  .x4e-item-p { max-width: none }
+  .x4e-stage { min-height: 240px }
+  .x4e-visual { padding: 28px 20px }
+  /* shrink the seals so the three still go one row across a phone rather than
+     wrapping two-and-one */
+  .xvs-certs { gap: 14px }
+  .xvs-seal { width: 88px; border-radius: 15px }
+  .xvs-seal-top { font-size: 9px; letter-spacing: .12em }
+  .xvs-seal-name { font-size: 17px }
+  .xvs-seal-rule { width: 28px }
+  /* the pill is wider than the 88px seal it hangs off at the desktop size, so
+     the two pending ones ran within a couple of px of each other — tighter
+     type and padding bring it back inside its own seal's width */
+  .xvs-seal-pill {
+    bottom: -10px; padding: 3px 6px; gap: 4px;
+    font-size: 8px; letter-spacing: .08em;
+  }
+  .xvs-seal-pill::before { width: 5px; height: 5px }
+}
+
+/* ══ Fia — wears the same framed layout as "FinSynth for Excel" (.x4e-*):
+      hairline frame, head band, then a pane splitting the rail of three
+      capabilities from the stage. The window is drawn after the real Fin
+      Chat webapp (history sidebar + empty state + composer); swap the mock
+      for the real shot inside .x4e-visual when it exists ══ */
+/* one-liner riding under the headline in the frame's head band */
+/* no max-width — the line is short enough to sit unbroken under the title */
+.fiag-sub {
+  margin: 12px 0 0;
+  font-size: clamp(15px, 1.4vw, 17px); line-height: 1.55;
+  color: var(--secondary);
+}
+/* the Fia rail states capabilities, it doesn't navigate — no pointer, no
+   hover tint, no active marker */
+.x4e-item--static { cursor: default }
+.x4e-item--static:hover { background: none }
+/* Fia's pane gives the stage more of the width than the add-in's does (1.34
+   against 1.12). The stage clips the window, so the slab of app on screen is
+   the stage's width divided by the shot's scale — and the empty-state headline
+   needs ~1275 source px inside it. At the shared .88/1.12 split that slab is
+   665px, which only holds 1275 source px if the shot is drawn at 0.52, small
+   enough that the sidebar type turns to grey mush. Widening the stage buys the
+   headline back at a scale the UI survives. Scoped to the id so the add-in
+   section keeps the shared split, and held above the 900px stack rule's
+   breakpoint so narrow screens still get one column.
+
+   .66 was too mean to the claims — three rows of two-line body copy inside a
+   third of the frame wrap to four and five lines each. .80 gives the rail back
+   most of the add-in section's .88 while still leaving the stage wider than the
+   add-in's; the window is a fixed 855px that already bleeds off the right, so
+   what the stage loses comes off that bleed rather than off the app. */
+@media (min-width: 901px) {
+  #fia-agent .x4e-pane { grid-template-columns: minmax(0, .80fr) minmax(0, 1.20fr) }
+}
+/* one window instead of four crossfading visuals, on the same grainy blue
+   ground the add-in stage carries — minus that stage's white card layer. The
+   browser window is already a white panel with its own lift, so a card cut out
+   underneath would only put a second edge behind the one the window draws, and
+   the window bleeds off the right (see below), so that edge would be sliced
+   mid-run anyway. Everything else — the blue, the corner light, the grain and
+   its overlay blend — is inherited from .x4e-stage untouched, so the two
+   sections read as one ground.
+
+   The floor is the shorter of the two — the add-in section above is the tall
+   one, and Fia reads as its compact companion */
+.fiag-stage {
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
+  background-size: 320px 320px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-position: 0 0, center, center;
+  background-blend-mode: overlay, normal, normal;
+  min-height: clamp(285px, 41.8vh, 399px);
+}
+/* the window is wider than the stage on purpose and runs off its right edge
+   (the stage already clips). Sized down to fit, the shot's UI shrinks to
+   texture — bled, it stays near its own scale and the section reads as a
+   glimpse into the app rather than a thumbnail of it. Hence no right padding
+   and a left-packed visual: the cut has to land past the frame, not inside it. */
+.fiag-stage .x4e-visual {
+  justify-content: flex-start;
+  padding: clamp(21px, 4.3%, 40px) 0 clamp(21px, 4.3%, 40px) clamp(28px, 5.5%, 52px);
+}
+/* The window's width sets the shot's scale, and the scale sets how much of the
+   app the stage's fixed slab can hold: visible source px = stage slab / scale,
+   so a wider window shows the shot bigger and shows less of it. 992 against the
+   1560-wide crop draws it at .59, which puts the empty-state headline's right
+   edge well inside the cut. Retune this and the crop together — on its own it
+   only trades reach for size.
+   942 is 992 less 5%: the window's height follows its width, so taking the
+   section 5% shorter means taking the window 5% narrower, not cropping it. */
+.fiag-stage .x4e-visual > * { width: 942px; max-width: none; flex: none }
+
+/* ── the window ──────────────────────────────────────────────────────── */
+/* the frame is a browser, not a bare app window: tinted chrome with traffic
+   lights + a tab strip, and the page floating inset below on its own
+   surface — the shadow is the reference's soft, wide falloff, not a card
+   shadow.
+
+   The chrome is the reference's dusty pink rather than the page's neutrals:
+   the stage behind it is our blue, and a pink window is the one tint that
+   reads as "someone's browser" instead of another FinSynth surface. Every
+   outline in here is a warm hairline off that same pink, so the tabs, the
+   page inset and the shot's top edge all belong to the one frame. Held as
+   locals so the whole treatment retunes from these five lines. */
+.fiag-window {
+  --fiag-chrome: #E9D3D5;
+  --fiag-line: #D9BEC2;      /* outlines: the chrome, a shade deeper */
+  --fiag-tab: #F7EEEE;       /* the active tab, lifted toward the page */
+  /* resting tabs: barely lifted off the chrome. They were a half-step below
+     the active tab, which put three near-equal pills in the strip and left
+     nothing saying which one you're looking at — the point of the strip is
+     that FinSynth is the tab in front */
+  --fiag-rest: rgba(255,255,255,.18);
+  --fiag-paper: #FDFAFA;     /* the page ground under the toolbar row */
+
+  width: min(100%, 960px);
+  border: 1px solid var(--fiag-line); border-radius: 18px;
+  background: var(--fiag-chrome);
+  /* warm-toned rather than the page's blue-grey — a neutral shadow under a
+     pink window reads as dirt on the stage */
+  box-shadow:
+    0 1px 2px rgba(74,38,43,.05),
+    0 24px 48px -20px rgba(74,38,43,.18),
+    0 56px 112px -32px rgba(74,38,43,.24);
+  overflow: hidden;
+}
+.fiag-chrome {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px 7px;
+}
+.fiag-lights { display: inline-flex; gap: 7px; margin-right: 6px }
+.fiag-lights i { width: 11px; height: 11px; border-radius: 50% }
+.fiag-lights i:nth-child(1) { background: #ff5f57 }
+.fiag-lights i:nth-child(2) { background: #febc2e }
+.fiag-lights i:nth-child(3) { background: #28c840 }
+/* the pinned-tab group — a translucent pill of workspace shortcuts, like the
+   reference's Work / Gmail / Calendar cluster */
+.fiag-pins {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 5.5px 11px; border-radius: 9px;
+  background: var(--fiag-rest); border: 1px solid rgba(217,190,194,.55);
+  font-size: 11.5px; font-weight: 550; color: rgba(58,37,40,.52);
+}
+.fiag-pins svg { width: 12px; height: 12px; color: rgba(58,37,40,.42); flex: none }
+.fiag-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5.5px 14px; border-radius: 9px;
+  background: var(--fiag-tab); border: 1px solid var(--fiag-line);
+  box-shadow: 0 1px 2px rgba(74,38,43,.07);
+  font-size: 12px; font-weight: 550; color: #3A2528;
+}
+/* a resting tab sits translucent and quiet next to the active one */
+.fiag-tab--rest {
+  background: var(--fiag-rest); box-shadow: none;
+  border-color: rgba(217,190,194,.55);
+  font-weight: 500; color: rgba(58,37,40,.52);
+}
+.fiag-tab--rest svg { width: 12px; height: 12px; color: rgba(58,37,40,.42); flex: none }
+.fiag-favicon { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none }
+.fiag-tab-add { display: inline-flex; color: #96777C; margin-left: 2px }
+.fiag-tab-add svg { width: 13px; height: 13px }
+.fiag-chrome-right {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 12px;
+  color: #96777C;
+}
+.fiag-chrome-right svg { width: 13px; height: 13px; flex: none }
+
+/* the page — an inset surface with its own toolbar, like a real tab. Warm
+   white, not pure: the shot below it is cold white, and the half-step keeps
+   the browser's toolbar row visibly the browser's */
+.fiag-page {
+  margin: 0 8px 8px; border-radius: 12px;
+  background: var(--fiag-paper); border: 1px solid var(--fiag-line);
+  box-shadow: 0 1px 3px rgba(74,38,43,.06);
+  overflow: hidden;
+}
+/* no hairline under the toolbar — in the reference it floats over the page */
+.fiag-toolbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px 10px;
+  color: #6B4E52;
+}
+.fiag-toolbar svg { width: 13px; height: 13px; flex: none }
+.fiag-tool-dim { opacity: .45 }
+.fiag-crumb {
+  margin-left: 6px; display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #96777C;
+}
+/* the crumb is a single site name now — the "/ Fin Chat" tail and its <em>
+   separator were cut, so there is nothing left for the muted colour to sit on */
+.fiag-crumb strong { font-weight: 550; color: #3A2528 }
+
+/* the page body is a screenshot of the workspace — the hairline is what tells
+   the browser's toolbar apart from the app's own header row inside the shot */
+.fiag-shot {
+  display: block; width: 100%; height: auto;
+  border-top: 1px solid var(--fiag-line);
+}
+
+@media (max-width: 900px) {
+  /* no room to bleed on a phone: the window comes back inside the stage and
+     sits centred, shot scaled down with it */
+  .fiag-stage .x4e-visual {
+    justify-content: center;
+    padding: 28px 20px;
+  }
+  .fiag-stage .x4e-visual > * { width: 100% }
+}
+
+.support-container {
+  flex: 1 1 auto;
+  min-height: calc(100vh - var(--navbar-height));
+  min-height: calc(100svh - var(--navbar-height));
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+  gap: 1rem;
+}
+
+.support-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.support-heading {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #4265cc;
+}
+
+.support-description {
+  text-align: center;
+  text-wrap: balance;
+}
+
+.support-content button {
+  width: fit-content;
+  padding: 0.25rem 0.5rem;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.button a {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.button-cta {
+  border-radius: 0.35rem;
+  background-color: #4265cc;
+  color: #ffffff;
+  border: none;
+}
+
+.button-cta:hover {
+  background-color: #3350a4;
+}
+
+.button-cta-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.button-cta-link img {
+  height: 1.5rem;
+  width: 1.5rem;
+}

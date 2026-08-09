@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1180" preserveAspectRatio="none">
+  <!-- the white card only, on a transparent ground: the stage paints its own
+       grainy blue underneath in CSS, so this layer just cuts the panel out of
+       it and casts the shadow that lifts the card off the blue. Stretched to
+       the stage with preserveAspectRatio="none", the same way the frame and
+       mosaic versions were. -->
+  <defs>
+    <filter id="lift" x="-15%" y="-12%" width="130%" height="126%">
+      <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#0B1E63" flood-opacity="0.34"/>
+    </filter>
+  </defs>
+  <rect x="106" y="74" width="908" height="1032" rx="22" fill="#fff" filter="url(#lift)"/>
+</svg>
