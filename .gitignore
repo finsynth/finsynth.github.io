@@ -9,3 +9,6 @@ dist
 
 # Playwright CLI session artifacts
 .playwright-cli/
+
+# Agent session decision logs
+_agent_session_decision_logs
