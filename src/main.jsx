@@ -11,7 +11,7 @@ window.scrollTo(0, 0)
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter> 
-      <App /> <Agentation />
+      <App /> {import.meta.env.DEV && <Agentation />}
     </BrowserRouter>
   </StrictMode>,
 )
