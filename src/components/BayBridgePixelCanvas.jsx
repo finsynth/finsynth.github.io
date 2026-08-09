@@ -16,7 +16,7 @@ import { useEffect, useRef } from 'react'
 // The bricks are the slow part by design, but the payoff is the sharp photo,
 // so the assemble stays short.
 // already greyscale at source, so the luminance sampling below is a no-op on it
-const SRC = '/assets/img/wall-street-bw.jpg'
+const SRC = '/assets/img/wall-street-bw.webp'
 
 // fraction of the assemble timeline a single tile takes to drop + settle
 const REVEAL_WINDOW = 0.16

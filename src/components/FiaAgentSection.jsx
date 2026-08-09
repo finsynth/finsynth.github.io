@@ -74,7 +74,7 @@ function ChatWindow() {
         {/* the page itself is the product shot */}
         <img
           className="fiag-shot"
-          src="/assets/img/fia-workspace.png"
+          src="/assets/img/fia-workspace.webp"
           alt="The FinSynth workspace: a thread history rail beside a new thread, ready for a question"
           loading="lazy"
           width="2000"

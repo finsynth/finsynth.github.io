@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react'
 // left-to-right staggered reveal — each cell pops in (ease-out-back) on a
 // column-swept + randomised delay. A gentle per-dot twinkle keeps the
 // field alive. No WebGL / deps. Static frame for reduced-motion visitors.
-const IMG_SRC = '/assets/img/bay-bridge.png'
+const IMG_SRC = '/assets/img/bay-bridge.webp'
 
 function DotBridgeCanvas({
   stageClassName = 'dot-globe__stage',

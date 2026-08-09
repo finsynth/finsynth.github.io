@@ -11,7 +11,7 @@ import { useEffect, useRef } from 'react'
 // forever. Fills the stage's full height, cover-cropping the source, and
 // honours an optional blank centre corridor so overlaid copy stays legible.
 // Static lit grid for reduced-motion visitors.
-const IMG_SRC = '/assets/img/sf-mosaic.png'
+const IMG_SRC = '/assets/img/sf-mosaic.webp'
 
 // fully-applied "hover" state, baked in as the peak of the resting look
 const LIT_GROW = 0.42  // extra scale at full intensity
