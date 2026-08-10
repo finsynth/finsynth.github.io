@@ -39,6 +39,11 @@ jobs:
       - name: SPA fallback (404.html)
         run: cp dist/index.html dist/404.html
 
+      # Explicit /support page: GitHub Pages serves support.html for /support
+      # with a 200 status, so curl/HEAD/crawlers don't hit the 404 fallback.
+      - name: Static /support page (support.html)
+        run: cp dist/index.html dist/support.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
