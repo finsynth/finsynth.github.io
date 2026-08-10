@@ -99,7 +99,7 @@ export default function FiaAgentSection({ id = 'fia-agent' }) {
                 Fia: FinSynth <span className="ttl-hl">beyond Excel</span>
               </h2>
               <p className="fiag-sub">
-                Same FinSynth engine, in a full research workspace, beyond the spreadsheet
+                Same FinSynth engine, in a full research workspace
               </p>
             </div>
           </div>

@@ -8,19 +8,7 @@ const FAQS = [
   },
   {
     q: 'Does FinSynth make up numbers?',
-    a: "No. Every figure is written with a citation to its source. If FinSynth can't find and cite a number, it won't invent one, and nothing gets written to your model without your approval first.",
-  },
-  {
-    q: 'Does my data or model ever leave my machine?',
-    a: "No. Excel operations run locally, on your machine. FinSynth's backend never reads, stores, or transmits your workbook.",
-  },
-  {
-    q: 'Does FinSynth work with my existing models?',
-    a: 'Yes. FinSynth works inside your existing Excel workbooks, no template, no rebuild required.',
-  },
-  {
-    q: 'Which surfaces does FinSynth run on?',
-    a: 'An Excel add-in and a webapp, the same agent either way.',
+    a: "No. Every figure is written with a citation to its source. If FinSynth can't find and cite a number, it won't invent one, and nothing gets written without your approval.",
   },
   {
     q: 'What data does FinSynth cover?',
@@ -28,7 +16,7 @@ const FAQS = [
   },
   {
     q: 'How is FinSynth different from a general AI assistant?',
-    a: "It's built specifically for financial work: it cites every number to its source, and never writes to your model without your approval.",
+    a: 'FinSynth is purpose-built and fine-tuned for public markets. Workflow depth, domain integrations, and auditability are much stronger for investment research use cases.',
   },
 ]
 

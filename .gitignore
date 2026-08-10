@@ -12,3 +12,6 @@ dist
 
 # Agent session decision logs
 _agent_session_decision_logs
+
+# Vite dep cache
+.vite

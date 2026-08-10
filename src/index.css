@@ -90,7 +90,19 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+html {
+  scroll-behavior: smooth; scroll-padding-top: 72px;
+  /* No scroll-snap here, deliberately. Snapping the two framed .x4e-sec
+     sections to the top does land their head bands neatly under the navbar,
+     but `proximity` fires on any scroll that merely stops near one, and both
+     sections are shorter than a 1026px-tall viewport — so they are always
+     candidates on a desktop screen. Measured with real wheel gestures of 360px
+     each: the gesture approaching #excel travelled 593px and the one
+     approaching #fia-agent 509px, dragging the reader 230px and 150px past
+     where they stopped and skipping the end of the preceding section. Landing
+     a nav jump under the navbar is what scroll-padding-top above is for; it
+     doesn't need to cost every manual scroll through the page. */
+}
 
 /* Keyboard focus: visible ring for all interactive elements (a11y).
    Uses the single blue accent; mouse clicks stay clean via :focus-visible. */
@@ -292,6 +304,127 @@ a { text-decoration: none; color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   .nav-drop-menu, .nav-drop-caret, .nav-drop-item { transition: none; }
+}
+
+/* ── Mobile navigation ──
+   Under 900px the link row is replaced (in Navbar.jsx, not hidden here) by a
+   button and a sheet that drops out of the bar's bottom edge. The sheet borrows
+   the bar's own glass so it reads as the bar growing taller rather than as a
+   card floating over the page. */
+.nav-burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--hair-strong);
+  border-radius: 9px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef1f8 100%);
+  color: var(--ink);
+  cursor: pointer;
+  flex: none;
+}
+.nav-burger-bars {
+  position: relative;
+  display: block;
+  width: 1.0625rem;
+  height: 0.6875rem;
+}
+.nav-burger-bars i {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.14s linear;
+}
+.nav-burger-bars i:nth-child(1) { top: 0 }
+.nav-burger-bars i:nth-child(2) { top: calc(50% - 0.75px) }
+.nav-burger-bars i:nth-child(3) { top: calc(100% - 1.5px) }
+/* the outer bars swing into an X and the middle one drops out */
+.nav-burger.is-open .nav-burger-bars i:nth-child(1) {
+  transform: translateY(calc(0.34375rem - 0.75px)) rotate(45deg);
+}
+.nav-burger.is-open .nav-burger-bars i:nth-child(2) { opacity: 0 }
+.nav-burger.is-open .nav-burger-bars i:nth-child(3) {
+  transform: translateY(calc(-0.34375rem + 0.75px)) rotate(-45deg);
+}
+
+.navbar-sheet[hidden] { display: none }
+.navbar-sheet {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* tall menus on short phones scroll inside the sheet instead of pushing the
+     page or running off the bottom of the screen */
+  max-height: calc(100dvh - var(--navbar-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.75rem 1rem 1.125rem;
+  /* nearly opaque, unlike the bar's glass: this one covers the hero photo, and
+     at 0.94 the headline read straight through the link labels */
+  background: rgba(255, 255, 255, 0.985);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(228, 233, 242, 0.9);
+  box-shadow: 0 18px 40px -18px rgba(20, 36, 46, 0.28);
+  animation: navSheetIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes navSheetIn {
+  from { opacity: 0; transform: translateY(-8px) }
+  to { opacity: 1; transform: none }
+}
+.navbar-sheet .nav-link {
+  padding: 0.6875rem 0.75rem;
+  font-size: 1rem;
+}
+/* Each dropdown prints as a labelled group. The heading is deliberately quiet:
+   it names the group, it isn't a tap target. */
+.nav-drop--flat {
+  display: block;
+  padding: 0.375rem 0 0.25rem;
+}
+.nav-drop-label {
+  margin: 0;
+  padding: 0.5rem 0.75rem 0.1875rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.navbar-sheet .nav-drop-item {
+  padding: 0.625rem 0.75rem 0.625rem 1.375rem;
+  font-size: 1rem;
+}
+.nav-sheet-signin {
+  margin-top: 0.625rem;
+  padding: 0.6875rem 0.75rem;
+  border-top: 1px solid var(--hair);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+@media (max-width: 900px) {
+  /* the sheet hangs off this box, so it has to be the positioning context */
+  .navbar-inner { position: relative }
+  /* .navbar-links used to be the flex child that pushed the actions right; with
+     the sheet taken out of flow, the margin does that job */
+  .navbar-right { margin-left: auto }
+  .nav-burger { display: inline-flex }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navbar-sheet { animation: none }
+  .nav-burger-bars i { transition: none }
 }
 
 .navbar-right {
@@ -744,7 +877,12 @@ button.play { border: none; padding: 0; appearance: none }
   font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
   text-transform: uppercase; letter-spacing: .18em; color: #fff; margin-bottom: 22px;
 }
-.foot-grid-new a {
+/* .foot-role is an <a> like the rest of the columns now that a role has
+   somewhere to land (a mailto — see src/data/roles.js), so it takes the same
+   baseline rhythm and the same hover shift as every other footer link. The
+   class is kept for the markup's sake; it carries no styling of its own. */
+.foot-grid-new a,
+.foot-grid-new .foot-role {
   display: block; width: max-content; font-family: var(--font-body); font-size: var(--fs-body);
   color: #fff; text-decoration: none; margin-bottom: 15px;
   transition: color .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
@@ -806,7 +944,9 @@ button.play { border: none; padding: 0; appearance: none }
 .footer-new.is-in .foot-grid-new > div:nth-child(1) { transition-delay: 80ms }
 .footer-new.is-in .foot-grid-new > div:nth-child(2) { transition-delay: 140ms }
 .footer-new.is-in .foot-grid-new > div:nth-child(3) { transition-delay: 200ms }
-.footer-new.is-in .foot-legal { transition-delay: 260ms }
+.footer-new.is-in .foot-grid-new > div:nth-child(4) { transition-delay: 260ms }
+/* stays behind the last column so the legal line still lands last */
+.footer-new.is-in .foot-legal { transition-delay: 320ms }
 @media (prefers-reduced-motion: reduce) {
   .foot-reveal { opacity: 1; transform: none; filter: none; transition: none }
   .foot-grid-new a, .foot-social-row a { transition: none }
@@ -1168,6 +1308,13 @@ button.play { border: none; padding: 0; appearance: none }
 @media (prefers-reduced-motion: reduce) {
   .faq-contact-action { transition: opacity .2s ease; }
 }
+/* On a touch device there is no hover to unfurl it, so Copy would stay folded
+   away forever and the chip's double-click-to-email is not a gesture a phone
+   has either — leaving the address on screen with nothing to do about it. Show
+   the button by default there; tapping it copies, which is the whole point. */
+@media (hover: none) {
+  .faq-contact-action { max-width: 90px; opacity: 1; margin-left: 0 }
+}
 /* continuous left rail with a shifting accent segment */
 .faq-list { position: relative; display: flex; flex-direction: column; max-width: 700px; margin-left: auto; width: 100% }
 .faq-list::before {
@@ -1250,119 +1397,35 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* ════════ RESPONSIVE ════════ */
 @media (max-width: 900px) {
-  .navbar-links { display: none; }
   .faq-grid { grid-template-columns: 1fr; gap: 48px }
   .faq-contact { padding-top: 32px }
   .foot-cols { flex-direction: column; gap: 56px }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
-  .foot-grid-new { justify-content: flex-start }
-  .foot-grid-new > div { padding: 0 20px 24px }
-  .foot-grid-new > div:first-child { padding-left: 20px; border-left: 1px solid rgba(255,255,255,.1) }
-  .foot-grid-new > div:nth-child(odd) { padding-left: 0; border-left: none }
+  /* Footer nav: two columns, explicitly. It used to be a wrapping flex row
+     whose divider rules keyed off :nth-child(odd) — that only lines up if two
+     columns land per row, and at tablet widths three did, so the third column
+     lost its divider mid-row and the fourth started a row with one. A grid
+     fixes the count instead of guessing it. */
+  .foot-grid-new {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+    width: 100%;
+  }
+  .foot-grid-new > div,
+  .foot-grid-new > div:first-child,
+  .foot-grid-new > div:nth-child(odd) {
+    min-width: 0;
+    padding: 0 0 32px;
+    border-left: 0;
+  }
 }
 
-/* Mobile "best on desktop" popup — rendered only on small screens (gated in JS),
-   so no media query is needed here. */
-.hero-desktop-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.hero-desktop-modal__scrim {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 18, 34, 0.55);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  animation: heroModalFade 0.24s ease both;
-}
-.hero-desktop-modal__card {
-  position: relative;
-  width: 100%;
-  max-width: 340px;
-  background: #fff;
-  border-radius: 18px;
-  padding: 30px 26px 26px;
-  text-align: center;
-  box-shadow: 0 24px 60px -20px rgba(10, 18, 34, 0.5);
-  animation: heroModalIn 0.28s cubic-bezier(0.2, 0.82, 0.24, 1) both;
-}
-.hero-desktop-modal__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 16px;
-  border-radius: 14px;
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-.hero-desktop-modal__icon svg { width: 26px; height: 26px; }
-.hero-desktop-modal__title {
-  font-family: var(--font-body);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  margin: 0 0 10px;
-}
-.hero-desktop-modal__btn {
-  width: 100%;
-  padding: 13px 20px;
-  border: 0;
-  border-radius: 11px;
-  background: var(--btn-blue-grad);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
-}
-.hero-desktop-modal__btn:hover { background: var(--btn-blue-grad-h); }
-.hero-desktop-modal__btn:active { transform: translateY(1px); }
-@keyframes heroModalFade { from { opacity: 0; } to { opacity: 1; } }
+/* Shared modal entrance, used by the "Try It" dialog. It lived with the old
+   mobile "best on desktop" gate; that gate is gone, the keyframes stay. */
 @keyframes heroModalIn {
   from { opacity: 0; transform: translateY(14px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-desktop-modal__scrim, .hero-desktop-modal__card { animation: none; }
-  .hero-desktop-modal__btn:active { transform: none; }
-}
-
-/* Mobile advisory banner — hidden on laptop/desktop, shown on tablets & phones.
-   Sits at the very top of the hero, just under the sticky navbar. */
-.hero-mobile-banner { display: none; }
-
-@media (max-width: 768px) {
-  .hero-mobile-banner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 10px 20px;
-    background: var(--btn-blue-grad);
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0;
-    text-align: center;
-    box-shadow: 0 1px 6px -2px rgba(20, 36, 46, 0.25);
-  }
-  .hero-mobile-banner svg { flex: none; width: 15px; height: 15px; }
 }
 
 /* ════════ MOBILE — phones & small tablets ════════ */
@@ -1383,7 +1446,17 @@ button.play { border: none; padding: 0; appearance: none }
      checklist viewport so it reads as a dense list, not a mostly-empty pane */
   .what-list-viewport { height: clamp(300px, 42vh, 380px); }
 
-  /* HowItWorks: keep the chat header from forcing horizontal overflow */
+  /* the two-column footer grid is set up above, at 900 — down here it only
+     tightens, so a 165px column doesn't spend half its height on gaps */
+  .foot-grid-new h4 { margin-bottom: 16px }
+  /* width: max-content off the desktop rule would push a long label out of its
+     column; auto lets it wrap inside one instead */
+  .foot-grid-new a,
+  .foot-grid-new .foot-role { width: auto; margin-bottom: 12px }
+  /* the © line has a row of its own down here rather than being pushed to a
+     right edge that no longer exists */
+  .foot-legal { gap: 14px }
+  .foot-copyright { margin-left: 0; text-align: left }
 }
 
 /* ════════ MOBILE — narrow phones ════════ */
@@ -1624,10 +1697,6 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--accent);
   font-weight: 700;
 }
-.hero-s2--globe .hero-excel-pill {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(255, 255, 255, 0.9);
-}
 /* primary CTA goes black on the glass panel (secondary stays ghost) */
 .hero-s2--globe .hero-s2-cta:not(.hero-s2-cta--ghost) {
   background: linear-gradient(180deg, #1b2130, #0b0f1a);
@@ -1646,6 +1715,11 @@ button.play { border: none; padding: 0; appearance: none }
   position: relative;
   z-index: 2;
   pointer-events: none;
+  /* .hero-s2 is a flex container, so this is a flex item and defaults to
+     min-width: auto — it refuses to shrink below the headline's min-content
+     width. On a phone that pushed the wrap ~28px wider than the viewport and
+     clipped the right edge of the copy. Zero lets the headline rewrap instead. */
+  min-width: 0;
 }
 
 .hero-s2-wrap a,
@@ -1686,7 +1760,9 @@ button.play { border: none; padding: 0; appearance: none }
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(1180px, 100%);
-  height: 660px;
+  /* tall enough to carry the wash past the backers row — the investor marks
+     are small and dark and lose the skyline underneath them otherwise */
+  height: 820px;
   max-height: 100%;
   z-index: -1;
   pointer-events: none;
@@ -1879,8 +1955,8 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
 /* ── "Try It" modal ─────────────────────────────────────────────────────────
    The hero's second primary CTA. Same page-idiom surface as the command box
    (--bg on --hair-strong, deep soft shadow) but lifted to a real full-page
-   dialog at the .hero-desktop-modal layer, so it clears the sticky navbar and
-   the formula bar. It reuses .hero-suggest__row for the sample prompts and the
+   dialog above every page layer, so it clears the sticky navbar and the
+   formula bar. It reuses .hero-suggest__row for the sample prompts and the
    .hero-answer query/thinking beats, so those need no new rules here — only the
    shell, the composer, the email step and the confirmation. */
 .hero-try {
@@ -2090,10 +2166,11 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
      wide enough to clear them would instead narrow every line of the query. */
   margin-top: 22px;
 }
-/* ── the ready card: what was built, and the one way to get it ──
+/* ── the ready card: what was built, and where to send it ──
    The output itself never renders in the modal, so this is the whole payoff
    screen — it has to feel finished rather than withheld: a settled green tick,
-   the real file name, and the Download button carrying the card's only weight. */
+   the real file name, and the email row right beneath it carrying the card's
+   only weight. */
 .hero-try__ready { margin-top: 14px; }
 
 .hero-try__ready-line {
@@ -2148,7 +2225,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.hero-try__dl { flex: none; }
+/* the email row, tucked straight under the file it sends — same form as the
+   standalone email step, only nearer the thing it's addressing */
+.hero-try__ready-form { margin-top: 10px; }
 
 .hero-try__ready-note {
   margin: 11px 0 0;
@@ -2158,15 +2237,7 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   color: var(--secondary);
 }
 
-/* the workbook echoed back on the email step, in place of a typed query */
-.hero-try__echo-file {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-}
-
-/* ── the email step ── */
+/* ── the email step (typed requests only — samples ask on the ready card) ── */
 .hero-try__echo-label {
   margin: 0 0 6px;
   font-family: var(--font-mono);
@@ -2340,16 +2411,24 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .hero-try { padding: 14px; align-items: flex-start; }
   .hero-try__card {
     padding: 24px 20px 22px;
+    /* vh on a phone is the height with the browser's bars retracted, so the
+       card's own scroller was sized taller than the screen and its last rows —
+       the email field and Send — sat under Safari's toolbar with nothing to
+       scroll. dvh is the height actually on screen; vh stays as the fallback. */
     max-height: calc(100vh - 28px);
+    max-height: calc(100dvh - 28px);
     margin-top: 8px;
   }
   .hero-try__title { font-size: 19px; }
   .hero-try__hint { display: none; }
   .hero-try__composer-foot { justify-content: flex-end; }
   .hero-try__ask-form { flex-direction: column; align-items: stretch; }
+  /* stacked, the flex basis would be read as a height and blow the input up
+     into a box — it goes full width and keeps its own height instead */
+  .hero-try__email { flex: none; width: 100%; }
   .hero-try__send { width: 100%; }
-  /* the file row drops its Download button onto its own line rather than
-     squeezing the name — .hero-try__send above already stretches it */
+  /* the file row is name-only now, so it just needs to wrap a long one under
+     its own mark rather than ellipsing it away on a narrow screen */
   .hero-try__file { flex-wrap: wrap; align-items: flex-start; }
   .hero-try__file-ic { margin-top: 1px; }
   .hero-try__file-txt { flex-basis: calc(100% - 31px); }
@@ -2363,28 +2442,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
 }
 
 /* once the pixel mosaic has settled, the trust line reads over it in solid ink */
-
-.hero-excel-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  /* 1.5× the original chip (feedback: "increase the size by .5x") */
-  padding: 5px 14px 5px 11px;
-  margin-bottom: 28px;
-  border: 1px solid var(--hair);
-  border-radius: 999px;
-  /* white fill + soft lift so the badge reads as a distinct chip over the
-     pixelated hero (feedback: "give a fill like this for backed by Accel") */
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 16px -8px rgba(16, 24, 40, .16);
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ink);
-}
-/* logo sized up so the Accel wordmark reads clearly (feedback: "barely
-   visible, increase the size a bit") */
-.hero-excel-pill img { height: 22px; width: auto; }
 
 /* ── Heading ── */
 /* The whole copy stack — title, lede, CTAs, trust line — scales as one unit, type
@@ -2410,7 +2467,12 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   line-height: 1.18;
   color: var(--ink);
   letter-spacing: var(--ls-display);
-  margin-bottom: calc(22px * var(--hero-scale));
+  /* One optical gap runs through the whole hero: headline → lede → buttons.
+     This is 3px under .hero-s2-lede's matching margin rather than equal to it,
+     because the lede's line-height leaves ~9px of empty space above its capitals
+     and only ~6px below its descenders — so the same margin measures wider above
+     the lede than below it. The two numbers differ; what you see doesn't. */
+  margin-bottom: calc(33px * var(--hero-scale));
   text-wrap: balance;
   /* Reserve every row the headline can occupy, so the CTA and ask input below
      never jump while the rotating segment types/deletes — they were impossible
@@ -2419,6 +2481,27 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
      ~3em, which can push row two into wrapping. Bumped ~5% so the rows always
      sit with a little more room. */
   min-height: 2.48em; /* 2 rows × 1.03 line-height + 0.42em row gap */
+  /* The reservation is always a little taller than the rows actually use, and
+     as a plain block that surplus sat under the last row — added to the margin
+     below, so the headline→lede gap ran ~10px wider than the lede→button one
+     between 768 and 1129px, where the reservation is a third row. Bottom-packed,
+     the surplus goes above the headline instead, where a vertically centred hero
+     just absorbs it, and the last row stays put whatever the rows above do.
+
+     Where the reservation does cover the tallest state, that is the whole fix.
+     It doesn't below 1024px: measured, the headline runs 2 rows down to 1124,
+     3 rows down to 1024, and 4 from 1023 — row two wraps once the longest
+     segment ("purpose-built for Asset Managers") outgrows the measure, with
+     0.4px to spare at 1024. So under 1024 the reservation is a row short and
+     the block below still shifts ~20px for the long segments. Reserving the
+     fourth row would only move the motion, not remove it: the headline's own
+     top rows would jump a full 48px line instead, which is more visible than
+     what it fixes. The height genuinely changes, so something has to give;
+     ending that needs row two to stop wrapping (shorter segments, or type that
+     keeps shrinking past the 42px clamp floor), not a bigger reservation. */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 /* Each headline row is a block with a tight internal line-height; the leading
@@ -2564,7 +2647,11 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
     calc(1.353vw * var(--hero-scale)),
     calc(21.33px * var(--hero-scale))
   );
-  font-weight: 500;
+  /* regular. This line only has to be read, not weighed — the headline above
+     it already carries the emphasis, and anything heavier here read as a
+     second bold lead-in competing with it. True black below does the
+     legibility work that extra weight would otherwise be doing. */
+  font-weight: 400;
   line-height: 1.5;
   /* true black, not the softer body ink: this line sits directly on the
      pixelated photo, where muted grey drops out of the mosaic */
@@ -2572,7 +2659,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   letter-spacing: 0;
   /* in ch, so the measure follows the type: two lines at any --hero-scale */
   max-width: 34ch;
-  margin: 0 auto calc(48px * var(--hero-scale));
+  /* the second half of the hero's one gap — see .hero-s2-title's margin-bottom
+     for why this number is 3px larger than that one */
+  margin: 0 auto calc(36px * var(--hero-scale));
   text-wrap: balance;
 }
 
@@ -2582,12 +2671,25 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
    step-up is continuous and nothing overflows the screen. Scaled by the same
    factor, so that stays true wherever --hero-scale is set. */
 @media (max-width: 560px) {
-  .hero-s2-title { font-size: calc(7.5vw * var(--hero-scale)); }
+  /* 6.4, not the 7.5 this rule carried when the headline was shorter: row one
+     ends in "research&nbsp;infrastructure," which by definition can't break, so
+     the row's min-content width is a hard floor on the whole hero. At 7.5 that
+     floor was ~28px wider than a 390px phone and it pushed the entire hero past
+     the screen edge — the copy was cut, not wrapped. 6.4 is the largest value
+     that keeps the clause inside the narrowest phone we lay out for (320px).
+     If that clause is ever reworded, re-measure this instead of trusting it. */
+  .hero-s2-title { font-size: calc(6.4vw * var(--hero-scale)); }
   .hero-s2-lede {
-    font-size: calc(3.1vw * var(--hero-scale));
+    /* the vw size alone bottoms out around 12px on a small phone, which is
+       under this page's body minimum — the floor is what it actually renders at */
+    font-size: max(14px, calc(3.1vw * var(--hero-scale)));
     max-width: 30ch;
-    margin-bottom: calc(38px * var(--hero-scale));
+    /* the leading correction above scales with the lede's type, and down here
+       the type is ~14px rather than 24px — so the two margins converge */
+    margin-bottom: calc(34px * var(--hero-scale));
   }
+  /* less inset on the copy block, so the headline gets the width back */
+  .hero-cell--mosaic { padding-left: 16px; padding-right: 16px; }
 }
 
 /* ── CTA button — embossed, brand color ── */
@@ -2626,6 +2728,129 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   margin-bottom: calc(18px * var(--hero-scale));
 }
 .hero-s2-ctas .hero-s2-cta { margin-bottom: 0; }
+
+/* ── Backers pill ──
+   "Backed by [Accel]", leading the copy stack above the headline, set in a
+   frosted-glass pill so it holds together as one object over the skyline
+   instead of dissolving into it. The blur does the legibility work that a
+   solid fill would otherwise have to, which keeps the photo readable through
+   it. Scales with the rest of the copy stack via --hero-scale.
+   The cell is a centred column flex, so the pill shrink-wraps its contents
+   without needing an explicit width. */
+.hero-backers {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: calc(11px * var(--hero-scale));
+  row-gap: calc(4px * var(--hero-scale));
+  margin: 0 0 calc(26px * var(--hero-scale));
+  /* Vertical padding is well under the horizontal, and under what the pill's
+     46px looked like it needed: the two things inside it are a 21.4px Accel
+     mark and a 21.6px line box holding ~10px of capitals, so most of the
+     apparent padding is whitespace the content already carries — the SVG's
+     under-baseline space and the caption's leading. Padding the boxes evenly
+     padded that whitespace twice. 6px against the boxes reads like ~12 against
+     the ink, which is what a badge this small wants. Anything less has to come
+     off the mark's own height, not off here. */
+  padding: calc(6px * var(--hero-scale)) calc(22px * var(--hero-scale));
+  border-radius: 999px;
+  /* the fill is a gradient, not a flat tint: real glass catches more light at
+     the top edge than the bottom, and that vertical falloff is most of what
+     separates "glass" from "translucent rectangle" */
+  background: linear-gradient(
+    170deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.34) 46%,
+    rgba(255, 255, 255, 0.48) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  /* deeper blur than a plain frost, plus brightness — the pane should lift what
+     is behind it, not just smear it */
+  backdrop-filter: blur(22px) saturate(180%) brightness(108%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(108%);
+  /* four layers doing four jobs: a wide ambient drop, a tight contact shadow,
+     the specular top rim, and a dim bottom rim so the pane has thickness */
+  box-shadow: 0 16px 40px -18px rgba(16, 24, 40, .3),
+    0 2px 6px -2px rgba(16, 24, 40, .1),
+    inset 0 1.5px 0 rgba(255, 255, 255, .9),
+    inset 0 -1px 0 rgba(16, 24, 40, .06);
+  /* clips the sheen sweep below to the pill's own curve */
+  isolation: isolate;
+  /* inert badge, not a control: clicking it shouldn't select the caption or
+     tint the Accel mark with the ::selection colour, and the logo shouldn't be
+     draggable out of the page */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Specular sweep — a soft diagonal highlight across the upper half, the
+   reflection a curved glass surface would throw. Kept low-contrast and
+   pointer-transparent: it is lighting, not an element. */
+.hero-backers::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    rgba(255, 255, 255, 0) 18%,
+    rgba(255, 255, 255, 0.55) 40%,
+    rgba(255, 255, 255, 0.08) 58%,
+    rgba(255, 255, 255, 0) 74%
+  );
+  /* fades out before the bottom edge so the sweep reads as a highlight sitting
+     on the top of the curve rather than a stripe across the whole pill */
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .35) 62%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .35) 62%, transparent 100%);
+}
+/* the copy has to sit above the sweep */
+.hero-backers > * { position: relative; z-index: 1; }
+/* no backdrop-filter (older Firefox, some Android) — fall back to a more opaque
+   fill so the line never sits unreadable over the photo */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hero-backers {
+    background: linear-gradient(
+      170deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.82) 100%
+    );
+  }
+}
+.hero-backers-label {
+  font-family: var(--font-body);
+  font-size: calc(12px * var(--hero-scale));
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  /* a step darker than the old bare caption — on glass the lighter grey lost
+     its contrast against the frosted fill */
+  color: #6B7688;
+  white-space: nowrap;
+}
+/* sized against the caption's cap height rather than its own box, so the
+   wordmark sits on the same optical line as the words beside it */
+.hero-backers-mark {
+  height: calc(19px * var(--hero-scale));
+  width: auto;
+  display: block;
+  /* the SVG carries whitespace under the baseline; nudge it back up so the
+     Accel wordmark centres against the caps, not against its own bounding box */
+  position: relative;
+  top: calc(-1px * var(--hero-scale));
+  /* Optical, not metric. Two things open a hole to the left of the mark: the
+     caption's .16em tracking leaves a trailing space after the final "Y", and
+     that "Y" then meets the diagonal "A" of Accel, so two receding letterforms
+     face each other. Measured edge-to-edge the space was already even; this
+     pulls it in until it *looks* even. The right side pays back the SVG's own
+     sidebearing so the pill's inner padding reads equal on both ends. */
+  margin-left: calc(-8px * var(--hero-scale));
+  margin-right: calc(-3px * var(--hero-scale));
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
 
 /* The hero's own pair of buttons scales with the rest of the copy stack — the
    base values above, times --hero-scale. Scoped to .hero-s2, because
@@ -3380,7 +3605,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   position: relative;   /* lifts the figures over the dot grid */
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* --n comes from WhyAnalysts.jsx and is the length of its figures array, so
+     dropping a figure closes the row up instead of leaving an empty cell */
+  grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
   margin: 0;
   padding: 0;
 }
@@ -3443,6 +3670,11 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .wac-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wac-num:nth-child(odd) { border-left: 0; }
   .wac-num:nth-child(n+3) { border-top: 1px solid var(--hair); }
+  /* An odd number of figures leaves the last one alone in its row with an empty
+     half-band beside it, which reads as a missing figure rather than as the end
+     of the row. It takes the full width instead. Keyed off the count, not the
+     position, so adding a fourth figure turns this back off by itself. */
+  .wac-num:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 
 /* One-up, and the vertical rule goes altogether — every cell but the first is
@@ -3629,18 +3861,10 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   opacity: 0;
   transition: opacity .35s cubic-bezier(.32,.72,0,1);
 }
-/* the wait — a hairline across the foot of the active row that fills over that
-   claim's dwell. Sits on the divider the next row draws, so it costs no height
-   and reads as that hairline turning accent rather than as a new part. scaleX
-   off a left origin, so the fill is compositor work and never lays out. */
-.x4e-item-tick {
-  content: '';
-  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: var(--accent);
-  transform: scaleX(0); transform-origin: left center;
-  animation: x4e-tick linear forwards;
-}
-@keyframes x4e-tick { to { transform: scaleX(1) } }
+/* The active row used to draw its dwell as an accent hairline filling across
+   its foot. Dropped on request: the moving line pulled the eye down to the
+   rail's edge and away from the visual it was counting toward. The left-edge
+   marker above is the only thing that says which claim is on stage now. */
 
 .x4e-item:hover { background: #F7F8FA }
 .x4e-item.is-active { background: #F7F8FA }
@@ -3866,6 +4090,15 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   font-family: var(--font-display); font-weight: 600;
   font-size: clamp(21px, 2.1vw, 28px); letter-spacing: -.01em;
 }
+/* The qualifier under the name (SOC 2's "Type 2"). Mono like the issuer line
+   above, but smaller and muted, so the plate reads issuer → mark → qualifier
+   rather than as two competing issuer lines. Pulled up against the name's line
+   box so it caps the mark instead of floating as a third beat. */
+.xvs-seal-sub {
+  margin-top: -3px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--body-2);
+}
 
 /* Compact — the size the seals wear beside a heading rather than alone on a
    stage. Everything else about them is unchanged, so the two rows on the page
@@ -3875,6 +4108,7 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
 .xvs-certs--compact .xvs-seal-top { font-size: 9.5px; letter-spacing: .13em }
 .xvs-certs--compact .xvs-seal-rule { width: 30px }
 .xvs-certs--compact .xvs-seal-name { font-size: clamp(16px, 1.4vw, 19px) }
+.xvs-certs--compact .xvs-seal-sub { margin-top: -2px; font-size: 8.5px; letter-spacing: .08em }
 .xvs-certs--compact .xvs-seal-pill {
   bottom: -11px; padding: 3px 9px; font-size: 9px;
 }
@@ -4255,8 +4489,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .x4e-reveal { opacity: 1; transform: none; filter: none; transition: none }
   .x4e-visual { transition: none }
   .x4e-item::before { transition: none }
-  /* the clock stands down under reduced motion, so there is no wait to draw */
-  .x4e-item-tick { display: none }
 }
 
 @media (max-width: 1100px) {
@@ -4264,11 +4496,28 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .x4e-visual { padding: 32px 28px }
 }
 
-/* Narrow: the rail and the stage stack — all four claims still visible on
-   top, the crossfading stage under them. */
+/* Narrow: the pane becomes one column and reads as an accordion. All four
+   claims stay visible, and the one on stage carries its visual inside its own
+   row (.x4e-stage--inline, mounted by ExcelSection) so the picture is never a
+   screen away from the words it illustrates. Fia keeps a single stage under the
+   rail — it has one visual and no active row — so the rail's foot hairline and
+   the sibling-stage sizing below both still apply there. */
 @media (max-width: 900px) {
   .x4e-pane { grid-template-columns: 1fr }
   .x4e-rail { border-right: none; border-bottom: 1px solid var(--hair) }
+  /* rows size to their own content now: the row holding the stage is several
+     times the height of the three that hold only copy. The row's button has to
+     drop the desktop `height: 100%` with it — against a row whose height the
+     button and the stage set between them, 100% resolves to the pair's height
+     and the button alone fills the row, pushing the stage out the bottom. */
+  .x4e-rail { grid-auto-rows: auto }
+  .x4e-item { height: auto }
+  /* the inline stage spans its row edge to edge, hung off the bottom of the
+     copy on the hairline the next row draws. Height comes from the visual, so
+     the flat 28/20 padding below would leave the visual over the drawn card's
+     edge — % on both axes tracks the card's own inset the way desktop does */
+  .x4e-stage--inline { min-height: 0; border-top: 1px solid var(--hair) }
+  .x4e-stage--inline .x4e-visual { padding: 7% 9.5% }
 
   .x4e-sec { padding: 72px 0 80px }
   .x4e-head { flex-direction: column; align-items: flex-start; gap: 24px; padding: 40px 28px 44px }
@@ -4282,6 +4531,7 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   .xvs-seal { width: 88px; border-radius: 15px }
   .xvs-seal-top { font-size: 9px; letter-spacing: .12em }
   .xvs-seal-name { font-size: 17px }
+  .xvs-seal-sub { margin-top: -2px; font-size: 8.5px; letter-spacing: .08em }
   .xvs-seal-rule { width: 28px }
   /* the pill is wider than the 88px seal it hangs off at the desktop size, so
      the two pending ones ran within a couple of px of each other — tighter
@@ -4483,6 +4733,23 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
     padding: 28px 20px;
   }
   .fiag-stage .x4e-visual > * { width: 100% }
+}
+
+@media (max-width: 640px) {
+  /* The chrome row is set at real browser scale and doesn't shrink, so on a
+     phone the tab strip ran off the right edge and got cut mid-tab — the one
+     thing that stops a fake window reading as a window. Drop the decoration
+     that carries no meaning (pinned shortcuts, the second tab, new-tab, the
+     window controls) and keep the lights and the active tab, which are what
+     say "browser". Also tighten the page toolbar for the same reason. */
+  .fiag-pins,
+  .fiag-tab--rest,
+  .fiag-tab-add,
+  .fiag-chrome-right { display: none }
+  .fiag-chrome { gap: 7px; padding: 7px 10px 6px }
+  .fiag-tab { padding: 5px 11px; font-size: 11.5px }
+  .fiag-toolbar { gap: 9px; padding-left: 10px; padding-right: 10px }
+  .fiag-crumb { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 }
 
 .support-container {
