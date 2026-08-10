@@ -10,9 +10,14 @@
  * `pending` marks one not yet awarded: it reads back from the certified seals
  * and carries an "In progress" pill on its lower edge, so the row never implies
  * a certification we don't hold.
+ *
+ * `sub` qualifies the name where the name alone would be imprecise — SOC 2 is
+ * two different audits and we hold the Type II. It sits on its own small line
+ * rather than in `name`, because the name is a display glyph sized to fill a
+ * square plate and "SOC 2 Type II" would wrap inside it.
  */
 export const SEALS = [
-  { key: 'soc2', top: 'AICPA', name: 'SOC 2' },
+  { key: 'soc2', top: 'AICPA', name: 'SOC 2', sub: 'Type II' },
   { key: 'gdpr', top: 'EU', name: 'GDPR', pending: true },
   { key: 'iso', top: 'ISO/IEC', name: '27001', pending: true },
 ]
@@ -29,6 +34,7 @@ export default function CertSeals({ compact = false }) {
           <span className="xvs-seal-top">{s.top}</span>
           <span className="xvs-seal-rule" />
           <span className="xvs-seal-name">{s.name}</span>
+          {s.sub && <span className="xvs-seal-sub">{s.sub}</span>}
           {s.pending && <span className="xvs-seal-pill">In progress</span>}
         </li>
       ))}

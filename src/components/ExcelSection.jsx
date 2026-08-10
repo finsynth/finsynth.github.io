@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
+import useMediaQuery from '../hooks/useMediaQuery'
 import WorkflowMarquee from './WorkflowMarquee'
 import CertSeals from './CertSeals'
 
@@ -352,7 +353,7 @@ function VisualAudit() {
  * the single thing left for the reader to do sits in the middle at full
  * strength. Two rows under a "Custom APIs" rule ran here before; the rule made
  * the named systems read as the boundary of what's supported, which is the
- * opposite of the claim. Held in the centre instead, "Add your custom API" is
+ * opposite of the claim. Held in the centre instead, "Add your custom MCP" is
  * the offer and the shelf behind it is the evidence.
  *
  * `y` is a percentage of the field and `r` a few degrees of tilt, hand-set
@@ -413,7 +414,7 @@ function VisualIntegrated() {
               {GLYPHS.api}
             </svg>
           </span>
-          <span className="xvi-label">Add your custom API</span>
+          <span className="xvi-label">Add your custom MCP</span>
           {/* a pointer arriving on the pill and clicking it. The rest of the
               field is inventory; this is the one thing left for the reader to
               do, and a cursor landing on it says that faster than any styling
@@ -512,11 +513,19 @@ const SCROLL_IDLE_MS = 1200
  * Which pillar the pane is showing — driven from two places at once.
  *
  * **Scroll.** While the reader is scrolling, the claim tracks the pane's travel
- * through the viewport: the pane's whole pass, from its top edge reaching the
- * bottom of the screen to its bottom edge leaving the top, is split into `count`
- * bands and the band under the reader is the claim on stage. So scrolling the
- * section past does walk the rail, rather than leaving it wherever the clock
- * happened to stop.
+ * through the viewport: a band centred on the pane's most-visible moment is
+ * split into `count` slices and the slice under the reader is the claim on
+ * stage. So scrolling the section past does walk the rail, rather than leaving
+ * it wherever the clock happened to stop. See `read` for why the band is
+ * centred rather than spread over the pane's whole pass across the screen.
+ *
+ * `scrub: false` switches this half off, and the stacked layout needs it: there
+ * the active claim carries the visual inside its own row, so every step change
+ * moves ~120px of height from one row to another. Scrubbing that off scroll
+ * position means the scroll is resizing the thing it is measuring — measured at
+ * 390x844 the page below the pane jumped ±124px on the way past and the band
+ * shifted enough under its own output that claim 3 was skipped outright (1 → 4).
+ * Taps and the clock drive the stack instead, and nothing moves under the thumb.
  *
  * **The clock.** Standing still, the claims keep advancing on their own, so a
  * reader parked on the section still sees all four. Each claim holds for its own
@@ -530,7 +539,7 @@ const SCROLL_IDLE_MS = 1200
  * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
  * the wait, so pressing a row always buys a full turn on the claim it selected.
  */
-function useAutoStep(dwell, paneRef) {
+function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
   const count = dwell.length
   const [step, setStep] = useState(0)
   const [held, setHeld] = useState(false)
@@ -542,6 +551,7 @@ function useAutoStep(dwell, paneRef) {
 
   // scroll scrub
   useEffect(() => {
+    if (!scrub) return
     const pane = paneRef.current
     if (!pane) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -554,9 +564,25 @@ function useAutoStep(dwell, paneRef) {
       const r = pane.getBoundingClientRect()
       const vh = window.innerHeight
       if (r.bottom <= 0 || r.top >= vh) return
-      // 0 as the pane's top edge touches the bottom of the viewport, 1 as its
-      // bottom edge clears the top — the pane's entire pass across the screen
-      const p = (vh - r.top) / (vh + r.height)
+      // The band the four claims are spread over is centred on the pane's
+      // most-visible moment, not on its whole pass across the screen.
+      //
+      // Spread over the whole pass — `(vh - r.top) / (vh + r.height)`, which
+      // this was — the first and last claims are only ever lit while the pane
+      // is half off screen: measured at 1908x1026 the pane is 681 tall, so
+      // through the entire window where it is 100% visible p only ran .40 to
+      // .60 and just claims 2 and 3 came up. Two of the four were never on
+      // stage while the reader could see the stage.
+      //
+      // `centre` is the top offset at which the pane sits centred in the
+      // viewport; travel spans 55% of the viewport around it, widened to the
+      // pane's own slack when that is larger so a pane much shorter than the
+      // screen still uses its full still-visible run. For a pane taller than
+      // the viewport (the stacked layout) the slack is negative and the 55%
+      // floor carries it.
+      const centre = (vh - r.height) / 2
+      const travel = Math.max(vh * 0.55, Math.abs(vh - r.height))
+      const p = (centre + travel / 2 - r.top) / travel
       setStep(Math.min(count - 1, Math.max(0, Math.floor(p * count))))
     }
 
@@ -577,8 +603,11 @@ function useAutoStep(dwell, paneRef) {
       window.removeEventListener('scroll', onScroll)
       clearTimeout(idle)
       if (raf) cancelAnimationFrame(raf)
+      // a scroll may have been in flight when the scrub was switched off, and
+      // nothing would clear the flag afterwards — the clock would never run
+      scrolling.current = false
     }
-  }, [paneRef, count])
+  }, [paneRef, count, scrub])
 
   // is the pane on screen? the clock only runs while it is
   useEffect(() => {
@@ -606,14 +635,6 @@ function useAutoStep(dwell, paneRef) {
 
   return {
     step,
-    // the clock is only counting down while the pane is on screen and nothing
-    // is holding it — the progress fill reads these so it never runs ahead of
-    // a clock that is standing still
-    running: onScreen && !held,
-    // changes on every step change and every restart (a row press, a scroll
-    // settling), so keying the fill on it remounts and replays the animation
-    // from zero — the fill always measures the wait actually in progress
-    cycle: `${step}:${nudge}`,
     goTo: i => { setStep(i); setNudge(n => n + 1) },
     hold: () => setHeld(true),
     release: () => setHeld(false),
@@ -633,7 +654,12 @@ export default function ExcelSection({
 }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const paneRef = useRef(null)
-  const { step, goTo, hold, release, running, cycle } = useAutoStep(DWELL, paneRef)
+  // Narrow screens read the pane as an accordion instead of two columns: the
+  // active claim's visual is mounted directly under its own row, so the picture
+  // is always beside the words it belongs to rather than below all four of them.
+  const stacked = useMediaQuery('(max-width: 900px)')
+  // and the stack takes no scroll scrub — see useAutoStep
+  const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef, { scrub: !stacked })
 
   return (
     <section className="x4e-sec" id={id}>
@@ -664,53 +690,54 @@ export default function ExcelSection({
                 the highlighted row is the one whose visual the stage shows,
                 and pressing a row jumps the stage to it. */}
             <ol className="x4e-rail">
-              {PILLARS.map((p, i) => (
-                <li key={p.key}>
-                  <button
-                    type="button"
-                    className={`x4e-item${i === step ? ' is-active' : ''}`}
-                    aria-current={i === step}
-                    onClick={() => goTo(i)}
-                  >
-                    <span className="x4e-item-body">
-                      <span className="x4e-item-title">{p.title}</span>
-                      <span className="x4e-item-p">{p.body}</span>
-                    </span>
-                    {/* the wait, drawn: a hairline across the row's foot that
-                        fills over this claim's own dwell, so the rail's
-                        advancing reads as a countdown rather than a jump. Only
-                        the active row carries one, and it pauses with the clock
-                        on hover or focus. */}
-                    {i === step && (
-                      <span
-                        key={cycle}
-                        className="x4e-item-tick"
-                        style={{
-                          animationDuration: `${p.ms}ms`,
-                          animationPlayState: running ? 'running' : 'paused',
-                        }}
-                        aria-hidden="true"
-                      />
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ol>
-            {/* only the visuals crossfade; every step's copy stays put */}
-            <div className="x4e-stage">
               {PILLARS.map((p, i) => {
                 const { Visual } = p
                 return (
-                  <div
-                    key={p.key}
-                    className={`x4e-visual${i === step ? ' is-active' : ''}`}
-                    aria-hidden={i !== step}
-                  >
-                    <Visual />
-                  </div>
+                  <li key={p.key}>
+                    <button
+                      type="button"
+                      className={`x4e-item${i === step ? ' is-active' : ''}`}
+                      aria-current={i === step}
+                      onClick={() => goTo(i)}
+                    >
+                      <span className="x4e-item-body">
+                        <span className="x4e-item-title">{p.title}</span>
+                        <span className="x4e-item-p">{p.body}</span>
+                      </span>
+                    </button>
+                    {/* stacked: the one visual on show rides under its own row.
+                        Mounted only while active, so its animation starts from
+                        the top each time the claim comes round rather than
+                        being caught mid-loop the way the always-mounted
+                        desktop stage needs the gate below for. */}
+                    {stacked && i === step && (
+                      <div className="x4e-stage x4e-stage--inline">
+                        <div className="x4e-visual is-active">
+                          <Visual />
+                        </div>
+                      </div>
+                    )}
+                  </li>
                 )
               })}
-            </div>
+            </ol>
+            {/* only the visuals crossfade; every step's copy stays put */}
+            {!stacked && (
+              <div className="x4e-stage">
+                {PILLARS.map((p, i) => {
+                  const { Visual } = p
+                  return (
+                    <div
+                      key={p.key}
+                      className={`x4e-visual${i === step ? ' is-active' : ''}`}
+                      aria-hidden={i !== step}
+                    >
+                      <Visual />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

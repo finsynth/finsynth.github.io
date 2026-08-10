@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { initGrid } from '../utils/gridCanvas'
 import { BOOK_URL } from './AskParts'
 import MosaicCanvas from './MosaicCanvas'
@@ -194,49 +194,13 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
     return initGrid(canvasRef.current)
   }, [mosaic])
 
-  // Mobile-only "best on desktop" notice — shown once per session as a popup on
-  // small screens, then a slim banner stays at the top of the hero as a reminder
-  const [showDesktopNote, setShowDesktopNote] = useState(false)
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    try {
-      if (sessionStorage.getItem('fs-desktop-note') === 'seen') return
-    } catch { /* storage blocked — still show the notice */ }
-    if (window.matchMedia('(max-width: 768px)').matches) setShowDesktopNote(true)
-  }, [])
-  const dismissDesktopNote = useCallback(() => {
-    setShowDesktopNote(false)
-    try { sessionStorage.setItem('fs-desktop-note', 'seen') } catch { /* no-op */ }
-  }, [])
+  // A "Best viewed on desktop" popup and a standing advisory banner used to open
+  // this section on phones. Both are gone: the page is laid out for phones now,
+  // and an apology in front of a working page only teaches the visitor to leave.
+  // Git history has the markup if the gate is ever wanted back.
 
   return (
     <section className={`hero-s2${mosaic && !dot && !photo ? ' hero-s2--mosaic' : ''}${dot ? ' hero-s2--globe' : ''}${photo ? ' hero-s2--photo' : ''}${bgGlass ? ' hero-s2--glass' : ''}${bare ? ' hero-s2--bare' : ''}`}>
-      {/* Mobile-only popup shown first on small screens (once per session) */}
-      {showDesktopNote && (
-        <div className="hero-desktop-modal" role="dialog" aria-modal="true" aria-labelledby="hero-desktop-modal-title">
-          <div className="hero-desktop-modal__scrim" onClick={dismissDesktopNote} />
-          <div className="hero-desktop-modal__card">
-            <span className="hero-desktop-modal__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="3.5" width="20" height="13" rx="1.8" />
-                <path d="M8 20.5h8M12 16.5v4" />
-              </svg>
-            </span>
-            <h2 id="hero-desktop-modal-title" className="hero-desktop-modal__title">Best viewed on desktop</h2>
-            <button type="button" className="hero-desktop-modal__btn" onClick={dismissDesktopNote}>
-              Continue on mobile
-            </button>
-          </div>
-        </div>
-      )}
-      {/* Mobile-only advisory — hidden on laptop/desktop via CSS media query */}
-      <div className="hero-mobile-banner" role="note">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <rect x="1.5" y="2.5" width="13" height="8.5" rx="1.2" />
-          <path d="M5.5 13.5h5M8 11v2.5" />
-        </svg>
-        <span>For the best experience, view on desktop</span>
-      </div>
       {/* bare mode omits the background entirely — the copy is overlaid on top
           of an external backdrop (the pixel-bridge scroll scene) */}
       {!bare && (bgImage ? (
@@ -277,11 +241,18 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
               line) and clamped to the cell so it never spills past the hero. */}
           {photo && !bare && <div className="hero-glow" aria-hidden="true" />}
 
-          {/* Backed-by-Accel pill */}
-          <div className="hero-excel-pill">
-            <span>Backed by</span>
-            <img src="/assets/img/accel-logo-brand.svg" alt="Accel" height="19" />
-          </div>
+          {/* Backers — a glass pill leading the copy stack: "Backed by
+              [Accel]", the mark standing in for its own name. The alt text
+              carries the name for anyone who can't see the logo, so the line
+              still reads. */}
+          <p className="hero-backers">
+            <span className="hero-backers-label">Backed by</span>
+            <img
+              className="hero-backers-mark"
+              src="/assets/img/accel-logo-brand.svg"
+              alt="Accel"
+            />
+          </p>
 
           {/* Heading — two rows, breaking on the comma:
               · the <br /> puts the clause break at the comma, so the rotating
@@ -326,6 +297,7 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
               Explore
             </button>
           </div>
+
         </div>
 
       </div>

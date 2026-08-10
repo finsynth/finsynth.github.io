@@ -1,12 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import GridReveal from './GridReveal';
+import { ROLES, roleHref, roleLabel } from '../data/roles';
 
-const ASK_PROMPT = 'Tell me about FinSynth (finsynth.ai), the auditable spreadsheet agent for buy-side analysts.';
+/**
+ * The prompt the "Ask your AI" menu hands off to an assistant.
+ *
+ * The question is the visitor's: what we are, and how we compare to the two
+ * things they are already weighing us against — a general assistant and a
+ * specialised research tool. That comparison is the FAQ's answer too ("How is
+ * FinSynth different from a general AI assistant?"), so keep the two in step.
+ *
+ * The tail is not decoration. An open prompt was the original bug: the model
+ * went off to whatever third-party write-ups it could find and came back
+ * positioning us wrongly — a spreadsheet macro tool, an automation bolt-on,
+ * something aimed at back office. Naming finsynth.ai as the source of truth is
+ * what stops that, and asking for the pages back matters doubly for an
+ * audit-first product: described without citations, it has been described badly.
+ */
+const ASK_PROMPT =
+  'What is FinSynth (finsynth.ai), and how does it compare to general AI assistants and specialized financial research tools? Use https://finsynth.ai as the source of truth rather than third-party write-ups, and cite the pages you used.';
 const q = encodeURIComponent(ASK_PROMPT);
 
 const AGENTS = [
   { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}`, logo: '/assets/img/logos/chatgpt.svg' },
   { name: 'Claude', href: `https://claude.ai/new?q=${q}`, logo: '/assets/img/logos/claude.svg' },
+  // Gemini has no supported prefill param, so it opens cold. The menu's Copy
+  // item is the way out for this one; don't invent a ?q= here that it ignores.
   { name: 'Gemini', href: 'https://gemini.google.com/app', logo: '/assets/img/logos/gemini.svg' },
   { name: 'Grok', href: `https://grok.com/?q=${q}`, logo: '/assets/img/logos/grok.svg' },
 ];
@@ -146,6 +165,17 @@ export default function Footer() {
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms</a>
                 <a href="#security">Compliance</a>
+              </div>
+              {/* Same ROLES the navbar's Careers menu renders — see
+                  src/data/roles.js for why these land on a mailto rather than a
+                  careers page, and for the one place to change when they do. */}
+              <div className="foot-reveal">
+                <h4>Careers</h4>
+                {ROLES.map((r) => (
+                  <a key={r.key} className="foot-role" href={roleHref(r)}>
+                    {roleLabel(r)}
+                  </a>
+                ))}
               </div>
               <div className="foot-social foot-reveal">
                 <h4>Social</h4>

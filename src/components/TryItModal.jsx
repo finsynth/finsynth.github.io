@@ -9,15 +9,16 @@ import { submitAsk, EMAIL_RE } from '../utils/submitAsk'
 //
 //  · a curated sample prompt → FinSynth "runs" it and reports that the workbook
 //    is ready. The output itself is NOT shown on the page any more: all three
-//    samples land on the same ready card — file name, what's in it, one
-//    Download button — and Download asks where to send it.
+//    samples land on the same ready card — file name, an email box and one
+//    "Send it on email" button, so the workbook is asked for and addressed in
+//    the same tap rather than on a second screen.
 //  · anything they typed themselves → we can't answer it on a static page, so
 //    we ask where to send it and hand it to submitAsk.
 //
-// So the email step is shared: same form, same shape, only the note and the
-// button label change depending on which road got there. Nothing is ever
-// delivered in this tab; every road ends on the confirmation that says the
-// result arrives by email.
+// So both roads collect the same email with the same form; only where it sits
+// (on the ready card, or on its own step) and the button label differ. Nothing
+// is ever delivered in this tab; every road ends on the confirmation that says
+// the result arrives by email.
 //
 // The modal is mounted only while open, so the effects below (scroll lock,
 // focus capture, key handling) are plain mount/unmount work.
@@ -38,8 +39,8 @@ const DL_TITLE = 'Your workbook is on its way'
 const DL_COPY = 'The cited workbook is being sent to'
 const DL_TAIL = 'now.'
 
-// The email is remembered so the form comes back pre-filled — the download is
-// still a deliberate tap either way, never a silent re-send.
+// The email is remembered so the form comes back pre-filled — sending is still
+// a deliberate tap either way, never a silent re-send.
 const EMAIL_KEY = 'fs-try-email'
 const recallEmail = () => {
   try { return localStorage.getItem(EMAIL_KEY) || '' } catch { return '' }
@@ -61,14 +62,6 @@ function PencilIcon({ size = 13 }) {
   )
 }
 
-function BackIcon({ size = 13 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 // The Excel mark on the ready card's file row — same one the workbook bar uses.
 function XlsMark() {
   return (
@@ -82,10 +75,11 @@ function XlsMark() {
   )
 }
 
-function DownloadIcon() {
+function MailIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 2.5v8M4.5 7l3.5 3.5L11.5 7M3 13.5h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="1.8" y="3.5" width="12.4" height="9" rx="1.8" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m2.6 5 4.5 3.4a1.5 1.5 0 0 0 1.8 0L13.4 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -102,11 +96,15 @@ function Spinner() {
 function TryItModal({ onClose }) {
   const [draft, setDraft] = useState('')
   const [typing, setTyping] = useState(false)   // a sample prompt is filling itself in
-  const [stage, setStage] = useState('compose') // compose | loading | ready | email | sending | sent
+  const [stage, setStage] = useState('compose') // compose | loading | ready | email | sent
   const [query, setQuery] = useState('')        // the prompt that was actually submitted
   const [result, setResult] = useState(null)    // the matched example, i.e. the workbook on offer
   const [email, setEmail] = useState(recallEmail)
   const [emailErr, setEmailErr] = useState('')
+  // in flight. It's a flag rather than a stage because the same form is now
+  // submitted from two different screens, and each has to stay put while it
+  // sends instead of collapsing into a shared "sending" step.
+  const [sending, setSending] = useState(false)
 
   const cardRef = useRef(null)
   const inputRef = useRef(null)
@@ -175,8 +173,8 @@ function TryItModal({ onClose }) {
   }
 
   // Submit. A prompt that is one of the curated samples verbatim runs and lands
-  // on its ready card — nothing is asked yet, the email comes at the Download
-  // tap. Anything else goes straight to the email step and is sent to us.
+  // on its ready card, which asks for the email in place. Anything else goes
+  // straight to the email step and is sent to us.
   const run = (text) => {
     const q = text.trim()
     if (!q) return
@@ -184,17 +182,9 @@ function TryItModal({ onClose }) {
     setQuery(q)
     const found = PROMPTS.find((p) => p.prompt === q)
     setResult(found || null)
+    setEmailErr('')
     if (found) { playOutput(); return }
     setStage('email')
-  }
-
-  // Download: the one and only way out of the ready card. Ask where to send it,
-  // pre-filled if they've told us before, but never sent without a tap.
-  const requestDownload = () => {
-    setEmailErr('')
-    setEmail((prev) => prev || recallEmail())
-    setStage('email')
-    requestAnimationFrame(() => emailRef.current?.focus())
   }
 
   // Clicking a sample types it into the prompt box character by character, then
@@ -226,7 +216,7 @@ function TryItModal({ onClose }) {
     }
     setEmailErr('')
     rememberEmail(value)
-    setStage('sending')
+    setSending(true)
     try {
       await submitAsk({
         prompt: query,
@@ -236,6 +226,7 @@ function TryItModal({ onClose }) {
         source: result ? 'landing:hero-try-download' : 'landing:hero-try-it',
       })
     } catch { /* the confirmation reads the same either way — see .hero-try__done */ }
+    setSending(false)
     setStage('sent')
   }
 
@@ -250,14 +241,6 @@ function TryItModal({ onClose }) {
     })
   }
 
-  // Back out of the email step. A typed request goes back to the composer to be
-  // reworded; a sample has nothing to reword, so it returns to its ready card.
-  const backFromEmail = () => {
-    if (!result) { editRequest(); return }
-    setEmailErr('')
-    setStage('ready')
-  }
-
   // Start over from the ready card or the confirmation.
   const reset = () => {
     clearTimers()
@@ -266,9 +249,35 @@ function TryItModal({ onClose }) {
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 
+  // The shared email row. Both screens render the same input and the same
+  // submit — only the label on the button changes.
+  const emailForm = (label, className = '') => (
+    <>
+      <form className={`hero-try__ask-form${className}`} onSubmit={sendEmail} noValidate>
+        <input
+          ref={emailRef}
+          className={`hero-try__email${emailErr ? ' has-err' : ''}`}
+          type="email"
+          name="email"
+          placeholder="you@fund.com"
+          autoComplete="email"
+          aria-label="Work email"
+          aria-invalid={emailErr ? 'true' : undefined}
+          aria-describedby={emailErr ? 'hero-try-err' : undefined}
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); if (emailErr) setEmailErr('') }}
+          disabled={sending}
+        />
+        <button type="submit" className="hero-try__send" disabled={sending}>
+          {sending ? <><Spinner /> Sending…</> : label}
+        </button>
+      </form>
+      {emailErr && <p className="hero-try__err" id="hero-try-err" role="alert">{emailErr}</p>}
+    </>
+  )
+
   const composing = stage === 'compose'
-  const sending = stage === 'sending'
-  const askStage = stage === 'email' || sending
+  const askStage = stage === 'email'
 
   // Mounted on <body> rather than in place: the hero section is a stacking
   // context (position + z-index) with overflow hidden, so a fixed overlay left
@@ -277,16 +286,19 @@ function TryItModal({ onClose }) {
     <div className="hero-try" role="dialog" aria-modal="true" aria-label="Try FinSynth">
       <div className="hero-try__scrim" onMouseDown={close} aria-hidden="true" />
       <div ref={cardRef} className="hero-try__card">
-        {stage === 'email' && (
-          <button type="button" className="hero-try__edit" onClick={backFromEmail}>
-            {result ? <BackIcon /> : <PencilIcon />}
-            {result ? 'Back' : 'Edit your query'}
+        {/* The email step is only ever reached by a typed request now — a
+            sample collects its email on the ready card itself — so the way
+            back out of it is always the composer. */}
+        {askStage && !sending && (
+          <button type="button" className="hero-try__edit" onClick={editRequest}>
+            <PencilIcon />
+            Edit your query
           </button>
         )}
         {/* "Ask something else" lives in the header beside the close cross (on
             request) — same pill as the edit button. Only on the ready card: the
             confirmation deliberately carries no CTA at all. */}
-        {stage === 'ready' && (
+        {stage === 'ready' && !sending && (
           <button type="button" className="hero-try__edit" onClick={reset}>
             Ask something else
           </button>
@@ -303,13 +315,9 @@ function TryItModal({ onClose }) {
             explains why the email is needed. */}
         {(composing || askStage) && (
           <div className={`hero-try__head${askStage ? ' is-ask' : ''}`}>
-            <h2 className="hero-try__title">
-              {result ? 'Where should we send it' : 'Give us your most complex problem'}
-            </h2>
+            <h2 className="hero-try__title">Give us your most complex problem</h2>
             <p className="hero-try__sub">
-              {result
-                ? 'The workbook goes straight to your inbox, every figure cited'
-                : "We'll run it on FinSynth and get back to you with an auditable solution"}
+              We&rsquo;ll run it on FinSynth and get back to you with an auditable solution
             </p>
           </div>
         )}
@@ -374,8 +382,8 @@ function TryItModal({ onClose }) {
 
           {/* ── Sample flow: the loader, then the workbook on offer ──
               The output is deliberately not rendered here. All three samples
-              land on this same card: what was built, and one Download button
-              that asks where to send it. */}
+              land on this same card: what was built, and the email box that
+              sends it, both on the one screen. */}
           {(stage === 'loading' || stage === 'ready') && (
             <div className="hero-answer hero-try__answer">
               <p className="hero-answer__query">{query}</p>
@@ -398,30 +406,24 @@ function TryItModal({ onClose }) {
                     <span className="hero-try__file-txt">
                       <b className="hero-try__file-name">{result.file}</b>
                     </span>
-                    <button type="button" className="hero-try__send hero-try__dl" onClick={requestDownload}>
-                      Download
-                      <DownloadIcon />
-                    </button>
                   </div>
+                  {/* the ask, in place: no second screen between the finished
+                      workbook and the box that addresses it */}
+                  {emailForm(<>Send it on email <MailIcon /></>, ' hero-try__ready-form')}
                   <p className="hero-try__ready-note">
-                    Hit download and tell us where to send it, the workbook lands in your inbox with its sources
+                    Tell us where to send it and the workbook lands in your inbox with its sources
                   </p>
                 </div>
               )}
             </div>
           )}
-          {/* ── Custom prompt: email, then confirmation ── */}
+          {/* ── Typed prompt: email, then confirmation ── */}
           {askStage && (
             <div className="hero-try__ask">
-              <p className="hero-try__echo-label">{result ? 'Sending you' : 'Your request'}</p>
+              <p className="hero-try__echo-label">Your request</p>
               <div className="hero-try__echo">
-                {result ? (
-                  <span className="hero-try__echo-file">
-                    <span className="hero-try__file-ic" aria-hidden="true"><XlsMark /></span>
-                    {result.file}
-                  </span>
-                ) : query}
-                {!result && !sending && (
+                {query}
+                {!sending && (
                   <button
                     type="button"
                     className="hero-try__echo-edit"
@@ -433,33 +435,11 @@ function TryItModal({ onClose }) {
                 )}
               </div>
               {/* why the email is asked for at all — the reason sits right on
-                  the input rather than in the heading. The download path says
-                  it in the heading instead, so it skips this line. */}
-              {!result && (
-                <p className="hero-try__ask-note">
-                  You’ll need to give your email, it’s where we send your feedback
-                </p>
-              )}
-              <form className="hero-try__ask-form" onSubmit={sendEmail} noValidate>
-                <input
-                  ref={emailRef}
-                  className={`hero-try__email${emailErr ? ' has-err' : ''}`}
-                  type="email"
-                  name="email"
-                  placeholder="you@fund.com"
-                  autoComplete="email"
-                  aria-label="Work email"
-                  aria-invalid={emailErr ? 'true' : undefined}
-                  aria-describedby={emailErr ? 'hero-try-err' : undefined}
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); if (emailErr) setEmailErr('') }}
-                  disabled={sending}
-                />
-                <button type="submit" className="hero-try__send" disabled={sending}>
-                  {sending ? <><Spinner /> Sending…</> : result ? <>Email me the workbook <DownloadIcon /></> : 'Send it to us'}
-                </button>
-              </form>
-              {emailErr && <p className="hero-try__err" id="hero-try-err" role="alert">{emailErr}</p>}
+                  the input rather than in the heading */}
+              <p className="hero-try__ask-note">
+                You&rsquo;ll need to give your email, it&rsquo;s where we send your feedback
+              </p>
+              {emailForm('Send it to us')}
             </div>
           )}
 

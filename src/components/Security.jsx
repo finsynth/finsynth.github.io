@@ -18,7 +18,7 @@ const POINTS = [
   {
     key: 'gate',
     title: 'Permission-gated by design',
-    body: 'The agent cannot write to your model without your explicit approval',
+    body: "The agent can't make a single change without your explicit approval",
   },
   {
     key: 'notraining',
