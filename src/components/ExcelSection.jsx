@@ -513,11 +513,19 @@ const SCROLL_IDLE_MS = 1200
  * Which pillar the pane is showing — driven from two places at once.
  *
  * **Scroll.** While the reader is scrolling, the claim tracks the pane's travel
- * through the viewport: the pane's whole pass, from its top edge reaching the
- * bottom of the screen to its bottom edge leaving the top, is split into `count`
- * bands and the band under the reader is the claim on stage. So scrolling the
- * section past does walk the rail, rather than leaving it wherever the clock
- * happened to stop.
+ * through the viewport: a band centred on the pane's most-visible moment is
+ * split into `count` slices and the slice under the reader is the claim on
+ * stage. So scrolling the section past does walk the rail, rather than leaving
+ * it wherever the clock happened to stop. See `read` for why the band is
+ * centred rather than spread over the pane's whole pass across the screen.
+ *
+ * `scrub: false` switches this half off, and the stacked layout needs it: there
+ * the active claim carries the visual inside its own row, so every step change
+ * moves ~120px of height from one row to another. Scrubbing that off scroll
+ * position means the scroll is resizing the thing it is measuring — measured at
+ * 390x844 the page below the pane jumped ±124px on the way past and the band
+ * shifted enough under its own output that claim 3 was skipped outright (1 → 4).
+ * Taps and the clock drive the stack instead, and nothing moves under the thumb.
  *
  * **The clock.** Standing still, the claims keep advancing on their own, so a
  * reader parked on the section still sees all four. Each claim holds for its own
@@ -531,7 +539,7 @@ const SCROLL_IDLE_MS = 1200
  * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
  * the wait, so pressing a row always buys a full turn on the claim it selected.
  */
-function useAutoStep(dwell, paneRef) {
+function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
   const count = dwell.length
   const [step, setStep] = useState(0)
   const [held, setHeld] = useState(false)
@@ -543,6 +551,7 @@ function useAutoStep(dwell, paneRef) {
 
   // scroll scrub
   useEffect(() => {
+    if (!scrub) return
     const pane = paneRef.current
     if (!pane) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -594,8 +603,11 @@ function useAutoStep(dwell, paneRef) {
       window.removeEventListener('scroll', onScroll)
       clearTimeout(idle)
       if (raf) cancelAnimationFrame(raf)
+      // a scroll may have been in flight when the scrub was switched off, and
+      // nothing would clear the flag afterwards — the clock would never run
+      scrolling.current = false
     }
-  }, [paneRef, count])
+  }, [paneRef, count, scrub])
 
   // is the pane on screen? the clock only runs while it is
   useEffect(() => {
@@ -642,11 +654,12 @@ export default function ExcelSection({
 }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const paneRef = useRef(null)
-  const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef)
   // Narrow screens read the pane as an accordion instead of two columns: the
   // active claim's visual is mounted directly under its own row, so the picture
   // is always beside the words it belongs to rather than below all four of them.
   const stacked = useMediaQuery('(max-width: 900px)')
+  // and the stack takes no scroll scrub — see useAutoStep
+  const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef, { scrub: !stacked })
 
   return (
     <section className="x4e-sec" id={id}>
