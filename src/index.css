@@ -3911,8 +3911,9 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
      the blue instead of grey confetti on top of it — it lightens the light end
      and darkens the dark end of whatever is under it.
 
-     x4e-stage-frame.svg (flat blue border, no grain) and x4e-stage-mosaic.svg
-     (the gradient cells) are the two earlier grounds, both still on disk. */
+     Two earlier grounds — x4e-stage-frame.svg (flat blue border, no grain) and
+     x4e-stage-mosaic.svg (the gradient cells) — are deleted; git history has
+     them if a plainer ground is ever wanted back. */
   background-color: #1B34A6;
   background-image:
     url('/assets/img/x4e-stage-card.svg'),
