@@ -55,7 +55,7 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
   const price = `${plan.fee.currencySymbol}${plan.fee.amountFormatted}`
 
   return (
-    <article className={`plan-card${plan.isDefault ? '' : ' plan-card--paid'}`}>
+    <article className="plan-card">
       <header className="plan-card-head">
         <h3 className="plan-card-name">{plan.name}</h3>
         <span className="plan-card-aud">{audience === 'organization' ? 'Organization' : 'Individual'}</span>
