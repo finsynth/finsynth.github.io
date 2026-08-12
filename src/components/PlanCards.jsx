@@ -56,6 +56,10 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
   const isActive = Boolean(isSignedIn && subscription?.subscriptionItems?.some(
     (item) => item.status === 'active' && item.plan?.id === plan.id,
   ))
+  
+  const hasPaidActive = Boolean(isSignedIn && subscription?.subscriptionItems?.some(
+    (item) => item.status === 'active' && item.plan && !item.plan.isDefault,
+  ))
 
   return (
     <article className="plan-card">
@@ -84,7 +88,9 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
           ))}
         </ul>
       )}
-      <PlanCta plan={plan} audience={audience} isActive={isActive} revalidate={revalidate} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
+      {!hasPaidActive && (
+        <PlanCta plan={plan} audience={audience} isActive={isActive} revalidate={revalidate} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
+      )}
     </article>
   )
 }
