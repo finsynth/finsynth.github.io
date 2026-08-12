@@ -1,5 +1,5 @@
 import { useOrganization, useUser } from '@clerk/clerk-react'
-import { CheckoutButton, usePlans } from '@clerk/clerk-react/experimental'
+import { CheckoutButton, usePlans, useSubscription } from '@clerk/clerk-react/experimental'
 import { Check } from 'lucide-react'
 
 // Where a finished checkout's "Continue" lands.
@@ -9,6 +9,18 @@ const APP_HREF = 'https://webapp.finsynth.ai/agent'
 function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
   const { isSignedIn } = useUser()
   const { organization } = useOrganization()
+  const { data: subscription } = useSubscription({ for: audience })
+
+  const isCurrent = isSignedIn && subscription?.subscriptionItems?.some(
+    (item) => item.status === 'active' && item.plan?.id === plan.id,
+  )
+  if (isCurrent) {
+    return (
+      <button type="button" className="plan-card-cta plan-card-cta--current" disabled>
+        Current plan
+      </button>
+    )
+  }
 
   if (!isSignedIn) {
     return (
