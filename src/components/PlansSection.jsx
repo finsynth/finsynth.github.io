@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ClerkProvider } from '@clerk/clerk-react'
 import useSectionZoom from '../hooks/useSectionZoom'
+import PlanCards from './PlanCards'
 
 // Where a finished checkout's "Continue" lands 
 export const APP_HREF = 'https://webapp.finsynth.ai/agent'
@@ -20,14 +21,6 @@ const AUDIENCES = [
   { key: 'user', label: 'Individual' },
   { key: 'organization', label: 'Organization' },
 ]
-
-function PlanCards({ audience }) {
-  return (
-    <div className="plans-skeleton" aria-hidden="true" data-audience={audience}>
-      <span /><span />
-    </div>
-  )
-}
 
 export default function PlansSection() {
   const zoomRef = useSectionZoom()
