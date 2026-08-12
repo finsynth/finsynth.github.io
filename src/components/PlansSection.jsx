@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { useClerk } from '@clerk/clerk-react'
 import useSectionZoom from '../hooks/useSectionZoom'
 import PlanCards from './PlanCards'
+import EnterpriseBanner from './EnterpriseBanner'
 
 // Modal flows land back here — the visitor never leaves the section.
 const PLANS_URL = '/#plans'
@@ -65,6 +66,7 @@ export default function PlansSection() {
           <PlansBoundary>
             <PlanFlow />
           </PlansBoundary>
+          <EnterpriseBanner />
         </div>
       </div>
     </section>
