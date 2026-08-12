@@ -47,18 +47,12 @@ function PlanCta({ plan, audience, isActive, revalidate, onNeedAuth, onNeedOrg }
   )
 }
 
-function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
+function PlanCard({ plan, audience, subscription, payerHasPaidPlan, revalidate, onNeedAuth, onNeedOrg }) {
   const price = `${plan.fee.currencySymbol}${plan.fee.amountFormatted}`
 
-  const { isSignedIn } = useUser()
-  const { data: subscription, revalidate } = useSubscription({ for: audience })
-  
-  const isActive = Boolean(isSignedIn && subscription?.subscriptionItems?.some(
+  // card-scoped: is THIS plan the one the payer is on
+  const isActive = Boolean(subscription?.subscriptionItems?.some(
     (item) => item.status === 'active' && item.plan?.id === plan.id,
-  ))
-  
-  const hasPaidActive = Boolean(isSignedIn && subscription?.subscriptionItems?.some(
-    (item) => item.status === 'active' && item.plan && !item.plan.isDefault,
   ))
 
   return (
@@ -88,7 +82,7 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
           ))}
         </ul>
       )}
-      {!hasPaidActive && (
+      {!payerHasPaidPlan && (
         <PlanCta plan={plan} audience={audience} isActive={isActive} revalidate={revalidate} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
       )}
     </article>
@@ -114,6 +108,20 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
   const isLoading = user.isLoading || org.isLoading
   const isError = user.isError && org.isError
   const plans = [...(user.data || []), ...(org.data || [])]
+
+  const { isSignedIn } = useUser()
+  const userSub = useSubscription({ for: 'user' })
+  const orgSub = useSubscription({ for: 'organization' })
+  const hasPaidActive = (sub) => Boolean(isSignedIn && sub.data?.subscriptionItems?.some(
+    (item) => item.status === 'active' && item.plan && !item.plan.isDefault,
+  ))
+  
+  const byAudience = {
+    user: { sub: userSub, paid: hasPaidActive(userSub) },
+    organization: { sub: orgSub, paid: hasPaidActive(orgSub) },
+  }
+
+  console.log("By sub",{byAudience})
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' })
   const [canPrev, setCanPrev] = useState(false)
@@ -174,16 +182,23 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
     <div className="plans-carousel">
       <div className="plans-carousel-viewport" ref={emblaRef}>
         <div className="plans-carousel-row">
-          {plans.map((p) => (
-            <div className="plans-slide" key={p.slug}>
-              <PlanCard
-                plan={p}
-                audience={p.forPayerType === 'org' ? 'organization' : 'user'}
-                onNeedAuth={onNeedAuth}
-                onNeedOrg={onNeedOrg}
-              />
-            </div>
-          ))}
+          {plans.map((p) => {
+            const audience = p.forPayerType === 'org' ? 'organization' : 'user'
+            const { sub, paid } = byAudience[audience]
+            return (
+              <div className="plans-slide" key={p.slug}>
+                <PlanCard
+                  plan={p}
+                  audience={audience}
+                  subscription={isSignedIn ? sub.data : null}
+                  payerHasPaidPlan={paid}
+                  revalidate={sub.revalidate}
+                  onNeedAuth={onNeedAuth}
+                  onNeedOrg={onNeedOrg}
+                />
+              </div>
+            )
+          })}
         </div>
       </div>
       {(canPrev || canNext) && (
