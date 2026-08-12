@@ -1395,10 +1395,84 @@ button.play { border: none; padding: 0; appearance: none }
 /* ════════ WRAP UTILITY ════════ */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--wrap-pad) }
 
+/* ════════ Plans / Pricing ════════ */
+/* Centered composition — unlike FAQ's two-column grid, this section is one
+   column with the plan cards as the main body, so the header stacks above. */
+.plans { background: var(--bg); padding: 120px 0 }
+.plans-wrap { display: flex; flex-direction: column; align-items: center; text-align: center }
+.plans-eyebrow {
+  font-family: var(--font-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); text-transform: uppercase;
+  color: var(--accent); margin-bottom: 18px;
+}
+.plans-title {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
+  color: var(--ink); letter-spacing: var(--ls-display);
+  margin-bottom: 16px;
+}
+.plans-sub {
+  font-family: var(--font-body); font-size: var(--fs-body);
+  color: var(--muted); max-width: 520px; margin-bottom: 36px;
+}
+/* Segmented control on the same shelf as the nav buttons: hairline border,
+   the nav-signin gradient's base grey as the track, white active segment. */
+.plans-tabs {
+  display: inline-flex; gap: 3px; padding: 3px;
+  background: #eef1f8; border: 1px solid var(--hair);
+  border-radius: 10px; margin-bottom: 44px;
+}
+.plans-tab {
+  padding: 0.45rem 1.25rem;
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
+  color: var(--muted); background: transparent;
+  border: 0; border-radius: 8px; cursor: pointer;
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.plans-tab:hover { color: var(--ink) }
+.plans-tab.is-active {
+  color: var(--ink); background: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(9, 20, 52, 0.12),
+    0 2px 6px rgba(9, 20, 52, 0.07);
+}
+.plans-table { width: 100%; max-width: 980px; text-align: left }
+/* placeholder shimmer while usePlans is in flight (and the step-1 stub) */
+.plans-skeleton { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px }
+.plans-skeleton span {
+  display: block; height: 280px; border-radius: 12px;
+  border: 1px solid var(--hair);
+  background: linear-gradient(100deg, #f3f5fa 40%, #fafbfe 50%, #f3f5fa 60%);
+  background-size: 200% 100%;
+  animation: plansShimmer 1.4s linear infinite;
+}
+@keyframes plansShimmer { to { background-position: -200% 0 } }
+@media (prefers-reduced-motion: reduce) { .plans-skeleton span { animation: none } }
+.plans-fallback {
+  border: 1px dashed var(--hair-strong); border-radius: 12px;
+  padding: 48px 24px; text-align: center;
+  font-family: var(--font-body); font-size: var(--fs-body); color: var(--muted);
+}
+.plans-fallback p + p { margin-top: 8px }
+.plans-fallback code { font-family: var(--font-mono); font-size: 0.85em; color: var(--ink) }
+.plans-fallback a { color: var(--accent) }
+/* Clerk's checkout drawer mounts with no stack level of its own, so navbar
+   (100) and even the rails (5) paint over it. Three layers, each covering a
+   different mount point: the drawer re-homed via checkoutProps.portalId, the
+   #clerk-components node Clerk uses for auth/org modals, and the drawer root
+   class itself wherever it lands (structural cl-* selector — Clerk may rename
+   it in a CDN update; if the drawer ever sinks again, start here). */
+#plans-checkout-portal,
+#clerk-components { position: relative; z-index: 1200; }
+.cl-checkout-root { position: relative; z-index: 1200; }
+
 /* ════════ RESPONSIVE ════════ */
 @media (max-width: 900px) {
   .faq-grid { grid-template-columns: 1fr; gap: 48px }
   .faq-contact { padding-top: 32px }
+  .plans { padding: 80px 0 }
+  .plans-skeleton { grid-template-columns: 1fr }
   .foot-cols { flex-direction: column; gap: 56px }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
   /* Footer nav: two columns, explicitly. It used to be a wrapping flex row
