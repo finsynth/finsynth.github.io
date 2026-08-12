@@ -6,6 +6,7 @@ import ExcelSection from '../components/ExcelSection'
 import FiaAgentSection from '../components/FiaAgentSection'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
+import PlansSection from '../components/PlansSection'
 import Faq from '../components/Faq'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
@@ -51,6 +52,8 @@ function Home() {
       <Testimonial />
       <SectionRule />
       <Security />
+      <SectionRule />
+      <PlansSection />
       <SectionRule />
       <Faq />
       <SectionRule />
