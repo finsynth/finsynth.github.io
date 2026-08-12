@@ -1440,6 +1440,29 @@ button.play { border: none; padding: 0; appearance: none }
 /* tighter x padding than the site default — the card row wants the width */
 .plans .wrap { padding: 0 16px }
 .plans-table { width: 100%; max-width: 1200px; text-align: left }
+/* ── Embla carousel: drag-to-scroll row, snap per card ── */
+.plans-carousel { position: relative; width: 100% }
+.plans-carousel-viewport { overflow: hidden }
+.plans-carousel-row { display: flex; gap: 20px }
+/* spacious slides by design — wider than a 4-up fit, so the row scrolls on
+   desktop too; the part-visible next card is the swipe affordance */
+.plans-slide { flex: 0 0 320px; min-width: 0; display: flex }
+.plans-slide .plan-card { width: 100% }
+.plans-carousel-nav { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 26px }
+.plans-carousel-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 999px;
+  border: 1px solid var(--hair-strong); background: #fff; color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(9, 20, 52, 0.08);
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.plans-carousel-btn svg { width: 18px; height: 18px }
+.plans-carousel-btn:hover:not(:disabled) { border-color: var(--accent) }
+.plans-carousel-btn:disabled { opacity: 0.35; cursor: default }
+@media (max-width: 720px) {
+  .plans-slide { flex-basis: 280px }
+}
 /* one row for both audiences — the column count follows however many plans
    the dashboard publishes, capped by what a readable card needs */
 .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px }

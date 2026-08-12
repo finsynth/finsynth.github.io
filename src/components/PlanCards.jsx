@@ -1,6 +1,8 @@
+import { useCallback, useEffect, useState } from 'react'
 import { useOrganization, useUser } from '@clerk/clerk-react'
 import { CheckoutButton, usePlans, useSubscription } from '@clerk/clerk-react/experimental'
-import { Check } from 'lucide-react'
+import useEmblaCarousel from 'embla-carousel-react'
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Where a finished checkout's "Continue" lands.
 const APP_HREF = 'https://webapp.finsynth.ai/agent'
@@ -103,6 +105,31 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
   const isError = user.isError && org.isError
   const plans = [...(user.data || []), ...(org.data || [])]
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' })
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(false)
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    const update = () => {
+      setCanPrev(emblaApi.canScrollPrev())
+      setCanNext(emblaApi.canScrollNext())
+    }
+
+    update()
+
+    emblaApi.on('select', update)
+    emblaApi.on('reInit', update)
+
+    return () => {
+      emblaApi.off('select', update)
+      emblaApi.off('reInit', update)
+    }
+  }, [emblaApi, plans.length])
+
   if (isLoading) {
     return (
       <div className="plans-grid" data-count="2">
@@ -129,16 +156,31 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
   }
 
   return (
-    <div className="plans-grid" data-count={plans.length}>
-      {plans.map((p) => (
-        <PlanCard
-          key={p.slug}
-          plan={p}
-          audience={p.forPayerType === 'org' ? 'organization' : 'user'}
-          onNeedAuth={onNeedAuth}
-          onNeedOrg={onNeedOrg}
-        />
-      ))}
+    <div className="plans-carousel">
+      <div className="plans-carousel-viewport" ref={emblaRef}>
+        <div className="plans-carousel-row">
+          {plans.map((p) => (
+            <div className="plans-slide" key={p.slug}>
+              <PlanCard
+                plan={p}
+                audience={p.forPayerType === 'org' ? 'organization' : 'user'}
+                onNeedAuth={onNeedAuth}
+                onNeedOrg={onNeedOrg}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      {(canPrev || canNext) && (
+        <div className="plans-carousel-nav">
+          <button type="button" className="plans-carousel-btn" onClick={scrollPrev} disabled={!canPrev} aria-label="Previous plans">
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <button type="button" className="plans-carousel-btn" onClick={scrollNext} disabled={!canNext} aria-label="Next plans">
+            <ChevronRight aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
