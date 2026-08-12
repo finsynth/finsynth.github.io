@@ -5,8 +5,6 @@ import { Check } from 'lucide-react'
 // Where a finished checkout's "Continue" lands.
 const APP_HREF = 'https://webapp.finsynth.ai/agent'
 
-const CHECKOUT_PORTAL_ID = 'plans-checkout-portal'
-
 
 function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
   const { isSignedIn } = useUser()
@@ -32,7 +30,6 @@ function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
       planPeriod="month"
       for={audience}
       newSubscriptionRedirectUrl={APP_HREF}
-      checkoutProps={{ portalId: CHECKOUT_PORTAL_ID }}
     >
       <button type="button" className="plan-card-cta">Subscribe</button>
     </CheckoutButton>
