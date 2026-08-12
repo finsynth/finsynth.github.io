@@ -250,7 +250,9 @@ export default function Navbar() {
               <a className="nav-signin" href={SIGNIN_HREF} target="_blank" rel="noopener noreferrer">Sign in</a>
             )
           )}
-          <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
+          {!signedIn && (
+            <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
+          )}
           {compact && (
             <button
               type="button"
