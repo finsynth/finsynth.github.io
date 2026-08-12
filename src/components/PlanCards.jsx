@@ -9,7 +9,7 @@ const APP_HREF = 'https://webapp.finsynth.ai/agent'
 function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
   const { isSignedIn } = useUser()
   const { organization } = useOrganization()
-  const { data: subscription } = useSubscription({ for: audience })
+  const { data: subscription, revalidate } = useSubscription({ for: audience })
 
   const isCurrent = isSignedIn && subscription?.subscriptionItems?.some(
     (item) => item.status === 'active' && item.plan?.id === plan.id,
@@ -42,6 +42,7 @@ function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
       planPeriod="month"
       for={audience}
       newSubscriptionRedirectUrl={APP_HREF}
+      onSubscriptionComplete={() => revalidate()}
     >
       <button type="button" className="plan-card-cta">Subscribe</button>
     </CheckoutButton>
