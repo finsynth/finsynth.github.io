@@ -56,10 +56,11 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
     <article className={`plan-card${plan.isDefault ? '' : ' plan-card--paid'}`}>
       <header className="plan-card-head">
         <h3 className="plan-card-name">{plan.name}</h3>
-        {plan.freeTrialEnabled && (
-          <span className="plan-card-trial">{plan.freeTrialDays}-day free trial</span>
-        )}
+        <span className="plan-card-aud">{audience === 'organization' ? 'Organization' : 'Individual'}</span>
       </header>
+      {plan.freeTrialEnabled && (
+        <span className="plan-card-trial">{plan.freeTrialDays}-day free trial</span>
+      )}
       <p className="plan-card-price">
         {price}
         <span className="plan-card-per">/month</span>
@@ -94,8 +95,13 @@ function SkeletonCard() {
   )
 }
 
-export default function PlanCards({ audience, onNeedAuth, onNeedOrg }) {
-  const { data: plans, isLoading, isError } = usePlans({ for: audience, pageSize: 20, keepPreviousData: true })
+export default function PlanCards({ onNeedAuth, onNeedOrg }) {
+  const user = usePlans({ for: 'user', pageSize: 20, keepPreviousData: true })
+  const org = usePlans({ for: 'organization', pageSize: 20, keepPreviousData: true })
+
+  const isLoading = user.isLoading || org.isLoading
+  const isError = user.isError && org.isError
+  const plans = [...(user.data || []), ...(org.data || [])]
 
   if (isLoading) {
     return (
@@ -125,7 +131,13 @@ export default function PlanCards({ audience, onNeedAuth, onNeedOrg }) {
   return (
     <div className="plans-grid" data-count={plans.length}>
       {plans.map((p) => (
-        <PlanCard key={p.slug} plan={p} audience={audience} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
+        <PlanCard
+          key={p.slug}
+          plan={p}
+          audience={p.forPayerType === 'org' ? 'organization' : 'user'}
+          onNeedAuth={onNeedAuth}
+          onNeedOrg={onNeedOrg}
+        />
       ))}
     </div>
   )
