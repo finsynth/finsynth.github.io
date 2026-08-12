@@ -1,8 +1,45 @@
-import { usePlans } from '@clerk/clerk-react/experimental'
+import { useOrganization, useUser } from '@clerk/clerk-react'
+import { CheckoutButton, usePlans } from '@clerk/clerk-react/experimental'
 import { Check } from 'lucide-react'
 
+// Where a finished checkout's "Continue" lands.
+const APP_HREF = 'https://webapp.finsynth.ai/agent'
 
-function PlanCard({ plan }) {
+const CHECKOUT_PORTAL_ID = 'plans-checkout-portal'
+
+
+function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
+  const { isSignedIn } = useUser()
+  const { organization } = useOrganization()
+
+  if (!isSignedIn) {
+    return (
+      <button type="button" className="plan-card-cta" onClick={onNeedAuth} disabled={!onNeedAuth}>
+        Get started
+      </button>
+    )
+  }
+  if (audience === 'organization' && !organization) {
+    return (
+      <button type="button" className="plan-card-cta" onClick={onNeedOrg} disabled={!onNeedOrg}>
+        Create workspace
+      </button>
+    )
+  }
+  return (
+    <CheckoutButton
+      planId={plan.id}
+      planPeriod="month"
+      for={audience}
+      newSubscriptionRedirectUrl={APP_HREF}
+      checkoutProps={{ portalId: CHECKOUT_PORTAL_ID }}
+    >
+      <button type="button" className="plan-card-cta">Subscribe</button>
+    </CheckoutButton>
+  )
+}
+
+function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
   const price = `${plan.fee.currencySymbol}${plan.fee.amountFormatted}`
 
   return (
@@ -30,9 +67,7 @@ function PlanCard({ plan }) {
           ))}
         </ul>
       )}
-      <button type="button" className="plan-card-cta" disabled>
-        Coming soon
-      </button>
+      <PlanCta plan={plan} audience={audience} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
     </article>
   )
 }
@@ -49,7 +84,7 @@ function SkeletonCard() {
   )
 }
 
-export default function PlanCards({ audience }) {
+export default function PlanCards({ audience, onNeedAuth, onNeedOrg }) {
   const { data: plans, isLoading, isError } = usePlans({ for: audience, pageSize: 20, keepPreviousData: true })
 
   if (isLoading) {
@@ -71,7 +106,7 @@ export default function PlanCards({ audience }) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Talk to Sales
+          Talk to Us
         </a>
       </div>
     )
@@ -79,7 +114,9 @@ export default function PlanCards({ audience }) {
 
   return (
     <div className="plans-grid" data-count={plans.length}>
-      {plans.map((p) => <PlanCard key={p.slug} plan={p} />)}
+      {plans.map((p) => (
+        <PlanCard key={p.slug} plan={p} audience={audience} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
+      ))}
     </div>
   )
 }
