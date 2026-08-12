@@ -108,8 +108,11 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', containScroll: 'trimSnaps' })
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(false)
+  const [snaps, setSnaps] = useState([])
+  const [selected, setSelected] = useState(0)
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi])
+  const scrollTo = useCallback((i) => emblaApi?.scrollTo(i), [emblaApi])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -117,6 +120,8 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
     const update = () => {
       setCanPrev(emblaApi.canScrollPrev())
       setCanNext(emblaApi.canScrollNext())
+      setSnaps(emblaApi.scrollSnapList())
+      setSelected(emblaApi.selectedScrollSnap())
     }
 
     update()
@@ -176,6 +181,19 @@ export default function PlanCards({ onNeedAuth, onNeedOrg }) {
           <button type="button" className="plans-carousel-btn" onClick={scrollPrev} disabled={!canPrev} aria-label="Previous plans">
             <ChevronLeft aria-hidden="true" />
           </button>
+          <div className="plans-carousel-dots" role="tablist" aria-label="Plan pages">
+            {snaps.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                role="tab"
+                aria-selected={i === selected}
+                aria-label={`Go to plans page ${i + 1}`}
+                className={`plans-carousel-dot${i === selected ? ' is-active' : ''}`}
+                onClick={() => scrollTo(i)}
+              />
+            ))}
+          </div>
           <button type="button" className="plans-carousel-btn" onClick={scrollNext} disabled={!canNext} aria-label="Next plans">
             <ChevronRight aria-hidden="true" />
           </button>
