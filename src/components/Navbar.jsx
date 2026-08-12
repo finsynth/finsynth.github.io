@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useUser } from '@clerk/clerk-react';
 import useMediaQuery from '../hooks/useMediaQuery';
-import useSignedIn from '../hooks/useSignedIn';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 
 // The two products live in the same page, so "Product" is a jump menu rather
@@ -80,6 +80,8 @@ const SIGNIN_HREF = 'https://webapp.finsynth.ai/signin?redirectPath=%2Fagent';
 const APP_HREF = 'https://webapp.finsynth.ai/agent';
 
 export default function Navbar() {
+    const { isSignedIn: signedIn } = useUser();
+    
   const [hidden, setHidden] = useState(false);
   // which menu is open, by id — 'product' | 'careers' | null
   const [openMenu, setOpenMenu] = useState(null);
@@ -87,7 +89,6 @@ export default function Navbar() {
   // it moves behind a button. Same breakpoint as the CSS that lays out the sheet.
   const compact = useMediaQuery('(max-width: 900px)');
   const [sheetOpen, setSheetOpen] = useState(false);
-  const signedIn = useSignedIn();
   const lastY = useRef(0);
   // the whole link row, so an outside click is measured against both menus at
   // once rather than each drop watching for itself
@@ -220,6 +221,7 @@ export default function Navbar() {
           >
             <NavDrop label="Product" items={PRODUCTS} flat onNavigate={closeSheet} />
             <a className="nav-link" href="#security" onClick={closeSheet}>Security</a>
+            <a className="nav-link" href="#plans" onClick={closeSheet}>Pricing</a>
             <a className="nav-link" href="#faq" onClick={closeSheet}>FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for */}
             <NavDrop label="Careers" items={CAREERS} flat onNavigate={closeSheet} />
@@ -233,6 +235,7 @@ export default function Navbar() {
           <div className="navbar-links" ref={linksRef}>
             <NavDrop id="product" label="Product" items={PRODUCTS} open={openMenu} setOpen={setOpenMenu} />
             <a className="nav-link" href="#security">Security</a>
+            <a className="nav-link" href="#plans">Pricing</a>
             <a className="nav-link" href="#faq">FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for,
                 and the menu has room to open inward from there */}
