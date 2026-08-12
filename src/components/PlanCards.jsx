@@ -8,15 +8,11 @@ import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 const APP_HREF = 'https://webapp.finsynth.ai/agent'
 
 
-function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
+function PlanCta({ plan, audience, isActive, revalidate, onNeedAuth, onNeedOrg }) {
   const { isSignedIn } = useUser()
   const { organization } = useOrganization()
-  const { data: subscription, revalidate } = useSubscription({ for: audience })
 
-  const isCurrent = isSignedIn && subscription?.subscriptionItems?.some(
-    (item) => item.status === 'active' && item.plan?.id === plan.id,
-  )
-  if (isCurrent) {
+  if (isActive) {
     return (
       <button type="button" className="plan-card-cta plan-card-cta--current" disabled>
         Current plan
@@ -54,10 +50,18 @@ function PlanCta({ plan, audience, onNeedAuth, onNeedOrg }) {
 function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
   const price = `${plan.fee.currencySymbol}${plan.fee.amountFormatted}`
 
+  const { isSignedIn } = useUser()
+  const { data: subscription, revalidate } = useSubscription({ for: audience })
+  
+  const isActive = Boolean(isSignedIn && subscription?.subscriptionItems?.some(
+    (item) => item.status === 'active' && item.plan?.id === plan.id,
+  ))
+
   return (
     <article className="plan-card">
       <header className="plan-card-head">
         <h3 className="plan-card-name">{plan.name}</h3>
+        {isActive && <span className="plan-card-active">Active</span>}
         <span className="plan-card-aud">{audience === 'organization' ? 'Organization' : 'Individual'}</span>
       </header>
       {plan.freeTrialEnabled && (
@@ -80,7 +84,7 @@ function PlanCard({ plan, audience, onNeedAuth, onNeedOrg }) {
           ))}
         </ul>
       )}
-      <PlanCta plan={plan} audience={audience} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
+      <PlanCta plan={plan} audience={audience} isActive={isActive} revalidate={revalidate} onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
     </article>
   )
 }
