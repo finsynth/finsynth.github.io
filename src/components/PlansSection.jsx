@@ -1,26 +1,48 @@
-import { useState } from 'react'
+import { Component, useState } from 'react'
 import { ClerkProvider } from '@clerk/clerk-react'
 import useSectionZoom from '../hooks/useSectionZoom'
 import PlanCards from './PlanCards'
-
-// Where a finished checkout's "Continue" lands 
-export const APP_HREF = 'https://webapp.finsynth.ai/agent'
-
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   || 'pk_live_Y2xlcmsuZmluc3ludGguYWkk'
 
 // This section is built on Clerk's experimental billing surface (usePlans,
-// CheckoutButton — steps 2-3), which is exempt from semver. Both layers are
-// pinned: the SDK exactly in package.json, and clerk-js here — it otherwise
-// hot-loads whatever 5.x the CDN serves. 5.105.0 is the version the webapp
-// already runs against this instance. Bump both together, deliberately.
-const CLERK_JS_VERSION = '5.105.0'
+// CheckoutButton), which is exempt from semver. Both layers are pinned: the
+// SDK exactly in package.json, and clerk-js here
+const CLERK_JS_VERSION = '5.127.1'
 
 const AUDIENCES = [
   { key: 'user', label: 'Individual' },
   { key: 'organization', label: 'Organization' },
 ]
+
+/**
+ * The cards run on Clerk's experimental surface — if it throws, only this
+ * section may die, never the page. React unmounts the whole tree on an
+ * uncaught render error, so the boundary is not optional here.
+ */
+class PlansBoundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  render() {
+    if (this.state.failed) {
+      return (
+        <div className="plans-error">
+          <p>Unable to load at the moment</p>
+          <a
+            className="plan-card-cta plans-error-cta"
+            href="https://calendly.com/kartik-finsynth/intro"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Talk to Us
+          </a>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 export default function PlansSection() {
   const zoomRef = useSectionZoom()
@@ -49,9 +71,11 @@ export default function PlansSection() {
         </div>
 
         <div className="plans-table">
-          <ClerkProvider publishableKey={PUBLISHABLE_KEY} clerkJSVersion={CLERK_JS_VERSION}>
-            <PlanCards audience={audience} />
-          </ClerkProvider>
+          <PlansBoundary>
+            <ClerkProvider publishableKey={PUBLISHABLE_KEY} clerkJSVersion={CLERK_JS_VERSION}>
+              <PlanCards audience={audience} />
+            </ClerkProvider>
+          </PlansBoundary>
         </div>
       </div>
       <div id="plans-checkout-portal" />
