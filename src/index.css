@@ -1395,10 +1395,225 @@ button.play { border: none; padding: 0; appearance: none }
 /* ════════ WRAP UTILITY ════════ */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--wrap-pad) }
 
+/* ════════ Plans / Pricing ════════ */
+/* Centered composition — unlike FAQ's two-column grid, this section is one
+   column with the plan cards as the main body, so the header stacks above. */
+.plans { background: var(--bg); padding: 120px 0 }
+.plans-wrap { display: flex; flex-direction: column; align-items: center; text-align: center }
+.plans-eyebrow {
+  font-family: var(--font-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); text-transform: uppercase;
+  color: var(--accent); margin-bottom: 18px;
+}
+.plans-title {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
+  color: var(--ink); letter-spacing: var(--ls-display);
+  margin-bottom: 16px;
+}
+.plans-sub {
+  font-family: var(--font-body); font-size: var(--fs-body);
+  color: var(--muted); max-width: 520px; margin-bottom: 36px;
+}
+/* Segmented control on the same shelf as the nav buttons: hairline border,
+   the nav-signin gradient's base grey as the track, white active segment. */
+.plans-tabs {
+  display: inline-flex; gap: 3px; padding: 3px;
+  background: #eef1f8; border: 1px solid var(--hair);
+  border-radius: 10px; margin-bottom: 44px;
+}
+.plans-tab {
+  padding: 0.45rem 1.25rem;
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
+  color: var(--muted); background: transparent;
+  border: 0; border-radius: 8px; cursor: pointer;
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.plans-tab:hover { color: var(--ink) }
+.plans-tab.is-active {
+  color: var(--ink); background: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(9, 20, 52, 0.12),
+    0 2px 6px rgba(9, 20, 52, 0.07);
+}
+/* tighter x padding than the site default — the card row wants the width */
+.plans .wrap { padding: 0 16px }
+.plans-table { width: 100%; max-width: 1200px; text-align: left }
+/* ── Embla carousel: drag-to-scroll row, snap per card ── */
+.plans-carousel { position: relative; width: 100% }
+.plans-carousel-viewport { overflow: hidden }
+.plans-carousel-row { display: flex; gap: 20px }
+/* spacious slides by design — wider than a 4-up fit, so the row scrolls on
+   desktop too; the part-visible next card is the swipe affordance */
+.plans-slide { flex: 0 0 320px; min-width: 0; display: flex }
+.plans-slide .plan-card { width: 100% }
+.plans-carousel-nav { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 26px }
+.plans-carousel-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 999px;
+  border: 1px solid var(--hair-strong); background: #fff; color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(9, 20, 52, 0.08);
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.plans-carousel-btn svg { width: 18px; height: 18px }
+.plans-carousel-btn:hover:not(:disabled) { border-color: var(--accent) }
+.plans-carousel-btn:disabled { opacity: 0.35; cursor: default }
+.plans-carousel-dots { display: flex; align-items: center; gap: 8px; padding: 0 4px }
+.plans-carousel-dot {
+  width: 7px; height: 7px; border-radius: 999px;
+  border: 0; padding: 0; cursor: pointer;
+  background: var(--hair-strong);
+  transition: background 0.15s, transform 0.15s;
+}
+.plans-carousel-dot:hover { background: var(--muted) }
+.plans-carousel-dot.is-active { background: var(--accent); transform: scale(1.25) }
+/* ── Enterprise band — sales-touch tier, no checkout, its own row ── */
+.ent-banner {
+  display: flex; align-items: center; gap: 32px;
+  margin-top: 28px; padding: 28px;
+  border: 1px solid var(--hair-strong); border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(9, 20, 52, 0.05);
+}
+.ent-copy { flex: 1 1 260px; min-width: 0 }
+.ent-title { font-family: var(--font-body); font-weight: 500; font-size: 1.125rem; color: var(--ink); margin-bottom: 6px }
+.ent-sub { font-family: var(--font-body); font-size: var(--fs-body); color: var(--muted) }
+.ent-features {
+  list-style: none; padding: 0; margin: 0;
+  flex: 1 1 380px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px;
+}
+.ent-features li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-family: var(--font-body); font-size: var(--fs-body); color: var(--ink);
+}
+.ent-features svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; color: var(--accent) }
+.ent-cta { flex: 0 0 auto; display: inline-block; text-decoration: none; padding: 0.6rem 1.5rem; text-align: center }
+@media (max-width: 900px) {
+  .ent-banner { flex-direction: column; align-items: stretch; gap: 20px }
+  .ent-features { grid-template-columns: 1fr }
+}
+@media (max-width: 720px) {
+  .plans-slide { flex-basis: 280px }
+}
+/* one row for both audiences — the column count follows however many plans
+   the dashboard publishes, capped by what a readable card needs */
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px }
+/* a lone plan shouldn't stretch to a 980px slab */
+.plans-grid[data-count="1"] { grid-template-columns: minmax(0, 480px); justify-content: center }
+.plan-card {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--hair-strong); border-radius: 12px;
+  padding: 28px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(9, 20, 52, 0.05);
+}
+.plan-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px }
+.plan-card-name {
+  font-family: var(--font-body); font-weight: 500; font-size: 1.125rem;
+  color: var(--ink);
+}
+.plan-card-trial {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .02em;
+  text-transform: uppercase; color: var(--accent);
+  border: 1px solid currentColor; border-radius: 999px; padding: 3px 9px;
+  white-space: nowrap;
+  align-self: flex-start; margin-bottom: 12px;
+}
+/* the plan this payer is subscribed to right now */
+.plan-card-active {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .02em;
+  text-transform: uppercase; color: #fff;
+  background: var(--accent); border-radius: 999px; padding: 4px 10px;
+  white-space: nowrap;
+  margin-left: auto;
+}
+/* the audience chip yields the right edge when the ACTIVE pill is present */
+.plan-card-active + .plan-card-aud { margin-left: 0 }
+/* which payer a plan belongs to, now that both share one row */
+.plan-card-aud {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .02em;
+  text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--hair-strong); border-radius: 999px; padding: 3px 9px;
+  white-space: nowrap;
+}
+.plan-card-price {
+  font-family: var(--font-body); font-weight: 500;
+  font-size: clamp(28px, 3vw, 38px); line-height: 1;
+  color: var(--ink); margin-bottom: 4px;
+}
+.plan-card-per { font-size: 0.9rem; font-weight: 400; color: var(--muted); margin-left: 4px }
+.plan-card-annual { font-family: var(--font-body); font-size: 0.85rem; color: var(--muted); margin-bottom: 4px }
+.plan-card-desc { font-family: var(--font-body); font-size: var(--fs-body); color: var(--muted); margin-top: 10px }
+.plan-card-features { list-style: none; padding: 0; margin: 18px 0 24px; display: grid; gap: 10px }
+.plan-card-features li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-family: var(--font-body); font-size: var(--fs-body); color: var(--ink);
+}
+.plan-card-features svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 3px; color: var(--accent) }
+/* CTA pinned to the card foot so buttons align across unequal feature lists */
+.plan-card-cta {
+  margin-top: auto;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
+  color: #fff; background: var(--btn-blue-grad);
+  border: 1px solid var(--btn-blue-line); border-radius: 8px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(10, 22, 74, 0.4),
+    0 2px 5px rgba(6, 16, 50, 0.4);
+  transition: background 0.15s, transform 0.12s ease, box-shadow 0.15s;
+}
+.plan-card-cta:hover:not(:disabled) { background: var(--btn-blue-grad-h); transform: translateY(-1px) }
+.plan-card-cta:disabled { opacity: 0.55; cursor: default }
+/* the plan already held — quiet outline instead of a call to action */
+.plan-card-cta--current {
+  color: var(--muted); background: #fff;
+  border: 1px solid var(--hair-strong); box-shadow: none;
+}
+.plan-card-cta--current:disabled { opacity: 1 }
+.plans-error {
+  border: 1px dashed var(--hair-strong); border-radius: 12px;
+  padding: 40px 24px; text-align: center;
+  font-family: var(--font-body); font-size: var(--fs-body); color: var(--muted);
+}
+.plans-error p { margin-bottom: 18px }
+/* anchor wearing the card CTA's button clothes */
+.plans-error-cta { display: inline-block; text-decoration: none; padding: 0.6rem 1.5rem }
+/* card-shaped placeholders while usePlans is in flight — same .plan-card box,
+   shimmer bars where the content lands, so nothing jumps on arrival */
+.plan-card--skeleton { gap: 0 }
+.plan-card--skeleton .sk {
+  display: block; border-radius: 6px;
+  background: linear-gradient(100deg, #eef1f8 40%, #f8fafd 50%, #eef1f8 60%);
+  background-size: 200% 100%;
+  animation: plansShimmer 1.4s linear infinite;
+}
+.plan-card--skeleton .sk-name { width: 40%; height: 20px; margin-bottom: 18px }
+.plan-card--skeleton .sk-price { width: 55%; height: 38px; margin-bottom: 22px }
+.plan-card--skeleton .sk-line { width: 85%; height: 13px; margin-bottom: 12px }
+.plan-card--skeleton .sk-cta { width: 100%; height: 42px; margin-top: 28px; border-radius: 8px }
+@keyframes plansShimmer { to { background-position: -200% 0 } }
+@media (prefers-reduced-motion: reduce) { .plan-card--skeleton .sk { animation: none } }
+/* Clerk's checkout drawer body-mounts with no stack level of its own, so
+   navbar (100) and even the rails (5) paint over it. Two rules: the
+   #clerk-components node Clerk uses for auth/org modals, and the drawer root
+   class wherever it lands (structural cl-* selector — Clerk may rename it in
+   a CDN update; if the drawer ever sinks again, start here). Don't route the
+   drawer into a custom portal div (checkoutProps.portalId) — it opens
+   invisible inside the zero-height container; failed twice, see session log. */
+#clerk-components { position: relative; z-index: 1200; }
+.cl-checkout-root { position: relative; z-index: 1200; }
+
 /* ════════ RESPONSIVE ════════ */
 @media (max-width: 900px) {
   .faq-grid { grid-template-columns: 1fr; gap: 48px }
   .faq-contact { padding-top: 32px }
+  .plans { padding: 80px 0 }
+  .plans-grid { grid-template-columns: 1fr }
   .foot-cols { flex-direction: column; gap: 56px }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
   /* Footer nav: two columns, explicitly. It used to be a wrapping flex row
