@@ -5,7 +5,6 @@ import MosaicCanvas from './MosaicCanvas'
 import TileMosaicCanvas from './TileMosaicCanvas'
 import DotBridgeCanvas from './DotBridgeCanvas'
 import BayBridgePixelCanvas from './BayBridgePixelCanvas'
-import TryItModal from './TryItModal'
 import { MatrixDecode } from '@/components/remocn/matrix-decode'
 
 const SEGMENTS = [
@@ -19,7 +18,7 @@ const TYPE_MS = 28      // per character
 const HOLD_MS = 1500    // full word on screen
 const SELECT_MS = 380   // selection highlight before delete
 
-function RotatingSegment({ paused = false }) {
+function RotatingSegment() {
   const [text, setText] = useState(SEGMENTS[0])
   const [phase, setPhase] = useState('idle') // idle | typing | hold | selected
   const rootRef = useRef(null)
@@ -27,7 +26,7 @@ function RotatingSegment({ paused = false }) {
   const [hl, setHl] = useState(false) // user's text selection covers the word
   const [hovered, setHovered] = useState(false) // pointer over the word — cycle held
   // which SEGMENT is on screen. A ref, not state: the cycle stops and restarts
-  // every time it's held (hover, ask popup), and a local counter would resume
+  // every time it's held (hover), and a local counter would resume
   // from the top and type a word other than the one the reader is looking at.
   const wordRef = useRef(0)
 
@@ -45,10 +44,10 @@ function RotatingSegment({ paused = false }) {
   }, [])
 
   useEffect(() => {
-    // paused (ask popup open) or hovered: drop all timers so the word freezes
-    // as-is; on resume the effect re-runs and the cycle picks up from the held
-    // word rather than restarting the list
-    if (paused || hovered) return
+    // hovered: drop all timers so the word freezes as-is; on resume the effect
+    // re-runs and the cycle picks up from the held word rather than restarting
+    // the list
+    if (hovered) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let alive = true
@@ -72,7 +71,7 @@ function RotatingSegment({ paused = false }) {
     t(() => { setPhase('hold'); t(select, HOLD_MS) }, 400)
 
     return () => { alive = false; timers.forEach(clearTimeout) }
-  }, [paused, hovered])
+  }, [hovered])
 
   // Hovering holds the carousel on the word under the pointer. The word is
   // snapped whole first: the pointer can land mid-type or mid-delete, and
@@ -171,7 +170,7 @@ function HeroSideTiles() {
   )
 }
 
-function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGlass = false, bare = false }) {
+function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
   // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
   // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
   // All share the same content layout (the "mosaic hero").
@@ -182,12 +181,6 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
   // backdrop layer; the pixel photo is the whole scene)
   const photo = variant === 'photo'
   const mosaic = variant === 'mosaic' || variant === 'tiles' || globe || photo
-  // the Try It modal covers the page and wants stillness behind its scrim —
-  // hold everything animated still while it's up, whether it's this hero's
-  // modal or another hero's (via the `frozen` prop)
-  const [tryOpen, setTryOpen] = useState(false)
-  const paused = frozen || tryOpen
-  useEffect(() => { onAskOpenChange?.(tryOpen) }, [tryOpen, onAskOpenChange])
   const canvasRef = useRef(null)
   useEffect(() => {
     if (mosaic) return
@@ -210,11 +203,11 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
           aria-hidden="true"
         />
       ) : photo ? (
-        <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" paused={paused} />
+        <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
       ) : dot ? (
-        <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" paused={paused} />
+        <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" />
       ) : variant === 'tiles' ? (
-        <TileMosaicCanvas stageClassName="hero-s2-mosaic" ariaLabel="" centerWash hoverReveal paused={paused} />
+        <TileMosaicCanvas stageClassName="hero-s2-mosaic" ariaLabel="" centerWash hoverReveal />
       ) : mosaic ? (
         <MosaicCanvas
           mode="mosaic"
@@ -269,7 +262,7 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
                 so text selection paints two separate white strips instead of
                 one merged slab (margins aren't covered by ::selection) */}
             <span className="hero-title-row">Auditable AI research&nbsp;infrastructure,</span>
-            <span className="hero-title-row">purpose-built for <RotatingSegment paused={paused} /></span>
+            <span className="hero-title-row">purpose-built for <RotatingSegment /></span>
           </h1>
 
           <p className="hero-s2-lede">
@@ -277,9 +270,10 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
             decision-making
           </p>
 
-          {/* CTAs — the two primaries: book a call, or run it yourself right
-              here. Sign-in lives in the navbar only; returning users don't need
-              it competing with the hero's asks. */}
+          {/* CTA — the one primary: book a call. Sign-in lives in the navbar
+              only; returning users don't need it competing with the hero's ask.
+              The "Explore" button (and the Try It modal it opened) was removed
+              on request — git history has both if they're ever wanted back. */}
           <div className="hero-s2-ctas">
             <a
               className="hero-s2-cta"
@@ -289,23 +283,11 @@ function Hero({ variant = 'grid', frozen = false, onAskOpenChange, bgImage, bgGl
             >
               Talk to Us
             </a>
-            <button
-              type="button"
-              className="hero-s2-cta hero-s2-cta--try"
-              onClick={() => setTryOpen(true)}
-            >
-              Explore
-            </button>
           </div>
 
         </div>
 
       </div>
-
-      {/* "Try It" — the full prompt box, out of the hero's cramped inline row.
-          Mounted only while open so its focus capture and scroll lock are
-          plain mount/unmount work. */}
-      {tryOpen && <TryItModal onClose={() => setTryOpen(false)} />}
     </section>
   )
 }

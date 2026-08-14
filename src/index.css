@@ -2029,18 +2029,6 @@ button.play { border: none; padding: 0; appearance: none }
   .hero-suggest__go { transition: none; }
 }
 
-/* While an ask popup is open (body.ask-freeze, set by Home) the whole page
-   holds still: the scrim is viewport-fixed and only blurs, so any animation
-   behind it — other sections' CSS loops, blinking carets — reads as motion.
-   The popup's own elements (.hero-ask and .hero-try subtrees: scrim fade,
-   palette pop-in, thinking dots, the modal's spinner) are exempt so they still
-   enter and respond normally. */
-body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *),
-body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::before,
-body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
-  animation-play-state: paused !important;
-}
-
 /* ── Command box — mosaic hero only. Collapsed single row, pinned to the
    bottom of the viewport while the hero is on screen (sticky within hero). ── */
 /* The command box is a shell that morphs into the answer overlay: closed it is
@@ -3019,43 +3007,6 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   font-size: calc(18px * var(--hero-scale));
   padding: calc(15px * var(--hero-scale)) calc(40px * var(--hero-scale));
   border-radius: calc(12px * var(--hero-scale));
-}
-
-/* "Try It" — the second primary. A button, not a link, so it needs the form
-   resets .hero-s2-cta never had to carry; white like the ghost but drawn in
-   accent so it reads as the other half of the pair rather than a third
-   afterthought behind Sign in. */
-.hero-s2-cta.hero-s2-cta--try {
-  appearance: none;
-  -webkit-appearance: none;
-  font-family: var(--font-body);
-  cursor: pointer;
-  background: var(--btn-white-grad);
-  border: 1px solid var(--accent);
-  box-shadow: var(--btn-white-glow);
-  color: var(--accent-deep);
-}
-.hero-s2-cta.hero-s2-cta--try:hover {
-  background: var(--btn-white-grad);
-  border-color: var(--accent-deep);
-  transform: translateY(-1px);
-}
-/* The shared --btn-white-glow is a 3px contact shadow, which reads as flat next
-   to the blue CTA beside it. In the hero the pair has to carry equal weight, so
-   Explore gets a real cast shadow of its own — scoped to .hero-s2 so the token
-   stays as-is everywhere else it's used. */
-.hero-s2 .hero-s2-cta.hero-s2-cta--try {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .9),
-    0 1px 2px rgba(10, 20, 40, .10),
-    0 6px 16px rgba(10, 20, 40, .16);
-  transition: background .15s, border-color .15s, transform .12s, box-shadow .2s;
-}
-.hero-s2 .hero-s2-cta.hero-s2-cta--try:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .9),
-    0 2px 4px rgba(10, 20, 40, .12),
-    0 10px 24px rgba(10, 20, 40, .20);
 }
 
 /* secondary (Sign in) — outline / glass */
