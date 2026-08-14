@@ -221,7 +221,6 @@ export default function Navbar() {
           >
             <NavDrop label="Product" items={PRODUCTS} flat onNavigate={closeSheet} />
             <a className="nav-link" href="#security" onClick={closeSheet}>Security</a>
-            <a className="nav-link" href="#plans" onClick={closeSheet}>Pricing</a>
             <a className="nav-link" href="#faq" onClick={closeSheet}>FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for */}
             <NavDrop label="Careers" items={CAREERS} flat onNavigate={closeSheet} />
@@ -235,7 +234,6 @@ export default function Navbar() {
           <div className="navbar-links" ref={linksRef}>
             <NavDrop id="product" label="Product" items={PRODUCTS} open={openMenu} setOpen={setOpenMenu} />
             <a className="nav-link" href="#security">Security</a>
-            <a className="nav-link" href="#plans">Pricing</a>
             <a className="nav-link" href="#faq">FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for,
                 and the menu has room to open inward from there */}
