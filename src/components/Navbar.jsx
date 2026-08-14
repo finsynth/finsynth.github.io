@@ -11,7 +11,7 @@ const PRODUCTS = [
 ];
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
-// disagree about what's open; the mailto is explained in src/data/roles.js.
+// disagree about what's open; each links to its posting on /careers.
 const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleHref(r) }));
 
 /**
