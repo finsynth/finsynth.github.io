@@ -803,8 +803,11 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .foot-lockup .foot-brand img { position: relative; top: 0 }
 /* RIGHT — nav columns above, Ask-AI below */
+/* takes the row's leftover width rather than sizing to the nav's content, so
+   the grid below has a fixed measure to divide evenly */
 .foot-right {
   display: flex; flex-direction: column; align-items: flex-end; gap: 56px;
+  flex: 1; min-width: 0;
 }
 /* Ask your AI — single dropdown button at the left of the bottom legal bar */
 .foot-askai { position: relative; display: inline-flex; flex-shrink: 0 }
@@ -868,10 +871,27 @@ button.play { border: none; padding: 0; appearance: none }
    stretch so both pills share the same (taller) height */
 .foot-cta-actions { display: flex; align-items: stretch; flex-wrap: wrap; gap: 14px }
 .foot-cta-actions .foot-askai-btn { height: 100% }
+/* Three even columns and then the icons. Sized to their own content the four
+   came out 204 / 200 / 259 / 200 — the careers roles are much the longest links
+   here — so the headings sat at 205 / 200 / 259 and "Social" was 59px out of
+   step with the other three.
+   Four equal quarters can't be the answer: the row has ~894px and the careers
+   column needs 258 of it, so an equal quarter would squeeze the very column
+   that set the width. Giving the three text columns an equal share and letting
+   the icon column hug its content puts every heading on one interval anyway —
+   each sits at its column's start plus the same padding, and the last column's
+   share is exactly the padding plus two 18px marks, which lands them flush on
+   the right edge with the copyright line. */
 .foot-grid-new {
-  display: flex; flex-wrap: wrap; justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  width: 100%;
 }
-.foot-grid-new > div { padding: 0 52px; border-left: 1px solid rgba(255,255,255,.08); min-width: 200px }
+/* 32px, not the 40 this started at: the padding is doubled at every rule, and
+   at 40 the three even columns needed more than the row had. At 32 the widest
+   column carries ~205px of measure against a 178px link, which is the room the
+   careers roles have to grow before this is a problem again. */
+.foot-grid-new > div { padding: 0 32px; border-left: 1px solid rgba(255,255,255,.08) }
 .foot-grid-new > div:first-child { border-left: none }
 .foot-grid-new > div:last-child { padding-right: 0 }
 .foot-grid-new h4 {
@@ -935,19 +955,19 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 640px) {
   .foot-wordmark span { font-size: 18vw }
 }
-/* staggered scroll-reveal (transform/opacity only) */
+/* scroll-reveal (transform/opacity only). The nav columns are deliberately not
+   part of the stagger: they are a single ruled grid, so revealing them one at a
+   time slid the four headings out of line with each other on the way in. The
+   grid carries one .foot-reveal and moves as a block. */
 .foot-reveal {
   opacity: 0; transform: translateY(24px); filter: blur(6px);
   transition: opacity .8s cubic-bezier(.32,.72,0,1), transform .8s cubic-bezier(.32,.72,0,1),
     filter .8s cubic-bezier(.32,.72,0,1);
 }
 .footer-new.is-in .foot-reveal { opacity: 1; transform: none; filter: none }
-.footer-new.is-in .foot-grid-new > div:nth-child(1) { transition-delay: 80ms }
-.footer-new.is-in .foot-grid-new > div:nth-child(2) { transition-delay: 140ms }
-.footer-new.is-in .foot-grid-new > div:nth-child(3) { transition-delay: 200ms }
-.footer-new.is-in .foot-grid-new > div:nth-child(4) { transition-delay: 260ms }
-/* stays behind the last column so the legal line still lands last */
-.footer-new.is-in .foot-legal { transition-delay: 320ms }
+.footer-new.is-in .foot-grid-new { transition-delay: 80ms }
+/* stays behind the columns so the legal line still lands last */
+.footer-new.is-in .foot-legal { transition-delay: 180ms }
 @media (prefers-reduced-motion: reduce) {
   .foot-reveal { opacity: 1; transform: none; filter: none; transition: none }
   .foot-grid-new a, .foot-social-row a { transition: none }
@@ -1418,25 +1438,35 @@ button.play { border: none; padding: 0; appearance: none }
   font-family: var(--font-display); font-weight: 450;
   font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
   color: var(--ink); letter-spacing: var(--ls-display);
-  margin-bottom: 16px;
-}
-.plans-sub {
-  font-family: var(--font-body); font-size: var(--fs-body);
-  color: var(--muted); max-width: 520px; margin-bottom: 36px;
+  /* the 36px the removed .plans-sub used to hold off the card row — the title is
+     the whole header now, so the gap lives here */
+  margin-bottom: 36px;
 }
 /* tighter x padding than the site default — the card row wants the width */
 .plans .wrap { padding: 0 16px }
 .plans-table { width: 100%; max-width: 1200px; text-align: left }
 /* the two Clerk tables share one row — individual left, organization right */
-/* groups size to their card count and the pair sits centered; unequal card
-   heights balance around the row's middle */
-.plans-duo { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap }
+/* groups size to their card count and the pair sits centered. Stretch, not
+   center: balancing unequal groups around the row's middle put "Individual" and
+   "Organization" on two different lines and left the two bordered boxes with
+   four different edges. It also moved on its own — the org header grows by a
+   button row when "Create Organization" is showing, and under centering that
+   nudged both columns rather than just its own. Same fix as the footer's nav
+   columns: one top edge, one bottom edge, headings on one line. */
+.plans-duo { display: flex; justify-content: center; align-items: stretch; gap: 20px; flex-wrap: wrap }
 /* each table sits in a quietly bordered group named by its payer type */
 .plans-group {
   width: fit-content;
   border: 1px solid var(--hair); border-radius: 14px;
   padding: 18px; background: rgba(255, 255, 255, 0.55);
+  /* column, so the table below the label can take the slack the stretch hands
+     the shorter group and keep its cards optically centred in it */
+  display: flex; flex-direction: column;
 }
+/* by position, not by class: this is Clerk's root and its class is theirs to
+   rename. Only the box grows — the cards inside stay centred by the
+   align-items on .plans-duo .cl-pricingTable below. */
+.plans-group > :last-child { flex: 1 }
 .plans-group-label {
   font-family: var(--font-mono); font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono); text-transform: uppercase;
@@ -1529,15 +1559,6 @@ button.play { border: none; padding: 0; appearance: none }
   background-blend-mode: overlay, normal, normal;
 }
 .ent-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-width: 0 }
-/* the tier name, in the role a plan card's "Team" plays: a label naming what
-   this is, not the panel's headline. Set small and plain rather than as a mono
-   kicker — every other section eyebrow on the page is hidden, so one here
-   would be the only kicker left standing */
-.ent-title {
-  font-family: var(--font-body); font-weight: 500;
-  font-size: var(--fs-body); line-height: 1.4;
-  color: rgba(255, 255, 255, 0.72);
-}
 /* the panel's headline: what the tier is for, in one sentence. Carries
    .plans-title's recipe — the display face at 450 on a tight line — one size
    class down, so it reads as a heading of the same family as the section
@@ -1564,8 +1585,12 @@ button.play { border: none; padding: 0; appearance: none }
 .ent-check { flex: 0 0 auto; width: 16px; height: 16px; color: #fff; stroke-width: 2.25 }
 /* the page's white button rather than its blue one: on this ground the blue
    gradient CTA sinks into the fill it is sitting on */
+/* Two routes out of the panel, so the row wraps rather than the buttons owning
+   their own margins: sales, and the free tier a reader who scrolled straight to
+   the bottom of the pricing section would otherwise have to scroll back up for */
+.ent-ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px }
 .ent-cta {
-  align-self: flex-start; margin-top: 8px;
+  align-self: flex-start;
   padding: 0.6rem 1.5rem; border-radius: var(--btn-radius);
   font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500;
   color: var(--ink); text-decoration: none;
@@ -1576,6 +1601,20 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .ent-cta:hover { transform: translateY(-1px); box-shadow: var(--btn-white-glow), 0 3px 8px rgba(6, 16, 50, 0.28) }
 .ent-cta:active { transform: translateY(1px) }
+/* Second button on a filled panel: outlined in the panel's own white rather
+   than a second solid fill, so "Talk to Us" stays the one thing that reads as
+   the primary action. Must follow .ent-cta:hover — same specificity. */
+.ent-cta--ghost {
+  color: #fff;
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.44);
+  box-shadow: none;
+}
+.ent-cta--ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.66);
+  box-shadow: none;
+}
 .ent-viz { display: flex; align-items: center; justify-content: center; min-height: 360px }
 .ent-viz-svg { width: 100%; max-width: 400px; height: auto; overflow: visible }
 /* white cubes outlined in blue: the stroke goes a shade deeper than --accent so
@@ -1590,6 +1629,11 @@ button.play { border: none; padding: 0; appearance: none }
 }
 @media (max-width: 700px) {
   .ent-panel { margin-top: 16px; padding: 26px 20px; gap: 28px }
+  /* On a phone the sentence runs four lines instead of two, which turns the
+     panel's headline into a paragraph — and 1.12 is a line for headlines. A
+     size down and a looser line brings it back to three lines that read as
+     one sentence rather than a stack. */
+  .ent-lede { font-size: 22px; line-height: 1.24 }
   .ent-list { grid-template-columns: 1fr; gap: 12px }
   .ent-cta { align-self: stretch; text-align: center }
 }
@@ -1634,11 +1678,22 @@ button.play { border: none; padding: 0; appearance: none }
   .plans { padding: 80px 0 }
   .foot-cols { flex-direction: column; gap: 56px }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
-  /* Footer nav: two columns, explicitly. It used to be a wrapping flex row
-     whose divider rules keyed off :nth-child(odd) — that only lines up if two
-     columns land per row, and at tablet widths three did, so the third column
-     lost its divider mid-row and the fourth started a row with one. A grid
-     fixes the count instead of guessing it. */
+}
+
+/* Footer nav: two columns, explicitly. It used to be a wrapping flex row whose
+   divider rules keyed off :nth-child(odd) — that only lines up if two columns
+   land per row, and at tablet widths three did, so the third column lost its
+   divider mid-row and the fourth started a row with one. A grid fixes the count
+   instead of guessing it.
+
+   Kept at 1660, far wider than the 900 the rest of the footer stacks at, and
+   measured rather than picked: the right-hand block gives the nav ~894px at a
+   1698px viewport but only ~815 at 1600 and ~690 at 1440, while three even
+   columns plus the icons need 830. So above 1660 they fit on one row and below
+   it they don't — and now that the one-row layout is a grid too, they can't
+   wrap to say so; the careers roles would just run under the rule beside them.
+   Two columns is the honest layout for everything under that. */
+@media (max-width: 1660px) {
   .foot-grid-new {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2027,6 +2082,29 @@ button.play { border: none; padding: 0; appearance: none }
   pointer-events: none;
   background:
     url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat;
+}
+
+/* Phones turn the desktop box on its side. 92vw is 359px there, while
+   max-height: 100vh clamps the 980 down to the viewport — a 1:2.35 column,
+   painted from a near-square blob. Two things went wrong with that: the
+   headline wrapped wider than the wash, so its line ends sat on bare
+   photograph, and both vertical falloffs landed inside the frame as visible
+   soft edges running down the buildings.
+
+   Wider than the viewport is the fix for both — the sides now bleed off
+   screen, so there is no edge to see, and the copy sits on the wash across its
+   full measure. The frame edges stop being photograph at this width, which is
+   the desktop rule's one concession here: on a 390px screen the copy is most
+   of the frame, so there is no margin left to keep. Shorter to match, so the
+   wash still stops before the empty pavement under the CTAs. */
+@media (max-width: 700px) {
+  .hero-glow {
+    width: 124vw;
+    height: 760px;
+    /* the 100vh cap was doing the sizing; this rule sets a height that already
+       fits, so hand it back */
+    max-height: none;
+  }
 }
 
 /* Mosaic hero: drop the card chrome so content floats over the skyline */

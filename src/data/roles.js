@@ -12,12 +12,12 @@
 export const CAREERS_EMAIL = 'support@finsynth.ai'
 
 export const ROLES = [
-  { key: 'gtm', title: 'GTM Lead', place: 'New York' },
-  { key: 'eng', title: 'Engineer', place: 'New York' },
+  { key: 'gtm', title: 'Founding GTM Lead', place: 'NYC' },
+  { key: 'eng', title: 'Founding Engineer', place: 'NYC' },
 ]
 
 // Location in brackets, so the role reads first and the city is the aside:
-// "GTM Lead (New York)". Both the footer column and the navbar menu render this,
+// "Founding Engineer (NYC)". Both the footer column and the navbar menu render this,
 // and it is also the subject line an application arrives under.
 export const roleLabel = (r) => `${r.title} (${r.place})`
 

@@ -4,7 +4,7 @@ import useSectionZoom from '../hooks/useSectionZoom'
 const FAQS = [
   {
     q: 'How do I get access, and what does it cost?',
-    a: "FinSynth is currently available to select funds. Talk to us and we'll walk you through access for your team.",
+    a: 'Sign-up with your email and get started immediately with limited credits. Talk to us to upgrade.',
   },
   {
     q: 'Does FinSynth make up numbers?',

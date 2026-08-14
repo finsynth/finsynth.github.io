@@ -64,8 +64,7 @@ export default function PlansSection() {
     <section className="plans" id="plans">
       <div className="wrap plans-wrap" ref={zoomRef}>
         <p className="plans-eyebrow">Pricing</p>
-        <h2 className="plans-title">Pick a plan, start <span className="ttl-hl">today</span></h2>
-        <p className="plans-sub">Start free and upgrade when the work demands it — or bring the whole desk on an organization plan.</p>
+        <h2 className="plans-title">Get your team on <span className="ttl-hl">FinSynth</span></h2>
 
         <div className="plans-table">
           <PlansBoundary>
