@@ -5,6 +5,7 @@ import ExcelSection from '../components/ExcelSection'
 import FiaAgentSection from '../components/FiaAgentSection'
 import Security from '../components/Security'
 import Testimonial from '../components/Testimonial'
+import PlansSection from '../components/PlansSection'
 import Faq from '../components/Faq'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
@@ -39,6 +40,13 @@ function Home() {
       <Testimonial />
       <SectionRule />
       <Security />
+      <SectionRule />
+      {/* Off the nav, still on the page: #23 took the Pricing link out of the
+          bar and the sheet, and took the section off Home with it. The link is
+          the part that was meant to go — the section is still where anyone
+          scrolling the page, or following #plans from anywhere else, expects
+          to find it. */}
+      <PlansSection />
       <SectionRule />
       <Faq />
       <SectionRule />

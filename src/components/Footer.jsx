@@ -10,15 +10,14 @@ import { ROLES, roleHref, roleLabel } from '../data/roles';
  * specialised research tool. That comparison is the FAQ's answer too ("How is
  * FinSynth different from a general AI assistant?"), so keep the two in step.
  *
- * The tail is not decoration. An open prompt was the original bug: the model
- * went off to whatever third-party write-ups it could find and came back
- * positioning us wrongly — a spreadsheet macro tool, an automation bolt-on,
- * something aimed at back office. Naming finsynth.ai as the source of truth is
- * what stops that, and asking for the pages back matters doubly for an
- * audit-first product: described without citations, it has been described badly.
+ * The question is the whole prompt: it is what a visitor would actually type,
+ * and it is short enough to read in the Copy item before sending it. It used to
+ * carry a tail telling the model to treat finsynth.ai as the source of truth and
+ * cite its pages — that is in git history, and worth reaching for again if
+ * answers start coming back positioned off third-party write-ups.
  */
 const ASK_PROMPT =
-  'What is FinSynth (finsynth.ai), and how does it compare to general AI assistants and specialized financial research tools? Use https://finsynth.ai as the source of truth rather than third-party write-ups, and cite the pages you used.';
+  'What is FinSynth (finsynth.ai), and how does it compare to general AI assistants and specialized financial research tools?';
 const q = encodeURIComponent(ASK_PROMPT);
 
 const AGENTS = [
@@ -92,7 +91,7 @@ export default function Footer() {
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
-              <h2>See it on <br />your own model</h2>
+              <h2>See it in <br />your own workflows</h2>
             </div>
             <div className="foot-cta-actions">
               <a
@@ -153,14 +152,18 @@ export default function Footer() {
 
           {/* RIGHT — nav columns above, Ask-AI below */}
           <div className="foot-right">
+            {/* The reveal is on the grid, not on the four columns: staggering
+                them meant each column rose from its own offset on its own
+                delay, so mid-animation the headings sat at four different
+                heights. They travel as one block now. */}
             <div className="foot-grid-new foot-reveal">
-              <div className="foot-reveal">
+              <div>
                 <h4>Product</h4>
                 <a href="#excel">FinSynth for Excel</a>
                 <a href="#fia-agent">Fia</a>
                 <a href="#security">Security</a>
               </div>
-              <div className="foot-reveal">
+              <div>
                 <h4>Legal</h4>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms</a>
@@ -169,7 +172,7 @@ export default function Footer() {
               {/* Same ROLES the navbar's Careers menu renders — each links to
                   its posting on /careers; src/data/roles.js is the one place
                   the list and the links are defined. */}
-              <div className="foot-reveal">
+              <div>
                 <h4>Careers</h4>
                 {ROLES.map((r) => (
                   <a key={r.key} className="foot-role" href={roleHref(r)}>
@@ -177,7 +180,7 @@ export default function Footer() {
                   </a>
                 ))}
               </div>
-              <div className="foot-social foot-reveal">
+              <div className="foot-social">
                 <h4>Social</h4>
                 <div className="foot-social-row">
                   <a href="https://www.linkedin.com/company/finsynthai/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">

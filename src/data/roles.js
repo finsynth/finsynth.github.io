@@ -33,42 +33,9 @@ export const ABOUT_US =
 // `lead` is the bolded first sentence ("Drive engineering execution.").
 export const ROLES = [
   {
-    key: 'eng',
-    title: 'Founding Engineer',
-    place: 'New York',
-    meta: 'New York · In person · Full time',
-    about:
-      "We're hiring a Senior Founding Engineer who will partner directly with " +
-      'our CTO to help lead product, engineering, and design. This is not a ' +
-      'typical developer role.',
-    sections: [
-      {
-        heading: 'What you will do',
-        items: [
-          { lead: 'Drive engineering execution.', text: 'Help with sprint planning, code reviews, and release quality.' },
-          { lead: 'Collaborate cross-functionally.', text: 'Work with design, Customer Success, Sales, and GTM to guide product decision making, drive architecture, and shape how we build as we scale.' },
-          { lead: 'Build with ownership.', text: 'Ship large features end to end, and define engineering culture and process as we scale.' },
-          { lead: 'Set technical direction.', text: 'Make architectural decisions that shape our next three years of growth.' },
-          { lead: 'Mentor and unblock others.', text: 'Be the first line of defense for technical and product questions, and help the team move faster.' },
-        ],
-      },
-      {
-        heading: 'Ideal candidate',
-        items: [
-          { text: '5+ years of experience' },
-          { text: 'Full-stack (React, Next.js, Node, Postgres)' },
-          { text: 'Hands-on experience building with LLMs or agentic systems in production' },
-          { text: 'Comfortable leading projects' },
-          { text: 'Thrives in ambiguous environments and takes ownership end to end' },
-          { text: "Hungry for growth and impact. There's no ceiling to your growth here, so take on as much responsibility as you're ready for." },
-        ],
-      },
-    ],
-  },
-  {
     key: 'gtm',
     title: 'Founding GTM Lead',
-    place: 'New York',
+    place: 'NYC',
     meta: 'New York · In person · Full time',
     about:
       'We are hiring our first dedicated Founding GTM Lead to work closely ' +
@@ -100,10 +67,43 @@ export const ROLES = [
       },
     ],
   },
+  {
+    key: 'eng',
+    title: 'Founding Engineer',
+    place: 'NYC',
+    meta: 'New York · In person · Full time',
+    about:
+      "We're hiring a Senior Founding Engineer who will partner directly with " +
+      'our CTO to help lead product, engineering, and design. This is not a ' +
+      'typical developer role.',
+    sections: [
+      {
+        heading: 'What you will do',
+        items: [
+          { lead: 'Drive engineering execution.', text: 'Help with sprint planning, code reviews, and release quality.' },
+          { lead: 'Collaborate cross-functionally.', text: 'Work with design, Customer Success, Sales, and GTM to guide product decision making, drive architecture, and shape how we build as we scale.' },
+          { lead: 'Build with ownership.', text: 'Ship large features end to end, and define engineering culture and process as we scale.' },
+          { lead: 'Set technical direction.', text: 'Make architectural decisions that shape our next three years of growth.' },
+          { lead: 'Mentor and unblock others.', text: 'Be the first line of defense for technical and product questions, and help the team move faster.' },
+        ],
+      },
+      {
+        heading: 'Ideal candidate',
+        items: [
+          { text: '5+ years of experience' },
+          { text: 'Full-stack (React, Next.js, Node, Postgres)' },
+          { text: 'Hands-on experience building with LLMs or agentic systems in production' },
+          { text: 'Comfortable leading projects' },
+          { text: 'Thrives in ambiguous environments and takes ownership end to end' },
+          { text: "Hungry for growth and impact. There's no ceiling to your growth here, so take on as much responsibility as you're ready for." },
+        ],
+      },
+    ],
+  },
 ]
 
 // Location in brackets, so the role reads first and the city is the aside:
-// "Founding GTM Lead (New York)". The footer column and the navbar menu render
+// "Founding GTM Lead (NYC)". The footer column and the navbar menu render
 // this, and it is also the role value an application arrives under.
 export const roleLabel = (r) => `${r.title} (${r.place})`
 

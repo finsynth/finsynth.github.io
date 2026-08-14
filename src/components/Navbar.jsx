@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/react';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
+import { SIGNIN_HREF, APP_HREF } from './AskParts';
 
 // The two products live in the same page, so "Product" is a jump menu rather
 // than a route switch.
@@ -75,9 +76,6 @@ function NavDrop({ id, label, items, open, setOpen, flat, onNavigate }) {
     </div>
   );
 }
-
-const SIGNIN_HREF = 'https://webapp.finsynth.ai/signin?redirectPath=%2Fagent';
-const APP_HREF = 'https://webapp.finsynth.ai/agent';
 
 export default function Navbar() {
     const { isSignedIn: signedIn } = useUser();
