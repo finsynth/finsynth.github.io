@@ -662,6 +662,7 @@ button.play { border: none; padding: 0; appearance: none }
    one place so the DOM/reveal wiring stays intact and this is easy to revert. */
 .hiw-eyebrow,
 .secx-eyebrow,
+.plans-eyebrow,
 .faq-eyebrow { display: none !important; }
 
 @keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
@@ -1400,14 +1401,19 @@ button.play { border: none; padding: 0; appearance: none }
    column with the plan cards as the main body, so the header stacks above. */
 .plans { background: var(--bg); padding: 120px 0 }
 .plans-wrap { display: flex; flex-direction: column; align-items: center; text-align: center }
+/* kept for the DOM/reveal wiring; hidden with every other section kicker by the
+   global rule near .hiw-eyebrow, which this one had been missed out of */
 .plans-eyebrow {
   font-family: var(--font-mono); font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono); text-transform: uppercase;
   color: var(--accent); margin-bottom: 18px;
 }
+/* .x4e-head h2's recipe verbatim — the heading the product sections and
+   Security all share. This had run half a weight heavier on a looser line,
+   which read as a different size class beside them. */
 .plans-title {
-  font-family: var(--font-body); font-weight: 500;
-  font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
+  font-family: var(--font-display); font-weight: 450;
+  font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
   color: var(--ink); letter-spacing: var(--ls-display);
   margin-bottom: 16px;
 }
