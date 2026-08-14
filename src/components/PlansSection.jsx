@@ -1,15 +1,15 @@
 import { Component } from 'react'
-import { useClerk } from '@clerk/clerk-react'
+import { PricingTable } from '@clerk/clerk-react'
 import useSectionZoom from '../hooks/useSectionZoom'
-import PlanCards from './PlanCards'
 import EnterpriseBanner from './EnterpriseBanner'
 
-// Modal flows land back here — the visitor never leaves the section.
-const PLANS_URL = '/#plans'
+// Where a finished checkout's "Continue" lands. External URL — leaves via the
+// router bridge in App.jsx.
+const APP_HREF = 'https://webapp.finsynth.ai/agent'
 
 /**
- * The cards run on Clerk's experimental surface — if it throws, only this
- * section may die, never the page. React unmounts the whole tree on an
+ * The tables run on Clerk's fast-moving billing surface — if it throws, only
+ * this section may die, never the page. React unmounts the whole tree on an
  * uncaught render error, so the boundary is not optional here.
  */
 class PlansBoundary extends Component {
@@ -35,23 +35,6 @@ class PlansBoundary extends Component {
   }
 }
 
-
-function PlanFlow() {
-  const clerk = useClerk()
-
-  const onNeedAuth = () => clerk.openSignUp({
-    forceRedirectUrl: PLANS_URL,
-    fallbackRedirectUrl: PLANS_URL,
-    signInForceRedirectUrl: PLANS_URL,
-  })
-
-  const onNeedOrg = () => clerk.openCreateOrganization({
-    afterCreateOrganizationUrl: PLANS_URL,
-  })
-
-  return <PlanCards onNeedAuth={onNeedAuth} onNeedOrg={onNeedOrg} />
-}
-
 export default function PlansSection() {
   const zoomRef = useSectionZoom()
 
@@ -64,7 +47,16 @@ export default function PlansSection() {
 
         <div className="plans-table">
           <PlansBoundary>
-            <PlanFlow />
+            <div className="plans-duo">
+              <div className="plans-group">
+                <p className="plans-group-label">Individual</p>
+                <PricingTable for="user" newSubscriptionRedirectUrl={APP_HREF} />
+              </div>
+              <div className="plans-group">
+                <p className="plans-group-label">Organization</p>
+                <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
+              </div>
+            </div>
           </PlansBoundary>
           <EnterpriseBanner />
         </div>
