@@ -19,10 +19,25 @@ function Careers() {
     if (id) document.getElementById(id)?.scrollIntoView()
   }, [])
 
+  // Tally's "redirect on completion" sends the applicant back here with
+  // ?applied=1 (set in the form's settings), so the thank-you is our page,
+  // not Tally's "create your own form" screen. Read once at mount — the flag
+  // shouldn't survive into copied/bookmarked URLs, so strip it after reading.
+  const applied = new URLSearchParams(window.location.search).has('applied')
+  useEffect(() => {
+    if (applied) window.history.replaceState(null, '', window.location.pathname)
+  }, [applied])
+
   return (
     <div className="mainContainer">
       <Navbar />
       <main className="careers-container">
+        {applied && (
+          <div className="careers-applied" role="status">
+            <b>Application received.</b> Thank you for applying — we read every
+            application and will be in touch.
+          </div>
+        )}
         <header className="careers-head">
           <h1 className="careers-heading">Careers</h1>
           <p className="careers-about">{ABOUT_US}</p>
