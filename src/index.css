@@ -1985,38 +1985,35 @@ button.play { border: none; padding: 0; appearance: none }
    the photo. Held at partial opacity so the skyline still reads through the
    wash behind the copy.
 
-   Painted twice, same box, for the same reason it is under the trust line: the
-   blob peaks at alpha .92 and is down to .6 by half its radius, which is
-   thinner than the hero-glow.svg it replaces, and a single copy leaves the
-   headline sitting on visible skyline. Stacking composes to 1-(1-a)^2.
+   Painted once. The blob is opaque at its core (alpha .99) and still .8 at
+   two fifths of its radius, so it grounds the headline on its own — the
+   earlier asset peaked at .92 and fell to .6 by half its radius, which needed
+   two stacked copies to read at all.
 
-   Box is 1180 x 560 against a near-square source — a 2.1:1 stretch, which the
-   soft edge takes without distorting. Flatter than tall on purpose: the copy
-   block is a wide short shape, and a box that matched the source's proportions
-   carried the wash a long way down the photo below the CTAs. */
+   Box is 1180 x 700 against a near-square source — a 1.7:1 stretch, which the
+   soft edge takes without distorting. Still flatter than tall: the copy block
+   is a wide short shape, and a box matching the source's proportions would run
+   the wash a long way down the photo below the CTAs. */
 .hero-glow {
   opacity: .9;
   position: absolute;
   top: 50%;
   left: 50%;
-  /* Lifted off the cell's centre line. top:50% centres the box on the cell,
-     but the cell's box and its copy are not concentric — the copy runs from the
-     backers pill down to the trust line and centres ~44px higher, and the blob
-     carries its own mass low and right, which drops the optical centre further
-     still. Past the copy's own centre line at -100px: the pill and the
-     headline are the tall dark shapes that need the ground, while the CTA row
-     and the trust line below sit inside the trust line's own wash and keep
-     their cover as this one rides up off them. */
-  transform: translate(-50%, calc(-50% - 100px));
+  /* Lifted off the cell's centre line onto the copy's. top:50% centres the box
+     on the cell, but the cell's box and its copy are not concentric — the copy
+     runs from the backers pill down to the trust line and centres ~44px
+     higher. That is the whole correction now: the blob's own mass is centred
+     (centroid 49.5% / 52.7%), so unlike the lobe-heavy asset before it, it
+     needs no further lift to sit optically level with the copy. */
+  transform: translate(-50%, calc(-50% - 44px));
   width: min(1180px, 100%);
   /* tall enough to carry the wash past the backers row — the investor marks
      are small and dark and lose the skyline underneath them otherwise */
-  height: 560px;
+  height: 700px;
   max-height: 100%;
   z-index: -1;
   pointer-events: none;
   background:
-    url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat,
     url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat;
 }
 
@@ -2387,41 +2384,52 @@ button.play { border: none; padding: 0; appearance: none }
    still behind every bit of copy.
 
    Painted with glow-blob.webp — the supplied blob, white with a grainy alpha
-   falloff and a fatter lobe low and right — rather than a CSS radial-gradient.
-   The blob's falloff is squarer than a gradient's, so it carries a wide bright
-   core out to the line's full measure and still reaches zero inside its own
-   box, and the grain keeps it from banding on the photo.
+   falloff, drawn round and centred (centroid 49.5% / 52.7%) — rather than a
+   CSS radial-gradient. The blob's falloff is squarer than a gradient's, so it
+   carries a wide bright core out to the line's full measure and still reaches
+   zero inside its own box, and the grain keeps it from banding on the photo.
 
    The width is absolute, not a percentage. The containing block here is the
    paragraph, and the paragraph is only as wide as its centred text (~276px) —
    so a percentage width sized the wash to the line rather than to the hero,
    and every earlier tuning pass was really only moving the height.
 
-   1100 x 340 stretches the near-square source about 3.2:1, which the soft edge
+   1100 x 220 stretches the near-square source about 5:1, which the soft edge
    takes without distorting and which leaves the grain readable. Much flatter
-   than that and the noise draws out into streaks. Kept short because the box
-   is centred on the line and its lower half falls on open street — at 520 the
-   wash reached the bottom of the viewport as a pale column.
+   than that and the noise draws out into streaks. Kept short because anything
+   below the line falls on open street: at 520 the wash reached the bottom of
+   the viewport as a pale column, and at 300 it still carried a visible haze
+   about 140px down over the crowd.
 
-   Painted twice, same box. The blob peaks at alpha .92 and is down to .6 by
-   half its radius — on its own it reads thinner here than the gradient it
-   replaced, which is the wrong direction. Two stacked copies compose to
-   1-(1-a)^2, so the core goes opaque and the mid-radius falloff lifts to .84
-   while the shape, the grain and the zero at the rim all stay put. */
+   Painted once, and lifted 24px off the line. The blob is round and its mass
+   sits dead centre, so the wash falls off evenly above and below rather than
+   pooling under the line — the small lift spends that symmetry where it is
+   worth something, putting the falloff back over the CTA row instead of the
+   street while the line stays inside the core. At alpha .99 in the core it
+   holds the line on its own; the stacked second copy the earlier, thinner
+   asset needed would only push the falloff back down again.
+
+   The mask is what actually stops it. Shrinking the box alone can't: the wash
+   has to reach past the bottom of the line to cover it, and the blob is round,
+   so whatever it spends below the line it spends symmetrically above. The mask
+   breaks that symmetry — full strength through the line, then out by 84% of
+   the box, which lands the visible edge just under the line instead of ~140px
+   down over the crowd. It's a 100px ramp, long enough that the cut reads as
+   the blob ending rather than as an edge. */
 .hero-s2-trust::before {
   content: '';
   position: absolute;
   z-index: -1;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% - 24px));
   width: 1100px;
   max-width: 92vw;
-  height: 340px;
+  height: 220px;
   pointer-events: none;
-  background:
-    url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat,
-    url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat;
+  background: url('/assets/img/glow-blob.webp') center / 100% 100% no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 45%, transparent 84%);
+  mask-image: linear-gradient(to bottom, #000 0 45%, transparent 84%);
 }
 
 /* ── Backers pill ──
