@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useUser } from '@clerk/react'
 import { initGrid } from '../utils/gridCanvas'
-import { BOOK_URL } from './AskParts'
+import { BOOK_URL, SIGNIN_HREF, APP_HREF } from './AskParts'
 import MosaicCanvas from './MosaicCanvas'
 import TileMosaicCanvas from './TileMosaicCanvas'
 import DotBridgeCanvas from './DotBridgeCanvas'
@@ -187,6 +188,11 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
     return initGrid(canvasRef.current)
   }, [mosaic])
 
+  // "Try Now" sends signed-out visitors through sign-in and already-signed-in
+  // ones straight to the agent — same split the navbar makes, so a returning
+  // user isn't asked to sign in again from the hero.
+  const { isSignedIn } = useUser()
+
   // A "Best viewed on desktop" popup and a standing advisory banner used to open
   // this section on phones. Both are gone: the page is laid out for phones now,
   // and an apology in front of a working page only teaches the visitor to leave.
@@ -270,10 +276,10 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             decision-making
           </p>
 
-          {/* CTA — the one primary: book a call. Sign-in lives in the navbar
-              only; returning users don't need it competing with the hero's ask.
-              The "Explore" button (and the Try It modal it opened) was removed
-              on request — git history has both if they're ever wanted back. */}
+          {/* CTAs — the primary ask is the call; "Try Now" is the self-serve
+              path beside it, handing the visitor to sign-in rather than to a
+              demo modal. The old "Explore" button and its Try It modal are in
+              git history if they're ever wanted back. */}
           <div className="hero-s2-ctas">
             <a
               className="hero-s2-cta"
@@ -282,6 +288,33 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
               rel="noopener noreferrer"
             >
               Talk to Us
+            </a>
+            <a
+              className="hero-s2-cta hero-s2-cta--ghost"
+              href={isSignedIn ? APP_HREF : SIGNIN_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Try Now
+              {/* the arrow only shows on hover, but its slot is always in the
+                  layout (see .hero-s2-cta-arrow) — the button can't change
+                  width under the pointer without shoving "Talk to Us" sideways,
+                  since the row is centred */}
+              <svg
+                className="hero-s2-cta-arrow"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M2.5 8h10M9 4.5 12.5 8 9 11.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </a>
           </div>
 

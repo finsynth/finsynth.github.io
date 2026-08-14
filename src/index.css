@@ -2227,6 +2227,43 @@ button.play { border: none; padding: 0; appearance: none }
   transform: translateY(-1px);
 }
 
+/* secondary ("Try Now") — outline on white, so the blue primary keeps the
+   weight and the self-serve path still reads as a button rather than a link */
+.hero-s2-cta.hero-s2-cta--ghost {
+  background: #fff;
+  border: 1px solid rgba(14, 26, 46, 0.22);
+  box-shadow: none;
+  color: var(--ink);
+}
+.hero-s2-cta.hero-s2-cta--ghost:hover {
+  background: #fff;
+  border-color: rgba(14, 26, 46, 0.4);
+}
+
+/* Hover arrow. The slot (arrow + the flex gap in front of it) is paid for out
+   of the right padding, so the label stays optically centred at rest and the
+   button's width never changes — the CTA row is centre-justified, and a button
+   that grew on hover would push "Talk to Us" sideways. */
+.hero-s2 .hero-s2-cta.hero-s2-cta--ghost {
+  padding-right: calc(20px * var(--hero-scale));
+}
+.hero-s2-cta-arrow {
+  flex: none;
+  width: calc(14px * var(--hero-scale));
+  height: calc(14px * var(--hero-scale));
+  opacity: 0;
+  transform: translateX(calc(-4px * var(--hero-scale)));
+  transition: opacity 0.15s, transform 0.15s;
+}
+.hero-s2-cta--ghost:hover .hero-s2-cta-arrow,
+.hero-s2-cta--ghost:focus-visible .hero-s2-cta-arrow {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-s2-cta-arrow { transition: none; transform: none; }
+}
+
 /* CTA row — primary + secondary side by side */
 .hero-s2-ctas {
   display: flex;
