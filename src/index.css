@@ -4952,3 +4952,119 @@ body.ask-freeze *:not(.hero-ask, .hero-ask *, .hero-try, .hero-try *)::after {
   height: 1.5rem;
   width: 1.5rem;
 }
+
+/* ── /careers — the postings page. One reading column, a card per role.
+   The form itself lives on Tally (fields + resume upload); this page only has
+   to make the JDs read well and hand off via the Apply button. ── */
+.careers-container {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.careers-heading {
+  font-size: 2.25rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.careers-about {
+  margin-top: 12px;
+  max-width: 62ch;
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.role-card {
+  border: 1px solid var(--hair-strong);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 28px;
+  /* deep links (/careers#eng) shouldn't tuck the title under the navbar */
+  scroll-margin-top: calc(var(--navbar-height) + 16px);
+}
+
+.role-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.role-title {
+  font-size: 1.4rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.role-meta {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.role-apply {
+  flex: 0 0 auto;
+  padding: 10px 26px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.12s;
+}
+.role-apply:hover {
+  background: var(--accent-deep);
+  transform: translateY(-1px);
+}
+
+.role-about {
+  margin-top: 18px;
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.role-section {
+  margin-top: 20px;
+}
+.role-section h3 {
+  font-size: 0.85rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.role-section ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.role-section li {
+  color: var(--secondary);
+  line-height: 1.55;
+}
+.role-section li b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* phones: the Apply button drops under the title instead of squeezing it */
+@media (max-width: 560px) {
+  .role-top {
+    flex-direction: column;
+  }
+  .careers-container {
+    padding-top: 32px;
+  }
+  .role-card {
+    padding: 20px;
+  }
+}
