@@ -96,7 +96,7 @@ export default function FiaAgentSection({ id = 'fia-agent' }) {
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
               <h2>
-                Fia: FinSynth <span className="ttl-hl">beyond Excel</span>
+                Fia: The FinSynth <span className="ttl-hl">workspace</span>
               </h2>
               <p className="fiag-sub">
                 Same FinSynth engine, in a full research workspace
