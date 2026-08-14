@@ -188,7 +188,7 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
     return initGrid(canvasRef.current)
   }, [mosaic])
 
-  // "Try Now" sends signed-out visitors through sign-in and already-signed-in
+  // "Try for free" sends signed-out visitors through sign-in and signed-in
   // ones straight to the agent — same split the navbar makes, so a returning
   // user isn't asked to sign in again from the hero.
   const { isSignedIn } = useUser()
@@ -276,10 +276,12 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             decision-making
           </p>
 
-          {/* CTAs — the primary ask is the call; "Try Now" is the self-serve
-              path beside it, handing the visitor to sign-in rather than to a
-              demo modal. The old "Explore" button and its Try It modal are in
-              git history if they're ever wanted back. */}
+          {/* CTAs — the primary ask is the call; "Try for free" is the
+              self-serve path beside it, handing the visitor to sign-in rather
+              than to a demo modal. It names the price rather than the action,
+              which is the part a visitor weighing the two buttons wants. The
+              old "Explore" button and its Try It modal are in git history if
+              they're ever wanted back. */}
           <div className="hero-s2-ctas">
             <a
               className="hero-s2-cta"
@@ -295,7 +297,7 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Try Now
+              Try for free
               {/* the arrow only shows on hover, but its slot is always in the
                   layout (see .hero-s2-cta-arrow) — the button can't change
                   width under the pointer without shoving "Talk to Us" sideways,
