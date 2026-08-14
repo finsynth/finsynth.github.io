@@ -9,8 +9,10 @@
  * there is no z-buffer here, only paint order.
  */
 
-// seconds per full assemble → hold → fade cycle
-const CYCLE_SECONDS = 2
+// Seconds per full assemble → hold → fade cycle. Long, and most of it is the
+// hold: this sits beside sales copy, so the stack should be a thing that
+// settles and stays settled, glanced at rather than watched.
+const CYCLE_SECONDS = 7
 const U = 95                 // cube edge, in projection units
 const C = 1.5 * U            // half the 3-cube, so the lattice centres on 0
 
@@ -23,15 +25,18 @@ const pt = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`
    and only exist so a cube's own edges stay legible against its neighbours. */
 const FACE = { t: '#FFFFFF', r: '#F6F8FE', l: '#ECF0FC' }
 
-// each piece names its cells and the offset it flies in from
+/* Each piece names its cells and the offset it flies in from. The offsets are
+   short — a little under one cube edge — so a piece reads as easing into place
+   rather than flying across the panel; the direction is what says which way it
+   came from, and the distance past that is only travel. */
 const PIECES = [
-  { cells: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0], [0, 2, 0]], from: [-170, 0, 0] },
-  { cells: [[1, 1, 0], [2, 1, 0], [1, 2, 0], [2, 2, 0]], from: [0, 170, 0] },
-  { cells: [[0, 0, 1], [1, 0, 1], [2, 0, 1]], from: [0, -170, 0] },
-  { cells: [[0, 1, 1], [1, 1, 1], [0, 2, 1], [1, 2, 1]], from: [-170, 0, 0] },
-  { cells: [[2, 1, 1], [2, 2, 1], [2, 1, 2], [2, 2, 2]], from: [180, 0, 0] },
-  { cells: [[0, 0, 2], [1, 0, 2], [2, 0, 2], [0, 1, 2], [0, 2, 2]], from: [0, 0, 180] },
-  { cells: [[1, 1, 2], [1, 2, 2]], from: [0, 0, 220] },
+  { cells: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0], [0, 2, 0]], from: [-85, 0, 0] },
+  { cells: [[1, 1, 0], [2, 1, 0], [1, 2, 0], [2, 2, 0]], from: [0, 85, 0] },
+  { cells: [[0, 0, 1], [1, 0, 1], [2, 0, 1]], from: [0, -85, 0] },
+  { cells: [[0, 1, 1], [1, 1, 1], [0, 2, 1], [1, 2, 1]], from: [-85, 0, 0] },
+  { cells: [[2, 1, 1], [2, 2, 1], [2, 1, 2], [2, 2, 2]], from: [90, 0, 0] },
+  { cells: [[0, 0, 2], [1, 0, 2], [2, 0, 2], [0, 1, 2], [0, 2, 2]], from: [0, 0, 90] },
+  { cells: [[1, 1, 2], [1, 2, 2]], from: [0, 0, 110] },
 ]
 
 // flattened and sorted back-to-front — see the paint-order note above
@@ -41,19 +46,23 @@ const CELLS = PIECES
 
 /* One keyframe track per piece: hold off-screen, slide in on a staggered beat,
    hold assembled, then fade before the loop restarts. The reduced-motion rule
-   parks every piece assembled instead of removing it. */
+   parks every piece assembled instead of removing it.
+
+   The stagger is packed into the first third of the cycle so the rest of it is
+   the stack standing still: the last piece lands around 41%, which leaves the
+   assembled form on screen for roughly 3.3 of the 7 seconds before the fade. */
 const KEYFRAMES = PIECES.map((p, pi) => {
   const [fx, fy, fz] = p.from
   const dx = ((fx - fy) * 0.866).toFixed(1)
   const dy = ((fx + fy) * 0.5 - fz).toFixed(1)
-  const inA = 4 + pi * (60 / PIECES.length)
-  const inB = inA + 8
+  const inA = 3 + pi * (31 / PIECES.length)
+  const inB = inA + 7
   return `@keyframes entPiece${pi}{`
     + `0%{opacity:0;transform:translate(${dx}px,${dy}px)}`
     + `${inA.toFixed(1)}%{opacity:0;transform:translate(${dx}px,${dy}px)}`
     + `${inB.toFixed(1)}%{opacity:1;transform:translate(0,0)}`
-    + `86%{opacity:1;transform:translate(0,0)}`
-    + `96%{opacity:0;transform:translate(0,0)}`
+    + `88%{opacity:1;transform:translate(0,0)}`
+    + `97%{opacity:0;transform:translate(0,0)}`
     + `100%{opacity:0;transform:translate(${dx}px,${dy}px)}}`
 }).join('')
   + '@media (prefers-reduced-motion: reduce){'
