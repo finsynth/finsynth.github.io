@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { PricingTable } from '@clerk/react'
+import { PricingTable, useUser, useOrganizationList } from '@clerk/react'
 import useSectionZoom from '../hooks/useSectionZoom'
 import EnterpriseBanner from './EnterpriseBanner'
 
@@ -35,6 +35,28 @@ class PlansBoundary extends Component {
   }
 }
 
+
+function CreateOrgButton() {
+  const { isLoaded: userLoaded, isSignedIn } = useUser()
+  const { isLoaded: orgsLoaded, userMemberships } = useOrganizationList({
+    userMemberships: { pageSize: 1 },
+  })
+
+  if (!userLoaded) return null
+  if (isSignedIn && (!orgsLoaded || userMemberships.count > 0)) return null
+
+  return (
+    <a
+      className="plans-create-org"
+      href="https://accounts.finsynth.ai/create-organization"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Create Organization
+    </a>
+  )
+}
+
 export default function PlansSection() {
   const zoomRef = useSectionZoom()
 
@@ -53,7 +75,10 @@ export default function PlansSection() {
                 <PricingTable for="user" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
               <div className="plans-group">
-                <p className="plans-group-label">Organization</p>
+                <div className="plans-group-head">
+                  <p className="plans-group-label">Organization</p>
+                  <CreateOrgButton />
+                </div>
                 <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
             </div>
