@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import WhyAnalysts from '../components/WhyAnalysts'
@@ -13,17 +12,6 @@ import SectionRule from '../components/SectionRule'
 import ScrollNextButton from '../components/ScrollNextButton'
 
 function Home() {
-  // Any hero's ask popup being open freezes the whole page: the popup's scrim
-  // is viewport-fixed and only blurs, so animation anywhere on screen (other
-  // heroes' canvases, typewriter headings, section CSS loops) stays visible
-  // through it. The body class pauses CSS animations (see .ask-freeze in
-  // index.css); the prop pauses the JS-driven canvases and typewriters.
-  const [askOpen, setAskOpen] = useState(false)
-  useEffect(() => {
-    document.body.classList.toggle('ask-freeze', askOpen)
-    return () => document.body.classList.remove('ask-freeze')
-  }, [askOpen])
-
   return (
     <div className="mainContainer">
       <div className="page-rails" aria-hidden="true">
@@ -35,7 +23,7 @@ function Home() {
           colour. The `bare` variant that ran here (plain background + the
           scattered photo-tile collage down the flanks) was dropped on request;
           Hero.jsx keeps the whole backdrop switch intact if it's wanted back. */}
-      <Hero variant="photo" frozen={askOpen} onAskOpenChange={setAskOpen} />
+      <Hero variant="photo" />
       <SectionRule />
       {/* the Excel add-in as its own product section — the Security section's
           bordered table: four rows, the claim left and its visual right */}
