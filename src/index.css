@@ -1990,12 +1990,11 @@ button.play { border: none; padding: 0; appearance: none }
    earlier asset peaked at .92 and fell to .6 by half its radius, which needed
    two stacked copies to read at all.
 
-   Box is 1180 x 700 against a near-square source — a 1.7:1 stretch, which the
-   soft edge takes without distorting. Still flatter than tall: the copy block
-   is a wide short shape, and a box matching the source's proportions would run
-   the wash a long way down the photo below the CTAs. */
+   Box is 1320 x 980 against a near-square source — a 1.35:1 stretch, close to
+   the blob's own proportions, so it reads as the shape it was drawn as rather
+   than as a flattened band. */
 .hero-glow {
-  opacity: .9;
+  opacity: 1;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -2006,11 +2005,21 @@ button.play { border: none; padding: 0; appearance: none }
      (centroid 49.5% / 52.7%), so unlike the lobe-heavy asset before it, it
      needs no further lift to sit optically level with the copy. */
   transform: translate(-50%, calc(-50% - 44px));
-  width: min(1180px, 100%);
-  /* tall enough to carry the wash past the backers row — the investor marks
-     are small and dark and lose the skyline underneath them otherwise */
-  height: 700px;
-  max-height: 100%;
+  /* Scaled past the copy cell in both axes. Width was min(1180px, 100%), and
+     that 100% is the cell (~1122px), so the wash stopped at the measure of the
+     copy; the viewport cap lets it carry out over the photo either side while
+     still leaving the frame edges as photograph. */
+  width: min(1320px, 92vw);
+  /* Vertical radius. Tall enough to carry the wash past the backers row at the
+     top — the investor marks are small and dark and lose the skyline
+     underneath them otherwise — and, below, to reach the trust line rather
+     than handing off to its wash mid-air.
+     The cap is keyed to the viewport, not to 100%: the containing block is the
+     copy cell, which is only ~604px on a 1019px screen, so 100% silently
+     clipped anything taller and height changes above that did nothing. The
+     real bound is the hero section, which is the full viewport. */
+  height: 980px;
+  max-height: 100vh;
   z-index: -1;
   pointer-events: none;
   background:
