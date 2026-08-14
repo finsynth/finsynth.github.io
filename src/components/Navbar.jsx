@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import useMediaQuery from '../hooks/useMediaQuery';
-import { ROLES, roleHref, roleLabel } from '../data/roles';
+import { ROLES, roleHref, roleLabel, roleExternal } from '../data/roles';
 
 // The two products live in the same page, so "Product" is a jump menu rather
 // than a route switch.
@@ -11,8 +11,9 @@ const PRODUCTS = [
 ];
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
-// disagree about what's open; each links to its posting on /careers.
-const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleHref(r) }));
+// disagree about what's open; each links to its role's Tally application
+// form (JD included), which is off-site, so `external` opens it in a new tab.
+const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleHref(r), external: roleExternal(r) }));
 
 /**
  * One nav dropdown. `id` is what the bar's single open-menu state holds, so
@@ -31,7 +32,14 @@ function NavDrop({ id, label, items, open, setOpen, flat, onNavigate }) {
       <div className="nav-drop nav-drop--flat">
         <p className="nav-drop-label">{label}</p>
         {items.map((it) => (
-          <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
+          <a
+            key={it.key}
+            className="nav-drop-item"
+            href={it.href}
+            target={it.external ? '_blank' : undefined}
+            rel={it.external ? 'noopener noreferrer' : undefined}
+            onClick={onNavigate}
+          >
             {it.label}
           </a>
         ))}
@@ -65,6 +73,8 @@ function NavDrop({ id, label, items, open, setOpen, flat, onNavigate }) {
               key={it.key}
               className="nav-drop-item"
               href={it.href}
+              target={it.external ? '_blank' : undefined}
+              rel={it.external ? 'noopener noreferrer' : undefined}
               onClick={() => setOpen(null)}
             >
               {it.label}

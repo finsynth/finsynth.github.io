@@ -44,11 +44,6 @@ jobs:
       - name: Static /support page (support.html)
         run: cp dist/index.html dist/support.html
 
-      # Same for /careers — the postings should return 200 for crawlers and
-      # job-board scrapers, not lean on the 404 fallback.
-      - name: Static /careers page (careers.html)
-        run: cp dist/index.html dist/careers.html
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

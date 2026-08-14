@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GridReveal from './GridReveal';
-import { ROLES, roleHref, roleLabel } from '../data/roles';
+import { ROLES, roleHref, roleLabel, roleExternal } from '../data/roles';
 
 /**
  * The prompt the "Ask your AI" menu hands off to an assistant.
@@ -167,12 +167,19 @@ export default function Footer() {
                 <a href="#security">Compliance</a>
               </div>
               {/* Same ROLES the navbar's Careers menu renders — each links to
-                  its posting on /careers; src/data/roles.js is the one place
-                  the list and the links are defined. */}
+                  its role's Tally application form (JD included);
+                  src/data/roles.js is the one place the list and the links
+                  are defined. */}
               <div className="foot-reveal">
                 <h4>Careers</h4>
                 {ROLES.map((r) => (
-                  <a key={r.key} className="foot-role" href={roleHref(r)}>
+                  <a
+                    key={r.key}
+                    className="foot-role"
+                    href={roleHref(r)}
+                    target={roleExternal(r) ? '_blank' : undefined}
+                    rel={roleExternal(r) ? 'noopener noreferrer' : undefined}
+                  >
                     {roleLabel(r)}
                   </a>
                 ))}
