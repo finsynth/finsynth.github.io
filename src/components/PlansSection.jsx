@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { PricingTable } from '@clerk/clerk-react'
+import { PricingTable } from '@clerk/react'
 import useSectionZoom from '../hooks/useSectionZoom'
 import EnterpriseBanner from './EnterpriseBanner'
 

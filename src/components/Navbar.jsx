@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from '@clerk/react';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 
