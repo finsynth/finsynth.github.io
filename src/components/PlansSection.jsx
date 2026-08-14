@@ -63,11 +63,11 @@ export default function PlansSection() {
   return (
     <section className="plans" id="plans">
       <div className="wrap plans-wrap" ref={zoomRef}>
-        <p className="plans-eyebrow">Pricing</p>
+        {/* <p className="plans-eyebrow">Pricing</p> */}
         <h2 className="plans-title">Get your team on <span className="ttl-hl">FinSynth</span></h2>
 
         <div className="plans-table">
-          <PlansBoundary>
+          {/* <PlansBoundary>
             <div className="plans-duo">
               <div className="plans-group">
                 <p className="plans-group-label">Individual</p>
@@ -81,7 +81,7 @@ export default function PlansSection() {
                 <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
             </div>
-          </PlansBoundary>
+          </PlansBoundary> */}
           <EnterpriseBanner />
         </div>
       </div>
