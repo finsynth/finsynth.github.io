@@ -53,7 +53,7 @@ export default function PlansSection() {
                 <PricingTable for="user" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
               <div className="plans-group">
-                <p className="plans-group-label">Team</p>
+                <p className="plans-group-label">Organization</p>
                 <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
             </div>
