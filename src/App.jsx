@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/react'
 import Home from './pages/Home'
 import Support from './pages/Support'
+import Careers from './pages/Careers'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   || 'pk_live_Y2xlcmsuZmluc3ludGguYWkk'
@@ -31,6 +32,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/support" element={<Support />} />
+        <Route path="/careers" element={<Careers />} />
       </Routes>
     </ClerkProvider>
   )

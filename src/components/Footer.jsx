@@ -169,9 +169,9 @@ export default function Footer() {
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms</a>
                 <a href="#security">Compliance</a>
               </div>
-              {/* Same ROLES the navbar's Careers menu renders — see
-                  src/data/roles.js for why these land on a mailto rather than a
-                  careers page, and for the one place to change when they do. */}
+              {/* Same ROLES the navbar's Careers menu renders — each links to
+                  its posting on /careers; src/data/roles.js is the one place
+                  the list and the links are defined. */}
               <div>
                 <h4>Careers</h4>
                 {ROLES.map((r) => (
