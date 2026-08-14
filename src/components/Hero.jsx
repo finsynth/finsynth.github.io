@@ -318,6 +318,10 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             </a>
           </div>
 
+          <p className="hero-s2-trust">
+            Trusted by investors from global funds
+          </p>
+
         </div>
 
       </div>
