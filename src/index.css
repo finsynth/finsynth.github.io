@@ -154,9 +154,9 @@ a { text-decoration: none; color: inherit; }
   height: var(--navbar-height);
   display: flex;
   justify-content: center;
-  /* solid, not glass: the translucent blur read as a murky gradient wherever
-     the bar crossed the dark footer */
-  background: #fff;
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid rgba(228, 233, 242, 0.7);
   box-shadow: 0 1px 3px rgba(20, 36, 46, 0.04), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
   position: sticky;
@@ -168,6 +168,22 @@ a { text-decoration: none; color: inherit; }
 
 .navbar.nav-hidden {
   transform: translateY(-100%);
+}
+
+/* Over the footer only. Everything above it is a light ground the frosted fill
+   sits nicely on; the footer is near-black, and the same translucency there
+   picks the dark up and reads as a murky gradient rather than glass. Navbar.jsx
+   adds this the moment the footer's top edge passes under the bar. */
+.navbar.nav-on-dark {
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* the full-height sheet hangs off the bar, so hiding the bar mid-menu would
+   drag the open menu off screen with it */
+.navbar.nav-sheet-open.nav-hidden {
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -358,31 +374,29 @@ a { text-decoration: none; color: inherit; }
 .navbar-sheet[hidden] { display: none }
 .navbar-sheet {
   position: absolute;
-  top: calc(100% + 0.375rem);
-  /* a panel hanging off the burger's corner, not a full-bleed banner — the
-     page stays visible beside it, the way the reference menus do it. 1rem is
-     the bar's own inner padding, so the panel's edge lines up with the burger */
-  right: 1rem;
-  left: auto;
-  width: min(19rem, calc(100vw - 2rem));
+  /* full-bleed panel flush under the bar, filling the rest of the screen —
+     it started as a corner panel off the burger, but feedback wanted the
+     whole height. The bar stays sticky at the viewport top while the sheet
+     is open (see .nav-sheet-open below), so bar + sheet together cover
+     exactly 100dvh. */
+  top: 100%;
+  left: 0;
+  right: 0;
   z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  height: calc(100dvh - var(--navbar-height));
   /* tall menus on short phones scroll inside the sheet instead of pushing the
      page or running off the bottom of the screen */
-  max-height: calc(100dvh - var(--navbar-height) - 1rem);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0.75rem 1rem 1rem;
+  padding: 0.75rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
   /* nearly opaque, unlike the bar's glass: this one covers the hero photo, and
      at 0.94 the headline read straight through the link labels */
   background: rgba(255, 255, 255, 0.985);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid rgba(228, 233, 242, 0.9);
-  border-radius: 14px;
-  box-shadow: 0 18px 40px -18px rgba(20, 36, 46, 0.28);
   animation: navSheetIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 @keyframes navSheetIn {
@@ -424,13 +438,27 @@ a { text-decoration: none; color: inherit; }
   padding: 0.625rem 0.75rem 0.625rem 1.375rem;
   font-size: 1rem;
 }
+/* no hover face in the sheet — it's a touch surface, where the tint doesn't
+   preview anything, it just sticks to whatever was tapped last */
+.navbar-sheet .nav-link:hover,
+.navbar-sheet .nav-drop-item:hover {
+  color: var(--secondary);
+  background: none;
+}
+/* ...but an open disclosure's tint is state, not hover — it stays put */
+.navbar-sheet .nav-drop.is-open .nav-drop-btn:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
 /* the panel's footer: both actions as stacked full-width buttons, set off from
    the links by the hairline. They wear the bar's own button faces. */
 .nav-sheet-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: 0.75rem;
+  /* auto: the buttons ride the bottom of the full-height panel; when a long
+     menu overflows, the margin collapses to 0 and they follow the links */
+  margin-top: auto;
   padding-top: 0.75rem;
   border-top: 1px solid var(--hair);
 }
@@ -906,19 +934,21 @@ button.play { border: none; padding: 0; appearance: none }
 .foot-askai-copy:hover { color: #fff }
 .foot-askai-logo { width: 16px; height: 16px; flex-shrink: 0; display: block }
 @media (prefers-reduced-motion: reduce) { .foot-askai-menu { animation: none } }
-/* merged CTA lockup — copy stacked above the button */
-.foot-cta-copy h2 {
+/* merged CTA lockup — copy stacked above the button. An h3: it heads the
+   footer's own lockup, not a section of the page. */
+.foot-cta-copy h3 {
   font-family: var(--font-body); font-weight: 500;
   font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
 /* Stacked footer: the heading tracks the viewport so its wide line keeps
    filling the column as the width changes, rather than parking at the clamp
-   floor. 9.9vw puts "your own workflows" at ~95% of the wrap at any phone
-   width; the 46px cap keeps it at the desktop size, not the 64px a previous
-   override blew it up to. */
+   floor. 9.9vw put "your own workflows" at ~95% of the wrap, which feedback
+   read as oversized on a phone — 7.9vw is that scaled down a fifth, ~76% of
+   the wrap; the 46px cap keeps it at the desktop size, not the 64px a
+   previous override blew it up to. */
 @media (max-width: 900px) {
-  .foot-cta-copy h2 { font-size: min(9.9vw, 46px); }
+  .foot-cta-copy h3 { font-size: min(7.9vw, 46px); }
 }
 .foot-cta-copy p {
   font-family: var(--font-body); font-size: 16px; line-height: 1.55;
@@ -1242,6 +1272,15 @@ button.play { border: none; padding: 0; appearance: none }
   /* extra room under the deck so the arrows sit clear of the card's copy
      instead of crowding its bottom edge */
   .testi-deck { padding-bottom: 26px; }
+  /* phone cards read as slabs of white at the tablet metrics — the 18px quote
+     runs 7 lines and every card stretches to the tallest one's height. Scale
+     the type and paddings down together so the card holds its proportions at
+     a height the copy actually needs */
+  .testi-head { margin-bottom: 56px }
+  .testi-card { padding: 24px 22px 20px; border-radius: 14px }
+  .testi-quote { font-size: 15px; padding-bottom: 18px }
+  .testi-card .testi-author { padding-top: 14px }
+  .testi-name { font-size: 14px }
 }
 
 /* Reduced motion: no deck animation — show the quotes as a plain column */
@@ -1727,7 +1766,7 @@ button.play { border: none; padding: 0; appearance: none }
 /* phones: one size step down across the whole panel - type, checklist,
    buttons and the cube diagram - so it reads as a banner rather than a page */
 @media (max-width: 560px) {
-  .ent-panel { padding: 22px 16px; gap: 22px; border-radius: 12px }
+  .ent-panel { padding: 28px 24px; gap: 22px; border-radius: 12px }
   .ent-lede { font-size: 19px }
   .ent-list { margin-top: 12px; gap: 10px }
   .ent-list li { font-size: 14px; gap: 8px }
@@ -1851,7 +1890,10 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 480px) {
   /* stack the hero CTAs full-width so long labels never wrap or clip */
   .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
-  .hero-s2-ctas .hero-s2-cta { width: 100%; }
+  /* full width means the button no longer hugs its label, so the flex row
+     needs telling to center it (the ghost's asymmetric padding already pays
+     for the arrow slot, so the label lands optically centered too) */
+  .hero-s2-ctas .hero-s2-cta { width: 100%; justify-content: center; }
 
   /* footer CTAs: one row of two equal halves, like the plans banner's
      Talk to Us / Try for free pair -- not stacked */
@@ -2201,12 +2243,12 @@ button.play { border: none; padding: 0; appearance: none }
    screen, so there is no edge to see, and the copy sits on the wash across its
    full measure. The frame edges stop being photograph at this width, which is
    the desktop rule's one concession here: on a 390px screen the copy is most
-   of the frame, so there is no margin left to keep. Shorter to match, so the
-   wash still stops before the empty pavement under the CTAs. */
+   of the frame, so there is no margin left to keep. Tall enough that the wash
+   still carries under the trust line instead of handing it bare photograph. */
 @media (max-width: 700px) {
   .hero-glow {
     width: 124vw;
-    height: 760px;
+    height: 1150px;
     /* the 100vh cap was doing the sizing; this rule sets a height that already
        fits, so hand it back */
     max-height: none;
@@ -2472,25 +2514,32 @@ button.play { border: none; padding: 0; appearance: none }
    step-up is continuous and nothing overflows the screen. Scaled by the same
    factor, so that stays true wherever --hero-scale is set. */
 @media (max-width: 560px) {
-  /* 8.4vw, capped at the desktop clamp's floor so the size stays continuous
-     at 560px (with this factor the cap only engages above ~562px, so the
-     whole mobile band is vw-linear). 9.4 was the largest value that kept the
-     widest unbreakable pieces ("infrastructure," and the rotator's "for Asset
-     Managers") inside the title column; 8.4 is a deliberate step down from
-     that ceiling — feedback read the title as too large on a phone — and
-     anything under the ceiling still fits at every width because the size is
-     vw-linear. If either phrase is ever reworded, re-measure this
-     instead of trusting it. */
+  /* Sized off the title column itself (100vw - 72px: the wrap and mosaic-cell
+     side paddings), not off the viewport: with the size a fixed fraction of
+     the column, the greedy wrap breaks at the same words at every width, so
+     one measurement covers the whole band. /12.4 is the measured width per
+     font px of the widest line ("infrastructure, purpose-built") plus ~2%
+     margin, which wraps every rotator state to exactly three lines from 280
+     to 560 — feedback read the old four-line stack as not-a-heading. The next
+     step down ("for" pulled up to line two) doesn't happen until ~/13.1, so
+     the band between is all-three-lines. If the headline or segments are
+     ever reworded, re-measure this instead of trusting it. */
   .hero-s2-title {
-    font-size: min(8.4vw, calc(42px * var(--hero-scale)));
-    /* Every FULL state of the cycle wraps to the same height at a given
-       width — but mid-typing the partial segment is narrower and can drop a
-       line, so the reservation must match the full-state height or the lede
-       and CTAs bounce on every cycle. At 8.4vw every full state measures
-       4 lines × 1.03 leading (4.12em) at every width from 320 to 560 — the
-       whole band is vw-linear, so one reservation covers it; + 5% headroom
-       = 4.33em. Re-measure if the headline or segments are ever reworded. */
-    min-height: 4.33em;
+    /* the base rule is a bottom-packed column flexbox (its reservation trick),
+       which blockifies the row spans — as flex items they can never flow
+       inline, so the paragraph flow below needs the h1 to be a plain block.
+       Bottom-packing loses nothing here: every cycle state is exactly three
+       lines (see min-height below), so there is no surplus to pack. */
+    display: block;
+    font-size: calc((100vw - 72px) / 12.4);
+    /* Every state of the cycle — full or mid-typing — measures exactly
+       3 lines at this size ("for" never fits at the end of line two, so the
+       third line exists even while the segment is empty). Flowing inline, the
+       lines take the h1's own 1.18 leading (the rows' 1.03 only sizes their
+       inline boxes, and the block strut is taller): 3 × 1.18 = 3.54em. The
+       height is the same in every state, so this reservation is belt and
+       braces, not load-bearing. */
+    min-height: 3.54em;
   }
   /* The selection cell hugs the word at desktop sizes (2px sides, ~0 above
      and below), which reads fine at 62px type but cramped at ~20px. Open the
@@ -2512,11 +2561,13 @@ button.play { border: none; padding: 0; appearance: none }
      "for". Dropping the left pull moves the whole cell 4px right, restoring
      a visible gap while the word keeps its 6px inner padding. */
   .hero-rotate { margin-left: 0; }
-  /* Both rows wrap down here, so the headline is 4 lines of one title — but
-     the 0.42em between-row margin (a desktop ::selection nicety) only sat
-     between lines 2 and 3, reading as a seam splitting the title into two
-     stanzas. Zeroed, all four lines carry the same 1.03 leading. */
-  .hero-title-row + .hero-title-row { margin-top: 0; }
+  /* The two markup rows flow as one paragraph down here: kept as blocks the
+     title can't do better than 2+2 lines, but flowed together it wraps
+     "Auditable AI research / infrastructure, purpose-built / for X" — three
+     honest lines. The ::before restores the word-space JSX drops between the
+     two row spans. */
+  .hero-title-row { display: inline; }
+  .hero-title-row + .hero-title-row::before { content: ' '; }
   .hero-s2-lede {
     /* the vw size alone bottoms out around 12px on a small phone, which is
        under this page's body minimum — the floor is what it actually renders at */
@@ -2529,6 +2580,7 @@ button.play { border: none; padding: 0; appearance: none }
   /* less inset on the copy block, so the headline gets the width back */
   .hero-cell--mosaic { padding-left: 16px; padding-right: 16px; }
 }
+
 
 /* ── CTA button — embossed, brand color ── */
 .hero-s2-cta {
@@ -2832,20 +2884,61 @@ button.play { border: none; padding: 0; appearance: none }
   .hero-s2 .hero-s2-cta.hero-s2-cta--ghost {
     padding-right: calc(20px * var(--hero-scale) * 0.8);
   }
-  /* the fold-filling min-height (100svh minus navbar) stretched the section to
-     ~970px on a tall phone while the copy stack only needs ~650 -- let it hug
-     its content down here */
-  .hero-s2--photo { min-height: 0; }
-  /* with the stretch gone the 96px mosaic tail below the trust line is the
-     next biggest stretch of empty photo -- half is plenty of breathing room */
+  /* the hero keeps the base fold-filling min-height (100svh minus navbar) on
+     phones too -- it briefly hugged its content here, and the section ending
+     mid-screen read as a cropped photo rather than a full opening frame */
   .hero-cell--mosaic { padding-bottom: 48px; }
   /* the desktop-scaled stack margins (~37/38/29px) read as four detached
      blocks at phone type sizes -- roughly halve each, keeping the existing
      proportions (title gap slightly under lede gap, trust line the tightest) */
-  .hero-backers { margin-bottom: 16px; }
+  /* a second 0.8x on top of the global one (0.64 total): at phone widths the
+     pill still outweighed the shrunken copy stack around it */
+  .hero-backers { --pill-scale: calc(var(--hero-scale) * 0.64); margin-bottom: 16px; }
+  /* at this size the box-centring reads as misalignment: the caps ride high
+     and the wordmark hangs low. Sit both on one baseline (an img's baseline
+     is its bottom edge), then ease the mark down 1px to pay back the SVG's
+     under-baseline whitespace */
+  .hero-backers { align-items: baseline; }
+  .hero-backers-mark { top: 1px; }
   .hero-s2-title { margin-bottom: 18px; }
   .hero-s2-lede { margin-bottom: 20px; }
   .hero-s2-ctas { margin-bottom: 14px; }
+}
+
+/* Stacked CTAs (the 480px block further up makes them full width). The
+   desktop's reserved arrow slot kept the ghost label ~2px off the button's
+   center; full width means the arrow can appear without changing the button's
+   size, so the slot collapses at rest — label dead center — and on hover the
+   arrow takes its width back and shifts the label over. Lives below the
+   base .hero-s2-cta-arrow rule because that's later than the 480px block. */
+@media (max-width: 480px) {
+  /* symmetric at rest (the 560px rule pre-pays the arrow out of the right
+     side; here nothing is reserved). The .hero-s2-ctas column shrink-wraps to
+     its widest child, so the button's intrinsic width is what sizes BOTH
+     buttons — on hover the arrow's 20-unit slot (gap + glyph) is paid for by
+     10 units off each padding, keeping that intrinsic width constant while
+     the centred label slides 10 units left to make the room. */
+  .hero-s2 .hero-s2-cta.hero-s2-cta--ghost {
+    padding-left: calc(40px * var(--hero-scale) * 0.8);
+    padding-right: calc(40px * var(--hero-scale) * 0.8);
+    transition: background 0.15s, transform 0.12s, padding 0.15s;
+  }
+  .hero-s2 .hero-s2-cta.hero-s2-cta--ghost:hover,
+  .hero-s2 .hero-s2-cta.hero-s2-cta--ghost:focus-visible {
+    padding-left: calc((40px * 0.8 - 10px) * var(--hero-scale));
+    padding-right: calc((40px * 0.8 - 10px) * var(--hero-scale));
+  }
+  .hero-s2-cta-arrow {
+    width: 0;
+    /* cancels the flex gap in front of it, so nothing of the slot remains */
+    margin-left: calc(-6px * var(--hero-scale));
+    transition: opacity 0.15s, transform 0.15s, width 0.15s, margin-left 0.15s;
+  }
+  .hero-s2-cta--ghost:hover .hero-s2-cta-arrow,
+  .hero-s2-cta--ghost:focus-visible .hero-s2-cta-arrow {
+    width: calc(14px * var(--hero-scale));
+    margin-left: 0;
+  }
 }
 
 /* ── Dashboard interior ── */
@@ -3623,7 +3716,10 @@ button.play { border: none; padding: 0; appearance: none }
    screen. */
 @media (max-width: 560px) {
   .wac-nums { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
-  .wac-num { gap: 12px; padding: 22px 16px; }
+  /* centred, not the desktop's left-align: at desktop widths the figures hang
+     left on the frame's text inset, but in three narrow cells the shared left
+     edge reads as ragged clutter — each figure centres over its own label */
+  .wac-num { gap: 12px; padding: 22px 16px; align-items: center; text-align: center; }
   .wac-num:nth-child(odd) { border-left: 1px solid var(--hair); }
   .wac-num:first-child { border-left: 0; }
   .wac-num:nth-child(n+3) { border-top: 0; }
@@ -4271,14 +4367,14 @@ button.play { border: none; padding: 0; appearance: none }
    width the desktop's stage padding was holding. */
 @media (max-width: 640px) {
   /* The ground image's white card keeps a frame 9.5% of the stage wide on each
-     side, which leaves the trace drawing and the connector field ~300px of
-     panel on a 430 phone; both drawings had been spilling over the frame onto
-     the blue. For these two stages the image goes, the same grain-and-gradient
-     blue is painted by the layers the image rode on, and the visual redraws
-     the white card itself with a thinner frame, so the drawings keep the look
-     and get the width back. */
-  .x4e-stage--inline:has(.xvc),
-  .x4e-stage--inline:has(.xvi) {
+     side, which leaves the visuals ~300px of panel on a 430 phone; the trace
+     drawing and the connector field had been spilling over the frame onto the
+     blue. On phones the image goes for every inline stage, the same
+     grain-and-gradient blue is painted by the layers the image rode on, and
+     the visual redraws the white card itself with a thinner frame — one card
+     width for all four features, where redrawing only the two spilling stages
+     left their cards visibly wider than the marquee's and the seals'. */
+  .x4e-stage--inline {
     background-image:
       url('/assets/img/grain.svg'),
       radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
@@ -4288,8 +4384,7 @@ button.play { border: none; padding: 0; appearance: none }
     background-position: 0 0, center, center;
     background-blend-mode: overlay, normal, normal;
   }
-  .x4e-stage--inline:has(.xvc) .x4e-visual,
-  .x4e-stage--inline:has(.xvi) .x4e-visual {
+  .x4e-stage--inline .x4e-visual {
     background: #fff;
     border-radius: 14px;
     margin: 4.5%;
@@ -4298,6 +4393,30 @@ button.play { border: none; padding: 0; appearance: none }
   }
   .x4e-stage--inline:has(.xvc) .x4e-visual { padding: 5% 2.5%; }
   .x4e-stage--inline:has(.xvi) .x4e-visual { padding: 3.5% 2.5%; }
+  /* One row of seals, never two-and-one: the ≤900 block's 88px seals need
+     292px and the card doesn't hold that below ~420px viewport. The stage
+     gets the same slim side padding the drawings run, and the seals size in
+     cqw of the .xvs column, capped at the 88px design — so on wider phones
+     nothing moves, and below the cap the whole row scales down as one piece
+     instead of re-wrapping. 3 × 28.5cqw + 2 × 3.2cqw gaps = 91.9cqw, so the
+     row fits at any width. */
+  .x4e-stage--inline:has(.xvs) .x4e-visual { padding: 5% 2.5%; }
+  .x4e-stage--inline .xvs { container-type: inline-size; }
+  .x4e-stage--inline .xvs-certs { flex-wrap: nowrap; gap: min(14px, 3.2cqw); }
+  .x4e-stage--inline .xvs-seal {
+    width: min(88px, 28.5cqw);
+    border-radius: min(15px, 4.8cqw);
+    gap: min(8px, 2.5cqw);
+  }
+  .x4e-stage--inline .xvs-seal-top { font-size: min(9px, 2.9cqw); }
+  .x4e-stage--inline .xvs-seal-name { font-size: min(17px, 5.4cqw); }
+  .x4e-stage--inline .xvs-seal-sub { font-size: min(8.5px, 2.7cqw); }
+  .x4e-stage--inline .xvs-seal-rule { width: min(28px, 8.9cqw); }
+  .x4e-stage--inline .xvs-seal-pill {
+    font-size: min(8px, 2.55cqw);
+    padding: min(3px, 1cqw) min(6px, 1.9cqw);
+    bottom: max(-8px, -2.5cqw);
+  }
   /* the 640-unit scene still runs at ~0.52 scale, so its ink steps up inside
      the viewBox and the sheet reads at ~7-8px instead of vanishing. Geometry
      is untouched; only the type grows. */
@@ -4954,4 +5073,56 @@ button.play { border: none; padding: 0; appearance: none }
   .role-card {
     padding: 20px;
   }
+}
+/* Phone feedback pass — placed after the 900px stacking rules because the 640
+   blocks earlier in the file lose to them at equal specificity. */
+@media (max-width: 640px) {
+  /* ALL the section headers take one size, tracking the narrowest column the
+     way the hero title does (100vw minus the wrap pads and the x4e head pads;
+     12.5 is the widest title's — "Fia: The FinSynth workspace" — measured
+     width per font px plus ~3% margin). One formula for the set keeps the
+     headers reading as the same size class on every phone width, each holding
+     one line instead of grazing its column edge. Alignment stays each
+     section's own (the product heads and FAQ range left). */
+  .x4e-head h2,
+  .secx-head h2,
+  .testi-head h2,
+  .plans-title,
+  .faq-title { font-size: min(32px, calc((100vw - 98px) / 12.5)); }
+  /* the sub under the Fia head at 0.8x — at full size it wrapped just past
+     its column; down here it fits the line */
+  .fiag-sub { font-size: 12px; }
+
+  /* the FAQ kept its desktop 120px roof; the sections around it open at
+     72–80px on phones, so the extra white above the title read as a gap */
+  .faq { padding-top: 72px; }
+  /* the Security points map onto the Excel rail rows' type scale (17/13.5 at
+     phone widths) so the two framed sections read as one system */
+  .secx-point-title { font-size: 17px; }
+  .secx-point-body p { font-size: 13.5px; }
+
+  /* the footer heading's <br> is the desktop lockup's shape; on a phone it
+     forced "your own workflows" onto line 2 when "your" fit on line 1 — let
+     it wrap naturally, a step smaller so the natural break is clean */
+  .foot-cta-copy h3 br { display: none; }
+  .foot-cta-copy h3 { font-size: min(6.4vw, 46px); }
+
+  /* the brand mark at 0.6x — 30px read as oversized over the shrunken
+     lockup, and the first cut (0.5x) as a notch too timid */
+  .foot-brand img { height: 18px; }
+
+  /* footer nav columns at 0.8x — the full-size type outweighed the links'
+     role as small print under the CTA lockup */
+  .foot-grid-new h4 { font-size: 8.4px; }
+  .foot-grid-new a,
+  .foot-grid-new .foot-role { font-size: 12px; }
+}
+
+/* Fold-cover widths: the hero already tracks the title column (see the 560px
+   block), so it needs nothing here — but the section heads and the footer
+   heading sit on a 32px floor that stops fitting its column below ~320px, so
+   they switch to tracking it too. /11.4 is the widest head's measured width
+   per font px plus margin. */
+@media (max-width: 320px) {
+  .foot-cta-copy h3 { font-size: calc((100vw - 72px) / 11.4); }
 }

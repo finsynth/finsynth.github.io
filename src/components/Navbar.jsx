@@ -101,8 +101,11 @@ export default function Navbar() {
   // which desktop menu is open, by id — 'product' | 'careers' | null
   const [openMenu, setOpenMenu] = useState(null);
   // the sheet's disclosure rows are independent of each other, so a set rather
-  // than a single id — both groups can sit expanded at once
-  const [openFlats, setOpenFlats] = useState(() => new Set());
+  // than a single id — both groups can sit expanded at once. They start (and
+  // reopen) expanded: the links are what the sheet is opened for, so they
+  // shouldn't hide behind a second tap. A tap on the title still folds one away.
+  const allFlats = () => new Set(['product', 'careers']);
+  const [openFlats, setOpenFlats] = useState(allFlats);
   const toggleFlat = (id) =>
     setOpenFlats((prev) => {
       const next = new Set(prev);
@@ -119,8 +122,14 @@ export default function Navbar() {
   const linksRef = useRef(null);
   const sheetRef = useRef(null);
   const burgerRef = useRef(null);
+  const navRef = useRef(null);
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true);
+  // Whether the dark footer is the thing currently passing under the bar. The
+  // bar is frosted glass everywhere else; over the footer the translucent fill
+  // picks up the dark ground and reads as a murky gradient, so it goes solid
+  // for exactly that stretch.
+  const [onDark, setOnDark] = useState(false);
 
   useEffect(() => {
     const heroes = Array.from(document.querySelectorAll('.hero-s2'));
@@ -137,6 +146,14 @@ export default function Navbar() {
       } else {
         setHidden(true);
       }
+
+      // Measured against the bar's own strip rather than the footer merely
+      // being in view: the swap has to land as the dark edge crosses the bar,
+      // not when the footer first appears at the bottom of the screen.
+      const navH = navRef.current?.offsetHeight ?? 60;
+      const footTop = footer?.getBoundingClientRect().top;
+      setOnDark(footTop != null && footTop < navH);
+
       lastY.current = y;
     };
 
@@ -161,6 +178,9 @@ export default function Navbar() {
     }
 
     lastY.current = window.scrollY;
+    // a reload part-way down the page can land on the footer, so settle the
+    // fill before the first scroll rather than after it
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
@@ -181,7 +201,7 @@ export default function Navbar() {
   useEffect(() => {
     setSheetOpen(false);
     setOpenMenu(null);
-    setOpenFlats(new Set());
+    setOpenFlats(allFlats());
   }, [compact]);
 
   // Close the sheet on Escape or on a tap anywhere outside it, including the
@@ -208,9 +228,9 @@ export default function Navbar() {
     };
   }, [sheetOpen]);
 
-  // The sheet's disclosure state goes with the sheet: reopening starts folded.
+  // Folds don't outlive the sheet: reopening starts fully expanded again.
   useEffect(() => {
-    if (!sheetOpen) setOpenFlats(new Set());
+    if (!sheetOpen) setOpenFlats(allFlats());
   }, [sheetOpen]);
 
   useEffect(() => {
@@ -234,7 +254,10 @@ export default function Navbar() {
   const closeSheet = () => setSheetOpen(false);
 
   return (
-    <nav className={`navbar${hidden ? ' nav-hidden' : ''}${sheetOpen ? ' nav-sheet-open' : ''}`}>
+    <nav
+      className={`navbar${hidden ? ' nav-hidden' : ''}${sheetOpen ? ' nav-sheet-open' : ''}${onDark ? ' nav-on-dark' : ''}`}
+      ref={navRef}
+    >
       <div className="navbar-inner">
         <img
           className="navbar-logo"

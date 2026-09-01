@@ -696,8 +696,8 @@ export default function ExcelSection({
                   <li key={p.key}>
                     <button
                       type="button"
-                      className={`x4e-item${i === step ? ' is-active' : ''}`}
-                      aria-current={i === step}
+                      className={`x4e-item${!stacked && i === step ? ' is-active' : ''}`}
+                      aria-current={!stacked && i === step}
                       onClick={() => goTo(i)}
                     >
                       <span className="x4e-item-body">
@@ -705,12 +705,13 @@ export default function ExcelSection({
                         <span className="x4e-item-p">{p.body}</span>
                       </span>
                     </button>
-                    {/* stacked: the one visual on show rides under its own row.
-                        Mounted only while active, so its animation starts from
-                        the top each time the claim comes round rather than
-                        being caught mid-loop the way the always-mounted
-                        desktop stage needs the gate below for. */}
-                    {stacked && i === step && (
+                    {/* stacked: every claim keeps its visual open under its
+                        own row, so a phone reader scrolls the whole feature
+                        set instead of tapping through an accordion. Each one
+                        carries is-active so its loop runs; the rail highlight
+                        (and the auto-step behind it) only means something
+                        while the rows share one stage, so it stays desktop. */}
+                    {stacked && (
                       <div className="x4e-stage x4e-stage--inline">
                         <div className="x4e-visual is-active">
                           <Visual />
