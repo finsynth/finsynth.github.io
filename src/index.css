@@ -3629,15 +3629,17 @@ button.play { border: none; padding: 0; appearance: none }
   .wac-num:nth-child(n+3) { border-top: 0; }
   .wac-num:last-child:nth-child(odd) { grid-column: auto; }
   .wac-num-value { font-size: 30px; }
-  /* the mono labels run wider than a third of a phone — they wrap to two
-     short lines instead of holding the row apart */
-  .wac-num-label { white-space: normal; font-size: 9.5px; line-height: 1.5; }
+  /* each label holds one line (base nowrap), stepped down so the widest —
+     "less time auditing" — fits inside a third of the band */
+  .wac-num-label { font-size: 9px; line-height: 1.5; }
 }
 
 @media (max-width: 460px) {
   .wac-num { padding: 18px 10px; }
   .wac-num-value { font-size: 26px; }
-  .wac-num-label { font-size: 9px; letter-spacing: .08em; }
+  /* viewport-tracked: the cell is a third of the screen, so a fixed size that
+     fits at 460 overflows at 375 — 1.9vw keeps the one-line fit everywhere */
+  .wac-num-label { font-size: clamp(7px, 1.9vw, 8.5px); letter-spacing: .06em; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
