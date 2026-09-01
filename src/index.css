@@ -912,9 +912,14 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
-/* The clamp's 30px floor holds on phones too: a viewport-relative override
-   used to blow this up to 64px there, twice the page's section headings, which
-   read as a stray h1 rather than the footer's h2. */
+/* Stacked footer: the heading tracks the viewport so its wide line keeps
+   filling the column as the width changes, rather than parking at the clamp
+   floor. 9.9vw puts "your own workflows" at ~95% of the wrap at any phone
+   width; the 46px cap keeps it at the desktop size, not the 64px a previous
+   override blew it up to. */
+@media (max-width: 900px) {
+  .foot-cta-copy h2 { font-size: min(9.9vw, 46px); }
+}
 .foot-cta-copy p {
   font-family: var(--font-body); font-size: 16px; line-height: 1.55;
   color: #A8AFAA; margin-top: 18px; max-width: 420px;
@@ -1234,6 +1239,9 @@ button.play { border: none; padding: 0; appearance: none }
    below the front card's copy */
 @media (max-width: 560px) {
   .testi-nav { display: flex; right: auto; left: 50%; transform: translateX(-50%); bottom: 4px; }
+  /* extra room under the deck so the arrows sit clear of the card's copy
+     instead of crowding its bottom edge */
+  .testi-deck { padding-bottom: 26px; }
 }
 
 /* Reduced motion: no deck animation — show the quotes as a plain column */
@@ -1765,7 +1773,8 @@ button.play { border: none; padding: 0; appearance: none }
 /* ════════ RESPONSIVE ════════ */
 @media (max-width: 900px) {
   .faq-grid { grid-template-columns: 1fr; gap: 48px }
-  .faq-contact { padding-top: 32px }
+  /* contact chip is desktop-only; mobile gets the footer's contact paths */
+  .faq-contact { display: none }
   .plans { padding: 80px 0 }
   .foot-cols { flex-direction: column; gap: 56px }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
@@ -1831,7 +1840,7 @@ button.play { border: none; padding: 0; appearance: none }
   /* width: max-content off the desktop rule would push a long label out of its
      column; auto lets it wrap inside one instead */
   .foot-grid-new a,
-  .foot-grid-new .foot-role { width: auto; margin-bottom: 12px }
+  .foot-grid-new .foot-role { width: auto; margin-bottom: 8px }
   /* the © line has a row of its own down here rather than being pushed to a
      right edge that no longer exists */
   .foot-legal { gap: 14px }
@@ -1844,15 +1853,16 @@ button.play { border: none; padding: 0; appearance: none }
   .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
   .hero-s2-ctas .hero-s2-cta { width: 100%; }
 
-  /* footer CTAs stack too, filling the row */
-  .foot-cta-actions { width: 100%; }
+  /* footer CTAs: one row of two equal halves, like the plans banner's
+     Talk to Us / Try for free pair -- not stacked */
+  .foot-lockup { align-self: stretch; }
+  /* grid, not flex: two 1fr tracks are exactly equal, where flex-grow lets the
+     pills' own content skew the split */
+  .foot-cta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
   .foot-cta-actions .cta-cta,
-  .foot-cta-actions .foot-askai { flex: 1 1 auto; }
-  /* the wrapper stretched but the button inside kept its content width, so
-     the two pills stacked at ragged widths -- fill and centre both */
-  .foot-cta-actions .cta-cta { justify-content: center; }
-  .foot-cta-actions .foot-askai { width: 100%; }
-  .foot-cta-actions .foot-askai-btn { width: 100%; justify-content: center; }
+  .foot-cta-actions .foot-askai { min-width: 0; }
+  .foot-cta-actions .cta-cta { justify-content: center; padding-left: 9px; }
+  .foot-cta-actions .foot-askai-btn { width: 100%; height: 100%; justify-content: center; }
 }
 
 
@@ -2462,24 +2472,24 @@ button.play { border: none; padding: 0; appearance: none }
    step-up is continuous and nothing overflows the screen. Scaled by the same
    factor, so that stays true wherever --hero-scale is set. */
 @media (max-width: 560px) {
-  /* 9.4vw, capped at the desktop clamp's floor so the size stays continuous
-     at 560px (the cap takes over above ~502px, where there's slack anyway).
-     With .hero-nounphrase unlocked below, the widest unbreakable pieces are
-     "infrastructure," and the rotator's longest state "for Asset Managers" —
-     9.4 is the largest value that keeps both inside the title column, and
-     because the size is vw-linear, fitting at one phone width means fitting
-     at all of them. If either phrase is ever reworded, re-measure this
+  /* 8.4vw, capped at the desktop clamp's floor so the size stays continuous
+     at 560px (with this factor the cap only engages above ~562px, so the
+     whole mobile band is vw-linear). 9.4 was the largest value that kept the
+     widest unbreakable pieces ("infrastructure," and the rotator's "for Asset
+     Managers") inside the title column; 8.4 is a deliberate step down from
+     that ceiling — feedback read the title as too large on a phone — and
+     anything under the ceiling still fits at every width because the size is
+     vw-linear. If either phrase is ever reworded, re-measure this
      instead of trusting it. */
   .hero-s2-title {
-    font-size: min(9.4vw, calc(42px * var(--hero-scale)));
+    font-size: min(8.4vw, calc(42px * var(--hero-scale)));
     /* Every FULL state of the cycle wraps to the same height at a given
        width — but mid-typing the partial segment is narrower and can drop a
        line, so the reservation must match the full-state height or the lede
-       and CTAs bounce on every cycle. In the capped band (the ~503px where
-       min() takes the 47.25px arm, up to 560) that's 4 lines × 1.03 leading
-       + 5% = 4.33em; below it the vw-linear size always wraps to 5 lines,
-       and the query right after this block raises the floor to match.
-       Re-measure both if the headline or segments are ever reworded. */
+       and CTAs bounce on every cycle. At 8.4vw every full state measures
+       4 lines × 1.03 leading (4.12em) at every width from 320 to 560 — the
+       whole band is vw-linear, so one reservation covers it; + 5% headroom
+       = 4.33em. Re-measure if the headline or segments are ever reworded. */
     min-height: 4.33em;
   }
   /* The selection cell hugs the word at desktop sizes (2px sides, ~0 above
@@ -2518,13 +2528,6 @@ button.play { border: none; padding: 0; appearance: none }
   }
   /* less inset on the copy block, so the headline gets the width back */
   .hero-cell--mosaic { padding-left: 16px; padding-right: 16px; }
-}
-
-/* the 5-line half of the reservation above: 9.4vw is the active min() arm up
-   to ~503px, and there every full state runs 5 lines (5 × 1.03 = 5.15em; the
-   rest is rounding headroom). Measured crossover: 503px is 5 lines, 508 is 4. */
-@media (max-width: 507px) {
-  .hero-s2-title { min-height: 5.2em; }
 }
 
 /* ── CTA button — embossed, brand color ── */
@@ -3613,25 +3616,28 @@ button.play { border: none; padding: 0; appearance: none }
   .wac-num:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 
-/* One-up, and the vertical rule goes altogether — every cell but the first is
-   divided from the one above it instead. */
-/* phones: the desktop clamps keep ~47px of vertical padding and a ~33px
-   figure-to-label gap, so each stacked stat cell ran ~190px tall -- tighten
-   both so a cell reads as one beat, not a panel */
+/* phones: back to one row, the way the desktop lays them. The stacked column
+   read as a tall panel pinned to the band's left half. The 860px fold's 2x2
+   rules are unwound (its border swaps and the odd last cell's full-width
+   span), and the cells tighten enough that three sit abreast on a 430
+   screen. */
 @media (max-width: 560px) {
-  .wac-num { gap: 14px; padding: 26px 28px; }
+  .wac-nums { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
+  .wac-num { gap: 12px; padding: 22px 16px; }
+  .wac-num:nth-child(odd) { border-left: 1px solid var(--hair); }
+  .wac-num:first-child { border-left: 0; }
+  .wac-num:nth-child(n+3) { border-top: 0; }
+  .wac-num:last-child:nth-child(odd) { grid-column: auto; }
+  .wac-num-value { font-size: 30px; }
+  /* the mono labels run wider than a third of a phone — they wrap to two
+     short lines instead of holding the row apart */
+  .wac-num-label { white-space: normal; font-size: 9.5px; line-height: 1.5; }
 }
 
 @media (max-width: 460px) {
-  .wac-nums { grid-template-columns: minmax(0, 1fr); }
-  .wac-num { border-left: 0; }
-  .wac-num:nth-child(n+2) { border-top: 1px solid var(--hair); }
-  /* Stacked full-width, each cell trailed half a screen of empty band after
-     its label. The band shrinks to the widest label instead, so the three
-     read as one compact rectangle, and the figure comes down with it — at
-     44px it towered over the page's own headings. */
-  .wac-band { width: fit-content; }
-  .wac-num-value { font-size: 34px; }
+  .wac-num { padding: 18px 10px; }
+  .wac-num-value { font-size: 26px; }
+  .wac-num-label { font-size: 9px; letter-spacing: .08em; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -4068,7 +4074,7 @@ button.play { border: none; padding: 0; appearance: none }
    pills the way the Excel section's phone block does so neighbours stay
    clear of each other. */
 @media (max-width: 560px) {
-  .secx-head .xvs-certs { justify-content: center; gap: 10px; width: 100%; row-gap: 18px; }
+  .secx-head .xvs-certs { justify-content: center; gap: 16px; width: 100%; row-gap: 18px; }
   .secx-head .xvs-seal-pill {
     bottom: -10px; padding: 3px 6px; gap: 4px;
     font-size: 8px; letter-spacing: .08em;
@@ -4262,7 +4268,43 @@ button.play { border: none; padding: 0; appearance: none }
    proportional cut — that lands under 6px type) and the drawing takes back the
    width the desktop's stage padding was holding. */
 @media (max-width: 640px) {
-  .x4e-stage--inline:has(.xvc) .x4e-visual { padding: 7% 5%; }
+  /* The ground image's white card keeps a frame 9.5% of the stage wide on each
+     side, which leaves the trace drawing and the connector field ~300px of
+     panel on a 430 phone; both drawings had been spilling over the frame onto
+     the blue. For these two stages the image goes, the same grain-and-gradient
+     blue is painted by the layers the image rode on, and the visual redraws
+     the white card itself with a thinner frame, so the drawings keep the look
+     and get the width back. */
+  .x4e-stage--inline:has(.xvc),
+  .x4e-stage--inline:has(.xvi) {
+    background-image:
+      url('/assets/img/grain.svg'),
+      radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
+      linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
+    background-size: 320px 320px, auto, auto;
+    background-repeat: repeat, no-repeat, no-repeat;
+    background-position: 0 0, center, center;
+    background-blend-mode: overlay, normal, normal;
+  }
+  .x4e-stage--inline:has(.xvc) .x4e-visual,
+  .x4e-stage--inline:has(.xvi) .x4e-visual {
+    background: #fff;
+    border-radius: 14px;
+    margin: 4.5%;
+    /* the ground image's own drop shadow, at this card's scale */
+    box-shadow: 0 9px 24px rgba(11, 30, 99, .34);
+  }
+  .x4e-stage--inline:has(.xvc) .x4e-visual { padding: 5% 2.5%; }
+  .x4e-stage--inline:has(.xvi) .x4e-visual { padding: 3.5% 2.5%; }
+  /* the 640-unit scene still runs at ~0.52 scale, so its ink steps up inside
+     the viewBox and the sheet reads at ~7-8px instead of vanishing. Geometry
+     is untouched; only the type grows. */
+  .xvc .xv .xv-ink { font-size: 16px; }
+  .xvc .xv .xv-mono { font-size: 12.5px; }
+  .xvc .xv .xvq-cl { font-size: 13.5px; }
+  .xvc .xv .xvq-cn { font-size: 13px; }
+  .xvc .xv .xvq-head, .xvc .xv .xvq-rn { font-size: 11px; }
+  .xvc .xv .xvq-cite { font-size: 12px; }
   .xvc .xvi-grid--tight .xvi-pill { padding: 4px 11px 4px 4px; gap: 6px; }
   .xvc .xvi-grid--tight .xvi-badge { width: 18px; height: 18px; }
   .xvc .xvi-grid--tight .xvi-badge--glyph svg { width: 13px; height: 13px; }
@@ -4489,6 +4531,25 @@ button.play { border: none; padding: 0; appearance: none }
 }
 @media (prefers-reduced-motion: reduce) {
   .xvi-pill { animation: none; }
+}
+
+/* phones: the field's pills are fixed px hung on percentage anchors, so at a
+   ~350px field the desktop sizes collide mid-cloud and clip at the mask edge.
+   They come down to ~72% (the field's own scale against desktop), the focal
+   pill keeping its rank over the shelf, and the visual sheds most of the
+   stage padding so the field itself gets the width back. */
+@media (max-width: 640px) {
+  .xvi-field .xvi-pill { padding: 4px 11px 4px 4px; gap: 6px; }
+  .xvi-field .xvi-label { font-size: 10px; }
+  .xvi-field .xvi-badge { width: 18px; height: 18px; }
+  .xvi-field .xvi-badge--glyph svg { width: 13.5px; height: 13.5px; }
+  .xvi-field .xvi-badge--mark svg,
+  .xvi-field .xvi-badge--mark img { width: 11.5px; height: 11.5px; }
+  .xvi-field .xvi-badge--mono { font-size: 7px; }
+  .xvi-field .xvi-pill--focal { padding: 7px 16px 7px 7px; gap: 8px; }
+  .xvi-field .xvi-pill--focal .xvi-label { font-size: 11.5px; }
+  .xvi-field .xvi-badge--focal { width: 20px; height: 20px; }
+  .xvi-field .xvi-badge--focal svg { width: 12.5px; height: 12.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
