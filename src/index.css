@@ -154,9 +154,9 @@ a { text-decoration: none; color: inherit; }
   height: var(--navbar-height);
   display: flex;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.62);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
+  /* solid, not glass: the translucent blur read as a murky gradient wherever
+     the bar crossed the dark footer */
+  background: #fff;
   border-bottom: 1px solid rgba(228, 233, 242, 0.7);
   box-shadow: 0 1px 3px rgba(20, 36, 46, 0.04), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
   position: sticky;
@@ -328,52 +328,60 @@ a { text-decoration: none; color: inherit; }
 .nav-burger-bars {
   position: relative;
   display: block;
-  width: 1.0625rem;
-  height: 0.6875rem;
+  /* px on purpose: at rem-derived fractional sizes the three 1.5px bars
+     rasterized unevenly (the bottom one darker than the top two) and shifted
+     between repaints. Whole-pixel bars land on the grid and stay identical. */
+  width: 17px;
+  height: 12px;
 }
 .nav-burger-bars i {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 1.5px;
+  height: 2px;
   border-radius: 2px;
   background: currentColor;
   transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.14s linear;
 }
 .nav-burger-bars i:nth-child(1) { top: 0 }
-.nav-burger-bars i:nth-child(2) { top: calc(50% - 0.75px) }
-.nav-burger-bars i:nth-child(3) { top: calc(100% - 1.5px) }
+.nav-burger-bars i:nth-child(2) { top: 5px }
+.nav-burger-bars i:nth-child(3) { top: 10px }
 /* the outer bars swing into an X and the middle one drops out */
 .nav-burger.is-open .nav-burger-bars i:nth-child(1) {
-  transform: translateY(calc(0.34375rem - 0.75px)) rotate(45deg);
+  transform: translateY(5px) rotate(45deg);
 }
 .nav-burger.is-open .nav-burger-bars i:nth-child(2) { opacity: 0 }
 .nav-burger.is-open .nav-burger-bars i:nth-child(3) {
-  transform: translateY(calc(-0.34375rem + 0.75px)) rotate(-45deg);
+  transform: translateY(-5px) rotate(-45deg);
 }
 
 .navbar-sheet[hidden] { display: none }
 .navbar-sheet {
   position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  top: calc(100% + 0.375rem);
+  /* a panel hanging off the burger's corner, not a full-bleed banner — the
+     page stays visible beside it, the way the reference menus do it. 1rem is
+     the bar's own inner padding, so the panel's edge lines up with the burger */
+  right: 1rem;
+  left: auto;
+  width: min(19rem, calc(100vw - 2rem));
   z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
   /* tall menus on short phones scroll inside the sheet instead of pushing the
      page or running off the bottom of the screen */
-  max-height: calc(100dvh - var(--navbar-height));
+  max-height: calc(100dvh - var(--navbar-height) - 1rem);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0.75rem 1rem 1.125rem;
+  padding: 0.75rem 1rem 1rem;
   /* nearly opaque, unlike the bar's glass: this one covers the hero photo, and
      at 0.94 the headline read straight through the link labels */
   background: rgba(255, 255, 255, 0.985);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid rgba(228, 233, 242, 0.9);
+  border: 1px solid rgba(228, 233, 242, 0.9);
+  border-radius: 14px;
   box-shadow: 0 18px 40px -18px rgba(20, 36, 46, 0.28);
   animation: navSheetIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
@@ -385,34 +393,53 @@ a { text-decoration: none; color: inherit; }
   padding: 0.6875rem 0.75rem;
   font-size: 1rem;
 }
-/* Each dropdown prints as a labelled group. The heading is deliberately quiet:
-   it names the group, it isn't a tap target. */
-.nav-drop--flat {
-  display: block;
-  padding: 0.375rem 0 0.25rem;
+/* Each dropdown is a disclosure row: the title sits at the same rank as the
+   plain links, and tapping it folds its items out underneath. The caret rides
+   the right edge, where a phone thumb expects the affordance. */
+.nav-drop--flat { display: block; }
+.nav-drop--flat .nav-drop-btn {
+  width: 100%;
+  justify-content: space-between;
+  padding: 0.6875rem 0.75rem;
+  font-size: 1rem;
+  text-align: left;
 }
-.nav-drop-label {
-  margin: 0;
-  padding: 0.5rem 0.75rem 0.1875rem;
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--muted);
+/* the 0fr→1fr grid is the collapse: the inner box clips while the row grows */
+.nav-drop-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.22s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.22s;
+}
+.nav-drop--flat.is-open .nav-drop-fold {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 0.22s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
+}
+.nav-drop-fold-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 .navbar-sheet .nav-drop-item {
   padding: 0.625rem 0.75rem 0.625rem 1.375rem;
   font-size: 1rem;
 }
-.nav-sheet-signin {
-  margin-top: 0.625rem;
-  padding: 0.6875rem 0.75rem;
+/* the panel's footer: both actions as stacked full-width buttons, set off from
+   the links by the hairline. They wear the bar's own button faces. */
+.nav-sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--hair);
-  font-family: var(--font-body);
+}
+.nav-sheet-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.625rem 0.875rem;
   font-size: 1rem;
-  font-weight: 500;
-  color: var(--ink);
 }
 @media (max-width: 900px) {
   /* the sheet hangs off this box, so it has to be the positioning context */
@@ -425,6 +452,7 @@ a { text-decoration: none; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .navbar-sheet { animation: none }
   .nav-burger-bars i { transition: none }
+  .nav-drop-fold { transition: none }
 }
 
 .navbar-right {
@@ -784,6 +812,27 @@ button.play { border: none; padding: 0; appearance: none }
 .gridreveal--bg .gridreveal__svg {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block;
 }
+/* phones: the slice fit is height-driven, so the tall narrow footer scaled
+   the cells to ~1.6x -- huge boxes on a small screen. Sizing the svg's box to
+   the viewBox ratio makes the fit width-driven instead: the whole 1350x610
+   dome renders at ~0.3x, cells go from ~100px to ~40px, and pinning it to
+   top: 0 attaches the grid to the section's start instead of floating it in
+   the footer's lower half. The container mask above fades the TOP 26% (sized
+   for the bottom-anchored desktop grid), which would now erase the grid --
+   move the fades onto the svg itself, where they track the dome exactly. */
+@media (max-width: 560px) {
+  .gridreveal--bg .gridreveal__svg {
+    top: 0; bottom: auto;
+    height: calc(100vw * (610 / 1350));
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%),
+      linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(180deg, #000 55%, transparent 100%),
+      linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-composite: intersect;
+  }
+  .gridreveal--bg { -webkit-mask-image: none; mask-image: none; }
+}
 /* faint cool wireframe over the deep base */
 .gridreveal--bg .gridreveal__lines path { stroke: rgba(150, 175, 255, .16); }
 /* blue fills glow over the dark footer — the hover "switch" shows clearly */
@@ -863,6 +912,9 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
+/* The clamp's 30px floor holds on phones too: a viewport-relative override
+   used to blow this up to 64px there, twice the page's section headings, which
+   read as a stray h1 rather than the footer's h2. */
 .foot-cta-copy p {
   font-family: var(--font-body); font-size: 16px; line-height: 1.55;
   color: #A8AFAA; margin-top: 18px; max-width: 420px;
@@ -1117,6 +1169,10 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: clamp(34px, 4vw, 52px); line-height: 1.12;
   color: var(--ink); letter-spacing: var(--ls-display);
 }
+/* every other section h2 bottoms out at 32px on phones; match it */
+@media (max-width: 560px) {
+  .testi-head h2 { font-size: 32px; }
+}
 
 /* iOS-style card stack — every card occupies the same grid cell, useCardStack
    drives translate/scale/z-index on an automatic timer.
@@ -1172,6 +1228,12 @@ button.play { border: none; padding: 0; appearance: none }
   .testi-nav { display: none }
   .testi-card { padding: 30px 28px 26px }
   .testi-head { margin-bottom: 80px }
+}
+/* phones: with no hover there's no other affordance to page the deck -- bring
+   the arrows back, centred in the deck's bottom peek padding where they sit
+   below the front card's copy */
+@media (max-width: 560px) {
+  .testi-nav { display: flex; right: auto; left: 50%; transform: translateX(-50%); bottom: 4px; }
 }
 
 /* Reduced motion: no deck animation — show the quotes as a plain column */
@@ -1382,6 +1444,12 @@ button.play { border: none; padding: 0; appearance: none }
 .faq-toggle::before { top: 7.25px; left: 0; width: 16px; height: 1.5px }
 .faq-toggle::after { left: 7.25px; top: 0; width: 1.5px; height: 16px }
 .faq-item.open .faq-toggle { color: var(--accent) }
+/* phones: 1.5px arms at 7.25px offsets rasterise unevenly at 1x-3x dpr (the
+   nav burger had the same defect) -- whole pixels only */
+@media (max-width: 560px) {
+  .faq-toggle::before { top: 7px; height: 2px }
+  .faq-toggle::after { left: 7px; width: 2px }
+}
 .faq-item.open .faq-toggle::after { transform: rotate(90deg); opacity: 0 }
 /* smooth height accordion (grid 0fr → 1fr, GPU-safe) */
 .faq-a {
@@ -1411,6 +1479,17 @@ button.play { border: none; padding: 0; appearance: none }
 .faq.is-in .faq-item:nth-child(5) { animation-delay: 260ms }
 .faq.is-in .faq-item:nth-child(6) { animation-delay: 310ms }
 .faq.is-in .faq-item:nth-child(7) { animation-delay: 360ms }
+/* phones: fill-mode both holds faqReveal's interpolation residue (identity
+   transform + blur(0px) filter) on every item after the reveal, keeping each
+   on its own compositor layer where the text rasterises soft. A plain fade
+   leaves no residue, so the items settle back to crisp DOM text. */
+@keyframes faqRevealFade {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+@media (max-width: 760px) {
+  .faq.is-in .faq-intro, .faq.is-in .faq-item { animation-name: faqRevealFade; }
+}
 @media (prefers-reduced-motion: reduce) {
   .faq .faq-intro, .faq .faq-item { opacity: 1; animation: none }
   .faq-a, .faq-toggle::before, .faq-toggle::after, .faq-item, .faq-q, .faq-contact-chip, .faq-rail { transition: none }
@@ -1637,6 +1716,18 @@ button.play { border: none; padding: 0; appearance: none }
   .ent-list { grid-template-columns: 1fr; gap: 12px }
   .ent-cta { align-self: stretch; text-align: center }
 }
+/* phones: one size step down across the whole panel - type, checklist,
+   buttons and the cube diagram - so it reads as a banner rather than a page */
+@media (max-width: 560px) {
+  .ent-panel { padding: 22px 16px; gap: 22px; border-radius: 12px }
+  .ent-lede { font-size: 19px }
+  .ent-list { margin-top: 12px; gap: 10px }
+  .ent-list li { font-size: 14px; gap: 8px }
+  .ent-check { width: 14px; height: 14px }
+  .ent-ctas { gap: 10px; margin-top: 6px }
+  .ent-cta { padding: 0.5rem 1.2rem; font-size: 14px }
+  .ent-viz-svg { max-width: 210px }
+}
 /* button clothes for the error-state / Enterprise "Talk to Us" anchors */
 .plan-card-cta {
   margin-top: auto;
@@ -1757,6 +1848,11 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-cta-actions { width: 100%; }
   .foot-cta-actions .cta-cta,
   .foot-cta-actions .foot-askai { flex: 1 1 auto; }
+  /* the wrapper stretched but the button inside kept its content width, so
+     the two pills stacked at ragged widths -- fill and centre both */
+  .foot-cta-actions .cta-cta { justify-content: center; }
+  .foot-cta-actions .foot-askai { width: 100%; }
+  .foot-cta-actions .foot-askai-btn { width: 100%; justify-content: center; }
 }
 
 
@@ -2201,6 +2297,13 @@ button.play { border: none; padding: 0; appearance: none }
    0.15em of visible photo between the strips. */
 .hero-title-row { display: block; line-height: 1.03; }
 .hero-title-row + .hero-title-row { margin-top: 0.42em; }
+/* keeps "research infrastructure," whole when row one wraps on narrow
+   laptops (it breaks after "AI" instead); phones relax this — see the
+   560px hero block */
+.hero-nounphrase { white-space: nowrap; }
+/* browsers happily break "purpose-built" at its hyphen, stranding
+   "purpose-" on its own line at some phone widths — keep the word whole */
+.hero-nobreak { white-space: nowrap; }
 
 /* Below ~1125px the headline no longer holds two rows: row one
    ("Auditable AI research infrastructure,") needs ~15.4em, and the measure
@@ -2359,14 +2462,51 @@ button.play { border: none; padding: 0; appearance: none }
    step-up is continuous and nothing overflows the screen. Scaled by the same
    factor, so that stays true wherever --hero-scale is set. */
 @media (max-width: 560px) {
-  /* 6.4, not the 7.5 this rule carried when the headline was shorter: row one
-     ends in "research&nbsp;infrastructure," which by definition can't break, so
-     the row's min-content width is a hard floor on the whole hero. At 7.5 that
-     floor was ~28px wider than a 390px phone and it pushed the entire hero past
-     the screen edge — the copy was cut, not wrapped. 6.4 is the largest value
-     that keeps the clause inside the narrowest phone we lay out for (320px).
-     If that clause is ever reworded, re-measure this instead of trusting it. */
-  .hero-s2-title { font-size: calc(6.4vw * var(--hero-scale)); }
+  /* 9.4vw, capped at the desktop clamp's floor so the size stays continuous
+     at 560px (the cap takes over above ~502px, where there's slack anyway).
+     With .hero-nounphrase unlocked below, the widest unbreakable pieces are
+     "infrastructure," and the rotator's longest state "for Asset Managers" —
+     9.4 is the largest value that keeps both inside the title column, and
+     because the size is vw-linear, fitting at one phone width means fitting
+     at all of them. If either phrase is ever reworded, re-measure this
+     instead of trusting it. */
+  .hero-s2-title {
+    font-size: min(9.4vw, calc(42px * var(--hero-scale)));
+    /* Every FULL state of the cycle wraps to the same height at a given
+       width — but mid-typing the partial segment is narrower and can drop a
+       line, so the reservation must match the full-state height or the lede
+       and CTAs bounce on every cycle. In the capped band (the ~503px where
+       min() takes the 47.25px arm, up to 560) that's 4 lines × 1.03 leading
+       + 5% = 4.33em; below it the vw-linear size always wraps to 5 lines,
+       and the query right after this block raises the floor to match.
+       Re-measure both if the headline or segments are ever reworded. */
+    min-height: 4.33em;
+  }
+  /* The selection cell hugs the word at desktop sizes (2px sides, ~0 above
+     and below), which reads fine at 62px type but cramped at ~20px. Open the
+     frame outward so the word gets clear inner padding on every side; the
+     word itself doesn't move, and the corner handles ride the frame. Only
+     the vertical sides open: horizontally the frame already clears the word
+     by 6px (the cell's 4px padding plus the 2px overhang), and anything wider
+     lands on "for" — the word-space is only ~5px at this type size. */
+  /* let row one split the noun phrase — on a phone the alternative is the
+     whole title stuck at ~20px (see .hero-nounphrase at the base rules) */
+  .hero-nounphrase { white-space: normal; }
+  /* with the phrase split three ways, balance evens the lines by stranding
+     "Auditable" alone up top; greedy gives "Auditable AI" a full first line
+     and reads far more deliberate */
+  .hero-s2-title { text-wrap: wrap; }
+  .hr-frame { inset: -0.08em -2px -0.1em -2px; }
+  /* the cell's -4px negative margin (sized for 62px desktop type) swallowed
+     most of the ~5px word-space, parking the frame's left border against
+     "for". Dropping the left pull moves the whole cell 4px right, restoring
+     a visible gap while the word keeps its 6px inner padding. */
+  .hero-rotate { margin-left: 0; }
+  /* Both rows wrap down here, so the headline is 4 lines of one title — but
+     the 0.42em between-row margin (a desktop ::selection nicety) only sat
+     between lines 2 and 3, reading as a seam splitting the title into two
+     stanzas. Zeroed, all four lines carry the same 1.03 leading. */
+  .hero-title-row + .hero-title-row { margin-top: 0; }
   .hero-s2-lede {
     /* the vw size alone bottoms out around 12px on a small phone, which is
        under this page's body minimum — the floor is what it actually renders at */
@@ -2378,6 +2518,13 @@ button.play { border: none; padding: 0; appearance: none }
   }
   /* less inset on the copy block, so the headline gets the width back */
   .hero-cell--mosaic { padding-left: 16px; padding-right: 16px; }
+}
+
+/* the 5-line half of the reservation above: 9.4vw is the active min() arm up
+   to ~503px, and there every full state runs 5 lines (5 × 1.03 = 5.15em; the
+   rest is rounding headroom). Measured crossover: 503px is 5 lines, 508 is 4. */
+@media (max-width: 507px) {
+  .hero-s2-title { min-height: 5.2em; }
 }
 
 /* ── CTA button — embossed, brand color ── */
@@ -2531,13 +2678,17 @@ button.play { border: none; padding: 0; appearance: none }
    The cell is a centred column flex, so the pill shrink-wraps its contents
    without needing an explicit width. */
 .hero-backers {
+  /* the badge runs a step smaller than the rest of the hero: everything inside
+     the pill sizes off this, while its margin below stays on the hero's own
+     scale so the stack rhythm doesn't shift */
+  --pill-scale: calc(var(--hero-scale) * 0.8);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  column-gap: calc(11px * var(--hero-scale));
-  row-gap: calc(4px * var(--hero-scale));
+  column-gap: calc(11px * var(--pill-scale));
+  row-gap: calc(4px * var(--pill-scale));
   margin: 0 0 calc(26px * var(--hero-scale));
   /* Vertical padding is well under the horizontal, and under what the pill's
      46px looked like it needed: the two things inside it are a 21.4px Accel
@@ -2547,7 +2698,7 @@ button.play { border: none; padding: 0; appearance: none }
      padded that whitespace twice. 6px against the boxes reads like ~12 against
      the ink, which is what a badge this small wants. Anything less has to come
      off the mark's own height, not off here. */
-  padding: calc(6px * var(--hero-scale)) calc(22px * var(--hero-scale));
+  padding: calc(6px * var(--pill-scale)) calc(22px * var(--pill-scale));
   border-radius: 999px;
   /* the fill is a gradient, not a flat tint: real glass catches more light at
      the top edge than the bottom, and that vertical falloff is most of what
@@ -2614,7 +2765,7 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hero-backers-label {
   font-family: var(--font-body);
-  font-size: calc(12px * var(--hero-scale));
+  font-size: calc(12px * var(--pill-scale));
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -2626,21 +2777,21 @@ button.play { border: none; padding: 0; appearance: none }
 /* sized against the caption's cap height rather than its own box, so the
    wordmark sits on the same optical line as the words beside it */
 .hero-backers-mark {
-  height: calc(19px * var(--hero-scale));
+  height: calc(19px * var(--pill-scale));
   width: auto;
   display: block;
   /* the SVG carries whitespace under the baseline; nudge it back up so the
      Accel wordmark centres against the caps, not against its own bounding box */
   position: relative;
-  top: calc(-1px * var(--hero-scale));
+  top: calc(-1px * var(--pill-scale));
   /* Optical, not metric. Two things open a hole to the left of the mark: the
      caption's .16em tracking leaves a trailing space after the final "Y", and
      that "Y" then meets the diagonal "A" of Accel, so two receding letterforms
      face each other. Measured edge-to-edge the space was already even; this
      pulls it in until it *looks* even. The right side pays back the SVG's own
      sidebearing so the pill's inner padding reads equal on both ends. */
-  margin-left: calc(-8px * var(--hero-scale));
-  margin-right: calc(-3px * var(--hero-scale));
+  margin-left: calc(-8px * var(--pill-scale));
+  margin-right: calc(-3px * var(--pill-scale));
   -webkit-user-drag: none;
   pointer-events: none;
 }
@@ -2654,6 +2805,44 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: calc(18px * var(--hero-scale));
   padding: calc(15px * var(--hero-scale)) calc(40px * var(--hero-scale));
   border-radius: calc(12px * var(--hero-scale));
+}
+
+/* Phones. This block lives below the base rules it overrides (the scaled CTA
+   just above, .hero-s2-trust further up) — the max-width:560px block beside
+   .hero-s2-lede is too early in the file to win at equal specificity. */
+@media (max-width: 560px) {
+  /* the trust line held its desktop size (15.75px) while the lede above it
+     dropped to 14px, so the footnote outweighed the lede. Same treatment as
+     the lede: viewport-relative, meeting the desktop size exactly at 560px,
+     with a floor under it. 2.5vw * 1.125 = 15.75px at 560. */
+  .hero-s2-trust {
+    font-size: max(12px, calc(2.5vw * var(--hero-scale)));
+  }
+  /* the CTAs kept their full desktop bulk (68px tall at 307px wide) once
+     stacked; 0.8x brings them back in proportion with the shrunken copy while
+     staying comfortably above tap-target minimums */
+  .hero-s2 .hero-s2-cta {
+    font-size: calc(18px * var(--hero-scale) * 0.8);
+    padding: calc(15px * var(--hero-scale) * 0.8) calc(40px * var(--hero-scale) * 0.8);
+    border-radius: calc(12px * var(--hero-scale) * 0.8);
+  }
+  .hero-s2 .hero-s2-cta.hero-s2-cta--ghost {
+    padding-right: calc(20px * var(--hero-scale) * 0.8);
+  }
+  /* the fold-filling min-height (100svh minus navbar) stretched the section to
+     ~970px on a tall phone while the copy stack only needs ~650 -- let it hug
+     its content down here */
+  .hero-s2--photo { min-height: 0; }
+  /* with the stretch gone the 96px mosaic tail below the trust line is the
+     next biggest stretch of empty photo -- half is plenty of breathing room */
+  .hero-cell--mosaic { padding-bottom: 48px; }
+  /* the desktop-scaled stack margins (~37/38/29px) read as four detached
+     blocks at phone type sizes -- roughly halve each, keeping the existing
+     proportions (title gap slightly under lede gap, trust line the tightest) */
+  .hero-backers { margin-bottom: 16px; }
+  .hero-s2-title { margin-bottom: 18px; }
+  .hero-s2-lede { margin-bottom: 20px; }
+  .hero-s2-ctas { margin-bottom: 14px; }
 }
 
 /* ── Dashboard interior ── */
@@ -3246,6 +3435,10 @@ button.play { border: none; padding: 0; appearance: none }
   color: #fff;
 }
 .scroll-next:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (max-width: 560px) {
+  .scroll-next { width: 36px; height: 36px; right: 18px; bottom: 18px; }
+  .scroll-next svg { width: 15px; height: 15px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .scroll-next { transition: none; }
 }
@@ -3422,10 +3615,23 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* One-up, and the vertical rule goes altogether — every cell but the first is
    divided from the one above it instead. */
+/* phones: the desktop clamps keep ~47px of vertical padding and a ~33px
+   figure-to-label gap, so each stacked stat cell ran ~190px tall -- tighten
+   both so a cell reads as one beat, not a panel */
+@media (max-width: 560px) {
+  .wac-num { gap: 14px; padding: 26px 28px; }
+}
+
 @media (max-width: 460px) {
   .wac-nums { grid-template-columns: minmax(0, 1fr); }
   .wac-num { border-left: 0; }
   .wac-num:nth-child(n+2) { border-top: 1px solid var(--hair); }
+  /* Stacked full-width, each cell trailed half a screen of empty band after
+     its label. The band shrinks to the widest label instead, so the three
+     read as one compact rectangle, and the figure comes down with it — at
+     44px it towered over the page's own headings. */
+  .wac-band { width: fit-content; }
+  .wac-num-value { font-size: 34px; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -3584,7 +3790,9 @@ button.play { border: none; padding: 0; appearance: none }
   border-right: 1px solid var(--hair);
   background: #fff;
 }
-.x4e-rail li + li { border-top: 1px solid var(--hair) }
+/* direct children only — on mobile the marquee's own <li> rows mount inside a
+   rail <li>, and the bare descendant selector ruled a line under every one */
+.x4e-rail > li + li { border-top: 1px solid var(--hair) }
 .x4e-item {
   position: relative;
   width: 100%; height: 100%;
@@ -3853,6 +4061,21 @@ button.play { border: none; padding: 0; appearance: none }
 .xvs-certs--compact .xvs-seal-rule { width: 30px }
 .xvs-certs--compact .xvs-seal-name { font-size: clamp(16px, 1.4vw, 19px) }
 .xvs-certs--compact .xvs-seal-sub { margin-top: -2px; font-size: 8.5px; letter-spacing: .08em }
+/* Security head, phones: the row kept desktop's flex-end alignment once the
+   head stacked, so the seals wrapped raggedly against the right edge. Centre
+   the wrap instead (two seals up, one below at this width -- three-up would
+   need ~55px seals, which clip their own marks) and shrink the straddling
+   pills the way the Excel section's phone block does so neighbours stay
+   clear of each other. */
+@media (max-width: 560px) {
+  .secx-head .xvs-certs { justify-content: center; gap: 10px; width: 100%; row-gap: 18px; }
+  .secx-head .xvs-seal-pill {
+    bottom: -10px; padding: 3px 6px; gap: 4px;
+    font-size: 8px; letter-spacing: .08em;
+  }
+  .secx-head .xvs-seal-pill::before { width: 5px; height: 5px }
+}
+
 .xvs-certs--compact .xvs-seal-pill {
   bottom: -11px; padding: 3px 9px; font-size: 9px;
 }
@@ -3872,6 +4095,33 @@ button.play { border: none; padding: 0; appearance: none }
   margin-inline: 0;
 }
 .xv-marquee .what-item { font-size: clamp(22px, 2vw, 32px); }
+
+/* Stacked (≤900px) the marquee rides the inline stage, which sizes to its
+   content — px/vh-clamped rows on a phone-width card read as a different
+   composition, not the desktop one smaller. Instead the inline stage keeps the
+   desktop stage's near-square proportions (600×630 at a typical desktop) and
+   every measure inside is the same fraction of stage width it is there, so the
+   whole card is the desktop card scaled down. :has() scopes the square to the
+   marquee's stage — the other pillar visuals keep sizing the stage themselves.
+   Ratios, from the desktop render: viewport height 46% of stage width, row
+   font 4.8%, check gap 3.12%, row gap 2.1%, check border 0.33%. */
+.x4e-stage--inline:has(.xv-marquee) {
+  aspect-ratio: 20 / 21;
+  container-type: inline-size;
+}
+.x4e-stage--inline .xv-marquee .what-list-viewport {
+  height: 46cqw;
+  width: max-content;
+  max-width: 100%;
+  margin-inline: 0;
+}
+.x4e-stage--inline .xv-marquee .what-item {
+  font-size: 4.8cqw;
+  gap: 3.12cqw;
+  line-height: 1.2;
+}
+.x4e-stage--inline .xv-marquee .what-list { gap: 2.1cqw; }
+.x4e-stage--inline .xv-marquee .what-check { border-width: max(1px, .33cqw); }
 
 /* 02 · Fully auditable — the trace drawing, with the rest of the source shelf
    following as pills so "anything" reads as a real list. */
@@ -4005,7 +4255,19 @@ button.play { border: none; padding: 0; appearance: none }
    to sit here never applied and the row has been sitting flush against the
    drawing. (A `gap: 8px 9px` was dead here for the same reason; dropped rather
    than revived, since .xvi-grid's 11/12 is what has been on screen.) */
-.xvc .xvi-grid--tight { margin-top: 56px; }
+.xvc .xvi-grid--tight { margin-top: 11.5%; }
+/* On a phone the drawing had collapsed to a third of the pills' height with the
+   desktop's fixed 56px still holding them apart. The % gap above scales with
+   the composition; here the pills come down a step (they can't take the full
+   proportional cut — that lands under 6px type) and the drawing takes back the
+   width the desktop's stage padding was holding. */
+@media (max-width: 640px) {
+  .x4e-stage--inline:has(.xvc) .x4e-visual { padding: 7% 5%; }
+  .xvc .xvi-grid--tight .xvi-pill { padding: 4px 11px 4px 4px; gap: 6px; }
+  .xvc .xvi-grid--tight .xvi-badge { width: 18px; height: 18px; }
+  .xvc .xvi-grid--tight .xvi-badge--glyph svg { width: 13px; height: 13px; }
+  .xvc .xvi-grid--tight .xvi-label { font-size: 11px; }
+}
 
 .xvi-grid--tight .xvi-pill { padding: 5px 14px 5px 5px; gap: 7px; }
 .xvi-grid--tight .xvi-badge { width: 21px; height: 21px; }
@@ -4377,12 +4639,6 @@ button.play { border: none; padding: 0; appearance: none }
 .fiag-window {
   --fiag-chrome: #E9D3D5;
   --fiag-line: #D9BEC2;      /* outlines: the chrome, a shade deeper */
-  --fiag-tab: #F7EEEE;       /* the active tab, lifted toward the page */
-  /* resting tabs: barely lifted off the chrome. They were a half-step below
-     the active tab, which put three near-equal pills in the strip and left
-     nothing saying which one you're looking at — the point of the strip is
-     that FinSynth is the tab in front */
-  --fiag-rest: rgba(255,255,255,.18);
   --fiag-paper: #FDFAFA;     /* the page ground under the toolbar row */
 
   width: min(100%, 960px);
@@ -4396,77 +4652,18 @@ button.play { border: none; padding: 0; appearance: none }
     0 56px 112px -32px rgba(74,38,43,.24);
   overflow: hidden;
 }
-.fiag-chrome {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px 7px;
-}
-.fiag-lights { display: inline-flex; gap: 7px; margin-right: 6px }
-.fiag-lights i { width: 11px; height: 11px; border-radius: 50% }
-.fiag-lights i:nth-child(1) { background: #ff5f57 }
-.fiag-lights i:nth-child(2) { background: #febc2e }
-.fiag-lights i:nth-child(3) { background: #28c840 }
-/* the pinned-tab group — a translucent pill of workspace shortcuts, like the
-   reference's Work / Gmail / Calendar cluster */
-.fiag-pins {
-  display: inline-flex; align-items: center; gap: 9px;
-  padding: 5.5px 11px; border-radius: 9px;
-  background: var(--fiag-rest); border: 1px solid rgba(217,190,194,.55);
-  font-size: 11.5px; font-weight: 550; color: rgba(58,37,40,.52);
-}
-.fiag-pins svg { width: 12px; height: 12px; color: rgba(58,37,40,.42); flex: none }
-.fiag-tab {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 5.5px 14px; border-radius: 9px;
-  background: var(--fiag-tab); border: 1px solid var(--fiag-line);
-  box-shadow: 0 1px 2px rgba(74,38,43,.07);
-  font-size: 12px; font-weight: 550; color: #3A2528;
-}
-/* a resting tab sits translucent and quiet next to the active one */
-.fiag-tab--rest {
-  background: var(--fiag-rest); box-shadow: none;
-  border-color: rgba(217,190,194,.55);
-  font-weight: 500; color: rgba(58,37,40,.52);
-}
-.fiag-tab--rest svg { width: 12px; height: 12px; color: rgba(58,37,40,.42); flex: none }
-.fiag-favicon { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none }
-.fiag-tab-add { display: inline-flex; color: #96777C; margin-left: 2px }
-.fiag-tab-add svg { width: 13px; height: 13px }
-.fiag-chrome-right {
-  margin-left: auto; display: inline-flex; align-items: center; gap: 12px;
-  color: #96777C;
-}
-.fiag-chrome-right svg { width: 13px; height: 13px; flex: none }
-
-/* the page — an inset surface with its own toolbar, like a real tab. Warm
-   white, not pure: the shot below it is cold white, and the half-step keeps
-   the browser's toolbar row visibly the browser's */
+/* the page — the screenshot inset in the frame with an even 8px margin; all
+   the browser dressing (chrome strip, toolbar) that used to sit above it was
+   cut on request */
 .fiag-page {
-  margin: 0 8px 8px; border-radius: 12px;
+  margin: 8px; border-radius: 12px;
   background: var(--fiag-paper); border: 1px solid var(--fiag-line);
   box-shadow: 0 1px 3px rgba(74,38,43,.06);
   overflow: hidden;
 }
-/* no hairline under the toolbar — in the reference it floats over the page */
-.fiag-toolbar {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 16px 10px;
-  color: #6B4E52;
-}
-.fiag-toolbar svg { width: 13px; height: 13px; flex: none }
-.fiag-tool-dim { opacity: .45 }
-.fiag-crumb {
-  margin-left: 6px; display: inline-flex; align-items: center; gap: 8px;
-  font-size: 12px; color: #96777C;
-}
-/* the crumb is a single site name now — the "/ Fin Chat" tail and its <em>
-   separator were cut, so there is nothing left for the muted colour to sit on */
-.fiag-crumb strong { font-weight: 550; color: #3A2528 }
 
-/* the page body is a screenshot of the workspace — the hairline is what tells
-   the browser's toolbar apart from the app's own header row inside the shot */
 .fiag-shot {
   display: block; width: 100%; height: auto;
-  border-top: 1px solid var(--fiag-line);
 }
 
 @media (max-width: 900px) {
@@ -4479,21 +4676,15 @@ button.play { border: none; padding: 0; appearance: none }
   .fiag-stage .x4e-visual > * { width: 100% }
 }
 
-@media (max-width: 640px) {
-  /* The chrome row is set at real browser scale and doesn't shrink, so on a
-     phone the tab strip ran off the right edge and got cut mid-tab — the one
-     thing that stops a fake window reading as a window. Drop the decoration
-     that carries no meaning (pinned shortcuts, the second tab, new-tab, the
-     window controls) and keep the lights and the active tab, which are what
-     say "browser". Also tighten the page toolbar for the same reason. */
-  .fiag-pins,
-  .fiag-tab--rest,
-  .fiag-tab-add,
-  .fiag-chrome-right { display: none }
-  .fiag-chrome { gap: 7px; padding: 7px 10px 6px }
-  .fiag-tab { padding: 5px 11px; font-size: 11.5px }
-  .fiag-toolbar { gap: 9px; padding-left: 10px; padding-right: 10px }
-  .fiag-crumb { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+/* Phones: the ≤900px centering above leaves the browser window a thumbnail
+   floating in a min-height slab. Give it the Excel inline-stage treatment
+   instead: the stage hugs the window, and the window runs wider than the
+   stage with the same left-packed right bleed it has on desktop (the stage
+   already clips). Placed after the ≤900px rules so it wins the cascade. */
+@media (max-width: 560px) {
+  .fiag-stage { min-height: 0; }
+  .fiag-stage .x4e-visual { justify-content: flex-start; padding: 18px 0 18px 16px; }
+  .fiag-stage .x4e-visual > * { width: 165%; max-width: none; }
 }
 
 .support-container {
