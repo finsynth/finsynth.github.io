@@ -19,14 +19,13 @@ export const CAREERS_EMAIL = 'support@finsynth.ai'
 // if VITE_TALLY_FORM_ID is ever set (e.g. to point local dev at a test form).
 export const TALLY_FORM_ID = import.meta.env?.VITE_TALLY_FORM_ID || 'GxEy8Q'
 
-// One "About us" for every posting, rendered once at the top of /careers
-// rather than repeated per role.
+
 export const ABOUT_US =
-  'FinSynth is auditable AI research infrastructure, purpose-built for public ' +
-  'markets. Teams using FinSynth save 80% of their time, spend 90% less time ' +
-  'auditing models, and cover 2x as many names. We are built for complex, ' +
-  'multi-step research work, not just one-click formula help. FinSynth is ' +
-  'backed by Accel and industry angels, and trusted by investors at global funds.'
+  'FinSynth is building auditable AI research infrastructure for public ' +
+  'markets. Its AI agent helps hedge funds, asset managers, family offices and ' +
+  'sell-side teams execute complex institutional-grade workflows while tracing ' +
+  'every output back to its source, across more than 12,000 global companies. ' +
+  'FinSynth is backed by Accel, hedge fund founders and portfolio managers.'
 
 // Each role: `about` opens the posting; `sections` are rendered in order as a
 // heading, an optional intro line, and a bullet list. A bullet's optional
