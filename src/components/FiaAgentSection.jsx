@@ -10,7 +10,7 @@ import useReveal from '../hooks/useReveal'
  *
  * The window is a plain frame around a real screenshot of the Fia workspace —
  * the browser dressing (chrome strip, toolbar) was cut on request. To refresh
- * the product view, drop a new capture at /assets/img/fia-workspace.png —
+ * the product view, drop a new capture at /assets/img/fia-workspace.webp —
  * nothing here needs to change.
  */
 
