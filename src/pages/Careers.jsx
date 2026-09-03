@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { ROLES, ABOUT_US, applyHref } from '../data/roles'
+import useHashScroll from '../hooks/useHashScroll'
 
 function Careers() {
   useEffect(() => {
@@ -11,13 +12,7 @@ function Careers() {
     }
   }, [])
 
-  // The navbar/footer role links land on /careers#<key>. The postings are
-  // client-rendered, so the browser's native anchor jump fires before they
-  // exist — repeat it once the page has mounted.
-  useEffect(() => {
-    const id = window.location.hash.slice(1)
-    if (id) document.getElementById(id)?.scrollIntoView()
-  }, [])
+  useHashScroll()
 
   // Tally's "redirect on completion" sends the applicant back here with
   // ?applied=1 (set in the form's settings), so the thank-you is our page,
@@ -40,9 +35,11 @@ function Careers() {
         )}
         <header className="careers-head">
           <h1 className="careers-heading">Careers</h1>
+          <h2 className="careers-sub">About FinSynth</h2>
           <p className="careers-about">{ABOUT_US}</p>
         </header>
 
+        <h2 className="careers-sub">Job Openings</h2>
         {ROLES.map((role) => (
           <article className="role-card" id={role.key} key={role.key}>
             <div className="role-top">

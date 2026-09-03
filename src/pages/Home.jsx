@@ -10,8 +10,11 @@ import Faq from '../components/Faq'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
 import ScrollNextButton from '../components/ScrollNextButton'
+import useHashScroll from '../hooks/useHashScroll'
 
 function Home() {
+  useHashScroll()
+
   return (
     <div className="mainContainer">
       <div className="page-rails" aria-hidden="true">

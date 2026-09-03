@@ -23,9 +23,6 @@ const q = encodeURIComponent(ASK_PROMPT);
 const AGENTS = [
   { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}`, logo: '/assets/img/logos/chatgpt.svg' },
   { name: 'Claude', href: `https://claude.ai/new?q=${q}`, logo: '/assets/img/logos/claude.svg' },
-  // Gemini has no supported prefill param, so it opens cold. The menu's Copy
-  // item is the way out for this one; don't invent a ?q= here that it ignores.
-  { name: 'Gemini', href: 'https://gemini.google.com/app', logo: '/assets/img/logos/gemini.svg' },
   { name: 'Grok', href: `https://grok.com/?q=${q}`, logo: '/assets/img/logos/grok.svg' },
 ];
 
@@ -159,15 +156,15 @@ export default function Footer() {
             <div className="foot-grid-new foot-reveal">
               <div>
                 <h4>Product</h4>
-                <a href="#excel">FinSynth for Excel</a>
-                <a href="#fia-agent">Fia</a>
-                <a href="#security">Security</a>
+                <a href="/#excel">FinSynth for Excel</a>
+                <a href="/#fia-agent">Fia</a>
+                <a href="/#security">Security</a>
               </div>
               <div>
                 <h4>Legal</h4>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms</a>
-                <a href="#security">Compliance</a>
+                <a href="/#security">Compliance</a>
               </div>
               {/* Same ROLES the navbar's Careers menu renders — each links to
                   its posting on /careers; src/data/roles.js is the one place
