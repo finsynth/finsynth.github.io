@@ -23,9 +23,6 @@ const q = encodeURIComponent(ASK_PROMPT);
 const AGENTS = [
   { name: 'ChatGPT', href: `https://chatgpt.com/?q=${q}`, logo: '/assets/img/logos/chatgpt.svg' },
   { name: 'Claude', href: `https://claude.ai/new?q=${q}`, logo: '/assets/img/logos/claude.svg' },
-  // Gemini has no supported prefill param, so it opens cold. The menu's Copy
-  // item is the way out for this one; don't invent a ?q= here that it ignores.
-  { name: 'Gemini', href: 'https://gemini.google.com/app', logo: '/assets/img/logos/gemini.svg' },
   { name: 'Grok', href: `https://grok.com/?q=${q}`, logo: '/assets/img/logos/grok.svg' },
 ];
 
