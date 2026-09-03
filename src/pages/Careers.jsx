@@ -35,9 +35,11 @@ function Careers() {
         )}
         <header className="careers-head">
           <h1 className="careers-heading">Careers</h1>
+          <h2 className="careers-sub">About FinSynth</h2>
           <p className="careers-about">{ABOUT_US}</p>
         </header>
 
+        <h2 className="careers-sub">Job Openings</h2>
         {ROLES.map((role) => (
           <article className="role-card" id={role.key} key={role.key}>
             <div className="role-top">
