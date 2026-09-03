@@ -159,15 +159,15 @@ export default function Footer() {
             <div className="foot-grid-new foot-reveal">
               <div>
                 <h4>Product</h4>
-                <a href="#excel">FinSynth for Excel</a>
-                <a href="#fia-agent">Fia</a>
-                <a href="#security">Security</a>
+                <a href="/#excel">FinSynth for Excel</a>
+                <a href="/#fia-agent">Fia</a>
+                <a href="/#security">Security</a>
               </div>
               <div>
                 <h4>Legal</h4>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
                 <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms</a>
-                <a href="#security">Compliance</a>
+                <a href="/#security">Compliance</a>
               </div>
               {/* Same ROLES the navbar's Careers menu renders — each links to
                   its posting on /careers; src/data/roles.js is the one place

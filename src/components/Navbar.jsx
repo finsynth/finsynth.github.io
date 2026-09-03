@@ -4,11 +4,10 @@ import useMediaQuery from '../hooks/useMediaQuery';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 import { SIGNIN_HREF, APP_HREF } from './AskParts';
 
-// The two products live in the same page, so "Product" is a jump menu rather
-// than a route switch.
+
 const PRODUCTS = [
-  { key: 'excel', label: 'FinSynth for Excel', href: '#excel' },
-  { key: 'fia', label: 'Fia', href: '#fia-agent' },
+  { key: 'excel', label: 'FinSynth for Excel', href: '/#excel' },
+  { key: 'fia', label: 'Fia', href: '/#fia-agent' },
 ];
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
@@ -273,8 +272,8 @@ export default function Navbar() {
             hidden={!sheetOpen}
           >
             <NavDrop id="product" label="Product" items={PRODUCTS} flat flatOpen={openFlats.has('product')} onToggle={() => toggleFlat('product')} onNavigate={closeSheet} />
-            <a className="nav-link" href="#security" onClick={closeSheet}>Security</a>
-            <a className="nav-link" href="#faq" onClick={closeSheet}>FAQ</a>
+            <a className="nav-link" href="/#security" onClick={closeSheet}>Security</a>
+            <a className="nav-link" href="/#faq" onClick={closeSheet}>FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for */}
             <NavDrop id="careers" label="Careers" items={CAREERS} flat flatOpen={openFlats.has('careers')} onToggle={() => toggleFlat('careers')} onNavigate={closeSheet} />
             {/* both actions come down here, stacked as buttons at the foot of
@@ -291,8 +290,8 @@ export default function Navbar() {
         ) : (
           <div className="navbar-links" ref={linksRef}>
             <NavDrop id="product" label="Product" items={PRODUCTS} open={openMenu} setOpen={setOpenMenu} />
-            <a className="nav-link" href="#security">Security</a>
-            <a className="nav-link" href="#faq">FAQ</a>
+            <a className="nav-link" href="/#security">Security</a>
+            <a className="nav-link" href="/#faq">FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for,
                 and the menu has room to open inward from there */}
             <NavDrop id="careers" label="Careers" items={CAREERS} open={openMenu} setOpen={setOpenMenu} />
