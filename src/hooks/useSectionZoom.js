@@ -28,9 +28,13 @@ function apply() {
   const mobile = mqMobile && mqMobile.matches
   registry.forEach((el) => {
     if (mobile) {
+      // also drop the will-change hint: with the zoom off it only keeps the
+      // section on a compositor layer, where its text rasterises soft
       if (el.style.transform) el.style.transform = ''
+      if (el.style.willChange) el.style.willChange = ''
       return
     }
+    if (!el.style.willChange) el.style.willChange = 'transform'
     const rect = el.getBoundingClientRect()
     // Ramp distance adapts to the section's own height: short sections settle
     // when centered, tall sections hold at full scale through the middle.

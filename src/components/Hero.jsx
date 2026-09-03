@@ -257,9 +257,11 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
               · the <br /> puts the clause break at the comma, so the rotating
                 segment rides the second row with "purpose-built for" rather
                 than taking a third row of its own.
-              · the nbsp glues "research infrastructure" so that when row one
-                does have to wrap (narrow laptops), it breaks after "AI"
-                instead of splitting the noun phrase.
+              · .hero-nounphrase glues "research infrastructure" so that when
+                row one does have to wrap (narrow laptops), it breaks after
+                "AI" instead of splitting the noun phrase. Phones relax it:
+                below 560px letting the phrase split is what lets the type
+                grow past ~20px at all (index.css documents the numbers).
               Below 1100px neither row fits and the headline runs to three rows;
               .hero-s2-title reserves that height there so the rotating segment
               can't shove the CTAs around mid-cycle. */}
@@ -267,8 +269,8 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             {/* each row is its own block with the leading moved into a margin,
                 so text selection paints two separate white strips instead of
                 one merged slab (margins aren't covered by ::selection) */}
-            <span className="hero-title-row">Auditable AI research&nbsp;infrastructure,</span>
-            <span className="hero-title-row">purpose-built for <RotatingSegment /></span>
+            <span className="hero-title-row">Auditable AI <span className="hero-nounphrase">research infrastructure,</span></span>
+            <span className="hero-title-row"><span className="hero-nobreak">purpose-built</span> for <RotatingSegment /></span>
           </h1>
 
           <p className="hero-s2-lede">

@@ -20,27 +20,44 @@ const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleH
  * opening one closes the other instead of leaving two cards hanging open.
  *
  * `flat` is the phone form: inside the mobile sheet there is no hover and no
- * room to float a card, so the group is printed open — a heading with its links
- * under it. It is a separate render rather than a CSS override because the
- * desktop trigger is a button whose only job is a hover state that touch
- * devices don't have, and an emulated mouseenter firing just before the tap
- * would toggle the menu shut the moment it opened.
+ * room to float a card, so the group is a disclosure row — the title sits at
+ * the same rank as the plain links (Security, FAQ) and tapping it folds its
+ * items out underneath. It is a separate render rather than a CSS override
+ * because the desktop trigger's mouseenter, emulated on touch just before the
+ * tap, would toggle the menu shut the moment it opened. Flat rows carry their
+ * own boolean (`flatOpen`/`onToggle`) instead of the bar's single open-menu
+ * id: in the sheet both groups can sit expanded at once.
  */
-function NavDrop({ id, label, items, open, setOpen, flat, onNavigate }) {
+function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, onNavigate }) {
+  const isOpen = flat ? flatOpen : open === id;
+
   if (flat) {
     return (
-      <div className="nav-drop nav-drop--flat">
-        <p className="nav-drop-label">{label}</p>
-        {items.map((it) => (
-          <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
-            {it.label}
-          </a>
-        ))}
+      <div className={`nav-drop nav-drop--flat${isOpen ? ' is-open' : ''}`}>
+        <button
+          type="button"
+          className="nav-link nav-drop-btn"
+          aria-expanded={isOpen}
+          onClick={onToggle}
+        >
+          {label}
+          <svg className="nav-drop-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M2.75 4.5 6 7.75 9.25 4.5" />
+          </svg>
+        </button>
+        <div className="nav-drop-fold">
+          <div className="nav-drop-fold-inner">
+            {items.map((it) => (
+              <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
+                {it.label}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  const isOpen = open === id;
   return (
     <div
       className={`nav-drop${isOpen ? ' is-open' : ''}`}
@@ -81,8 +98,20 @@ export default function Navbar() {
     const { isSignedIn: signedIn } = useUser();
     
   const [hidden, setHidden] = useState(false);
-  // which menu is open, by id — 'product' | 'careers' | null
+  // which desktop menu is open, by id — 'product' | 'careers' | null
   const [openMenu, setOpenMenu] = useState(null);
+  // the sheet's disclosure rows are independent of each other, so a set rather
+  // than a single id — both groups can sit expanded at once. They start (and
+  // reopen) expanded: the links are what the sheet is opened for, so they
+  // shouldn't hide behind a second tap. A tap on the title still folds one away.
+  const allFlats = () => new Set(['product', 'careers']);
+  const [openFlats, setOpenFlats] = useState(allFlats);
+  const toggleFlat = (id) =>
+    setOpenFlats((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
   // Below this width the link row doesn't fit next to the logo and the CTAs, so
   // it moves behind a button. Same breakpoint as the CSS that lays out the sheet.
   const compact = useMediaQuery('(max-width: 900px)');
@@ -93,8 +122,14 @@ export default function Navbar() {
   const linksRef = useRef(null);
   const sheetRef = useRef(null);
   const burgerRef = useRef(null);
+  const navRef = useRef(null);
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true);
+  // Whether the dark footer is the thing currently passing under the bar. The
+  // bar is frosted glass everywhere else; over the footer the translucent fill
+  // picks up the dark ground and reads as a murky gradient, so it goes solid
+  // for exactly that stretch.
+  const [onDark, setOnDark] = useState(false);
 
   useEffect(() => {
     const heroes = Array.from(document.querySelectorAll('.hero-s2'));
@@ -111,6 +146,14 @@ export default function Navbar() {
       } else {
         setHidden(true);
       }
+
+      // Measured against the bar's own strip rather than the footer merely
+      // being in view: the swap has to land as the dark edge crosses the bar,
+      // not when the footer first appears at the bottom of the screen.
+      const navH = navRef.current?.offsetHeight ?? 60;
+      const footTop = footer?.getBoundingClientRect().top;
+      setOnDark(footTop != null && footTop < navH);
+
       lastY.current = y;
     };
 
@@ -135,6 +178,9 @@ export default function Navbar() {
     }
 
     lastY.current = window.scrollY;
+    // a reload part-way down the page can land on the footer, so settle the
+    // fill before the first scroll rather than after it
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
@@ -155,6 +201,7 @@ export default function Navbar() {
   useEffect(() => {
     setSheetOpen(false);
     setOpenMenu(null);
+    setOpenFlats(allFlats());
   }, [compact]);
 
   // Close the sheet on Escape or on a tap anywhere outside it, including the
@@ -181,6 +228,11 @@ export default function Navbar() {
     };
   }, [sheetOpen]);
 
+  // Folds don't outlive the sheet: reopening starts fully expanded again.
+  useEffect(() => {
+    if (!sheetOpen) setOpenFlats(allFlats());
+  }, [sheetOpen]);
+
   useEffect(() => {
     if (!openMenu) return;
     const onDown = (e) => {
@@ -202,7 +254,10 @@ export default function Navbar() {
   const closeSheet = () => setSheetOpen(false);
 
   return (
-    <nav className={`navbar${hidden ? ' nav-hidden' : ''}${sheetOpen ? ' nav-sheet-open' : ''}`}>
+    <nav
+      className={`navbar${hidden ? ' nav-hidden' : ''}${sheetOpen ? ' nav-sheet-open' : ''}${onDark ? ' nav-on-dark' : ''}`}
+      ref={navRef}
+    >
       <div className="navbar-inner">
         <img
           className="navbar-logo"
@@ -217,16 +272,21 @@ export default function Navbar() {
             ref={sheetRef}
             hidden={!sheetOpen}
           >
-            <NavDrop label="Product" items={PRODUCTS} flat onNavigate={closeSheet} />
+            <NavDrop id="product" label="Product" items={PRODUCTS} flat flatOpen={openFlats.has('product')} onToggle={() => toggleFlat('product')} onNavigate={closeSheet} />
             <a className="nav-link" href="#security" onClick={closeSheet}>Security</a>
             <a className="nav-link" href="#faq" onClick={closeSheet}>FAQ</a>
             {/* last in the row: hiring is the least of what a visitor came for */}
-            <NavDrop label="Careers" items={CAREERS} flat onNavigate={closeSheet} />
-            {/* Sign in comes down here so the bar itself keeps only the one
-                action worth a phone's width: Talk to Us */}
-            <a className="nav-sheet-signin" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
-              {signedIn ? 'Go to app' : 'Sign in'}
-            </a>
+            <NavDrop id="careers" label="Careers" items={CAREERS} flat flatOpen={openFlats.has('careers')} onToggle={() => toggleFlat('careers')} onNavigate={closeSheet} />
+            {/* both actions come down here, stacked as buttons at the foot of
+                the panel — the bar itself keeps only the burger */}
+            <div className="nav-sheet-actions">
+              <a className="nav-signin nav-sheet-btn" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
+                {signedIn ? 'Go to app' : 'Sign in'}
+              </a>
+              {!signedIn && (
+                <a className="nav-demo nav-sheet-btn" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
+              )}
+            </div>
           </div>
         ) : (
           <div className="navbar-links" ref={linksRef}>
@@ -246,7 +306,8 @@ export default function Navbar() {
               <a className="nav-signin" href={SIGNIN_HREF} target="_blank" rel="noopener noreferrer">Sign in</a>
             )
           )}
-          {!signedIn && (
+          {/* on compact this moves into the sheet's footer, beside Sign in */}
+          {!signedIn && !compact && (
             <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
           )}
           {compact && (
