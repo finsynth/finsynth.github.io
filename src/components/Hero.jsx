@@ -171,7 +171,42 @@ function HeroSideTiles() {
   )
 }
 
-function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
+// Trust line variations under the CTAs — the line was the faintest thing on
+// the hero, so it's the first thing the iteration switch (HeroIterations.jsx)
+// varies. Copy stays the same across all three; only the treatment changes.
+//   'plain'   — the original: one line of low-emphasis ink
+//   'eyebrow' — tracked caps between two hairlines, set in full ink
+//   'chips'   — the segments as glass chips (same glass as the backers pill)
+function HeroTrust({ style = 'plain' }) {
+  if (style === 'eyebrow') {
+    return (
+      <p className="hero-s2-trust hero-s2-trust--eyebrow">
+        <span className="hero-trust-rule" aria-hidden="true" />
+        <span>Trusted by investors from global funds</span>
+        <span className="hero-trust-rule" aria-hidden="true" />
+      </p>
+    )
+  }
+  if (style === 'chips') {
+    return (
+      <div className="hero-s2-trust hero-s2-trust--chips">
+        <span className="hero-trust-lead">Trusted by investors at</span>
+        <span className="hero-trust-chips">
+          {SEGMENTS.map((seg) => (
+            <span className="hero-trust-chip" key={seg}>{seg}</span>
+          ))}
+        </span>
+      </div>
+    )
+  }
+  return (
+    <p className="hero-s2-trust">
+      Trusted by investors from global funds
+    </p>
+  )
+}
+
+function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false, trust = 'plain' }) {
   // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
   // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
   // All share the same content layout (the "mosaic hero").
@@ -322,9 +357,7 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             </a>
           </div>
 
-          <p className="hero-s2-trust">
-            Trusted by investors from global funds
-          </p>
+          <HeroTrust style={trust} />
 
         </div>
 

@@ -2724,6 +2724,146 @@ button.play { border: none; padding: 0; appearance: none }
   mask-image: linear-gradient(to bottom, #000 0 45%, transparent 84%);
 }
 
+/* ── Trust line variations ──
+   The plain line above is iteration v1. HeroIterations.jsx switches the hero
+   between it and the two treatments below; all three keep the ::before wash. */
+
+/* v2 — an eyebrow: tracked capitals in full ink between two short hairlines.
+   The caps and the rules give the line an outline the photo can't swallow, so
+   it holds at the same size the plain line kept. */
+.hero-s2-trust--eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(14px * var(--hero-scale));
+  font-size: calc(12px * var(--hero-scale));
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(20, 36, 46, 0.86);
+}
+.hero-trust-rule {
+  flex: 0 0 auto;
+  width: calc(40px * var(--hero-scale));
+  height: 1px;
+  background: rgba(20, 36, 46, 0.3);
+}
+
+/* v3 — the segments as chips, in the backers pill's glass so the two ends of
+   the copy stack rhyme. The lead-in stays plain text; the chips carry the
+   contrast, each one a small pane with its own edge and frost. */
+.hero-s2-trust--chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--hero-scale)) calc(10px * var(--hero-scale));
+  color: rgba(20, 36, 46, 0.78);
+}
+.hero-trust-lead { white-space: nowrap; }
+.hero-trust-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(6px * var(--hero-scale));
+}
+.hero-trust-chip {
+  display: inline-block;
+  padding: calc(4px * var(--hero-scale)) calc(11px * var(--hero-scale));
+  border-radius: 999px;
+  font-size: calc(12.5px * var(--hero-scale));
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: nowrap;
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.46) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 8px 20px -12px rgba(16, 24, 40, .3),
+    inset 0 1px 0 rgba(255, 255, 255, .9);
+  user-select: none;
+  -webkit-user-select: none;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hero-trust-chip { background: rgba(255, 255, 255, 0.92); }
+}
+
+/* ── Hero iteration switch ──
+   Review tooling, not page furniture: a dark strip pinned bottom-left that
+   flips the hero between the iterations registered in HeroIterations.jsx.
+   Dev only, or a production preview opened with ?hero=<id>. Kept off the
+   hero's own type scale on purpose so it never reads as part of the design. */
+.hero-iter {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(20, 36, 46, 0.92);
+  box-shadow: 0 10px 30px -10px rgba(16, 24, 40, .5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.hero-iter-title {
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .6;
+  margin-right: 6px;
+}
+.hero-iter-btn {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0 10px;
+  height: 26px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .8);
+  background: rgba(255, 255, 255, .08);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.hero-iter-btn:hover { background: rgba(255, 255, 255, .18); color: #fff; }
+.hero-iter-btn.is-on { background: #fff; color: var(--ink); }
+.hero-iter-btn:focus-visible,
+.hero-iter-close:focus-visible { outline: 2px solid var(--blue-light); outline-offset: 1px; }
+.hero-iter-note {
+  margin: 0 6px 0 8px;
+  color: rgba(255, 255, 255, .62);
+  white-space: nowrap;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hero-iter-close {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 16px;
+  color: rgba(255, 255, 255, .6);
+  background: transparent;
+  cursor: pointer;
+}
+.hero-iter-close:hover { color: #fff; background: rgba(255, 255, 255, .12); }
+@media (max-width: 560px) {
+  .hero-iter-note { display: none; }
+}
+
 /* ── Backers pill ──
    "Backed by [Accel]", leading the copy stack above the headline, set in a
    frosted-glass pill so it holds together as one object over the skyline
@@ -2737,9 +2877,17 @@ button.play { border: none; padding: 0; appearance: none }
      the pill sizes off this, while its margin below stays on the hero's own
      scale so the stack rhythm doesn't shift */
   --pill-scale: calc(var(--hero-scale) * 0.8);
+  /* the one line height both children share: the caption's line box and the
+     Accel mark's box are both this tall, so the pill holds one line, not two
+     boxes of different heights centred against each other */
+  --pill-line: calc(15px * var(--pill-scale));
   position: relative;
   display: flex;
-  align-items: center;
+  /* baseline, not centre: an img's baseline is its bottom edge, and the
+     wordmark's own baseline is a known distance above that (see the mark's
+     `top`), so this puts BACKED BY and Accel on one line the way two words
+     set in the same font would be */
+  align-items: baseline;
   justify-content: center;
   flex-wrap: wrap;
   column-gap: calc(11px * var(--pill-scale));
@@ -2753,7 +2901,7 @@ button.play { border: none; padding: 0; appearance: none }
      padded that whitespace twice. 6px against the boxes reads like ~12 against
      the ink, which is what a badge this small wants. Anything less has to come
      off the mark's own height, not off here. */
-  padding: calc(6px * var(--pill-scale)) calc(22px * var(--pill-scale));
+  padding: calc(8px * var(--pill-scale)) calc(22px * var(--pill-scale));
   border-radius: 999px;
   /* the fill is a gradient, not a flat tint: real glass catches more light at
      the top edge than the bottom, and that vertical falloff is most of what
@@ -2820,7 +2968,12 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hero-backers-label {
   font-family: var(--font-body);
-  font-size: calc(12px * var(--pill-scale));
+  /* Sized to the Accel wordmark, not the other way round. The mark's capital
+     A stands 10.48/17 of its box; Geist capitals stand ~0.71em. 13px here
+     against the 15px mark below puts both cap heights within a tenth of a
+     pixel of each other, so BACKED BY and Accel read at one size. */
+  font-size: calc(13px * var(--pill-scale));
+  line-height: var(--pill-line);
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -2829,16 +2982,18 @@ button.play { border: none; padding: 0; appearance: none }
   color: #6B7688;
   white-space: nowrap;
 }
-/* sized against the caption's cap height rather than its own box, so the
-   wordmark sits on the same optical line as the words beside it */
+/* the same line height as the caption (see --pill-line), so the two boxes
+   match, and the wordmark's cap height matches the caption's caps */
 .hero-backers-mark {
-  height: calc(19px * var(--pill-scale));
+  height: var(--pill-line);
   width: auto;
   display: block;
-  /* the SVG carries whitespace under the baseline; nudge it back up so the
-     Accel wordmark centres against the caps, not against its own bounding box */
+  /* The SVG's baseline sits 3.22/17 of its height above its bottom edge, and
+     flex baseline alignment treats the bottom edge as the img's baseline; this
+     drops the mark by exactly that whitespace so the wordmark's real baseline
+     lands on the caption's. */
   position: relative;
-  top: calc(-1px * var(--pill-scale));
+  top: calc(var(--pill-line) * 0.19);
   /* Optical, not metric. Two things open a hole to the left of the mark: the
      caption's .16em tracking leaves a trailing space after the final "Y", and
      that "Y" then meets the diagonal "A" of Accel, so two receding letterforms
@@ -2894,12 +3049,6 @@ button.play { border: none; padding: 0; appearance: none }
   /* a second 0.8x on top of the global one (0.64 total): at phone widths the
      pill still outweighed the shrunken copy stack around it */
   .hero-backers { --pill-scale: calc(var(--hero-scale) * 0.64); margin-bottom: 16px; }
-  /* at this size the box-centring reads as misalignment: the caps ride high
-     and the wordmark hangs low. Sit both on one baseline (an img's baseline
-     is its bottom edge), then ease the mark down 1px to pay back the SVG's
-     under-baseline whitespace */
-  .hero-backers { align-items: baseline; }
-  .hero-backers-mark { top: 1px; }
   .hero-s2-title { margin-bottom: 18px; }
   .hero-s2-lede { margin-bottom: 20px; }
   .hero-s2-ctas { margin-bottom: 14px; }
