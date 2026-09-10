@@ -131,6 +131,24 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
+/* Nothing on the page is selectable or draggable: a click-drag across copy
+   shouldn't paint a highlight band, and the GIFs, screenshots and logos
+   shouldn't lift out of the page as ghost images. Form fields opt back in so
+   anything typed stays editable. */
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+img, video, svg, picture {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+input, textarea, [contenteditable] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
 /* Text selection: white wash behind, accent-blue text — instead of the
    browser's default light-blue band over dark ink. */
 ::selection { background: #fff; color: var(--accent); }
@@ -316,6 +334,15 @@ a { text-decoration: none; color: inherit; }
 .nav-drop-item:hover {
   color: var(--ink);
   background: var(--accent-soft);
+}
+
+/* an entry that isn't live yet — listed so the roadmap reads in the menu, but
+   it goes nowhere, so no hover face and no pointer */
+.nav-drop-item.is-soon,
+.navbar-sheet .nav-drop-item.is-soon {
+  color: var(--muted);
+  cursor: default;
+  background: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3993,14 +4020,21 @@ button.play { border: none; padding: 0; appearance: none }
       so the section reads the same short height as every other one ══ */
 .x4e-sec { background: var(--bg); padding: clamp(72px, 9vh, 104px) 0 }
 /* white inside the hairline, so the head and rail sit on the same ground as
-   the stage's white panel rather than the section's gray */
-.x4e-frame { position: relative; border: 1px solid var(--hair); background: #fff }
+   the stage's white panel rather than the section's gray.
+   --x4e-pad-x is the one side inset the head band and every rail row share, so
+   the section title and the claim titles under it start on the same vertical
+   line. The rows used to carry their own clamp(22px, 2.6vw, 36px) and sat up to
+   24px inboard of the headline on desktop. */
+.x4e-frame {
+  position: relative; border: 1px solid var(--hair); background: #fff;
+  --x4e-pad-x: clamp(32px, 3.8vw, 60px);
+}
 
 /* header — same measures as .secx-head */
 .x4e-head {
   display: flex; flex-direction: row; align-items: center; justify-content: space-between;
   text-align: left; gap: 40px;
-  padding: clamp(38px, 5vh, 54px) clamp(32px, 3.8vw, 60px) clamp(34px, 4.5vh, 48px);
+  padding: clamp(38px, 5vh, 54px) var(--x4e-pad-x) clamp(34px, 4.5vh, 48px);
 }
 .x4e-head-copy { min-width: 0; text-align: left }
 .x4e-head h2 {
@@ -4030,7 +4064,9 @@ button.play { border: none; padding: 0; appearance: none }
   position: relative;
   border-top: 1px solid var(--hair);
   display: grid;
-  grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+  /* the stage takes the larger share: its visuals are the section's picture,
+     and the rail's copy wraps comfortably at 40% */
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
   overflow: hidden;
 }
 /* pane with no rail — the stage takes the full frame width (Fia) */
@@ -4053,7 +4089,7 @@ button.play { border: none; padding: 0; appearance: none }
   flex-direction: column;
   justify-content: center;
   text-align: left;
-  padding: 18px clamp(22px, 2.6vw, 36px);
+  padding: 18px var(--x4e-pad-x);
   border: 0; background: none; cursor: pointer;
   font: inherit; color: inherit;
 }
@@ -4103,6 +4139,11 @@ button.play { border: none; padding: 0; appearance: none }
   position: relative;
   display: grid;
   overflow: hidden;
+  /* how far the white card in x4e-stage-card.svg sits in from each side edge
+     (67/1120). The visual's side padding is this plus an inner gutter, so the
+     content stays inside the card at every width instead of running to its
+     edge. Change the SVG and this together. */
+  --x4e-card-inset: 6%;
   /* Grainy blue ground, white card floating on it. Four layers, top down:
      the card (an SVG cut-out so it needs no element of its own — a
      pseudo-element card would have to sit above the visuals or force a
@@ -4140,7 +4181,7 @@ button.play { border: none; padding: 0; appearance: none }
      so the padding has to clear it or the visuals sit on the border. % padding
      resolves against the stage's width on every side, which tracks the frame
      because the image is stretched to the stage. */
-  padding: clamp(40px, 8.5%, 72px) clamp(48px, 9.5%, 88px);
+  padding: clamp(40px, 8.5%, 72px) calc(var(--x4e-card-inset) + clamp(20px, 3.2%, 32px));
   min-width: 0;
   opacity: 0; visibility: hidden;
   transition: opacity .5s cubic-bezier(.32,.72,0,1), visibility 0s linear .5s;
@@ -4829,8 +4870,9 @@ button.play { border: none; padding: 0; appearance: none }
 }
 
 @media (max-width: 1100px) {
-  .x4e-head { padding: 48px 44px 60px }
-  .x4e-visual { padding: 32px 28px }
+  .x4e-frame { --x4e-pad-x: 44px }
+  .x4e-head { padding: 48px var(--x4e-pad-x) 60px }
+  .x4e-visual { padding: 32px calc(var(--x4e-card-inset) + 20px) }
 }
 
 /* Narrow: the pane becomes one column and reads as an accordion. All four
@@ -4854,14 +4896,17 @@ button.play { border: none; padding: 0; appearance: none }
      the flat 28/20 padding below would leave the visual over the drawn card's
      edge — % on both axes tracks the card's own inset the way desktop does */
   .x4e-stage--inline { min-height: 0; border-top: 1px solid var(--hair) }
-  .x4e-stage--inline .x4e-visual { padding: 7% 9.5% }
+  /* side inset: the card's own edge plus a 4.5% gutter, the same shape as the
+     desktop rule so the content clears the white's edge by the same margin */
+  .x4e-stage--inline .x4e-visual { padding: 7% calc(var(--x4e-card-inset) + 4.5%) }
 
   .x4e-sec { padding: 72px 0 80px }
-  .x4e-head { flex-direction: column; align-items: flex-start; gap: 24px; padding: 40px 28px 44px }
-  .x4e-item { padding: 20px 28px }
+  .x4e-frame { --x4e-pad-x: 28px }
+  .x4e-head { flex-direction: column; align-items: flex-start; gap: 24px; padding: 40px var(--x4e-pad-x) 44px }
+  .x4e-item { padding: 20px var(--x4e-pad-x) }
   .x4e-item-p { max-width: none }
   .x4e-stage { min-height: 240px }
-  .x4e-visual { padding: 28px 20px }
+  .x4e-visual { padding: 28px calc(var(--x4e-card-inset) + 16px) }
   /* shrink the seals so the three still go one row across a phone rather than
      wrapping two-and-one */
   .xvs-certs { gap: 14px }

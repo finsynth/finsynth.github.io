@@ -8,6 +8,8 @@ import { SIGNIN_HREF, APP_HREF } from './AskParts';
 const PRODUCTS = [
   { key: 'excel', label: 'FinSynth for Excel', href: '/#excel' },
   { key: 'fia', label: 'Fia', href: '/#fia-agent' },
+  // listed ahead of launch so the menu shows the roadmap; no page to send to yet
+  { key: 'mcp', label: 'MCP (coming soon)', soon: true },
 ];
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
@@ -47,9 +49,15 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
         <div className="nav-drop-fold">
           <div className="nav-drop-fold-inner">
             {items.map((it) => (
-              <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
-                {it.label}
-              </a>
+              it.soon ? (
+                <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
+                  {it.label}
+                </span>
+              ) : (
+                <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
+                  {it.label}
+                </a>
+              )
             ))}
           </div>
         </div>
@@ -78,14 +86,20 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
       <div className="nav-drop-menu">
         <div className="nav-drop-card">
           {items.map((it) => (
-            <a
-              key={it.key}
-              className="nav-drop-item"
-              href={it.href}
-              onClick={() => setOpen(null)}
-            >
-              {it.label}
-            </a>
+            it.soon ? (
+              <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
+                {it.label}
+              </span>
+            ) : (
+              <a
+                key={it.key}
+                className="nav-drop-item"
+                href={it.href}
+                onClick={() => setOpen(null)}
+              >
+                {it.label}
+              </a>
+            )
           ))}
         </div>
       </div>

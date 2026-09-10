@@ -20,7 +20,7 @@ import useReveal from '../hooks/useReveal'
 const CLAIMS = [
   {
     title: 'Agentic research',
-    body: 'Describe any complex problem and it runs the full analysis, cited end to end',
+    body: 'Describe any complex research and it runs the full analysis, cited end to end',
   },
   {
     title: 'Background execution',
