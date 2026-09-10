@@ -176,7 +176,9 @@ function HeroSideTiles() {
 // varies. Copy stays the same across all three; only the treatment changes.
 //   'plain'   — the original: one line of low-emphasis ink
 //   'eyebrow' — tracked caps between two hairlines, set in full ink
-//   'chips'   — the segments as glass chips (same glass as the backers pill)
+//   'ink'     — the same sentence, a half step larger, in full ink
+// (a 'chips' treatment that named the segments in glass pills ran here as v3
+// and was rejected in review)
 function HeroTrust({ style = 'plain' }) {
   if (style === 'eyebrow') {
     return (
@@ -187,16 +189,11 @@ function HeroTrust({ style = 'plain' }) {
       </p>
     )
   }
-  if (style === 'chips') {
+  if (style === 'ink') {
     return (
-      <div className="hero-s2-trust hero-s2-trust--chips">
-        <span className="hero-trust-lead">Trusted by investors at</span>
-        <span className="hero-trust-chips">
-          {SEGMENTS.map((seg) => (
-            <span className="hero-trust-chip" key={seg}>{seg}</span>
-          ))}
-        </span>
-      </div>
+      <p className="hero-s2-trust hero-s2-trust--ink">
+        Trusted by investors from global funds
+      </p>
     )
   }
   return (

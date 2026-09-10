@@ -29,8 +29,8 @@ export const HERO_ITERATIONS = [
   {
     id: 'v3',
     label: 'v3',
-    note: 'Trust line as glass chips naming the segments',
-    render: () => <Hero variant="photo" trust="chips" />,
+    note: 'Trust line as the same sentence in full ink',
+    render: () => <Hero variant="photo" trust="ink" />,
   },
 ]
 
