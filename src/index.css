@@ -985,68 +985,59 @@ button.play { border: none; padding: 0; appearance: none }
    stretch so both pills share the same (taller) height */
 .foot-cta-actions { display: flex; align-items: stretch; flex-wrap: wrap; gap: 14px }
 .foot-cta-actions .foot-askai-btn { height: 100% }
-/* Three even columns and then the icons. Sized to their own content the four
-   came out 204 / 200 / 259 / 200 — the careers roles are much the longest links
-   here — so the headings sat at 205 / 200 / 259 and "Social" was 59px out of
-   step with the other three.
-   Four equal quarters can't be the answer: the row has ~894px and the careers
-   column needs 258 of it, so an equal quarter would squeeze the very column
-   that set the width. Giving the three text columns an equal share and letting
-   the icon column hug its content puts every heading on one interval anyway —
-   each sits at its column's start plus the same padding, and the last column's
-   share is exactly the padding plus two 18px marks, which lands them flush on
-   the right edge with the copyright line. */
+/* Four columns (Product / Company / Legal / Social), each as wide as its
+   longest link, and the whole block flush with the wrap's right edge
+   (.foot-right aligns its children to the end). Even 1fr shares left the last
+   column's empty right half between the links and the page edge. */
 .foot-grid-new {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-  width: 100%;
+  grid-template-columns: repeat(4, max-content);
+  width: auto;
+  /* feedback: "shift them towards right". The columns sat on the shared
+     content edge, 32px inside the wrap; on the full-bleed dark ground that
+     read as floating, so they run out to the wrap's own edge instead */
+  margin-right: calc(-1 * var(--wrap-pad));
 }
-/* 32px, not the 40 this started at: the padding is doubled at every rule, and
-   at 40 the three even columns needed more than the row had. At 32 the widest
-   column carries ~205px of measure against a 178px link, which is the room the
-   careers roles have to grow before this is a problem again. */
 .foot-grid-new > div { padding: 0 32px; border-left: 1px solid rgba(255,255,255,.08) }
-.foot-grid-new > div:first-child { border-left: none }
+.foot-grid-new > div:first-child { border-left: none; padding-left: 0 }
 .foot-grid-new > div:last-child { padding-right: 0 }
 .foot-grid-new h4 {
   font-family: var(--font-mono); font-weight: 500; font-size: 10.5px;
   text-transform: uppercase; letter-spacing: .18em; color: #fff; margin-bottom: 22px;
 }
-/* .foot-role is an <a> like the rest of the columns now that a role has
-   somewhere to land (a mailto — see src/data/roles.js), so it takes the same
-   baseline rhythm and the same hover shift as every other footer link. The
-   class is kept for the markup's sake; it carries no styling of its own. */
-.foot-grid-new a,
-.foot-grid-new .foot-role {
+.foot-grid-new a {
   display: block; width: max-content; font-family: var(--font-body); font-size: var(--fs-body);
   color: #fff; text-decoration: none; margin-bottom: 15px;
   transition: color .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
 }
 .foot-grid-new a:hover { color: #fff; transform: translateX(4px) }
-/* social — bare icons only, no label, no bezel */
-.foot-social-row { display: flex; align-items: center; gap: 22px }
-.foot-social-row a {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: auto; margin: 0; color: #A8AFAA;
-  transition: color .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
+/* an item that isn't a destination yet (MCP): same rhythm as the links, dimmed,
+   no hover shift, not focusable */
+.foot-soon {
+  display: block; width: max-content; font-family: var(--font-body); font-size: var(--fs-body);
+  color: #7F8BA3; margin-bottom: 15px; cursor: default;
 }
-.foot-social-row a:hover { color: #fff; transform: translateY(-2px) }
+/* © line — centred in front of the wordmark's lower half (the Hebbia footer's
+   move). Absolute inside .foot-wordmark, above the letters in z-order; the
+   wordmark's fill fades toward the bottom so the line stays legible. */
 .foot-legal {
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;
-  margin-top: 40px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px;
-  padding-bottom: 8px;
-  font-family: var(--font-body); font-size: 13px; letter-spacing: .01em; color: #7F8BA3;
+  position: absolute; left: 0; right: 0; bottom: 30px; z-index: 2;
+  display: flex; justify-content: center; align-items: center;
+  padding: 0 var(--wrap-pad, 24px);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500; line-height: 1.4; /* .foot-wordmark is line-height: 0 */
+  text-transform: uppercase; letter-spacing: .16em; color: #A6AFC2;
+  pointer-events: auto;
 }
-/* © line pinned to the right corner of the legal bar */
-.foot-copyright { margin-left: auto; text-align: right; white-space: nowrap; }
+.foot-copyright { text-align: center; white-space: nowrap; }
 /* full-bleed FINSYNTH wordmark — bleeds across the footer's bottom margin */
 .foot-wordmark {
   position: relative; z-index: 1;
-  width: 100%; margin-top: 8px; overflow: hidden;
+  width: 100%; margin-top: 24px; overflow: hidden;
   line-height: 0; text-align: center;
   pointer-events: none;
 }
-.foot-wordmark span {
+/* > span: the letters only; the © line inside .foot-legal is also a span */
+.foot-wordmark > span {
   position: relative; z-index: 1;
   display: block;
   font-family: var(--font-display, var(--font-body));
@@ -1055,19 +1046,43 @@ button.play { border: none; padding: 0; appearance: none }
   line-height: .82;
   letter-spacing: -.04em;
   white-space: nowrap;
-  /* muted blue fill (rgba carries its own alpha so the reveal still fades to
-     opacity:1) — recedes softly into the light grid backdrop */
-  color: rgba(126, 150, 226, .40);
-  /* seat the baseline below the edge so the wordmark bleeds off the bottom */
+  /* muted blue fill that holds through the letters' upper third and is all but
+     gone by 55% of their height, which is where the © line sits at desktop
+     widths (the letters are translated .14em down, so the visible band is
+     their top ~83%). background-clip: text; rgba carries its own alpha so the
+     reveal still fades to opacity:1 */
+  color: transparent;
+  background: linear-gradient(180deg,
+    rgba(126, 150, 226, .42) 0%,
+    rgba(126, 150, 226, .34) 28%,
+    rgba(126, 150, 226, .05) 55%,
+    rgba(126, 150, 226, .03) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  /* starts below the edge and rises to .14em: baseline still past the bottom,
+     so the letters bleed off, but their lower half stays on screen behind the
+     © line */
   transform: translateY(1.1em);
   opacity: 0;
   transition: transform 1.1s cubic-bezier(.22,.61,.36,1) .34s,
     opacity 1.1s cubic-bezier(.22,.61,.36,1) .34s;
   user-select: none;
 }
-.footer-new.is-in .foot-wordmark span { transform: translateY(.34em); opacity: 1 }
+.footer-new.is-in .foot-wordmark > span { transform: translateY(.14em); opacity: 1 }
 @media (max-width: 640px) {
-  .foot-wordmark span { font-size: 18vw }
+  /* a notch taller than the 15vw desktop size so the © line has letters
+     behind it; 20vw is the most that still fits all eight letters across */
+  .foot-wordmark > span {
+    font-size: 20vw;
+    /* nothing sits over the letters on phones (the © line is above them), so
+       the fill only softens toward the edge instead of dropping out.
+       background-image, not the shorthand: `background:` resets
+       background-clip to border-box, which turned the letters into one faint
+       rectangle on phones (the "gradient FinSynth isn't visible" report) */
+    background-image: linear-gradient(180deg,
+      rgba(126, 150, 226, .42) 0%,
+      rgba(126, 150, 226, .30) 55%,
+      rgba(126, 150, 226, .14) 100%);
+  }
 }
 /* scroll-reveal (transform/opacity only). The nav columns are deliberately not
    part of the stagger: they are a single ruled grid, so revealing them one at a
@@ -1084,8 +1099,8 @@ button.play { border: none; padding: 0; appearance: none }
 .footer-new.is-in .foot-legal { transition-delay: 180ms }
 @media (prefers-reduced-motion: reduce) {
   .foot-reveal { opacity: 1; transform: none; filter: none; transition: none }
-  .foot-grid-new a, .foot-social-row a { transition: none }
-  .foot-wordmark span { opacity: 1; transform: translateY(.34em); transition: none }
+  .foot-grid-new a { transition: none }
+  .foot-wordmark > span { opacity: 1; transform: translateY(.14em); transition: none }
 }
 
 /* ════════ SETUP (3-STEP) ════════ */
@@ -1295,6 +1310,9 @@ button.play { border: none; padding: 0; appearance: none }
    the arrows back, centred in the deck's bottom peek padding where they sit
    below the front card's copy */
 @media (max-width: 560px) {
+  /* the desktop's 110/96 breathing room read as dead space above and below a
+     250px deck on a phone (feedback: "reduce the length in mobile view") */
+  .testi-pin { padding: 56px 0 48px }
   .testi-nav { display: flex; right: auto; left: 50%; transform: translateX(-50%); bottom: 4px; }
   /* extra room under the deck so the arrows sit clear of the card's copy
      instead of crowding its bottom edge */
@@ -1303,7 +1321,7 @@ button.play { border: none; padding: 0; appearance: none }
      runs 7 lines and every card stretches to the tallest one's height. Scale
      the type and paddings down together so the card holds its proportions at
      a height the copy actually needs */
-  .testi-head { margin-bottom: 56px }
+  .testi-head { margin-bottom: 32px }
   .testi-card { padding: 24px 22px 20px; border-radius: 14px }
   .testi-quote { font-size: 15px; padding-bottom: 18px }
   .testi-card .testi-author { padding-top: 14px }
@@ -1335,13 +1353,13 @@ button.play { border: none; padding: 0; appearance: none }
   will-change: transform;
 }
 .cta-cta-label { line-height: 1 }
+/* the icon is static: the button itself lifts on hover, the arrow doesn't
+   move or brighten on its own (feedback: "remove the icon interaction") */
 .cta-cta-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 34px; height: 34px; border-radius: 999px;
   background: rgba(255,255,255,.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
-  transition: transform .5s cubic-bezier(.32,.72,0,1),
-              background .5s cubic-bezier(.32,.72,0,1);
 }
 .cta-cta-icon svg { width: 15px; height: 15px }
 /* matches the Ask-your-AI hover: slight glassmorph fill instead of the blue
@@ -1353,15 +1371,11 @@ button.play { border: none; padding: 0; appearance: none }
   transform: translateY(-2px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 8px 24px rgba(255,255,255,.08);
 }
-.cta-cta:hover .cta-cta-icon {
-  background: rgba(255,255,255,.26);
-  transform: translate(3px,-3px) scale(1.06);
-}
 .cta-cta:active { transform: translateY(-1px) scale(.98) }
 
 /* Scroll-entry reveal */
 @media (prefers-reduced-motion: reduce) {
-  .cta-cta, .cta-cta-icon { transition: none }
+  .cta-cta { transition: none }
 }
 
 /* ════════ POSITIONING BLOCK ════════ */
@@ -1450,6 +1464,7 @@ button.play { border: none; padding: 0; appearance: none }
   transition: background .5s cubic-bezier(.32,.72,0,1), transform .5s cubic-bezier(.32,.72,0,1);
 }
 .faq-contact-chip:hover { background: var(--accent); transform: translateY(-2px) }
+.faq-contact-email { display: inline-flex; align-items: center; gap: 9px; color: inherit; text-decoration: none }
 .faq-contact-chip.is-copied { background: var(--accent); }
 /* the Copy / Copied label unfurls from the right edge on hover (or while the
    copied confirmation is showing) so the resting chip stays just the address */
@@ -1469,14 +1484,18 @@ button.play { border: none; padding: 0; appearance: none }
   .faq-contact-action { transition: opacity .2s ease; }
 }
 /* On a touch device there is no hover to unfurl it, so Copy would stay folded
-   away forever and the chip's double-click-to-email is not a gesture a phone
-   has either — leaving the address on screen with nothing to do about it. Show
-   the button by default there; tapping it copies, which is the whole point. */
+   away forever. Show the button by default there; tapping the address opens
+   mail, tapping Copy copies. */
 @media (hover: none) {
   .faq-contact-action { max-width: 90px; opacity: 1; margin-left: 0 }
 }
 /* continuous left rail with a shifting accent segment */
-.faq-list { position: relative; display: flex; flex-direction: column; max-width: 700px; margin-left: auto; width: 100% }
+.faq-list {
+  position: relative; display: flex; flex-direction: column; max-width: 700px; margin-left: auto; width: 100%;
+  /* the rows are ruled between themselves and railed on both sides; the last
+     one closes with the same hairline so the list has a floor */
+  border-bottom: 1px solid var(--hair);
+}
 .faq-list::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0;
   width: 1px; background: var(--hair);
@@ -1837,42 +1856,26 @@ button.play { border: none; padding: 0; appearance: none }
 .cl-checkout-root { position: relative; z-index: 1200; }
 
 /* ════════ RESPONSIVE ════════ */
+/* Footer stacks (lockup above, nav below) from 1100 down, not 900: the lockup
+   keeps its ~375px and below 1100 the nav is left with under 460px, where
+   three columns can't hold "MCP (coming soon)" on one line. */
+@media (max-width: 1100px) {
+  .foot-cols { flex-direction: column; gap: 56px }
+  .foot-right { align-items: flex-start; gap: 44px; width: 100% }
+  /* stacked under the lockup the nav has the full width, so the four columns
+     spread across it rather than huddling at the left; each keeps its longest
+     link's width so nothing wraps mid-label */
+  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; width: 100%; margin-right: 0 }
+}
+
 @media (max-width: 900px) {
   .faq-grid { grid-template-columns: 1fr; gap: 48px }
+  /* stacked above the list the intro is a heading block, and reads centred
+     like the other section heads at this width */
+  .faq-intro { text-align: center; align-items: center }
   /* contact chip is desktop-only; mobile gets the footer's contact paths */
   .faq-contact { display: none }
   .plans { padding: 80px 0 }
-  .foot-cols { flex-direction: column; gap: 56px }
-  .foot-right { align-items: flex-start; gap: 44px; width: 100% }
-}
-
-/* Footer nav: two columns, explicitly. It used to be a wrapping flex row whose
-   divider rules keyed off :nth-child(odd) — that only lines up if two columns
-   land per row, and at tablet widths three did, so the third column lost its
-   divider mid-row and the fourth started a row with one. A grid fixes the count
-   instead of guessing it.
-
-   Kept at 1660, far wider than the 900 the rest of the footer stacks at, and
-   measured rather than picked: the right-hand block gives the nav ~894px at a
-   1698px viewport but only ~815 at 1600 and ~690 at 1440, while three even
-   columns plus the icons need 830. So above 1660 they fit on one row and below
-   it they don't — and now that the one-row layout is a grid too, they can't
-   wrap to say so; the careers roles would just run under the rule beside them.
-   Two columns is the honest layout for everything under that. */
-@media (max-width: 1660px) {
-  .foot-grid-new {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 20px;
-    width: 100%;
-  }
-  .foot-grid-new > div,
-  .foot-grid-new > div:first-child,
-  .foot-grid-new > div:nth-child(odd) {
-    min-width: 0;
-    padding: 0 0 32px;
-    border-left: 0;
-  }
 }
 
 /* Shared modal entrance, used by the "Try It" dialog. It lived with the old
@@ -1900,23 +1903,32 @@ button.play { border: none; padding: 0; appearance: none }
      checklist viewport so it reads as a dense list, not a mostly-empty pane */
   .what-list-viewport { height: clamp(300px, 42vh, 380px); }
 
-  /* the two-column footer grid is set up above, at 900 — down here it only
-     tightens, so a 165px column doesn't spend half its height on gaps */
+  /* four columns don't fit a phone row, so they go two by two, tightened so
+     a ~105px column doesn't spend half its height on gaps; the dividers go,
+     they crowd the narrow columns. The pair splits the row in two equal
+     halves, so the second column starts at the middle rather than hugging the
+     far edge: with max-content columns spread by space-between the right
+     column sat flush right with a void between ("in mobile view this looks
+     distorted"). The links never break mid-label */
+  .foot-grid-new > div { padding: 0 12px; border-left: none; }
+  .foot-grid-new > div:nth-child(odd) { padding-left: 0; }
+  .foot-grid-new > div:nth-child(even) { padding-right: 0; }
   .foot-grid-new h4 { margin-bottom: 16px }
-  /* width: max-content off the desktop rule would push a long label out of its
-     column; auto lets it wrap inside one instead */
+  .foot-grid-new { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: normal; row-gap: 28px; width: 100% }
   .foot-grid-new a,
-  .foot-grid-new .foot-role { width: auto; margin-bottom: 8px }
-  /* the © line has a row of its own down here rather than being pushed to a
-     right edge that no longer exists */
-  .foot-legal { gap: 14px }
-  .foot-copyright { margin-left: 0; text-align: left }
+  .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
+  /* the © line moves above the letters here. At 20vw there is no band of the
+     wordmark tall enough to fade behind a centred line and still read as
+     letters, so on phones the line sits in the flow and the wordmark shows in
+     full below it (feedback: "the gradient FinSynth isn't visible") */
+  .foot-wordmark { display: flex; flex-direction: column }
+  .foot-legal { position: static; order: -1; font-size: 10px; padding: 0 var(--wrap-pad, 20px) 18px; }
 }
 
 /* ════════ MOBILE — narrow phones ════════ */
 @media (max-width: 480px) {
   /* stack the hero CTAs full-width so long labels never wrap or clip */
-  .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-s2-ctas { flex-direction: column; align-items: stretch; gap: 14px; }
   /* full width means the button no longer hugs its label, so the flex row
      needs telling to center it (the ghost's asymmetric padding already pays
      for the arrow slot, so the label lands optically centered too) */
@@ -1930,8 +1942,12 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-cta-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
   .foot-cta-actions .cta-cta,
   .foot-cta-actions .foot-askai { min-width: 0; }
-  .foot-cta-actions .cta-cta { justify-content: center; padding-left: 9px; }
-  .foot-cta-actions .foot-askai-btn { width: 100%; height: 100%; justify-content: center; }
+  /* a size down from the desktop pill (feedback: "reduce the size in mobile
+     view"): 42px tall instead of 52, type at 14/13 */
+  .foot-cta-actions .cta-cta { justify-content: center; gap: 10px; padding: 7px 7px 7px 12px; font-size: 14px; }
+  .foot-cta-actions .cta-cta-icon { width: 28px; height: 28px; }
+  .foot-cta-actions .cta-cta-icon svg { width: 13px; height: 13px; }
+  .foot-cta-actions .foot-askai-btn { width: 100%; height: 100%; justify-content: center; padding: 7px 12px; font-size: 13px; }
 }
 
 
@@ -2752,28 +2768,19 @@ button.play { border: none; padding: 0; appearance: none }
 }
 
 /* ── Trust line variations ──
-   The plain line above is iteration v1. HeroIterations.jsx switches the hero
-   between it and the two treatments below; all three keep the ::before wash. */
+   The plain line above is the original. Hero.jsx picks between it and the two
+   treatments below with its `trust` prop ('ink' is the default and the one
+   that shipped); all three keep the ::before wash. */
 
-/* v2 — an eyebrow: tracked capitals in full ink between two short hairlines.
-   The caps and the rules give the line an outline the photo can't swallow, so
-   it holds at the same size the plain line kept. */
-.hero-s2-trust--eyebrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(14px * var(--hero-scale));
-  font-size: calc(12px * var(--hero-scale));
+/* v2 — two tones. The plain line's size and case, but the claim itself,
+   "investors from global funds", is set in the headline's ink at medium
+   weight, with only the lead-in left in the 62% grey. The part of the sentence
+   a visitor is meant to read now holds against the photo, and the line still
+   sits as quietly under the CTAs as v1 does. (An eyebrow treatment, tracked
+   caps between two hairlines, ran here first and was rejected in review.) */
+.hero-s2-trust--tone .hero-trust-em {
   font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: rgba(20, 36, 46, 0.86);
-}
-.hero-trust-rule {
-  flex: 0 0 auto;
-  width: calc(40px * var(--hero-scale));
-  height: 1px;
-  background: rgba(20, 36, 46, 0.3);
+  color: rgba(20, 36, 46, 0.9);
 }
 
 /* v3 — the same sentence, in ink. Nothing added around it: the plain line's
@@ -2785,81 +2792,6 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: calc(15px * var(--hero-scale));
   font-weight: 500;
   color: rgba(20, 36, 46, 0.9);
-}
-
-/* ── Hero iteration switch ──
-   Review tooling, not page furniture: a dark strip pinned bottom-left that
-   flips the hero between the iterations registered in HeroIterations.jsx.
-   Dev only, or a production preview opened with ?hero=<id>. Kept off the
-   hero's own type scale on purpose so it never reads as part of the design. */
-.hero-iter {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 6px 6px 12px;
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  line-height: 1;
-  color: #fff;
-  background: rgba(20, 36, 46, 0.92);
-  box-shadow: 0 10px 30px -10px rgba(16, 24, 40, .5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.hero-iter-title {
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  opacity: .6;
-  margin-right: 6px;
-}
-.hero-iter-btn {
-  appearance: none;
-  border: 0;
-  margin: 0;
-  padding: 0 10px;
-  height: 26px;
-  border-radius: 999px;
-  font: inherit;
-  font-weight: 500;
-  color: rgba(255, 255, 255, .8);
-  background: rgba(255, 255, 255, .08);
-  cursor: pointer;
-  transition: background .15s ease, color .15s ease;
-}
-.hero-iter-btn:hover { background: rgba(255, 255, 255, .18); color: #fff; }
-.hero-iter-btn.is-on { background: #fff; color: var(--ink); }
-.hero-iter-btn:focus-visible,
-.hero-iter-close:focus-visible { outline: 2px solid var(--blue-light); outline-offset: 1px; }
-.hero-iter-note {
-  margin: 0 6px 0 8px;
-  color: rgba(255, 255, 255, .62);
-  white-space: nowrap;
-  max-width: 320px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hero-iter-close {
-  appearance: none;
-  border: 0;
-  margin: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 16px;
-  color: rgba(255, 255, 255, .6);
-  background: transparent;
-  cursor: pointer;
-}
-.hero-iter-close:hover { color: #fff; background: rgba(255, 255, 255, .12); }
-@media (max-width: 560px) {
-  .hero-iter-note { display: none; }
 }
 
 /* ── Backers pill ──
@@ -2875,17 +2807,9 @@ button.play { border: none; padding: 0; appearance: none }
      the pill sizes off this, while its margin below stays on the hero's own
      scale so the stack rhythm doesn't shift */
   --pill-scale: calc(var(--hero-scale) * 0.8);
-  /* the one line height both children share: the caption's line box and the
-     Accel mark's box are both this tall, so the pill holds one line, not two
-     boxes of different heights centred against each other */
-  --pill-line: calc(15px * var(--pill-scale));
   position: relative;
   display: flex;
-  /* baseline, not centre: an img's baseline is its bottom edge, and the
-     wordmark's own baseline is a known distance above that (see the mark's
-     `top`), so this puts BACKED BY and Accel on one line the way two words
-     set in the same font would be */
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   column-gap: calc(11px * var(--pill-scale));
@@ -2899,7 +2823,7 @@ button.play { border: none; padding: 0; appearance: none }
      padded that whitespace twice. 6px against the boxes reads like ~12 against
      the ink, which is what a badge this small wants. Anything less has to come
      off the mark's own height, not off here. */
-  padding: calc(8px * var(--pill-scale)) calc(22px * var(--pill-scale));
+  padding: calc(6px * var(--pill-scale)) calc(22px * var(--pill-scale));
   border-radius: 999px;
   /* the fill is a gradient, not a flat tint: real glass catches more light at
      the top edge than the bottom, and that vertical falloff is most of what
@@ -2966,12 +2890,7 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hero-backers-label {
   font-family: var(--font-body);
-  /* Sized to the Accel wordmark, not the other way round. The mark's capital
-     A stands 10.48/17 of its box; Geist capitals stand ~0.71em. 13px here
-     against the 15px mark below puts both cap heights within a tenth of a
-     pixel of each other, so BACKED BY and Accel read at one size. */
-  font-size: calc(13px * var(--pill-scale));
-  line-height: var(--pill-line);
+  font-size: calc(12px * var(--pill-scale));
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
@@ -2980,18 +2899,16 @@ button.play { border: none; padding: 0; appearance: none }
   color: #6B7688;
   white-space: nowrap;
 }
-/* the same line height as the caption (see --pill-line), so the two boxes
-   match, and the wordmark's cap height matches the caption's caps */
+/* sized against the caption's cap height rather than its own box, so the
+   wordmark sits on the same optical line as the words beside it */
 .hero-backers-mark {
-  height: var(--pill-line);
+  height: calc(19px * var(--pill-scale));
   width: auto;
   display: block;
-  /* The SVG's baseline sits 3.22/17 of its height above its bottom edge, and
-     flex baseline alignment treats the bottom edge as the img's baseline; this
-     drops the mark by exactly that whitespace so the wordmark's real baseline
-     lands on the caption's. */
+  /* the SVG carries whitespace under the baseline; nudge it back up so the
+     Accel wordmark centres against the caps, not against its own bounding box */
   position: relative;
-  top: calc(var(--pill-line) * 0.19);
+  top: calc(-1px * var(--pill-scale));
   /* Optical, not metric. Two things open a hole to the left of the mark: the
      caption's .16em tracking leaves a trailing space after the final "Y", and
      that "Y" then meets the diagonal "A" of Accel, so two receding letterforms
@@ -3046,10 +2963,23 @@ button.play { border: none; padding: 0; appearance: none }
      proportions (title gap slightly under lede gap, trust line the tightest) */
   /* a second 0.8x on top of the global one (0.64 total): at phone widths the
      pill still outweighed the shrunken copy stack around it */
-  .hero-backers { --pill-scale: calc(var(--hero-scale) * 0.64); margin-bottom: 16px; }
-  .hero-s2-title { margin-bottom: 18px; }
-  .hero-s2-lede { margin-bottom: 20px; }
-  .hero-s2-ctas { margin-bottom: 14px; }
+  .hero-backers { --pill-scale: calc(var(--hero-scale) * 0.64); margin-bottom: 24px; }
+  /* at this size the box-centring reads as misalignment: the caps ride high
+     and the wordmark hangs low. Sit both on one baseline (an img's baseline
+     is its bottom edge), then ease the mark down to pay back the SVG's
+     under-baseline whitespace. Measured on a 4x render: at 1px the Accel
+     glyphs still stood 1.5px above the caps' baseline and read "a little up";
+     3px lands them a hair below it, which is what centres the taller
+     wordmark against the small capitals ("keep it always in centre when not
+     in laptop view") */
+  .hero-backers { align-items: baseline; }
+  .hero-backers-mark { top: 3px; }
+  /* phone feedback: "add more space between all divs". The halved gaps read
+     as one dense block at 479, so each step gets ~8px back (24/26/28/22),
+     keeping the same order: title gap under lede gap, trust line tightest */
+  .hero-s2-title { margin-bottom: 26px; }
+  .hero-s2-lede { margin-bottom: 28px; }
+  .hero-s2-ctas { margin-bottom: 22px; }
 }
 
 /* Stacked CTAs (the 480px block further up makes them full width). The
@@ -3474,7 +3404,7 @@ button.play { border: none; padding: 0; appearance: none }
   align-items: flex-start;
   gap: clamp(9px, 1.4vh, 16px);
   will-change: transform;
-  animation: whatMarquee 26s linear infinite;
+  animation: whatMarquee 35s linear infinite;
 }
 @keyframes whatMarquee { to { transform: translateY(-50%); } }
 
@@ -4171,7 +4101,7 @@ button.play { border: none; padding: 0; appearance: none }
 
    Keep this list in step with the animation names the visuals actually use.
    It listed .xv-cite / .xv-fx, which the audit visual stopped using when it
-   was rebuilt on .xvq-*, so the gate silently covered nothing and the trace
+   was rebuilt (twice since, on .xvq-* and now .xvk-*), so the gate silently covered nothing and the trace
    went back to being caught mid-cycle — the exact fault this rule exists for.
    A stale selector here fails quietly: nothing errors, the animation simply
    stops being restarted.
@@ -4181,7 +4111,7 @@ button.play { border: none; padding: 0; appearance: none }
    stage: an animation whose name computes to `none` is removed outright, and
    re-declaring it creates a new one starting at zero. `paused` would not do —
    it freezes mid-cycle and resumes there. */
-.x4e-visual:not(.is-active) .xvq-trace,
+.x4e-visual:not(.is-active) .xvk *,
 .x4e-visual:not(.is-active) .xvi-slot,
 .x4e-visual:not(.is-active) .xvi-pill,
 .x4e-visual:not(.is-active) .xvi-cursor,
@@ -4333,9 +4263,19 @@ button.play { border: none; padding: 0; appearance: none }
    pills the way the Excel section's phone block does so neighbours stay
    clear of each other. */
 @media (max-width: 560px) {
-  .secx-head .xvs-certs { justify-content: center; gap: 16px; width: 100%; row-gap: 18px; }
-  .secx-head .xvs-seal-pill {
-    bottom: -10px; padding: 3px 6px; gap: 4px;
+  .secx-head .xvs-certs { justify-content: center; gap: 12px; width: 100%; padding-bottom: 16px; }
+  /* three across, sharing the head's width equally (the head keeps 30px side
+     padding, so this is ~85px at 390 and ~110px, capped, at 479) rather than
+     three fixed 84px tiles floating under the heading; aspect-ratio keeps the
+     seal square off whatever width the share comes to */
+  .secx-head .xvs-certs--compact .xvs-seal {
+    flex: 1 1 0; min-width: 0; width: auto; max-width: 104px;
+  }
+  .secx-head .xvs-certs--compact .xvs-seal-name { font-size: 18px }
+  /* .secx-head beats the compact pill rule below at the same specificity by
+     source order, so the phone pill has to name both to win */
+  .secx-head .xvs-certs--compact .xvs-seal-pill {
+    bottom: -10px; padding: 3px 7px; gap: 4px;
     font-size: 8px; letter-spacing: .08em;
   }
   .secx-head .xvs-seal-pill::before { width: 5px; height: 5px }
@@ -4360,6 +4300,31 @@ button.play { border: none; padding: 0; appearance: none }
   margin-inline: 0;
 }
 .xv-marquee .what-item { font-size: clamp(22px, 2vw, 32px); }
+/* On the white card the checklist's default hairlines (#DBDBDB boxes, muted
+   grey labels) all but vanish. Each row is its own small document: a bordered
+   white plate with a clear band of margin between the border and the box and
+   label on every side, and a matching gap between plates; the checked ones
+   edged a shade bluer. The boxes take a blue-tinted edge and a faint fill and
+   the waiting labels sit a notch darker. Everything is in em so the plates
+   scale with the row type on every stage size. */
+.xv-marquee .what-item {
+  padding: .55em 1.1em .55em .8em;
+  border: 1px solid rgba(53, 80, 200, .16);
+  border-radius: .5em;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(20, 36, 46, .05);
+  transition: color .4s ease, font-weight .2s ease, border-color .4s ease, background .4s ease;
+}
+.xv-marquee .what-item:not(.is-checked) { color: #6F7A90; }
+.xv-marquee .what-item.is-checked {
+  border-color: rgba(53, 80, 200, .34);
+  background: rgba(53, 80, 200, .035);
+}
+.xv-marquee .what-list { gap: 12px; }
+.xv-marquee .what-check {
+  border-color: rgba(53, 80, 200, .34);
+  background: rgba(53, 80, 200, .04);
+}
 
 /* Stacked (≤900px) the marquee rides the inline stage, which sizes to its
    content — px/vh-clamped rows on a phone-width card read as a different
@@ -4385,142 +4350,469 @@ button.play { border: none; padding: 0; appearance: none }
   gap: 3.12cqw;
   line-height: 1.2;
 }
-.x4e-stage--inline .xv-marquee .what-list { gap: 2.1cqw; }
+/* 2.6 rather than the measured 2.1: the rows are bordered plates and want a
+   clear band between them */
+.x4e-stage--inline .xv-marquee .what-list { gap: 2.6cqw; }
 .x4e-stage--inline .xv-marquee .what-check { border-width: max(1px, .33cqw); }
 
-/* 02 · Fully auditable — the trace drawing, with the rest of the source shelf
-   following as pills so "anything" reads as a real list. */
+/* 02 · Fully auditable — the trace, with the rest of the source shelf
+   following as pills so "anything" reads as a real list.
+
+   The scene is a dark inner panel set into the stage's white card (the same
+   navy family as the stage's own ground, so the two read as one object), and
+   the files float on it as white cards. The analyst's workbook sits on the
+   right and stays put. Three sources are dealt onto a stack on the left, one
+   per 3s beat of a 9s loop: the 10-K, the earnings call, the analyst's own
+   tracker. Each slides in, its page resolves as it is read, the passage that
+   carries the number lights up, and the cell it supports fills in the
+   workbook with the provenance printed under the grid. The pill above names
+   the step and turns its spinner into a check as each number lands. Each
+   newcomer pushes the source before it back a step — softer, a touch smaller —
+   so the eye always has the current file in front and the read ones behind.
+
+   Two clocks. Things that belong to one beat and are gone by the next (the
+   pill label, the page resolve, the passage, the cell ring) share one 9s
+   keyframe set and are offset by `animation-delay: calc(var(--i) * 3s)` —
+   before its delay an element sits on its 0% frame, which is always the hidden
+   one. Things that have to persist across beats (the cards themselves, the
+   filled cells, the provenance line) get a keyframe per index.
+
+   Everything inside is sized in cqw off the scene's width, so the picture
+   scales as one piece; the few max() floors keep the type legible when the
+   scene is a phone wide. Only transform, opacity and filter animate. */
 .xvc { width: 100%; }
-.xvc .xv { max-width: 640px; margin: 0 auto; }
+.xvk {
+  container-type: inline-size;
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 16px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  /* the cell colours the trace paints with; .xvk--ink swaps them for on-dark */
+  --k-num: #3B3831;
+  --k-acc: var(--accent);
+  --k-acc-soft: var(--accent-soft);
+}
+/* navy: grained blue panel, white windows (kept behind ?trace=navy; ink ships) */
+.xvk--navy {
+  background-color: #16244E;
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(95% 85% at 88% -5%, rgba(107, 132, 232, .55) 0%, rgba(107, 132, 232, 0) 62%),
+    radial-gradient(70% 70% at 6% 104%, rgba(53, 80, 200, .5) 0%, rgba(53, 80, 200, 0) 62%),
+    linear-gradient(200deg, #22337F 0%, #16244E 100%);
+  background-size: 320px 320px, auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-blend-mode: overlay, normal, normal, normal;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    0 0 0 1px rgba(20, 36, 46, .08);
+}
 
-/* The citation loop. Three source cards rest on the left and three empty cells
-   on the right; one pair at a time lights up — the card takes an accent ring
-   and a badge on its edge, the connector runs across, and the cell fills with
-   the value and, under it, the source it came from.
-
-   Strictly one at a time. Three connectors crossing at once would read as a
-   diagram of a system; one at a time reads as a thing happening, and it also
-   keeps the reader's eye on the pairing, which is the whole claim.
-
-   9s, three beats of 3s. Negative delays put each trace on its own beat: a
-   trace with --xvd: -6s starts 6s into the cycle, so its window (the first
-   third) has already gone by and it next plays at t=3s. */
-.xvq-trace {
+/* the step, named — one pill, three labels stacked in the same cell */
+.xvk-status {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 4.4cqw;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 1.3cqw;
+  height: 5.6cqw;
+  padding: 0 2.4cqw 0 1.4cqw;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .8),
+    0 0 0 1px rgba(255, 255, 255, .35),
+    0 .9cqw 2.6cqw rgba(6, 12, 40, .32);
+  font-size: max(10px, 2.05cqw);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.xvk-ico { position: relative; flex: none; width: 3cqw; height: 3cqw; }
+.xvk-spin,
+.xvk-check { position: absolute; inset: 0; border-radius: 50%; }
+.xvk-spin {
+  border: max(1.5px, .34cqw) solid rgba(20, 36, 46, .14);
+  border-top-color: rgba(20, 36, 46, .78);
+  animation: xvkRotate .9s linear infinite, xvkSpinOn 3s cubic-bezier(.32, .72, 0, 1) infinite;
+}
+.xvk-check {
+  display: grid;
+  place-items: center;
+  background: var(--positive);
+  color: #fff;
+  animation: xvkCheckOn 3s cubic-bezier(.32, .72, 0, 1) infinite;
+}
+.xvk-check svg { width: 64%; height: 64%; }
+.xvk-labels { display: grid; min-width: 0; }
+.xvk-lbl {
+  grid-area: 1 / 1;
   opacity: 0;
-  animation: xvqBeat 9s cubic-bezier(.4, 0, .2, 1) infinite;
-  animation-delay: var(--xvd, 0s);
+  animation: xvkLbl 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+  animation-delay: calc(var(--i) * 3s);
 }
-.xvq-trace--1 { --xvd: -6s; }
-.xvq-trace--2 { --xvd: -3s; }
 
-/* the badge straddling the card's right edge, the way the reference does it —
-   the white ring is what lets it sit on the edge without merging into it */
-.xvq-badge { fill: var(--accent); stroke: #fff; stroke-width: 2.5; }
-.xvq-mark { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-/* dashed, so it reads as a reference rather than as a pipe carrying data */
-.xvq-conn { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
-
-/* the kind mark on a source card — drawn rather than lettered, so the only
-   words on the card are its title */
-.xvq-gl {
-  fill: none;
-  stroke: #8A8479;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* the files */
+.xvk-card {
+  position: absolute;
+  border-radius: 2.2cqw;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .28),
+    0 1.6cqw 4cqw rgba(6, 12, 40, .34);
 }
-.xvq-gl--on { stroke: var(--accent); }
+/* the stack: tall windows that run off the bottom of the panel, each one a
+   step down and to the right of the last, so the earlier tabs stay readable
+   above the card in front and nothing peeks out underneath */
+.xvk-src {
+  width: 32cqw;
+  height: 60cqw;
+  left: calc(2cqw + var(--i) * 3cqw);
+  top: calc(13cqw + var(--i) * 6.5cqw);
+  z-index: var(--i);
+  background: #fff;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+}
+.xvk-src--0 { animation-name: xvkSrc0; }
+.xvk-src--1 { animation-name: xvkSrc1; }
+.xvk-src--2 { animation-name: xvkSrc2; }
+.xvk-book { z-index: 3; left: 42cqw; top: 13cqw; width: 55cqw; }
 
-/* the open card is drawn over an opaque ground rather than pushing the shut
-   cards aside, so this has to be the stage card's own white, not a tint */
-.xvq-back { fill: #fff; }
-/* the passage inside an open card, with the line the figure was read off */
-.xvq-band { fill: rgba(53, 80, 200, .1); }
-.xvq-quote { fill: var(--accent); }
-.xvq-found {
-  fill: var(--accent);
+/* the tab strip: a translucent band with the white tab sitting in it */
+.xvk-head { display: flex; padding: .9cqw; background: rgba(255, 255, 255, .36); }
+.xvk-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.1cqw;
+  max-width: 100%;
+  height: 4.4cqw;
+  padding: 0 1.3cqw 0 1.2cqw;
+  border-radius: 1.4cqw;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(6, 12, 40, .08);
+}
+.xvk-title { font-size: max(8.5px, 1.7cqw); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xvk-x { position: relative; flex: none; width: 1.4cqw; height: 1.4cqw; margin-left: .8cqw; opacity: .42; }
+.xvk-x::before,
+.xvk-x::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: var(--ink);
+  transform: rotate(45deg);
+}
+.xvk-x::after { transform: rotate(-45deg); }
+/* kind tiles: page, handset, grid — tinted, drawn rather than borrowed */
+.xvk-kind {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.6cqw;
+  height: 2.6cqw;
+  border-radius: .6cqw;
+  color: #fff;
+}
+.xvk-kind svg { width: 78%; height: 78%; }
+.xvk-kind--filing { background: #DC3B2E; }
+.xvk-kind--call { background: var(--accent); }
+.xvk-kind--xlsx { background: #1F7A47; }
+.xvk-body { background: #fff; }
+
+/* a source page: a kicker naming the section, a few lines of body, and the
+   passage that carries the number — which lights up once the page has been
+   read. The whole page resolves from a blur as its card lands. */
+.xvk-doc {
+  padding: 2.4cqw 2.8cqw 2.6cqw;
+  animation: xvkRes 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+  animation-delay: calc(var(--i) * 3s);
+}
+.xvk-kicker {
+  margin: 0 0 1.9cqw;
+  font-size: max(8px, 1.75cqw);
+  font-weight: 500;
+  letter-spacing: -.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xvk-line { display: block; flex: 1; height: 1.4cqw; margin-bottom: 1.2cqw; border-radius: 999px; background: #EEEEEA; }
+.xvk-line--short { width: 64%; }
+.xvk-ex {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+  margin: 1.5cqw 0 1.6cqw;
+  padding: 1cqw 1.3cqw 1cqw 1.5cqw;
+  border-radius: .9cqw;
+  background: var(--accent-soft);
+  box-shadow: inset .35cqw 0 0 var(--accent);
+  opacity: 0;
+  animation: xvkEx 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+  animation-delay: calc(var(--i) * 3s);
+}
+.xvk-ex .xvk-line { margin: 0; background: rgba(53, 80, 200, .28); }
+.xvk-ex b {
+  flex: none;
   font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: max(8px, 1.8cqw);
+  font-weight: 500;
+  color: var(--accent);
 }
 
-/* The sheet at rest: a full worksheet, column heads and row numbers and nine
-   rows of figures already in it, quiet and uncited. It matters that these are
-   not empty — an empty grid reads as "FinSynth will fill this in", and the
-   claim is about the numbers you already have. */
-.xvq-head {
-  fill: #9A9488;
+/* the workbook: column letters, row numbers, nine rows of a real model */
+.xvk-sheet { padding: 0; font-size: max(7.5px, 1.75cqw); }
+.xvk-srow {
+  display: grid;
+  grid-template-columns: 3.2cqw minmax(0, 1fr) 12.5cqw 15cqw;
+  height: 3.3cqw;
+  border-bottom: 1px solid #ECECE8;
+}
+.xvk-srow > span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 1.1cqw;
+  border-right: 1px solid #ECECE8;
+  white-space: nowrap;
+}
+.xvk-srow > span:last-child { border-right: 0; }
+.xvk-srow--cols { height: 2.9cqw; background: #F6F6F3; }
+.xvk-srow--cols > span,
+.xvk-srow > .xvk-rn {
+  justify-content: center;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: max(6.5px, 1.35cqw);
   letter-spacing: .06em;
+  color: #A9A396;
 }
-.xvq-rn {
-  fill: #A9A396;
+.xvk-srow > .xvk-rn { background: #F6F6F3; }
+.xvk-sl { font-weight: 500; color: #55514A; }
+.xvk-srow > .xvk-num {
+  justify-content: flex-end;
+  padding: 0 .9cqw;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: max(6.8px, 1.6cqw);
+  color: #3B3831;
 }
-.xvq-cl { fill: #6E6960; font-size: 11px; font-weight: 500; }
-.xvq-cn {
-  fill: #55514A;
+/* the traced cells: always filled, like the rest of the model. Each lights up
+   as its source is read, then settles to accent ink so it stays marked */
+.xvk-srow > .xvk-hit {
+  color: var(--k-num);
+  background: transparent;
+  animation: 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+}
+.xvk-srow > .xvk-hit--0 { animation-name: xvkHit0; }
+.xvk-srow > .xvk-hit--1 { animation-name: xvkHit1; }
+.xvk-srow > .xvk-hit--2 { animation-name: xvkHit2; }
+.xvk-ring {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 max(1px, .3cqw) var(--k-acc);
+  opacity: 0;
+  animation: xvkRing 9s cubic-bezier(.32, .72, 0, 1) infinite both;
+  animation-delay: calc(var(--i) * 3s);
+}
+/* where it came from: one line under the grid, swapped with each beat */
+.xvk-prov {
+  display: flex;
+  align-items: center;
+  gap: 1.1cqw;
+  height: 4.6cqw;
+  padding: 0 1.4cqw;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: max(7px, 1.45cqw);
+  letter-spacing: .03em;
+  color: rgba(53, 80, 200, .86);
 }
+.xvk-prov i { flex: none; width: 1.1cqw; height: 1.1cqw; border-radius: .3cqw; background: var(--accent); }
+.xvk-foot { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xvk-foot--0 { animation-name: xvkFoot0; }
+.xvk-foot--1 { animation-name: xvkFoot1; }
+.xvk-foot--2 { animation-name: xvkFoot2; }
 
-/* The cited cells, drawn the way a spreadsheet draws a selected range rather
-   than as a panel dropped on top of the sheet: the row keeps its own text at
-   its own position and size, and what changes is that A:B are washed, ringed
-   and re-inked in the accent. Nothing moves, nothing is covered, so the reader
-   sees FinSynth pointing at a cell that was already there.
-
-   These are stacked in paint order and each one is load-bearing:
-   rowlit  the number gutter, so the whole row reads as picked out
-   clear   an opaque patch — the resting row's grey text is painted underneath
-           this group, and the wash alone would leave it showing through
-   sel     the wash itself
-   seldiv  the A|B edge, redrawn over the wash; a selected range still shows
-           its inner gridlines and without this the two cells merge into one
-   selbox  the range border
-   lit     the label and figure re-inked, drawn last so they sit above it all */
-.xvq-rowlit { fill: rgba(53, 80, 200, .07); }
-.xvq-clear { fill: #fff; }
-.xvq-sel { fill: rgba(53, 80, 200, .13); }
-.xvq-seldiv { stroke: rgba(53, 80, 200, .22); stroke-width: 1; }
-.xvq-selbox { fill: none; stroke: var(--accent); stroke-width: 1.5; }
-/* after .xvq-cl/.xvq-cn, which it has to beat at equal specificity */
-.xvq-lit { fill: var(--accent); font-weight: 600; }
-
-/* The citation sits on its own line under the grid, with a small accent square
-   for a key. It used to ride inside the cell, which only worked while the cell
-   was an opaque block big enough to hold two lines of type — on a real row
-   there is nowhere to put it that isn't on top of the row below. */
-.xvq-citemark { fill: var(--accent); }
-.xvq-cite {
-  fill: rgba(53, 80, 200, .82);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .04em;
+/* the clock. Three 3s beats in 9s: 0–33 the filing, 33–67 the call, 67–100
+   the tracker. Within a beat: the card lands by 8%, its page has resolved by
+   13%, the passage lights at 14%, the cell fills at 18%, the check comes at
+   24%. The last 5% fades the sources and the filled cells so the loop can
+   start clean; the workbook and the pill stay. */
+@keyframes xvkSrc0 {
+  0% { opacity: 0; transform: translate(-3cqw, 9cqw); }
+  8%, 33% { opacity: 1; transform: none; }
+  41%, 94% { opacity: .9; transform: none; }
+  100% { opacity: 0; transform: none; }
 }
-
-/* in fast, hold, out — the gap at the end of each third is the pause that keeps
-   the loop from reading as a strobe */
-@keyframes xvqBeat {
-  0% { opacity: 0 }
-  4%, 27% { opacity: 1 }
-  32%, 100% { opacity: 0 }
+@keyframes xvkSrc1 {
+  0%, 33.3% { opacity: 0; transform: translate(-3cqw, 9cqw); }
+  41.3%, 66.6% { opacity: 1; transform: none; }
+  74.6%, 94% { opacity: .9; transform: none; }
+  100% { opacity: 0; transform: none; }
 }
-/* still frame: the first pair lit, the other two left as empty cells — which is
-   the honest still, since only one source can be shown landing at a time */
+@keyframes xvkSrc2 {
+  0%, 66.6% { opacity: 0; transform: translate(-3cqw, 9cqw); }
+  74.6%, 94% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+/* per-beat, shared and offset by --i */
+@keyframes xvkRes {
+  0%, 4% { opacity: .4; filter: blur(5px); }
+  13%, 33.3% { opacity: 1; filter: blur(0); }
+  37%, 100% { opacity: 0; filter: blur(0); }
+}
+@keyframes xvkEx {
+  0%, 11% { opacity: 0; transform: translateY(.6cqw); }
+  14%, 100% { opacity: 1; transform: none; }
+}
+@keyframes xvkRing {
+  0%, 15% { opacity: 0; }
+  18%, 30% { opacity: 1; }
+  33%, 100% { opacity: 0; }
+}
+@keyframes xvkLbl {
+  0% { opacity: 0; filter: blur(4px); transform: translateY(30%); }
+  3.5%, 31% { opacity: 1; filter: blur(0); transform: none; }
+  33.3%, 100% { opacity: 0; filter: blur(4px); transform: translateY(-30%); }
+}
+/* the filled cells persist, so one keyframe each */
+@keyframes xvkHit0 {
+  0%, 15% { color: var(--k-num); background: transparent; }
+  18%, 33.3% { color: var(--k-acc); background: var(--k-acc-soft); }
+  38%, 95% { color: var(--k-acc); background: transparent; }
+  100% { color: var(--k-num); background: transparent; }
+}
+@keyframes xvkHit1 {
+  0%, 48.3% { color: var(--k-num); background: transparent; }
+  51.3%, 66.6% { color: var(--k-acc); background: var(--k-acc-soft); }
+  71%, 95% { color: var(--k-acc); background: transparent; }
+  100% { color: var(--k-num); background: transparent; }
+}
+@keyframes xvkHit2 {
+  0%, 81.6% { color: var(--k-num); background: transparent; }
+  84.6%, 95% { color: var(--k-acc); background: var(--k-acc-soft); }
+  100% { color: var(--k-num); background: transparent; }
+}
+/* the provenance line prints as its cell fills and holds until the next one */
+@keyframes xvkFoot0 {
+  0%, 16% { opacity: 0; filter: blur(4px); transform: translateY(30%); }
+  19%, 49.5% { opacity: 1; filter: blur(0); transform: none; }
+  52.5%, 100% { opacity: 0; filter: blur(4px); transform: translateY(-30%); }
+}
+@keyframes xvkFoot1 {
+  0%, 49.3% { opacity: 0; filter: blur(4px); transform: translateY(30%); }
+  52.3%, 82.8% { opacity: 1; filter: blur(0); transform: none; }
+  85.8%, 100% { opacity: 0; filter: blur(4px); transform: translateY(-30%); }
+}
+@keyframes xvkFoot2 {
+  0%, 82.6% { opacity: 0; filter: blur(4px); transform: translateY(30%); }
+  85.6%, 96.5% { opacity: 1; filter: blur(0); transform: none; }
+  99.5%, 100% { opacity: 0; filter: blur(4px); transform: translateY(-30%); }
+}
+/* the mark runs on a 3s clock, so it lands once per beat: spinner while the
+   step is under way, check for the last ~0.8s of it */
+@keyframes xvkRotate { to { transform: rotate(360deg); } }
+@keyframes xvkSpinOn {
+  0%, 72% { opacity: 1; }
+  75%, 100% { opacity: 0; }
+}
+@keyframes xvkCheckOn {
+  0%, 73% { opacity: 0; transform: scale(.5); }
+  80%, 100% { opacity: 1; transform: none; }
+}
+/* still frame: the finished trace — all three sources read, the tracker in
+   front, every traced cell filled, the last provenance line and the check */
 @media (prefers-reduced-motion: reduce) {
-  .xvq-trace { animation: none; opacity: 0 }
-  .xvq-trace--0 { opacity: 1 }
+  .xvk * { animation: none !important; }
+  .xvk-src--0, .xvk-src--1 { opacity: .9; }
+  .xvk-src--2, .xvk-ex, .xvk-check { opacity: 1; }
+  .xvk-srow > .xvk-hit { color: var(--k-acc); }
+  .xvk-srow > .xvk-hit--2 { background: var(--k-acc-soft); }
+  .xvk-lbl--2, .xvk-foot--2 { opacity: 1; filter: none; transform: none; }
+  .xvk-spin { opacity: 0; }
 }
-/* Set off the source kinds from the trace diagram above them. This has to beat
+@media (max-width: 640px) {
+  .xvk { border-radius: 12px; }
+  .xvk-src .xvk-x { display: none; }
+  .xvk-src .xvk-tab { padding-right: 1.6cqw; }
+  .xvk-title { font-size: max(7.5px, 1.7cqw); }
+}
+
+/* ink: no panel of its own. The windows sit straight on the stage's white
+   card, so the whole stage reads as one white ground, and everything that
+   was dark chrome on navy (the status pill, the tab strips, the tabs) is
+   FinSynth blue instead (feedback: "keep it light mode, but use finsynth
+   blue colours for dark stuff"). Only colour changes here; geometry and
+   motion are shared with navy. The cell colours stay the light-ground set
+   from .xvk, so the traced numbers read the same as everywhere else. */
+.xvk--ink {
+  --k-chrome: var(--accent);
+  --k-hair: rgba(53, 80, 200, .14);
+}
+.xvk--ink .xvk-status {
+  color: #fff;
+  background: var(--accent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    0 0 0 1px rgba(53, 80, 200, .18),
+    0 .9cqw 2.6cqw rgba(53, 80, 200, .28);
+}
+.xvk--ink .xvk-spin { border-color: rgba(255, 255, 255, .28); border-top-color: #fff; }
+.xvk--ink .xvk-check { background: #fff; color: var(--accent); }
+/* a blue-tinted lift instead of the navy panel's white key line */
+.xvk--ink .xvk-card {
+  box-shadow:
+    0 0 0 1px var(--k-hair),
+    0 1.6cqw 4cqw rgba(53, 80, 200, .16);
+}
+/* with no panel to run off, the windows dissolve into the white over their
+   last stretch instead of stopping at a hard edge. The scene is 62.5cqw tall
+   and card i starts at 13 + 6.5i, so the fade ends exactly at the bottom. */
+.xvk--ink .xvk-src {
+  mask-image: linear-gradient(to bottom, #000 calc(37.5cqw - var(--i) * 6.5cqw), transparent calc(49.5cqw - var(--i) * 6.5cqw));
+}
+/* the body carries its own stroke in a subtle blue, drawn inset so the sheet's
+   cqw layout is untouched; the top edge is left to the glass head's hairline
+   so the two do not double up */
+.xvk--ink .xvk-body {
+  /* the source pages end well above their card's clip, so without this their
+     bottom edge is a hard square line; the body takes the card's own radius on
+     its lower corners and the inset stroke follows it */
+  border-radius: 0 0 2.2cqw 2.2cqw;
+  box-shadow:
+    inset 1px 0 0 rgba(53, 80, 200, .3),
+    inset -1px 0 0 rgba(53, 80, 200, .3),
+    inset 0 -1px 0 rgba(53, 80, 200, .3);
+}
+/* the tab strip is a pane of frosted blue glass over the stage: a light
+   tint with the blur and saturate that give the sense of glass, closed by a
+   hairline below. The tab stays a white plate on it. */
+.xvk--ink .xvk-head {
+  background: rgba(53, 80, 200, .09);
+  -webkit-backdrop-filter: blur(8px) saturate(1.4);
+  backdrop-filter: blur(8px) saturate(1.4);
+  box-shadow: inset 0 -1px 0 rgba(53, 80, 200, .12);
+}
+.xvk--ink .xvk-tab { box-shadow: 0 1px 2px rgba(20, 36, 46, .16); }
+.xvk--ink .xvk-x { opacity: .55; }
+.xvk--ink .xvk-x::before,
+.xvk--ink .xvk-x::after { background: var(--ink); }
+.xvk--ink .xvk-ex { box-shadow: inset .35cqw 0 0 var(--k-acc); }
+
+/* Set off the source kinds from the cascade above them. This has to beat
    .xvi-grid's own `margin: 0`, which is declared further down the file at the
    same specificity — a bare .xvi-grid--tight loses to it, so the 20px that used
    to sit here never applied and the row has been sitting flush against the
    drawing. (A `gap: 8px 9px` was dead here for the same reason; dropped rather
    than revived, since .xvi-grid's 11/12 is what has been on screen.) */
-.xvc .xvi-grid--tight { margin-top: 11.5%; }
+.xvc .xvi-grid--tight { margin-top: 5%; }
 /* On a phone the drawing had collapsed to a third of the pills' height with the
    desktop's fixed 56px still holding them apart. The % gap above scales with
    the composition; here the pills come down a step (they can't take the full
@@ -4545,12 +4837,13 @@ button.play { border: none; padding: 0; appearance: none }
     background-position: 0 0, center, center;
     background-blend-mode: overlay, normal, normal;
   }
+  /* the white fills the stage edge to edge (feedback at 440: "drop the
+     margins from this"). It sat inset 4.5% as a card on the blue with its own
+     radius and shadow; with no inset there is no ground left to show, so the
+     radius and shadow go with the margin rather than leaving blue corners */
   .x4e-stage--inline .x4e-visual {
     background: #fff;
-    border-radius: 14px;
-    margin: 4.5%;
-    /* the ground image's own drop shadow, at this card's scale */
-    box-shadow: 0 9px 24px rgba(11, 30, 99, .34);
+    margin: 0;
   }
   .x4e-stage--inline:has(.xvc) .x4e-visual { padding: 5% 2.5%; }
   .x4e-stage--inline:has(.xvi) .x4e-visual { padding: 3.5% 2.5%; }
@@ -4578,15 +4871,6 @@ button.play { border: none; padding: 0; appearance: none }
     padding: min(3px, 1cqw) min(6px, 1.9cqw);
     bottom: max(-8px, -2.5cqw);
   }
-  /* the 640-unit scene still runs at ~0.52 scale, so its ink steps up inside
-     the viewBox and the sheet reads at ~7-8px instead of vanishing. Geometry
-     is untouched; only the type grows. */
-  .xvc .xv .xv-ink { font-size: 16px; }
-  .xvc .xv .xv-mono { font-size: 12.5px; }
-  .xvc .xv .xvq-cl { font-size: 13.5px; }
-  .xvc .xv .xvq-cn { font-size: 13px; }
-  .xvc .xv .xvq-head, .xvc .xv .xvq-rn { font-size: 11px; }
-  .xvc .xv .xvq-cite { font-size: 12px; }
   .xvc .xvi-grid--tight .xvi-pill { padding: 4px 11px 4px 4px; gap: 6px; }
   .xvc .xvi-grid--tight .xvi-badge { width: 18px; height: 18px; }
   .xvc .xvi-grid--tight .xvi-badge--glyph svg { width: 13px; height: 13px; }
@@ -4925,17 +5209,16 @@ button.play { border: none; padding: 0; appearance: none }
    .66 was too mean to the claims — three rows of two-line body copy inside a
    third of the frame wrap to four and five lines each. .80 gives the rail back
    most of the add-in section's .88 while still leaving the stage wider than the
-   add-in's; the window is a fixed 855px that already bleeds off the right, so
-   what the stage loses comes off that bleed rather than off the app. */
+   add-in's; the window scales with the stage, so what the stage loses only
+   takes the app down a size. */
 @media (min-width: 901px) {
   #fia-agent .x4e-pane { grid-template-columns: minmax(0, .80fr) minmax(0, 1.20fr) }
 }
 /* one window instead of four crossfading visuals, on the same grainy blue
    ground the add-in stage carries — minus that stage's white card layer. The
    browser window is already a white panel with its own lift, so a card cut out
-   underneath would only put a second edge behind the one the window draws, and
-   the window bleeds off the right (see below), so that edge would be sliced
-   mid-run anyway. Everything else — the blue, the corner light, the grain and
+   underneath would only put a second edge behind the one the window draws.
+   Everything else — the blue, the corner light, the grain and
    its overlay blend — is inherited from .x4e-stage untouched, so the two
    sections read as one ground.
 
@@ -4952,24 +5235,23 @@ button.play { border: none; padding: 0; appearance: none }
   background-blend-mode: overlay, normal, normal;
   min-height: clamp(285px, 41.8vh, 399px);
 }
-/* the window is wider than the stage on purpose and runs off its right edge
-   (the stage already clips). Sized down to fit, the shot's UI shrinks to
-   texture — bled, it stays near its own scale and the section reads as a
-   glimpse into the app rather than a thumbnail of it. Hence no right padding
-   and a left-packed visual: the cut has to land past the frame, not inside it. */
+/* The window sits whole inside the stage. It used to run 942px wide and bleed
+   off the right, with the capture cropped to the sidebar and the empty-state
+   headline; feedback at 1698 wanted the full workspace instead: "the sidebar
+   part is fine, but the main empty chat screen needs to be enlarged, also the
+   bottom actions got cropped, keep it like this [the full capture]". So the
+   capture is the whole 2000x1398 window again (composer with its actions
+   included) and the window is sized to the stage rather than past it, centred
+   with even padding. Its height follows its width, so the stage grows with it
+   and the min-height floor below is just that, a floor. */
 .fiag-stage .x4e-visual {
-  justify-content: flex-start;
-  padding: clamp(21px, 4.3%, 40px) 0 clamp(21px, 4.3%, 40px) clamp(28px, 5.5%, 52px);
+  justify-content: center;
+  padding: clamp(21px, 4.3%, 40px);
 }
-/* The window's width sets the shot's scale, and the scale sets how much of the
-   app the stage's fixed slab can hold: visible source px = stage slab / scale,
-   so a wider window shows the shot bigger and shows less of it. 992 against the
-   1560-wide crop draws it at .59, which puts the empty-state headline's right
-   edge well inside the cut. Retune this and the crop together — on its own it
-   only trades reach for size.
-   942 is 992 less 5%: the window's height follows its width, so taking the
-   section 5% shorter means taking the window 5% narrower, not cropping it. */
-.fiag-stage .x4e-visual > * { width: 942px; max-width: none; flex: none }
+/* 86% of the stage rather than the full width (feedback at 1698: "reduce the
+   width"): the window keeps a clear band of blue around it on the sides as
+   well as above and below, and still shows the whole capture */
+.fiag-stage .x4e-visual > * { width: 86%; max-width: none; flex: none }
 
 /* ── the window ──────────────────────────────────────────────────────── */
 /* the frame is a plain window around the shot: a tinted border with the page
@@ -5014,24 +5296,25 @@ button.play { border: none; padding: 0; appearance: none }
 }
 
 @media (max-width: 900px) {
-  /* no room to bleed on a phone: the window comes back inside the stage and
-     sits centred, shot scaled down with it */
+  /* tighter padding on a phone, window still whole and centred */
   .fiag-stage .x4e-visual {
     justify-content: center;
     padding: 28px 20px;
   }
-  .fiag-stage .x4e-visual > * { width: 100% }
+  .fiag-stage .x4e-visual > * { width: 86% }
 }
 
-/* Phones: the ≤900px centering above leaves the browser window a thumbnail
-   floating in a min-height slab. Give it the Excel inline-stage treatment
-   instead: the stage hugs the window, and the window runs wider than the
-   stage with the same left-packed right bleed it has on desktop (the stage
-   already clips). Placed after the ≤900px rules so it wins the cascade. */
+/* Phones: the stage hugs the window (no min-height slab), and the window sits
+   whole inside it. It ran 165% wide with the desktop's right bleed for a
+   while, but on a phone that cut the workspace off mid-screen ("this screen is
+   getting cropped, I want it to fit well"), so the whole capture shows, scaled
+   to the stage. Placed after the ≤900px rules so it wins the cascade. */
 @media (max-width: 560px) {
   .fiag-stage { min-height: 0; }
-  .fiag-stage .x4e-visual { justify-content: flex-start; padding: 18px 0 18px 16px; }
-  .fiag-stage .x4e-visual > * { width: 165%; max-width: none; }
+  .fiag-stage .x4e-visual { justify-content: center; padding: 16px; }
+  /* 86% like the desktop (feedback at 440: "reduce the width"), so a band of
+     stage shows on the sides too */
+  .fiag-stage .x4e-visual > * { width: 86%; max-width: none; }
 }
 
 .support-container {
@@ -5297,7 +5580,7 @@ button.play { border: none; padding: 0; appearance: none }
      role as small print under the CTA lockup */
   .foot-grid-new h4 { font-size: 8.4px; }
   .foot-grid-new a,
-  .foot-grid-new .foot-role { font-size: 12px; }
+  .foot-soon { font-size: 12px; }
 }
 
 /* Fold-cover widths: the hero already tracks the title column (see the 560px

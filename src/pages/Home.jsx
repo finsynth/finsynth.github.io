@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar'
-import HeroIteration from '../components/HeroIterations'
+import Hero from '../components/Hero'
 import WhyAnalysts from '../components/WhyAnalysts'
 import ExcelSection from '../components/ExcelSection'
 import FiaAgentSection from '../components/FiaAgentSection'
@@ -26,10 +26,9 @@ function Home() {
           colour. The `bare` variant that ran here (plain background + the
           scattered photo-tile collage down the flanks) was dropped on request;
           Hero.jsx keeps the whole backdrop switch intact if it's wanted back.
-          The hero is now rendered through HeroIterations, which holds one
-          entry per rebuild pass and a switch (dev, or ?hero=<id>) to flip
-          between them for side-by-side review. */}
-      <HeroIteration />
+          Trust line is the full-ink treatment (Hero's default), which won the
+          2026-09-11 review over the plain and toned variants. */}
+      <Hero variant="photo" />
       <SectionRule />
       {/* the Excel add-in as its own product section — the Security section's
           bordered table: four rows, the claim left and its visual right */}

@@ -3,11 +3,32 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
 
 const DEFAULT_CHARSET = '!@#$%^&*()_+-=<>?/\\|'
+
+// While a decode runs the real word stays in layout as an invisible ghost
+// and each churning symbol is painted at the measured centre of its
+// character. Symbols vary in width, so rendering them inline would change the
+// word's width every frame and, in a centred layout, shake the words beside
+// it. Per-character boxes aren't enough either: they lose the kerning pairs
+// and the word still runs a few px wider than at rest.
+// Each symbol's box is the measured box of its character (the font's
+// ascent+descent), with line-height equal to that height, so the symbol sits
+// on the same baseline as the letters; a plain absolute span would get its own
+// line box and float the symbol a few px above the word.
+const GHOST = { visibility: 'hidden' }
+const glyphStyle = (c) => ({
+  position: 'absolute',
+  left: c.x,
+  top: c.y,
+  height: c.h,
+  lineHeight: `${c.h}px`,
+  transform: 'translateX(-50%)',
+})
 
 /**
  * Matrix-style text decode: every character churns through the charset, then
@@ -42,6 +63,29 @@ export const MatrixDecode = forwardRef(function MatrixDecode(
   const rafRef = useRef(0)
   const textRef = useRef(text)
   textRef.current = text
+  const hostRef = useRef(null)
+  const ghostRef = useRef(null)
+  const [centres, setCentres] = useState(null) // per character: centre x, top y, height (host-relative)
+
+  const decoding = display != null
+  useLayoutEffect(() => {
+    if (!decoding) { setCentres(null); return }
+    const host = hostRef.current
+    // first decode frame renders `text` verbatim (no ghost yet): measure the
+    // host's own text node, later frames measure the ghost
+    const node = (ghostRef.current ?? host)?.firstChild
+    if (!host || !node) return
+    const { left, top } = host.getBoundingClientRect()
+    const range = document.createRange()
+    const out = []
+    for (let i = 0; i < node.length; i++) {
+      range.setStart(node, i)
+      range.setEnd(node, i + 1)
+      const r = range.getBoundingClientRect()
+      out.push({ x: r.left - left + r.width / 2, y: r.top - top, h: r.height })
+    }
+    setCentres(out)
+  }, [decoding, text])
 
   const play = useCallback(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -81,15 +125,26 @@ export const MatrixDecode = forwardRef(function MatrixDecode(
   if (fontSize != null) styles.fontSize = typeof fontSize === 'number' ? `${fontSize}px` : fontSize
   if (color != null) styles.color = color
   if (fontWeight != null) styles.fontWeight = fontWeight
+  if (decoding && styles.position == null) styles.position = 'relative'
 
   return (
     <Tag
+      ref={hostRef}
       className={className}
       style={styles}
       onMouseEnter={trigger === 'hover' ? play : undefined}
       {...rest}
     >
-      {display ?? text}
+      {!decoding || !centres ? text : (
+        <>
+          <span ref={ghostRef} style={GHOST}>{text}</span>
+          {Array.from(text).map((ch, i) => (
+            ch === ' ' || centres[i] == null ? null : (
+              <span key={i} aria-hidden="true" style={glyphStyle(centres[i])}>{display[i] ?? ch}</span>
+            )
+          ))}
+        </>
+      )}
     </Tag>
   )
 })

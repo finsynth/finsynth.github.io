@@ -11,6 +11,7 @@ import { MatrixDecode } from '@/components/remocn/matrix-decode'
 const SEGMENTS = [
   'Hedge Funds',
   'Asset Managers',
+  'Private Equity',
   'Family Offices',
   'Sell Side',
 ]
@@ -172,20 +173,19 @@ function HeroSideTiles() {
 }
 
 // Trust line variations under the CTAs — the line was the faintest thing on
-// the hero, so it's the first thing the iteration switch (HeroIterations.jsx)
-// varies. Copy stays the same across all three; only the treatment changes.
+// the hero, so it was the first thing reviewed in variants. Copy stays the
+// same across all three; only the treatment changes. 'ink' won and is the
+// default; the others stay for the next time the line is questioned.
 //   'plain'   — the original: one line of low-emphasis ink
-//   'eyebrow' — tracked caps between two hairlines, set in full ink
+//   'tone'    — the plain line, with the claim itself lifted into ink
 //   'ink'     — the same sentence, a half step larger, in full ink
-// (a 'chips' treatment that named the segments in glass pills ran here as v3
-// and was rejected in review)
+// (two earlier treatments ran here and were rejected in review: 'chips', the
+// segments as glass pills, and 'eyebrow', tracked caps between hairlines)
 function HeroTrust({ style = 'plain' }) {
-  if (style === 'eyebrow') {
+  if (style === 'tone') {
     return (
-      <p className="hero-s2-trust hero-s2-trust--eyebrow">
-        <span className="hero-trust-rule" aria-hidden="true" />
-        <span>Trusted by investors from global funds</span>
-        <span className="hero-trust-rule" aria-hidden="true" />
+      <p className="hero-s2-trust hero-s2-trust--tone">
+        Trusted by <span className="hero-trust-em">investors from global funds</span>
       </p>
     )
   }
@@ -203,7 +203,7 @@ function HeroTrust({ style = 'plain' }) {
   )
 }
 
-function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false, trust = 'plain' }) {
+function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false, trust = 'ink' }) {
   // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
   // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
   // All share the same content layout (the "mosaic hero").

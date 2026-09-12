@@ -4,19 +4,23 @@ import useSectionZoom from '../hooks/useSectionZoom'
 const FAQS = [
   {
     q: 'How do I get access, and what does it cost?',
-    a: 'Sign-up with your email and get started immediately with limited credits. Talk to us to upgrade.',
+    a: 'Sign-up with your email and get started for free. Upgrade to pro for more capabilities and higher credits. Talk to us to get your team on FinSynth with enterprise capabilities.',
   },
   {
-    q: 'Does FinSynth make up numbers?',
-    a: "No. Every figure is written with a citation to its source. If FinSynth can't find and cite a number, it won't invent one, and nothing gets written without your approval.",
+    q: 'How does FinSynth handle ambiguity?',
+    a: "The agent asks clarification questions or flags decisions taken. A gap it can't source stays n/a rather than inventing a number.",
+  },
+  {
+    q: 'Will it stay consistent with our conventions?',
+    a: 'Yes. It detects your existing formatting and conventions and matches it. You can also save skills to perform specific, repeatable tasks with consistent results.',
   },
   {
     q: 'What data does FinSynth cover?',
-    a: 'Filings, transcripts, reports, and presentations across 12,000+ global companies.',
+    a: 'Filings, transcripts, reports, presentations and investor relations material for companies globally.',
   },
   {
     q: 'How is FinSynth different from a general AI assistant?',
-    a: 'FinSynth is purpose-built and fine-tuned for public markets. Workflow depth, domain integrations, and auditability are much stronger for investment research use cases.',
+    a: 'FinSynth is purpose-built and fine-tuned for investment research and workflows. Workflow depth, domain integrations, and auditability are much stronger for investment research use cases.',
   },
 ]
 
@@ -55,9 +59,6 @@ export default function Faq() {
     } else {
       fallback()
     }
-  }
-  const openMail = () => {
-    window.location.href = `mailto:${CONTACT_EMAIL}`
   }
   useEffect(() => () => clearTimeout(copyTimer.current), [])
 
@@ -115,16 +116,18 @@ export default function Faq() {
           <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
-            <div
-              className={`faq-contact-chip${copied ? ' is-copied' : ''}`}
-              onDoubleClick={openMail}
-              title="Double-click to email us"
-            >
-              <svg className="faq-contact-mail" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m2 7 10 6 10-6" />
-              </svg>
-              <span className="faq-contact-email">{CONTACT_EMAIL}</span>
+            <div className={`faq-contact-chip${copied ? ' is-copied' : ''}`}>
+              {/* the address is a real mailto link (feedback: a click "is taking
+                  me nowhere"); Copy sits next to it as its own button */}
+              {/* a mailto does nothing visible on a machine with no mail client,
+                  so the click also copies the address and shows Copied */}
+              <a className="faq-contact-email" href={`mailto:${CONTACT_EMAIL}`} title="Email us" onClick={copyEmail}>
+                <svg className="faq-contact-mail" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m2 7 10 6 10-6" />
+                </svg>
+                {CONTACT_EMAIL}
+              </a>
               <button
                 type="button"
                 className="faq-contact-action"

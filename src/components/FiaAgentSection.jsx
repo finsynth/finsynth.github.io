@@ -20,7 +20,7 @@ import useReveal from '../hooks/useReveal'
 const CLAIMS = [
   {
     title: 'Agentic research',
-    body: 'Describe any complex research and it runs the full analysis, cited end to end',
+    body: 'Describe any investment research workflow and it runs the full analysis, cited end to end',
   },
   {
     title: 'Background execution',
@@ -43,7 +43,7 @@ function ChatWindow() {
           alt="The FinSynth workspace: a thread history rail beside a new thread, ready for a question"
           loading="lazy"
           width="2000"
-          height="880"
+          height="1398"
         />
       </div>
     </div>
