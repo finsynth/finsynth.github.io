@@ -1918,15 +1918,16 @@ button.play { border: none; padding: 0; appearance: none }
      checklist viewport so it reads as a dense list, not a mostly-empty pane */
   .what-list-viewport { height: clamp(300px, 42vh, 380px); }
 
-  /* four columns don't fit a phone row, so the groups stack: one column, four
-     rows (Product / Company / Legal / Social), each flush left under the CTA
-     lockup. They went two by two before, but the pair read as a broken grid
-     ("2 rows 4 column, instead 4 rows?"): Legal and Social sat under Product
-     and Company with a void between the halves. The dividers go too. The
-     links never break mid-label */
+  /* the four groups (Product / Company / Legal / Social) stay on one row on
+     phones too, each as wide as its longest link and spread across the wrap.
+     At the 0.8x type below they measure ~290px together, so they clear a
+     400px row (440 viewport) and a 335px one (375). They went two by two,
+     then four rows, and both read wrong ("2 rows 4 column, instead 4 rows?",
+     "Can't fit in 1 coloum?"). The dividers go, they crowd the narrow
+     columns; the links never break mid-label */
   .foot-grid-new > div { padding: 0; border-left: none; }
   .foot-grid-new h4 { margin-bottom: 16px }
-  .foot-grid-new { grid-template-columns: minmax(0, 1fr); justify-content: normal; row-gap: 32px; width: 100% }
+  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; column-gap: 12px; width: 100% }
   .foot-grid-new a,
   .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
   /* the © line moves above the letters here. At 20vw there is no band of the
@@ -5726,4 +5727,9 @@ button.play { border: none; padding: 0; appearance: none }
    per font px plus margin. */
 @media (max-width: 320px) {
   .foot-cta-copy h3 { font-size: calc((100vw - 72px) / 11.4); }
+  /* under ~330px the four footer groups' longest links no longer clear the
+     row, so the labels may wrap inside their column here */
+  .foot-grid-new { grid-template-columns: repeat(4, minmax(0, auto)); }
+  .foot-grid-new a,
+  .foot-soon { width: auto; white-space: normal; }
 }
