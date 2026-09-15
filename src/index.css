@@ -465,20 +465,27 @@ input, textarea, [contenteditable] {
   padding: 0.625rem 0.75rem 0.625rem 1.375rem;
   font-size: 1rem;
 }
-/* no hover face in the sheet — it's a touch surface, where the tint doesn't
-   preview anything, it just sticks to whatever was tapped last */
-.navbar-sheet .nav-link:hover,
-.navbar-sheet .nav-drop-item:hover {
+/* an expanded row sits at rest in the plain face: the rows start open, so the
+   desktop trigger's open tint would read as a button stuck in hover. The
+   turned caret marks open; the tint is reserved for an actual pointer... */
+.navbar-sheet .nav-drop.is-open .nav-drop-btn {
   color: var(--secondary);
   background: none;
 }
-/* the expanded row wears no tint either: the rows start open, so the desktop
-   trigger's open face would read as a permanently hovered button. The turned
-   caret is the only open-state marker */
-.navbar-sheet .nav-drop.is-open .nav-drop-btn,
-.navbar-sheet .nav-drop.is-open .nav-drop-btn:hover {
-  color: var(--secondary);
-  background: none;
+/* ...and only a real one. On touch the emulated hover sticks to whatever was
+   tapped last, so there the sheet's rows and items never take the tint. */
+@media (hover: hover) {
+  .navbar-sheet .nav-drop.is-open .nav-drop-btn:hover {
+    color: var(--ink);
+    background: var(--accent-soft);
+  }
+}
+@media (hover: none) {
+  .navbar-sheet .nav-link:hover,
+  .navbar-sheet .nav-drop-item:hover {
+    color: var(--secondary);
+    background: none;
+  }
 }
 /* the panel's footer: both actions as stacked full-width buttons, set off from
    the links by the hairline. They wear the bar's own button faces. */
