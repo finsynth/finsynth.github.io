@@ -1913,18 +1913,15 @@ button.play { border: none; padding: 0; appearance: none }
      checklist viewport so it reads as a dense list, not a mostly-empty pane */
   .what-list-viewport { height: clamp(300px, 42vh, 380px); }
 
-  /* four columns don't fit a phone row, so they go two by two, tightened so
-     a ~105px column doesn't spend half its height on gaps; the dividers go,
-     they crowd the narrow columns. The pair splits the row in two equal
-     halves, so the second column starts at the middle rather than hugging the
-     far edge: with max-content columns spread by space-between the right
-     column sat flush right with a void between ("in mobile view this looks
-     distorted"). The links never break mid-label */
-  .foot-grid-new > div { padding: 0 12px; border-left: none; }
-  .foot-grid-new > div:nth-child(odd) { padding-left: 0; }
-  .foot-grid-new > div:nth-child(even) { padding-right: 0; }
+  /* four columns don't fit a phone row, so the groups stack: one column, four
+     rows (Product / Company / Legal / Social), each flush left under the CTA
+     lockup. They went two by two before, but the pair read as a broken grid
+     ("2 rows 4 column, instead 4 rows?"): Legal and Social sat under Product
+     and Company with a void between the halves. The dividers go too. The
+     links never break mid-label */
+  .foot-grid-new > div { padding: 0; border-left: none; }
   .foot-grid-new h4 { margin-bottom: 16px }
-  .foot-grid-new { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: normal; row-gap: 28px; width: 100% }
+  .foot-grid-new { grid-template-columns: minmax(0, 1fr); justify-content: normal; row-gap: 32px; width: 100% }
   .foot-grid-new a,
   .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
   /* the © line moves above the letters here. At 20vw there is no band of the
