@@ -5378,13 +5378,15 @@ button.play { border: none; padding: 0; appearance: none }
 .fiag-stage .x4e-visual > * { width: 86%; max-width: none; flex: none }
 /* ...then feedback at 1698 asked for it 1.2x with the right side out of the
    stage ("scale this to 1.2x so that right side is out of the div"). So on
-   desktop the window is 86% x 1.2 of the stage, pinned to the left padding, and
-   the stage's overflow crops its right edge. Sized by width rather than
-   transform so the stage still grows with the window's height and nothing is
-   cut top or bottom. The ≤900 rules below keep the whole window on phones. */
+   desktop the window is pinned to the left padding and sized past the visual's
+   box: 1.2x the old 86% only reached the padding, so 112% is what actually
+   puts its right edge out through the stage's overflow (about 50px at 1698).
+   Sized by width rather than transform so the stage still grows with the
+   window's height and nothing is cut top or bottom. The ≤900 rules below keep
+   the whole window on phones. */
 @media (min-width: 901px) {
   .fiag-stage .x4e-visual { justify-content: flex-start }
-  .fiag-stage .x4e-visual > * { width: 103.2% }
+  .fiag-stage .x4e-visual > * { width: 112% }
 }
 
 /* ── the window ──────────────────────────────────────────────────────── */
