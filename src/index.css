@@ -472,10 +472,13 @@ input, textarea, [contenteditable] {
   color: var(--secondary);
   background: none;
 }
-/* ...but an open disclosure's tint is state, not hover — it stays put */
+/* the expanded row wears no tint either: the rows start open, so the desktop
+   trigger's open face would read as a permanently hovered button. The turned
+   caret is the only open-state marker */
+.navbar-sheet .nav-drop.is-open .nav-drop-btn,
 .navbar-sheet .nav-drop.is-open .nav-drop-btn:hover {
-  color: var(--ink);
-  background: var(--accent-soft);
+  color: var(--secondary);
+  background: none;
 }
 /* the panel's footer: both actions as stacked full-width buttons, set off from
    the links by the hairline. They wear the bar's own button faces. */
@@ -5480,7 +5483,7 @@ button.play { border: none; padding: 0; appearance: none }
 .button a {
   padding: 0.5rem 1rem;
   text-decoration: none;
-  color: inherit;
+  color: var(--secondary);
 }
 
 .button-cta {
