@@ -311,7 +311,7 @@ function VisualCascade() {
   )
 }
 
-/* 02 · Fully auditable, the shipped drawing — sources on the left, the workbook on the right, and a
+/* 02 · Fully auditable, the earlier drawing (behind ?audit=trace) — sources on the left, the workbook on the right, and a
  * connector carrying each one into the cell it lands in. Three documents rather
  * than two, and deliberately unalike: a filing, a call transcript, and someone's
  * own model, because the claim the copy makes is that anything gets cited, not
@@ -524,14 +524,11 @@ function VisualCited() {
   )
 }
 // two treatments of the audit claim, kept side by side so either can be
-// reviewed without rebuilding it: 'trace' is the drawn SVG above (source
-// cards, worksheet, connector), which is what main ships; 'cascade' is the
-// HTML window stack below. The site ships AUDIT_DEFAULT; ?audit=cascade
-// previews the other, and ?trace=ink|navy picks the cascade's tone.
-// Trace went back to being the default on review ("keep this ui similar to
-// what exists on main, only add the new topics"); the shelf of source kinds
-// under it is the one thing carried over from the cascade round.
-const AUDIT_DEFAULT = 'trace'
+// reviewed without rebuilding it: 'cascade' is the HTML window stack above,
+// which ships; 'trace' is the drawn SVG main used to ship (source cards,
+// worksheet, connector), kept as the baseline. ?audit=trace previews it, and
+// ?trace=ink|navy picks the cascade's tone.
+const AUDIT_DEFAULT = 'cascade'
 const AUDIT_VIEW = (() => {
   const q = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('audit') : null
   return q === 'trace' || q === 'cascade' ? q : AUDIT_DEFAULT
