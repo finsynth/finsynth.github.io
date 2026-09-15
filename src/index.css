@@ -4111,6 +4111,7 @@ button.play { border: none; padding: 0; appearance: none }
    stage: an animation whose name computes to `none` is removed outright, and
    re-declaring it creates a new one starting at zero. `paused` would not do —
    it freezes mid-cycle and resumes there. */
+.x4e-visual:not(.is-active) .xvq-trace,
 .x4e-visual:not(.is-active) .xvk *,
 .x4e-visual:not(.is-active) .xvi-slot,
 .x4e-visual:not(.is-active) .xvi-pill,
@@ -4355,7 +4356,133 @@ button.play { border: none; padding: 0; appearance: none }
 .x4e-stage--inline .xv-marquee .what-list { gap: 2.6cqw; }
 .x4e-stage--inline .xv-marquee .what-check { border-width: max(1px, .33cqw); }
 
-/* 02 · Fully auditable — the trace, with the rest of the source shelf
+/* 02 · Fully auditable — the trace drawing, with the rest of the source shelf
+   following as pills so "anything" reads as a real list. */
+.xvc .xv { max-width: 640px; margin: 0 auto; }
+
+/* The citation loop. Three source cards rest on the left and three empty cells
+   on the right; one pair at a time lights up — the card takes an accent ring
+   and a badge on its edge, the connector runs across, and the cell fills with
+   the value and, under it, the source it came from.
+
+   Strictly one at a time. Three connectors crossing at once would read as a
+   diagram of a system; one at a time reads as a thing happening, and it also
+   keeps the reader's eye on the pairing, which is the whole claim.
+
+   9s, three beats of 3s. Negative delays put each trace on its own beat: a
+   trace with --xvd: -6s starts 6s into the cycle, so its window (the first
+   third) has already gone by and it next plays at t=3s. */
+.xvq-trace {
+  opacity: 0;
+  animation: xvqBeat 9s cubic-bezier(.4, 0, .2, 1) infinite;
+  animation-delay: var(--xvd, 0s);
+}
+.xvq-trace--1 { --xvd: -6s; }
+.xvq-trace--2 { --xvd: -3s; }
+
+/* the badge straddling the card's right edge, the way the reference does it —
+   the white ring is what lets it sit on the edge without merging into it */
+.xvq-badge { fill: var(--accent); stroke: #fff; stroke-width: 2.5; }
+.xvq-mark { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* dashed, so it reads as a reference rather than as a pipe carrying data */
+.xvq-conn { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+
+/* the kind mark on a source card — drawn rather than lettered, so the only
+   words on the card are its title */
+.xvq-gl {
+  fill: none;
+  stroke: #8A8479;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.xvq-gl--on { stroke: var(--accent); }
+
+/* the open card is drawn over an opaque ground rather than pushing the shut
+   cards aside, so this has to be the stage card's own white, not a tint */
+.xvq-back { fill: #fff; }
+/* the passage inside an open card, with the line the figure was read off */
+.xvq-band { fill: rgba(53, 80, 200, .1); }
+.xvq-quote { fill: var(--accent); }
+.xvq-found {
+  fill: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* The sheet at rest: a full worksheet, column heads and row numbers and nine
+   rows of figures already in it, quiet and uncited. It matters that these are
+   not empty — an empty grid reads as "FinSynth will fill this in", and the
+   claim is about the numbers you already have. */
+.xvq-head {
+  fill: #9A9488;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .06em;
+}
+.xvq-rn {
+  fill: #A9A396;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+}
+.xvq-cl { fill: #6E6960; font-size: 11px; font-weight: 500; }
+.xvq-cn {
+  fill: #55514A;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+/* The cited cells, drawn the way a spreadsheet draws a selected range rather
+   than as a panel dropped on top of the sheet: the row keeps its own text at
+   its own position and size, and what changes is that A:B are washed, ringed
+   and re-inked in the accent. Nothing moves, nothing is covered, so the reader
+   sees FinSynth pointing at a cell that was already there.
+
+   These are stacked in paint order and each one is load-bearing:
+   rowlit  the number gutter, so the whole row reads as picked out
+   clear   an opaque patch — the resting row's grey text is painted underneath
+           this group, and the wash alone would leave it showing through
+   sel     the wash itself
+   seldiv  the A|B edge, redrawn over the wash; a selected range still shows
+           its inner gridlines and without this the two cells merge into one
+   selbox  the range border
+   lit     the label and figure re-inked, drawn last so they sit above it all */
+.xvq-rowlit { fill: rgba(53, 80, 200, .07); }
+.xvq-clear { fill: #fff; }
+.xvq-sel { fill: rgba(53, 80, 200, .13); }
+.xvq-seldiv { stroke: rgba(53, 80, 200, .22); stroke-width: 1; }
+.xvq-selbox { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+/* after .xvq-cl/.xvq-cn, which it has to beat at equal specificity */
+.xvq-lit { fill: var(--accent); font-weight: 600; }
+
+/* The citation sits on its own line under the grid, with a small accent square
+   for a key. It used to ride inside the cell, which only worked while the cell
+   was an opaque block big enough to hold two lines of type — on a real row
+   there is nowhere to put it that isn't on top of the row below. */
+.xvq-citemark { fill: var(--accent); }
+.xvq-cite {
+  fill: rgba(53, 80, 200, .82);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+
+/* in fast, hold, out — the gap at the end of each third is the pause that keeps
+   the loop from reading as a strobe */
+@keyframes xvqBeat {
+  0% { opacity: 0 }
+  4%, 27% { opacity: 1 }
+  32%, 100% { opacity: 0 }
+}
+/* still frame: the first pair lit, the other two left as empty cells — which is
+   the honest still, since only one source can be shown landing at a time */
+@media (prefers-reduced-motion: reduce) {
+  .xvq-trace { animation: none; opacity: 0 }
+  .xvq-trace--0 { opacity: 1 }
+}
+
+/* 02 · Fully auditable, the cascade treatment (behind ?audit=cascade) — the trace, with the rest of the source shelf
    following as pills so "anything" reads as a real list.
 
    The scene is a dark inner panel set into the stage's white card (the same
@@ -4530,8 +4657,11 @@ button.play { border: none; padding: 0; appearance: none }
 /* a source page: a kicker naming the section, a few lines of body, and the
    passage that carries the number — which lights up once the page has been
    read. The whole page resolves from a blur as its card lands. */
-.xvk-doc {
-  padding: 2.4cqw 2.8cqw 2.6cqw;
+.xvk-doc { padding: 2.4cqw 2.8cqw 2.6cqw; }
+/* the fade rides an inner wrapper, not .xvk-doc itself: the body is what
+   carries the ink tone's stroke, and fading it took the card's edges with it,
+   so a source that had fallen back behind the next one lost its borders */
+.xvk-page {
   animation: xvkRes 9s cubic-bezier(.32, .72, 0, 1) infinite both;
   animation-delay: calc(var(--i) * 3s);
 }
@@ -4871,6 +5001,15 @@ button.play { border: none; padding: 0; appearance: none }
     padding: min(3px, 1cqw) min(6px, 1.9cqw);
     bottom: max(-8px, -2.5cqw);
   }
+  /* the 640-unit scene still runs at ~0.52 scale, so its ink steps up inside
+     the viewBox and the sheet reads at ~7-8px instead of vanishing. Geometry
+     is untouched; only the type grows. */
+  .xvc .xv .xv-ink { font-size: 16px; }
+  .xvc .xv .xv-mono { font-size: 12.5px; }
+  .xvc .xv .xvq-cl { font-size: 13.5px; }
+  .xvc .xv .xvq-cn { font-size: 13px; }
+  .xvc .xv .xvq-head, .xvc .xv .xvq-rn { font-size: 11px; }
+  .xvc .xv .xvq-cite { font-size: 12px; }
   .xvc .xvi-grid--tight .xvi-pill { padding: 4px 11px 4px 4px; gap: 6px; }
   .xvc .xvi-grid--tight .xvi-badge { width: 18px; height: 18px; }
   .xvc .xvi-grid--tight .xvi-badge--glyph svg { width: 13px; height: 13px; }
