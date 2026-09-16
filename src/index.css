@@ -131,22 +131,20 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
-/* Nothing on the page is selectable or draggable: a click-drag across copy
-   shouldn't paint a highlight band, and the GIFs, screenshots and logos
-   shouldn't lift out of the page as ghost images. Form fields opt back in so
-   anything typed stays editable. */
-body {
+/* The Excel section only: its rail rows are buttons and its stage is a
+   drawing, so a click-drag across them shouldn't paint a selection band. The
+   rest of the page (FAQ answers, plan copy, job postings) stays selectable.
+   This ran on body for a while, which took selection off every paragraph on
+   the site and made the ::selection rule below dead. */
+#excel {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
+/* GIFs, screenshots and logos shouldn't lift out of the page as ghost images */
 img, video, svg, picture {
   -webkit-user-drag: none;
   user-drag: none;
-}
-input, textarea, [contenteditable] {
-  user-select: text;
-  -webkit-user-select: text;
 }
 
 /* Text selection: white wash behind, accent-blue text — instead of the
