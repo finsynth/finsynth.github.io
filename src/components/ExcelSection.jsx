@@ -216,22 +216,9 @@ const CITED_KINDS = [
 // which source lands in a given cell, if any — so the grid can mark it
 const hitAt = (row, col) => SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
 
-// two treatments of the trace, kept side by side so either can be reviewed
-// without rebuilding it: 'ink' is the windows straight on the stage's white
-// card with FinSynth blue for the chrome, 'navy' is the grained dark blue panel
-// with white windows. The site ships TRACE_DEFAULT; ?trace=ink or ?trace=navy
-// previews the other. Both are styled under .xvk--navy / .xvk--ink in index.css.
-// Ink became the default on review ("we eliminated this dark bg version"): the
-// navy panel was the one dark slab on an otherwise light page.
-const TRACE_DEFAULT = 'ink'
-const TRACE_TONE = (() => {
-  const q = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('trace') : null
-  return q === 'ink' || q === 'navy' ? q : TRACE_DEFAULT
-})()
-
 function VisualCascade() {
   return (
-    <div className={`xvk xvk--${TRACE_TONE}`} aria-hidden="true">
+    <div className="xvk xvk--ink" aria-hidden="true">
       {/* the step, named. One pill; the three labels sit on top of one another
           and cross-fade, and the mark beside them turns from a spinner into a
           check as each number lands */}
@@ -311,233 +298,10 @@ function VisualCascade() {
   )
 }
 
-/* 02 · Fully auditable, the earlier drawing (behind ?audit=trace) — sources on the left, the workbook on the right, and a
- * connector carrying each one into the cell it lands in. Three documents rather
- * than two, and deliberately unalike: a filing, a call transcript, and someone's
- * own model, because the claim the copy makes is that anything gets cited, not
- * just the figures in filings.
- *
- * The citation rides inside the cell — value on the first line, source on the
- * second — rather than only in the formula bar. A formula bar tells you what is
- * in the selected cell; the point here is that every cell carries its source
- * whether or not anyone has selected it, so the sheet is auditable at a glance.
- * The rest of the shelf follows as pills, so "anything" reads as a real list
- * rather than a promise. */
-function VisualCited() {
-  // three sources, three cells. Unalike on purpose: a filing, a transcript and
-  // someone's own model, so the trio reads as "anything" rather than "filings"
-  const TRACES = [
-    { k: 'filing', glyph: 'sec', doc: 'Apple FY24 filing', row: 0, cite: '10-K FY24 · p.47' },
-    { k: 'call', glyph: 'call', doc: 'Q4 earnings call', row: 4, cite: 'Q4 call · 14:22' },
-    { k: 'model', glyph: 'folder', doc: 'Coverage model', row: 7, cite: 'Model.xlsx · row 22' },
-  ]
-
-  // Two columns: source cards down the left, a worksheet down the right.
-  //
-  // The left column is an accordion. At rest all three cards are collapsed to a
-  // header; the one currently being cited opens to show the passage inside it
-  // with the line the value came from highlighted, and the cards below it move
-  // down to make room. Because the open card is always EXP tall and the other
-  // two always COL, the stack ends at the same y whichever one is open, so the
-  // column doesn't grow and shrink as the loop runs.
-  //
-  // Each card carries its document title and nothing else in words — a drawn
-  // glyph for the kind, bars for the passage. Titles are what an analyst would
-  // read at a glance, and stripping the rest keeps the eye on the one line of
-  // the passage that is actually highlighted.
-  const CARD = { x: 22, w: 250 }
-  const COL = 54       // a collapsed card: just the header
-  const EXP = 140      // the open card: header, passage, highlighted line
-  const STEP = COL + 10
-  const TOP = 32
-  // card j's top when card `open` is the one expanded; pass open = -1 for the
-  // all-collapsed rest state
-  const cardY = (j, open) => TOP + STEP * j + (open >= 0 && j > open ? EXP - COL : 0)
-  const cardMid = (i) => cardY(i, i) + EXP / 2
-  const BX = CARD.x + CARD.w       // the badge straddles the card's right edge
-  const BR = 14                    // badge radius
-
-  // The sheet: a real worksheet rather than three tiles — column heads, row
-  // numbers, nine rows already carrying figures. The claim is about the numbers
-  // an analyst already has, so the grid has to look full before anything lands
-  // in it; a sparse sheet would read as "FinSynth fills this in".
-  const SH = { x: 358, y: 34, w: 262, head: 22, rh: 26, n: 9 }
-  const CA = 378, CB = 506, CC = 568, CEND = 620
-  const rowY = (r) => SH.y + SH.head + SH.rh * r
-  const cellMid = (r) => rowY(r) + SH.rh / 2
-  // the cited range is A:B of one row — the label and the figure it belongs to
-  const BLOCK = { x: CA, w: CC - CA, h: SH.rh }
-
-  const SHEET = [
-    { label: 'Net revenue', b: '1,842', c: '1,704' },
-    { label: 'Cost of sales', b: '1,104', c: '1,040' },
-    { label: 'Gross profit', b: '738', c: '664' },
-    { label: 'Operating inc.', b: '336', c: '298' },
-    { label: 'Pricing power', b: 'Intact', c: '' },
-    { label: 'R&D', b: '214', c: '201' },
-    { label: 'Services rev', b: '612', c: '549' },
-    { label: 'Gross margin', b: '40.1%', c: '38.9%' },
-    { label: 'FX impact', b: '(18)', c: '(11)' },
-  ]
-
-  // kind as a drawn mark, so the card says its type without spending a word
-  const CardGlyph = ({ t, y, on }) => (
-    <>
-      <rect className="xv-tag" x={CARD.x + 14} y={y + 12} width="30" height="30" rx="9" />
-      <g className={on ? 'xvq-gl xvq-gl--on' : 'xvq-gl'} transform={`translate(${CARD.x + 20.75} ${y + 18.75}) scale(0.75)`}>
-        {GLYPHS[t.glyph]}
-      </g>
-    </>
-  )
-
-  // the header every card carries, open or shut: the mark and the title
-  const CardHead = ({ t, y, on }) => (
-    <>
-      <CardGlyph t={t} y={y} on={on} />
-      <text className="xv-ink" x={CARD.x + 54} y={y + 32}>{t.doc}</text>
-    </>
-  )
-
-  const CardShut = ({ t, y }) => (
-    <g>
-      <rect className="xv-panel" x={CARD.x} y={y} width={CARD.w} height={COL} rx="12" />
-      <CardHead t={t} y={y} />
-    </g>
-  )
-
-  // the open card: the header, then the passage, with the line the figure was
-  // read off banded in accent and the figure itself repeated at its right —
-  // this is the "show me where you got that" moment, drawn out
-  const CardOpen = ({ t, y }) => (
-    <g>
-      <rect className="xv-panel" x={CARD.x} y={y} width={CARD.w} height={EXP} rx="12" />
-      <rect className="xv-panel--hit" fill="none" x={CARD.x} y={y} width={CARD.w} height={EXP} rx="12" />
-      <CardHead t={t} y={y} on />
-      <line className="xv-grid" x1={CARD.x} y1={y + 58} x2={CARD.x + CARD.w} y2={y + 58} />
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 70} width="200" height="5" rx="2.5" />
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 82} width="148" height="5" rx="2.5" />
-      <rect className="xvq-band" x={CARD.x + 12} y={y + 94} width={CARD.w - 24} height="28" rx="6" />
-      <rect className="xvq-quote" x={CARD.x + 12} y={y + 94} width="2.5" height="28" />
-      <rect className="xv-bar-hit" x={CARD.x + 24} y={y + 105} width="86" height="5" rx="2.5" />
-      <text className="xvq-found" x={CARD.x + CARD.w - 16} y={y + 112} textAnchor="end">{SHEET[t.row].b}</text>
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 128} width="176" height="5" rx="2.5" />
-    </g>
-  )
-
-  // the cited cell, lit in place. The sheet keeps its own row: same figure, same
-  // column, same neighbours, selected the way a spreadsheet selects a range —
-  // a wash inside an accent outline, with the row's header lit alongside it.
-  //
-  // This was an opaque accent block laid over two rows. It covered column C
-  // beside it and read as a tooltip dropped onto the sheet rather than as the
-  // sheet's own cell coming alive, which undercuts the claim: the whole point
-  // is that these are the numbers already in your workbook.
-  //
-  // The white patch under the wash is doing real work. The resting row is
-  // already drawn beneath this group, so without it the accent label and figure
-  // would sit on top of their own grey ghosts.
-  //
-  // The citation can't ride inside the cell any more without covering the row
-  // under it, so it sits on a caption line below the grid, in the same accent
-  // that marks the selection.
-  const Landing = ({ t }) => {
-    const y = rowY(t.row)
-    const r = SHEET[t.row]
-    return (
-      <g>
-        <rect className="xvq-rowlit" x={SH.x + 1} y={y} width={CA - SH.x - 1} height={SH.rh} />
-        <rect className="xvq-clear" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        <rect className="xvq-sel" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        {/* the divider between A and B, redrawn over the wash — a selected range
-            still shows its inner edges, and without this the two cells merge */}
-        <line className="xvq-seldiv" x1={CB} y1={y} x2={CB} y2={y + BLOCK.h} />
-        <rect className="xvq-selbox" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        <text className="xvq-cl xvq-lit" x={CA + 12} y={y + 17}>{r.label}</text>
-        <text className="xvq-cn xvq-lit" x={CC - 10} y={y + 17} textAnchor="end">{r.b}</text>
-        <rect className="xvq-citemark" x={CA} y={rowY(SH.n) + 11} width="7" height="7" rx="2" />
-        <text className="xvq-cite" x={CA + 13} y={rowY(SH.n) + 18}>{t.cite}</text>
-      </g>
-    )
-  }
-
-  return (
-    <svg className="xv" viewBox={VB} role="img" aria-hidden="true">
-      <text className="xv-mono" x={CARD.x + 2} y={22}>Every source</text>
-      <text className="xv-mono" x={SH.x} y={22}>Your workbook</text>
-
-      {/* rest state: three shut cards, and a sheet already full of figures. The
-          cells are not empty waiting to be filled — they are numbers an analyst
-          would have to take on trust until the citation arrives */}
-      {TRACES.map((t, i) => <CardShut t={t} y={cardY(i, -1)} key={t.k} />)}
-
-      <rect className="xv-panel" x={SH.x} y={SH.y} width={SH.w} height={SH.head + SH.rh * SH.n} rx="8" />
-      <rect className="xv-tag" x={SH.x + 1} y={SH.y + 1} width={SH.w - 2} height={SH.head - 1} rx="7" />
-      <text className="xvq-head" x={(CA + CB) / 2} y={SH.y + 15} textAnchor="middle">A</text>
-      <text className="xvq-head" x={(CB + CC) / 2} y={SH.y + 15} textAnchor="middle">B</text>
-      <text className="xvq-head" x={(CC + CEND) / 2} y={SH.y + 15} textAnchor="middle">C</text>
-      {[CA, CB, CC].map((x) => (
-        <line className="xv-grid" key={`v${x}`} x1={x} y1={SH.y} x2={x} y2={rowY(SH.n)} />
-      ))}
-      {SHEET.map((r, i) => (
-        <g key={r.label}>
-          <line className="xv-grid" x1={SH.x} y1={rowY(i)} x2={SH.x + SH.w} y2={rowY(i)} />
-          <text className="xvq-rn" x={(SH.x + CA) / 2} y={rowY(i) + 17} textAnchor="middle">{i + 1}</text>
-          <text className="xvq-cl" x={CA + 12} y={rowY(i) + 17}>{r.label}</text>
-          <text className="xvq-cn" x={CC - 10} y={rowY(i) + 17} textAnchor="end">{r.b}</text>
-          <text className="xvq-cn" x={CEND - 10} y={rowY(i) + 17} textAnchor="end">{r.c}</text>
-        </g>
-      ))}
-
-      {/* One trace lit at a time. Each redraws the whole left column in its own
-          open state over an opaque ground, rather than animating the cards into
-          position: the beats already cross-fade, so a fade between two finished
-          layouts is what the eye gets either way, and this keeps the geometry
-          arithmetic instead of a stack of per-card keyframes.
-          Timing in .xvq-trace, index.css. */}
-      {TRACES.map((t, i) => (
-        <g className={`xvq-trace xvq-trace--${i}`} key={`trace-${t.k}`}>
-          <rect className="xvq-back" x="14" y="26" width={CARD.w + 20} height="282" />
-          {TRACES.map((u, j) => (
-            j === i
-              ? <CardOpen t={u} y={cardY(j, i)} key={u.k} />
-              : <CardShut t={u} y={cardY(j, i)} key={u.k} />
-          ))}
-          {/* stops at the sheet's outer edge rather than at the selection: the
-              row-number gutter sits between the two, and a line run through it
-              crosses the row number on its way in. The lit gutter carries the
-              eye the rest of the way. */}
-          <path
-            className="xvq-conn"
-            d={`M${BX + BR + 2} ${cardMid(i)} C ${BX + BR + 44} ${cardMid(i)}, ${SH.x - 46} ${cellMid(t.row)}, ${SH.x - 2} ${cellMid(t.row)}`}
-          />
-          <Landing t={t} />
-          {/* the arrow points back at the card, not forward at the cell: the
-              claim is that the figure traces to where it came from */}
-          <circle className="xvq-badge" cx={BX} cy={cardMid(i)} r={BR} />
-          <path
-            className="xvq-mark"
-            d={`M${BX + 5} ${cardMid(i)} h-8 M${BX - 0.5} ${cardMid(i) - 3.5} l-3.5 3.5 l3.5 3.5`}
-          />
-        </g>
-      ))}
-    </svg>
-  )
-}
-// two treatments of the audit claim, kept side by side so either can be
-// reviewed without rebuilding it: 'cascade' is the HTML window stack above,
-// which ships; 'trace' is the drawn SVG main used to ship (source cards,
-// worksheet, connector), kept as the baseline. ?audit=trace previews it, and
-// ?trace=ink|navy picks the cascade's tone.
-const AUDIT_DEFAULT = 'cascade'
-const AUDIT_VIEW = (() => {
-  const q = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('audit') : null
-  return q === 'trace' || q === 'cascade' ? q : AUDIT_DEFAULT
-})()
-
 function VisualAudit() {
   return (
     <div className="xvc">
-      {AUDIT_VIEW === 'cascade' ? <VisualCascade /> : <VisualCited />}
+      <VisualCascade />
       <PillRow items={CITED_KINDS} className="xvi-grid--tight" />
     </div>
   )
@@ -653,9 +417,9 @@ function VisualEnterprise() {
    own animation rather than shared: a single interval short enough for the
    still visuals cut the animated ones off part-way through, and one long enough
    for the animated ones parked the still ones on screen with nothing happening.
-   The audit visual is the constraint — either treatment loops three beats over 9s (one
-   per source; see .xvq-trace and the .xvk-* keyframes in index.css), and at the 4.2s every claim used to
-   get, the last two beats never played at all. */
+   The audit cascade is the constraint — it loops three beats over 9s (one per
+   source; see the .xvk-* keyframes in index.css), and at the 4.2s every claim
+   used to get, the last two beats never played at all. */
 const PILLARS = [
   {
     key: 'workflows',

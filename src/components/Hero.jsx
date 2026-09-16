@@ -172,38 +172,7 @@ function HeroSideTiles() {
   )
 }
 
-// Trust line variations under the CTAs — the line was the faintest thing on
-// the hero, so it was the first thing reviewed in variants. Copy stays the
-// same across all three; only the treatment changes. 'ink' won and is the
-// default; the others stay for the next time the line is questioned.
-//   'plain'   — the original: one line of low-emphasis ink
-//   'tone'    — the plain line, with the claim itself lifted into ink
-//   'ink'     — the same sentence, a half step larger, in full ink
-// (two earlier treatments ran here and were rejected in review: 'chips', the
-// segments as glass pills, and 'eyebrow', tracked caps between hairlines)
-function HeroTrust({ style = 'plain' }) {
-  if (style === 'tone') {
-    return (
-      <p className="hero-s2-trust hero-s2-trust--tone">
-        Trusted by <span className="hero-trust-em">investors from global funds</span>
-      </p>
-    )
-  }
-  if (style === 'ink') {
-    return (
-      <p className="hero-s2-trust hero-s2-trust--ink">
-        Trusted by investors from global funds
-      </p>
-    )
-  }
-  return (
-    <p className="hero-s2-trust">
-      Trusted by investors from global funds
-    </p>
-  )
-}
-
-function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false, trust = 'ink' }) {
+function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
   // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
   // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
   // All share the same content layout (the "mosaic hero").
@@ -354,7 +323,13 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false, trust 
             </a>
           </div>
 
-          <HeroTrust style={trust} />
+          {/* the trust line in full ink (.hero-s2-trust--ink): the 62%-grey base
+              was the faintest thing on the hero. Reviewed against a two-tone
+              version (claim in ink, lead-in grey), glass segment chips and a
+              tracked-caps eyebrow; all rejected 2026-09-11, all in git. */}
+          <p className="hero-s2-trust hero-s2-trust--ink">
+            Trusted by investors from global funds
+          </p>
 
         </div>
 

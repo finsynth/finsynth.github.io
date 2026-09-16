@@ -22,35 +22,16 @@ function Home() {
         <span className="rail rail-right" />
       </div>
       <Navbar />
-      {/* One hero — copy over the Bay Bridge sunset photo pixelated in full
-          colour. The `bare` variant that ran here (plain background + the
-          scattered photo-tile collage down the flanks) was dropped on request;
-          Hero.jsx keeps the whole backdrop switch intact if it's wanted back.
-          Trust line is the full-ink treatment (Hero's default), which won the
-          2026-09-11 review over the plain and toned variants. */}
       <Hero variant="photo" />
       <SectionRule />
-      {/* the Excel add-in as its own product section — the Security section's
-          bordered table: four rows, the claim left and its visual right */}
       <ExcelSection />
-      {/* the numbers belong to the add-in section: same .wrap, hung off the
-          bottom of its frame with no <SectionRule /> between them, so the
-          frame's own bottom hairline is the only line and the band reads as
-          the close of the section rather than a section of its own */}
       <WhyAnalysts />
       <SectionRule />
-      {/* Fia follows the add-in — the two products read as one suite, in the
-          same framed layout */}
       <FiaAgentSection />
       <Testimonial />
       <SectionRule />
       <Security />
       <SectionRule />
-      {/* Off the nav, still on the page: #23 took the Pricing link out of the
-          bar and the sheet, and took the section off Home with it. The link is
-          the part that was meant to go — the section is still where anyone
-          scrolling the page, or following #plans from anywhere else, expects
-          to find it. */}
       <PlansSection />
       <SectionRule />
       <Faq />
