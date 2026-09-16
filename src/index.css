@@ -1641,7 +1641,7 @@ button.play { border: none; padding: 0; appearance: none }
 .plans-duo { display: flex; justify-content: center; align-items: stretch; gap: 20px; flex-wrap: wrap }
 /* each table sits in a quietly bordered group named by its payer type */
 .plans-group {
-  width: fit-content;
+  width: fit-content; max-width: 100%;
   border: 1px solid var(--hair); border-radius: 14px;
   padding: 18px; background: rgba(255, 255, 255, 0.55);
   /* column, so the table below the label can take the slack the stretch hands
@@ -1692,12 +1692,10 @@ button.play { border: none; padding: 0; appearance: none }
     inset 0 2px 3px rgba(9, 20, 52, 0.12),
     0 1px 1px rgba(9, 20, 52, 0.08);
 }
-/* each card is a fixed-width column, so a table is exactly as wide as its
-   plan count — one plan, one card. Structural cl-* selector, same drift
-   risk/acceptance as .cl-checkout-root. */
+
 .plans-duo .cl-pricingTable {
   grid-auto-flow: column;
-  grid-auto-columns: 300px;
+  grid-auto-columns: minmax(0, 380px);
   grid-template-columns: none !important;
   align-items: center !important;
 }
@@ -1730,7 +1728,6 @@ button.play { border: none; padding: 0; appearance: none }
    plan card, and .plans-group's 14px corner. Only the colours flip for the
    fill they sit on. */
 .ent-panel {
-  margin-top: 20px;
   display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: center;
   padding: 44px 48px; border-radius: 14px;
   background-color: var(--accent);
@@ -1813,7 +1810,7 @@ button.play { border: none; padding: 0; appearance: none }
   .ent-viz-svg { max-width: 320px }
 }
 @media (max-width: 700px) {
-  .ent-panel { margin-top: 16px; padding: 26px 20px; gap: 28px }
+  .ent-panel { padding: 26px 20px; gap: 28px }
   /* On a phone the sentence runs four lines instead of two, which turns the
      panel's headline into a paragraph — and 1.12 is a line for headlines. A
      size down and a looser line brings it back to three lines that read as
