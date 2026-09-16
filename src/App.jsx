@@ -7,6 +7,16 @@ import Careers from './pages/Careers'
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   || 'pk_live_Y2xlcmsuZmluc3ludGguYWkk'
 
+
+const APPEARANCE = {
+  variables: {
+    colorPrimary: '#3550C8',
+    colorForeground: '#14242E',
+    fontFamily: "'Geist', -apple-system, system-ui, sans-serif",
+    borderRadius: '12px',
+  },
+}
+
 function App() {
   const navigate = useNavigate()
 
@@ -28,6 +38,7 @@ function App() {
       publishableKey={PUBLISHABLE_KEY}
       routerPush={(to) => go(to)}
       routerReplace={(to) => go(to, { replace: true })}
+      appearance={APPEARANCE}
     >
       <Routes>
         <Route path="/" element={<Home />} />
