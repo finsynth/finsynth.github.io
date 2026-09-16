@@ -5297,7 +5297,11 @@ button.play { border: none; padding: 0; appearance: none }
      copy on the hairline the next row draws. Height comes from the visual, so
      the flat 28/20 padding below would leave the visual over the drawn card's
      edge — % on both axes tracks the card's own inset the way desktop does */
-  .x4e-stage--inline { min-height: 0; border-top: 1px solid var(--hair) }
+  .x4e-stage--inline {
+    min-height: 0; border-top: 1px solid var(--hair);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
+  }
   /* side inset: the card's own edge plus a 4.5% gutter, the same shape as the
      desktop rule so the content clears the white's edge by the same margin */
   .x4e-stage--inline .x4e-visual { padding: 7% calc(var(--x4e-card-inset) + 4.5%) }
