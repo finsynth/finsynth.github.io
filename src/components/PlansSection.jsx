@@ -1,11 +1,12 @@
 import { Component } from 'react'
 import { PricingTable, useUser, useOrganizationList } from '@clerk/react'
 import useSectionZoom from '../hooks/useSectionZoom'
-import EnterpriseBanner from './EnterpriseBanner'
 
 // Where a finished checkout's "Continue" lands. External URL — leaves via the
 // router bridge in App.jsx.
 const APP_HREF = 'https://webapp.finsynth.ai/agent'
+
+const SHOW_ORG_PLANS = false
 
 /**
  * The tables run on Clerk's fast-moving billing surface — if it throws, only
@@ -61,28 +62,29 @@ export default function PlansSection() {
   const zoomRef = useSectionZoom()
 
   return (
-    <section className="plans" id="plans">
+    <section className="plans" id="pricing">
       <div className="wrap plans-wrap" ref={zoomRef}>
-        {/* <p className="plans-eyebrow">Pricing</p> */}
-        <h2 className="plans-title">Get your team on <span className="ttl-hl">FinSynth</span></h2>
+        <p className="plans-eyebrow">Pricing</p>
+        <h2 className="plans-title">Get started on <span className="ttl-hl">FinSynth</span></h2>
 
         <div className="plans-table">
-          {/* <PlansBoundary>
+          <PlansBoundary>
             <div className="plans-duo">
               <div className="plans-group">
-                <p className="plans-group-label">Individual</p>
+                {SHOW_ORG_PLANS && <p className="plans-group-label">Individual</p>}
                 <PricingTable for="user" newSubscriptionRedirectUrl={APP_HREF} />
               </div>
-              <div className="plans-group">
-                <div className="plans-group-head">
-                  <p className="plans-group-label">Organization</p>
-                  <CreateOrgButton />
+              {SHOW_ORG_PLANS && (
+                <div className="plans-group">
+                  <div className="plans-group-head">
+                    <p className="plans-group-label">Organization</p>
+                    <CreateOrgButton />
+                  </div>
+                  <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
                 </div>
-                <PricingTable for="organization" newSubscriptionRedirectUrl={APP_HREF} />
-              </div>
+              )}
             </div>
-          </PlansBoundary> */}
-          <EnterpriseBanner />
+          </PlansBoundary>
         </div>
       </div>
     </section>
