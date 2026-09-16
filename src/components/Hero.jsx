@@ -11,6 +11,7 @@ import { MatrixDecode } from '@/components/remocn/matrix-decode'
 const SEGMENTS = [
   'Hedge Funds',
   'Asset Managers',
+  'Private Equity',
   'Family Offices',
   'Sell Side',
 ]
@@ -322,7 +323,11 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             </a>
           </div>
 
-          <p className="hero-s2-trust">
+          {/* the trust line in full ink (.hero-s2-trust--ink): the 62%-grey base
+              was the faintest thing on the hero. Reviewed against a two-tone
+              version (claim in ink, lead-in grey), glass segment chips and a
+              tracked-caps eyebrow; all rejected 2026-09-11, all in git. */}
+          <p className="hero-s2-trust hero-s2-trust--ink">
             Trusted by investors from global funds
           </p>
 

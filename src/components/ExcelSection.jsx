@@ -48,6 +48,10 @@ const GLYPHS = {
   deck: <><rect x="2.4" y="3.6" width="17.2" height="11" rx="1.6" /><path d="M11 14.6v3.8M7.6 18.4h6.8" /></>,
   // internal files — the folder
   folder: <path d="M2.6 6.4A1.6 1.6 0 0 1 4.2 4.8h3.6L10 7.1h7.8a1.6 1.6 0 0 1 1.6 1.6v7.9a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6z" />,
+  // market data — a price line over its baseline
+  chart: <><path d="M2.6 18.4h16.8" /><path d="M3.6 14.6 8 9.4l3.4 3.2 3.2-5.6 3.8 4.4" /></>,
+  // research notes — a page with ruled lines
+  note: <><path d="M5 2.8h8.4L18 7.4v11.8a1.6 1.6 0 0 1-1.6 1.6H5a1.6 1.6 0 0 1-1.6-1.6V4.4A1.6 1.6 0 0 1 5 2.8Z" /><path d="M13.4 2.8v4.6H18" /><path d="M6.8 11.4h7.8M6.8 15h7.8" /></>,
   // custom APIs — the plug
   api: <><path d="M8 2.8v4.4M14 2.8v4.4" /><path d="M5.8 7.2h10.4v3.2a5.2 5.2 0 0 1-10.4 0z" /><path d="M11 15.6v1.8a2.8 2.8 0 0 1-2.8 2.8H6" /></>,
 }
@@ -116,233 +120,188 @@ function VisualWorkflows() {
   )
 }
 
-/* 02 · Fully auditable — sources on the left, the workbook on the right, and a
- * connector carrying each one into the cell it lands in. Three documents rather
- * than two, and deliberately unalike: a filing, a call transcript, and someone's
- * own model, because the claim the copy makes is that anything gets cited, not
- * just the figures in filings.
+/* 02 · Fully auditable — the work shown as a cascade of the files it passes
+ * through, with a status pill above naming the step. Three beats, one file
+ * each: the source is read (a filing), its figures land in the model (a
+ * workbook), and the output is built with its citations attached (a slide).
+ * Each new file slides in front and the one before it falls back a step,
+ * softened, so the reader always sees where the number is now and where it
+ * just came from. That is the claim in one picture: a figure you can walk
+ * back through the files to its source.
  *
- * The citation rides inside the cell — value on the first line, source on the
- * second — rather than only in the formula bar. A formula bar tells you what is
- * in the selected cell; the point here is that every cell carries its source
- * whether or not anyone has selected it, so the sheet is auditable at a glance.
- * The rest of the shelf follows as pills, so "anything" reads as a real list
- * rather than a promise. */
+ * Drawn in HTML rather than SVG so the type stays type: the cards carry real
+ * titles, headings and cells, and everything is sized in cqw off the scene's
+ * own width so the composition scales as one piece. Timing lives in the
+ * .xvk-* keyframes in index.css — a 9s loop, three 3s beats, matching the
+ * `ms` the claim holds the stage for. */
+// the three sources the trace runs through, in the order they are read. Each
+// one supports a single cell in the analyst's own workbook: `hit` is that
+// cell (row, column), `value` is what lands in it, `prov` is the line that
+// prints under the grid saying exactly where it came from.
+const SOURCES = [
+  {
+    k: 'filing', kind: 'filing', title: 'Apple FY25 10-K', status: 'Tracing to the filing',
+    kicker: 'Net sales by category', value: '416,161', hit: [6, 'B'], prov: '10-K FY25 · p.31',
+  },
+  {
+    k: 'call', kind: 'call', title: 'Q3 FY26 earnings call', status: 'Tracing to the call',
+    kicker: 'CFO prepared remarks', value: '47.0–48.0%', hit: [9, 'C'], prov: 'Q3 FY26 call · 11:48',
+  },
+  {
+    k: 'tracker', kind: 'xlsx', title: 'iPhone_ASP_tracker.xlsx', status: 'Tracing to your tracker',
+    kicker: 'Regional pricing', value: '872', hit: [2, 'C'], prov: 'iPhone_ASP_tracker.xlsx · Regional pricing · row 22',
+  },
+]
+
+// the workbook the sources land in. Nine rows so it reads as a real model
+// rather than a three-line prop; the three traced cells start empty and fill
+// on their beat, everything else is already there.
+const BOOK = { kind: 'xlsx', title: 'AAPL_model_v18.xlsx' }
+const ROWS = [
+  ['iPhone units (m)', '232', '238'],
+  ['iPhone ASP ($)', '847', ''],
+  ['iPhone revenue', '196,504', '207,536'],
+  ['Services revenue', '108,242', '119,066'],
+  ['Other products', '111,415', '114,000'],
+  ['Total net sales', '', '440,602'],
+  ['Cost of sales', '220,565', '231,757'],
+  ['Gross margin %', '47.0%', '47.4%'],
+  ['GM guide, next Q', '', ''],
+]
+
+// file kinds as tiny tinted tiles — a page, a handset, a grid — drawn rather
+// than borrowed from the vendors
+const KIND_MARK = {
+  filing: <path d="M4 1.5h4.5L12 5v7.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1Z" />,
+  call: <path d="M3.9 2.3 5.5 1.9l1.3 2.7-1.3 1a6.8 6.8 0 0 0 3 3l1-1.3 2.7 1.3-.4 1.6a1.3 1.3 0 0 1-1.4 1C6.8 10.8 3.5 7.5 3 3.7a1.3 1.3 0 0 1 .9-1.4Z" />,
+  xlsx: <><rect x="2.5" y="2.5" width="9" height="9" rx="1" /><path d="M2.5 7h9M7 2.5v9" /></>,
+}
+
+function KindMark({ kind }) {
+  return (
+    <i className={`xvk-kind xvk-kind--${kind}`}>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+        {KIND_MARK[kind]}
+      </svg>
+    </i>
+  )
+}
+
+// the file's tab: kind mark, title, and a close glyph so it reads as an open
+// window rather than a label
+function CardTab({ c }) {
+  return (
+    <div className="xvk-head">
+      <div className="xvk-tab">
+        <KindMark kind={c.kind} />
+        <span className="xvk-title">{c.title}</span>
+        <span className="xvk-x" />
+      </div>
+    </div>
+  )
+}
+
+// the rest of the shelf, as pills under the cascade, so "anything" reads as a
+// real list rather than a promise
 const CITED_KINDS = [
   { label: 'Public filings', glyph: 'sec' },
   { label: 'Transcripts', glyph: 'call' },
+  { label: 'Investor materials', glyph: 'deck' },
   { label: 'Internal files', glyph: 'folder' },
-  { label: 'Emails', glyph: 'mail' },
-  { label: 'Decks', glyph: 'deck' },
-  { label: 'Databases', glyph: 'db' },
+  { label: 'Market data', glyph: 'chart' },
+  { label: 'Research notes', glyph: 'note' },
   { label: 'Web', glyph: 'web' },
 ]
 
-function VisualCited() {
-  // three sources, three cells. Unalike on purpose: a filing, a transcript and
-  // someone's own model, so the trio reads as "anything" rather than "filings"
-  const TRACES = [
-    { k: 'filing', glyph: 'sec', doc: 'Apple FY24 filing', row: 0, cite: '10-K FY24 · p.47' },
-    { k: 'call', glyph: 'call', doc: 'Q4 earnings call', row: 4, cite: 'Q4 call · 14:22' },
-    { k: 'model', glyph: 'folder', doc: 'Coverage model', row: 7, cite: 'Model.xlsx · row 22' },
-  ]
+// which source lands in a given cell, if any — so the grid can mark it
+const hitAt = (row, col) => SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
 
-  // Two columns: source cards down the left, a worksheet down the right.
-  //
-  // The left column is an accordion. At rest all three cards are collapsed to a
-  // header; the one currently being cited opens to show the passage inside it
-  // with the line the value came from highlighted, and the cards below it move
-  // down to make room. Because the open card is always EXP tall and the other
-  // two always COL, the stack ends at the same y whichever one is open, so the
-  // column doesn't grow and shrink as the loop runs.
-  //
-  // Each card carries its document title and nothing else in words — a drawn
-  // glyph for the kind, bars for the passage. Titles are what an analyst would
-  // read at a glance, and stripping the rest keeps the eye on the one line of
-  // the passage that is actually highlighted.
-  const CARD = { x: 22, w: 250 }
-  const COL = 54       // a collapsed card: just the header
-  const EXP = 140      // the open card: header, passage, highlighted line
-  const STEP = COL + 10
-  const TOP = 32
-  // card j's top when card `open` is the one expanded; pass open = -1 for the
-  // all-collapsed rest state
-  const cardY = (j, open) => TOP + STEP * j + (open >= 0 && j > open ? EXP - COL : 0)
-  const cardMid = (i) => cardY(i, i) + EXP / 2
-  const BX = CARD.x + CARD.w       // the badge straddles the card's right edge
-  const BR = 14                    // badge radius
-
-  // The sheet: a real worksheet rather than three tiles — column heads, row
-  // numbers, nine rows already carrying figures. The claim is about the numbers
-  // an analyst already has, so the grid has to look full before anything lands
-  // in it; a sparse sheet would read as "FinSynth fills this in".
-  const SH = { x: 358, y: 34, w: 262, head: 22, rh: 26, n: 9 }
-  const CA = 378, CB = 506, CC = 568, CEND = 620
-  const rowY = (r) => SH.y + SH.head + SH.rh * r
-  const cellMid = (r) => rowY(r) + SH.rh / 2
-  // the cited range is A:B of one row — the label and the figure it belongs to
-  const BLOCK = { x: CA, w: CC - CA, h: SH.rh }
-
-  const SHEET = [
-    { label: 'Net revenue', b: '1,842', c: '1,704' },
-    { label: 'Cost of sales', b: '1,104', c: '1,040' },
-    { label: 'Gross profit', b: '738', c: '664' },
-    { label: 'Operating inc.', b: '336', c: '298' },
-    { label: 'Pricing power', b: 'Intact', c: '' },
-    { label: 'R&D', b: '214', c: '201' },
-    { label: 'Services rev', b: '612', c: '549' },
-    { label: 'Gross margin', b: '40.1%', c: '38.9%' },
-    { label: 'FX impact', b: '(18)', c: '(11)' },
-  ]
-
-  // kind as a drawn mark, so the card says its type without spending a word
-  const CardGlyph = ({ t, y, on }) => (
-    <>
-      <rect className="xv-tag" x={CARD.x + 14} y={y + 12} width="30" height="30" rx="9" />
-      <g className={on ? 'xvq-gl xvq-gl--on' : 'xvq-gl'} transform={`translate(${CARD.x + 20.75} ${y + 18.75}) scale(0.75)`}>
-        {GLYPHS[t.glyph]}
-      </g>
-    </>
-  )
-
-  // the header every card carries, open or shut: the mark and the title
-  const CardHead = ({ t, y, on }) => (
-    <>
-      <CardGlyph t={t} y={y} on={on} />
-      <text className="xv-ink" x={CARD.x + 54} y={y + 32}>{t.doc}</text>
-    </>
-  )
-
-  const CardShut = ({ t, y }) => (
-    <g>
-      <rect className="xv-panel" x={CARD.x} y={y} width={CARD.w} height={COL} rx="12" />
-      <CardHead t={t} y={y} />
-    </g>
-  )
-
-  // the open card: the header, then the passage, with the line the figure was
-  // read off banded in accent and the figure itself repeated at its right —
-  // this is the "show me where you got that" moment, drawn out
-  const CardOpen = ({ t, y }) => (
-    <g>
-      <rect className="xv-panel" x={CARD.x} y={y} width={CARD.w} height={EXP} rx="12" />
-      <rect className="xv-panel--hit" fill="none" x={CARD.x} y={y} width={CARD.w} height={EXP} rx="12" />
-      <CardHead t={t} y={y} on />
-      <line className="xv-grid" x1={CARD.x} y1={y + 58} x2={CARD.x + CARD.w} y2={y + 58} />
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 70} width="200" height="5" rx="2.5" />
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 82} width="148" height="5" rx="2.5" />
-      <rect className="xvq-band" x={CARD.x + 12} y={y + 94} width={CARD.w - 24} height="28" rx="6" />
-      <rect className="xvq-quote" x={CARD.x + 12} y={y + 94} width="2.5" height="28" />
-      <rect className="xv-bar-hit" x={CARD.x + 24} y={y + 105} width="86" height="5" rx="2.5" />
-      <text className="xvq-found" x={CARD.x + CARD.w - 16} y={y + 112} textAnchor="end">{SHEET[t.row].b}</text>
-      <rect className="xv-bar" x={CARD.x + 16} y={y + 128} width="176" height="5" rx="2.5" />
-    </g>
-  )
-
-  // the cited cell, lit in place. The sheet keeps its own row: same figure, same
-  // column, same neighbours, selected the way a spreadsheet selects a range —
-  // a wash inside an accent outline, with the row's header lit alongside it.
-  //
-  // This was an opaque accent block laid over two rows. It covered column C
-  // beside it and read as a tooltip dropped onto the sheet rather than as the
-  // sheet's own cell coming alive, which undercuts the claim: the whole point
-  // is that these are the numbers already in your workbook.
-  //
-  // The white patch under the wash is doing real work. The resting row is
-  // already drawn beneath this group, so without it the accent label and figure
-  // would sit on top of their own grey ghosts.
-  //
-  // The citation can't ride inside the cell any more without covering the row
-  // under it, so it sits on a caption line below the grid, in the same accent
-  // that marks the selection.
-  const Landing = ({ t }) => {
-    const y = rowY(t.row)
-    const r = SHEET[t.row]
-    return (
-      <g>
-        <rect className="xvq-rowlit" x={SH.x + 1} y={y} width={CA - SH.x - 1} height={SH.rh} />
-        <rect className="xvq-clear" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        <rect className="xvq-sel" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        {/* the divider between A and B, redrawn over the wash — a selected range
-            still shows its inner edges, and without this the two cells merge */}
-        <line className="xvq-seldiv" x1={CB} y1={y} x2={CB} y2={y + BLOCK.h} />
-        <rect className="xvq-selbox" x={BLOCK.x} y={y} width={BLOCK.w} height={BLOCK.h} />
-        <text className="xvq-cl xvq-lit" x={CA + 12} y={y + 17}>{r.label}</text>
-        <text className="xvq-cn xvq-lit" x={CC - 10} y={y + 17} textAnchor="end">{r.b}</text>
-        <rect className="xvq-citemark" x={CA} y={rowY(SH.n) + 11} width="7" height="7" rx="2" />
-        <text className="xvq-cite" x={CA + 13} y={rowY(SH.n) + 18}>{t.cite}</text>
-      </g>
-    )
-  }
-
+function VisualCascade() {
   return (
-    <svg className="xv" viewBox={VB} role="img" aria-hidden="true">
-      <text className="xv-mono" x={CARD.x + 2} y={22}>Every source</text>
-      <text className="xv-mono" x={SH.x} y={22}>Your workbook</text>
-
-      {/* rest state: three shut cards, and a sheet already full of figures. The
-          cells are not empty waiting to be filled — they are numbers an analyst
-          would have to take on trust until the citation arrives */}
-      {TRACES.map((t, i) => <CardShut t={t} y={cardY(i, -1)} key={t.k} />)}
-
-      <rect className="xv-panel" x={SH.x} y={SH.y} width={SH.w} height={SH.head + SH.rh * SH.n} rx="8" />
-      <rect className="xv-tag" x={SH.x + 1} y={SH.y + 1} width={SH.w - 2} height={SH.head - 1} rx="7" />
-      <text className="xvq-head" x={(CA + CB) / 2} y={SH.y + 15} textAnchor="middle">A</text>
-      <text className="xvq-head" x={(CB + CC) / 2} y={SH.y + 15} textAnchor="middle">B</text>
-      <text className="xvq-head" x={(CC + CEND) / 2} y={SH.y + 15} textAnchor="middle">C</text>
-      {[CA, CB, CC].map((x) => (
-        <line className="xv-grid" key={`v${x}`} x1={x} y1={SH.y} x2={x} y2={rowY(SH.n)} />
-      ))}
-      {SHEET.map((r, i) => (
-        <g key={r.label}>
-          <line className="xv-grid" x1={SH.x} y1={rowY(i)} x2={SH.x + SH.w} y2={rowY(i)} />
-          <text className="xvq-rn" x={(SH.x + CA) / 2} y={rowY(i) + 17} textAnchor="middle">{i + 1}</text>
-          <text className="xvq-cl" x={CA + 12} y={rowY(i) + 17}>{r.label}</text>
-          <text className="xvq-cn" x={CC - 10} y={rowY(i) + 17} textAnchor="end">{r.b}</text>
-          <text className="xvq-cn" x={CEND - 10} y={rowY(i) + 17} textAnchor="end">{r.c}</text>
-        </g>
-      ))}
-
-      {/* One trace lit at a time. Each redraws the whole left column in its own
-          open state over an opaque ground, rather than animating the cards into
-          position: the beats already cross-fade, so a fade between two finished
-          layouts is what the eye gets either way, and this keeps the geometry
-          arithmetic instead of a stack of per-card keyframes.
-          Timing in .xvq-trace, index.css. */}
-      {TRACES.map((t, i) => (
-        <g className={`xvq-trace xvq-trace--${i}`} key={`trace-${t.k}`}>
-          <rect className="xvq-back" x="14" y="26" width={CARD.w + 20} height="282" />
-          {TRACES.map((u, j) => (
-            j === i
-              ? <CardOpen t={u} y={cardY(j, i)} key={u.k} />
-              : <CardShut t={u} y={cardY(j, i)} key={u.k} />
+    <div className="xvk xvk--ink" aria-hidden="true">
+      {/* the step, named. One pill; the three labels sit on top of one another
+          and cross-fade, and the mark beside them turns from a spinner into a
+          check as each number lands */}
+      <div className="xvk-status">
+        <span className="xvk-ico">
+          <span className="xvk-spin" />
+          <span className="xvk-check">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+            </svg>
+          </span>
+        </span>
+        <span className="xvk-labels">
+          {SOURCES.map((s, i) => (
+            <span className={`xvk-lbl xvk-lbl--${i}`} style={{ '--i': i }} key={s.k}>{s.status}</span>
           ))}
-          {/* stops at the sheet's outer edge rather than at the selection: the
-              row-number gutter sits between the two, and a line run through it
-              crosses the row number on its way in. The lit gutter carries the
-              eye the rest of the way. */}
-          <path
-            className="xvq-conn"
-            d={`M${BX + BR + 2} ${cardMid(i)} C ${BX + BR + 44} ${cardMid(i)}, ${SH.x - 46} ${cellMid(t.row)}, ${SH.x - 2} ${cellMid(t.row)}`}
-          />
-          <Landing t={t} />
-          {/* the arrow points back at the card, not forward at the cell: the
-              claim is that the figure traces to where it came from */}
-          <circle className="xvq-badge" cx={BX} cy={cardMid(i)} r={BR} />
-          <path
-            className="xvq-mark"
-            d={`M${BX + 5} ${cardMid(i)} h-8 M${BX - 0.5} ${cardMid(i) - 3.5} l-3.5 3.5 l3.5 3.5`}
-          />
-        </g>
+        </span>
+      </div>
+
+      {/* the sources, stacked like open windows: each one rises in a step
+          down and right of the last, its page resolves as it is read, and the
+          passage that carries the number lights up. The ones behind keep their
+          tabs showing and go quiet. */}
+      {SOURCES.map((s, i) => (
+        <article className={`xvk-card xvk-src xvk-src--${i}`} style={{ '--i': i }} key={s.k}>
+          <CardTab c={s} />
+          <div className="xvk-body xvk-doc">
+            {/* the page content fades as the card falls back; the wrapper
+                takes that fade so the body (and the stroke it carries in the
+                ink tone) stays put, or the card behind loses its edges */}
+            <div className="xvk-page">
+              <p className="xvk-kicker">{s.kicker}</p>
+              <span className="xvk-line" />
+              <span className="xvk-line xvk-line--short" />
+              <div className="xvk-ex"><span className="xvk-line" /><b>{s.value}</b></div>
+              <span className="xvk-line xvk-line--short" />
+            </div>
+          </div>
+        </article>
       ))}
-    </svg>
+
+      {/* the workbook. Stays put; the traced cells fill on their beat and the
+          provenance line under the grid names the source each time */}
+      <article className="xvk-card xvk-book">
+        <CardTab c={BOOK} />
+        <div className="xvk-body xvk-sheet">
+          <div className="xvk-srow xvk-srow--cols">
+            <span className="xvk-rn" /><span>A</span><span>B</span><span>C</span>
+          </div>
+          {ROWS.map(([label, b, c], r) => (
+            <div className="xvk-srow" key={label}>
+              <span className="xvk-rn">{r + 1}</span>
+              <span className="xvk-sl">{label}</span>
+              {[['B', b], ['C', c]].map(([col, v]) => {
+                const h = hitAt(r + 1, col)
+                return h < 0
+                  ? <span className="xvk-num" key={col}>{v}</span>
+                  : (
+                    <span className={`xvk-num xvk-hit xvk-hit--${h}`} style={{ '--i': h }} key={col}>
+                      {SOURCES[h].value}<i className="xvk-ring" />
+                    </span>
+                  )
+              })}
+            </div>
+          ))}
+          <div className="xvk-prov">
+            <i />
+            <span className="xvk-labels">
+              {SOURCES.map((s, i) => (
+                <span className={`xvk-lbl xvk-foot xvk-foot--${i}`} key={s.k}>{s.prov}</span>
+              ))}
+            </span>
+          </div>
+        </div>
+      </article>
+    </div>
   )
 }
 
 function VisualAudit() {
   return (
     <div className="xvc">
-      <VisualCited />
+      <VisualCascade />
       <PillRow items={CITED_KINDS} className="xvi-grid--tight" />
     </div>
   )
@@ -458,9 +417,9 @@ function VisualEnterprise() {
    own animation rather than shared: a single interval short enough for the
    still visuals cut the animated ones off part-way through, and one long enough
    for the animated ones parked the still ones on screen with nothing happening.
-   The audit trace is the constraint — its loop runs three beats over 9s (one
-   per source; see .xvq-trace in index.css), and at the 4.2s every claim used to
-   get, the last two beats never played at all. */
+   The audit cascade is the constraint — it loops three beats over 9s (one per
+   source; see the .xvk-* keyframes in index.css), and at the 4.2s every claim
+   used to get, the last two beats never played at all. */
 const PILLARS = [
   {
     key: 'workflows',
@@ -475,9 +434,9 @@ const PILLARS = [
     title: 'Fully auditable',
     body: 'Public sources or your own internal files, every number traced to where it came from',
     Visual: VisualAudit,
-    // all three beats of the 9s citation cycle, so every source gets shown
-    // landing; the swap comes in the quiet after the third rather than cutting
-    // into the next cycle's first beat
+    // all three beats of the 9s trace, so the tracker gets its turn in the workbook;
+    // the swap comes as the loop fades rather than cutting into the next
+    // cycle's first beat
     ms: 9000,
   },
   {

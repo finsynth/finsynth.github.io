@@ -9,5 +9,8 @@
       <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#0B1E63" flood-opacity="0.34"/>
     </filter>
   </defs>
-  <rect x="106" y="74" width="908" height="1032" rx="22" fill="#fff" filter="url(#lift)"/>
+  <!-- 6% inset per side (67/1120). Was 106 (9.5%): at a 608px stage that left
+       a 493px card that the visuals filled edge to edge, pills and cards
+       touching the white. the x4e-card-inset custom property on .x4e-stage mirrors this figure. -->
+  <rect x="67" y="74" width="986" height="1032" rx="22" fill="#fff" filter="url(#lift)"/>
 </svg>

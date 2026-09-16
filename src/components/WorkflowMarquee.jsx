@@ -23,6 +23,10 @@ const WORKFLOWS = [
   'Sector mapping',
   'Portfolio monitoring',
   'Thesis testing',
+  'Update models',
+  'Watchlist monitoring',
+  'Get up to speed',
+  'DCF builds',
 ]
 
 function Tick() {
