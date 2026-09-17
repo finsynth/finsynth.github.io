@@ -910,6 +910,8 @@ button.play { border: none; padding: 0; appearance: none }
      footer's edges, so the band carries its own side padding inside the wrap
      (the ≤900 rules zero it again, where the columns stack) */
   padding: 0 40px 8px; margin-bottom: 8px;
+  /* size container: the headline below sizes itself off this band's width */
+  container-type: inline-size;
 }
 /* LEFT — logo, headline and CTA as one aligned lockup */
 .foot-lockup {
@@ -976,7 +978,14 @@ button.play { border: none; padding: 0; appearance: none }
    footer's own lockup, not a section of the page. */
 .foot-cta-copy h3 {
   font-family: var(--font-body); font-weight: 500;
-  font-size: clamp(30px, 3.4vw, 46px); line-height: 1.08;
+  /* Beside the nav the headline is the lockup's widest line, so its size is
+     what decides whether the two collide (feedback at 1275: "the words are
+     colliding"). Second term is the room the nav leaves: the band's width
+     less the 555px grid, its 32px overhang into the wrap padding and a 48px
+     breathing gap, divided by the headline's measured 8.68px of width per
+     font px. 3.4vw still governs where there is room to spare. */
+  font-size: clamp(30px, min(3.4vw, (100cqw - 571px) / 8.68), 46px);
+  line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
 /* Stacked footer: the heading tracks the viewport so its wide line keeps
@@ -1867,12 +1876,16 @@ button.play { border: none; padding: 0; appearance: none }
 .cl-checkout-root { position: relative; z-index: 1200; }
 
 /* ════════ RESPONSIVE ════════ */
-/* Footer stacks (lockup above, nav below) from 1100 down, not 900: the lockup
-   keeps its ~375px and below 1100 the nav is left with under 460px, where
-   three columns can't hold "MCP (coming soon)" on one line. */
-@media (max-width: 1100px) {
+/* Footer stacks (lockup above, nav below) from 1300 down. The 1100 this used
+   to be predates the Social column: the four-column nav is 555px, and the
+   lockup can't shrink under the 311px of its two buttons, so below ~1300 the
+   two are left with less than 48px between them however small the headline. */
+@media (max-width: 1300px) {
   .foot-cols { flex-direction: column; gap: 56px; padding-inline: 0 }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
+  /* stacked, the headline has the whole width, so the nav term above no
+     longer applies */
+  .foot-cta-copy h3 { font-size: clamp(30px, 3.4vw, 46px) }
   /* stacked under the lockup the nav has the full width, so the four columns
      spread across it rather than huddling at the left; each keeps its longest
      link's width so nothing wraps mid-label */
