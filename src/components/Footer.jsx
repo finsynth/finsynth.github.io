@@ -168,6 +168,7 @@ export default function Footer() {
               </div>
               <div>
                 <h4>Company</h4>
+                <a href="/#pricing">Pricing</a>
                 <a href="/careers">Careers</a>
                 <a href="/support">Support</a>
                 {/* the company's posture (SOC 2, GDPR, ISO), not a product feature */}
