@@ -1750,14 +1750,16 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: clamp(24px, 2.4vw, 34px); line-height: 1.12;
   letter-spacing: var(--ls-display); color: #fbfbf9; max-width: 30ch;
 }
-/* two abreast — four short items in one column left a tall thin stack beside a
-   diagram that is nearly square, so the panel ran deeper than it had copy for */
+/* one column: two abreast wrapped "Custom contracts and SLAs" onto a second
+   line once the copy column narrowed below about 1300px, which dropped its tick
+   out of line with the one beside it and broke the rows' rhythm. Four items
+   down the left line up at every width; the extra height is one line. */
 /* the top margin is the break between the pitch and what the tier includes —
    it carries the whole gap, since .ent-copy's own gap sets the line rhythm */
 .ent-list {
   list-style: none; padding: 0; margin: 22px 0 0; align-self: stretch;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 28px;
+  display: grid; grid-template-columns: 1fr;
+  gap: 12px;
 }
 .ent-list li {
   display: flex; align-items: center; gap: 10px;
@@ -1816,7 +1818,6 @@ button.play { border: none; padding: 0; appearance: none }
      size down and a looser line brings it back to three lines that read as
      one sentence rather than a stack. */
   .ent-lede { font-size: 22px; line-height: 1.24 }
-  .ent-list { grid-template-columns: 1fr; gap: 12px }
   .ent-cta { align-self: stretch; text-align: center }
 }
 /* phones: one size step down across the whole panel - type, checklist,
