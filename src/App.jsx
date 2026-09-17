@@ -15,6 +15,12 @@ const APPEARANCE = {
     fontFamily: "'Geist', -apple-system, system-ui, sans-serif",
     borderRadius: '12px',
   },
+  // Buttons on this site sit at 8px (nav sign-in, nav CTA, .plan-card-cta);
+  // only the cards keep the 12px variable above. Keyed by Clerk's element
+  // name, not its class, so it survives their internal renames.
+  elements: {
+    pricingTableCardFooterButton: { borderRadius: '8px' },
+  },
 }
 
 function App() {
