@@ -21,11 +21,11 @@ export const TALLY_FORM_ID = import.meta.env?.VITE_TALLY_FORM_ID || 'GxEy8Q'
 
 
 export const ABOUT_US =
-  'FinSynth is building auditable AI research infrastructure for public ' +
-  'markets. Its AI agent helps hedge funds, asset managers, family offices and ' +
-  'sell-side teams execute complex institutional-grade workflows while tracing ' +
-  'every output back to its source, across more than 12,000 global companies. ' +
-  'FinSynth is backed by Accel, hedge fund founders and portfolio managers.'
+  'FinSynth is building auditable AI research infrastructure for investment ' +
+  'research teams. Its AI agent helps teams execute complex research workflows ' +
+  'while tracing every output back to its source, making AI-generated research ' +
+  'verifiable and decision-ready. FinSynth is backed by Accel and industry ' +
+  'veterans.'
 
 // Each role: `about` opens the posting; `sections` are rendered in order as a
 // heading, an optional intro line, and a bullet list. A bullet's optional
