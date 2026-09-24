@@ -5124,12 +5124,12 @@ button.play { border: none; padding: 0; appearance: none }
   /* the inline stage spans its row edge to edge, hung off the bottom of the
      copy on the hairline the next row draws. Height comes from the visual, so
      the flat 28/20 padding below would leave the visual over the drawn card's
-     edge — % on both axes tracks the card's own inset the way desktop does */
-  .x4e-stage--inline {
-    min-height: 0; border-top: 1px solid var(--hair);
-    content-visibility: auto;
-    contain-intrinsic-size: auto 300px;
-  }
+     edge — % on both axes tracks the card's own inset the way desktop does.
+     No content-visibility here: its placeholder size (contain-intrinsic-size
+     sets width as well as height) held every row at 300px wide, clipping all
+     four cards on the right below ~342px (phones with page zoom), and in iOS
+     Safari the skipped .xvs container left the seals' cqw type at zero. */
+  .x4e-stage--inline { min-height: 0; border-top: 1px solid var(--hair) }
   /* side inset: the card's own edge plus a 4.5% gutter, the same shape as the
      desktop rule so the content clears the white's edge by the same margin */
   .x4e-stage--inline .x4e-visual { padding: 7% calc(var(--x4e-card-inset) + 4.5%) }
