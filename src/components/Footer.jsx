@@ -164,7 +164,7 @@ export default function Footer() {
                 <a href="/#fia-agent">Fia</a>
                 {/* straight after Fia (feedback), and not a link until it ships
                     (same treatment as the navbar) */}
-                <span className="foot-soon">MCP (coming soon)</span>
+                <span className="foot-soon">FinSynth MCP<br className="foot-soon-br" />{' '}(coming soon)</span>
               </div>
               <div>
                 <h4>Company</h4>

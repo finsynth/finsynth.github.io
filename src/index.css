@@ -1039,6 +1039,8 @@ button.play { border: none; padding: 0; appearance: none }
   display: block; width: max-content; font-family: var(--font-body); font-size: var(--fs-body);
   color: #7F8BA3; margin-bottom: 15px; cursor: default;
 }
+/* one line here; phones break before "(coming soon)" (see 640px block) */
+.foot-soon-br { display: none }
 /* © line — centred in front of the wordmark's lower half (the Hebbia footer's
    move). Absolute inside .foot-wordmark, above the letters in z-order; the
    wordmark's fill fades toward the bottom so the line stays legible. */
@@ -1939,6 +1941,10 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; column-gap: 12px; width: 100% }
   .foot-grid-new a,
   .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
+  /* "FinSynth MCP (coming soon)" on one line widens the Product column
+     toward the row's edge at 375; split at the status so the column stays no wider
+     than "FinSynth for Excel" */
+  .foot-soon-br { display: inline }
   /* the © line moves above the letters here. At 20vw there is no band of the
      wordmark tall enough to fade behind a centred line and still read as
      letters, so on phones the line sits in the flow and the wordmark shows in

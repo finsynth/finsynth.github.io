@@ -9,7 +9,7 @@ const PRODUCTS = [
   { key: 'excel', label: 'FinSynth for Excel', href: '/#excel' },
   { key: 'fia', label: 'Fia', href: '/#fia-agent' },
   // listed ahead of launch so the menu shows the roadmap; no page to send to yet
-  { key: 'mcp', label: 'MCP (coming soon)', soon: true },
+  { key: 'mcp', label: 'FinSynth MCP (coming soon)', soon: true },
 ];
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
