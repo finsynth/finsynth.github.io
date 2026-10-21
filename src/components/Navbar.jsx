@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/react';
 import useMediaQuery from '../hooks/useMediaQuery';
+import { Landmark, Building2, ChartCandlestick, Briefcase } from 'lucide-react';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
+import { SEGMENTS } from '../data/segments';
 import { SIGNIN_HREF, APP_HREF } from './AskParts';
 
 
@@ -11,6 +13,20 @@ const PRODUCTS = [
   // listed ahead of launch so the menu shows the roadmap; no page to send to yet
   { key: 'mcp', label: 'FinSynth MCP (coming soon)', soon: true },
 ];
+
+// Who FinSynth is for, by desk. The names are the hero headline's own
+// rotating segments (data/segments.js) so the menu and the h1 can't disagree;
+// Family Offices is left out of the menu on purpose. There are no per-segment
+// pages yet, so every entry lands on the why-FinSynth section for now.
+const SOLUTION_BLURBS = {
+  'Hedge Funds':    { icon: Landmark,         desc: 'Alpha generation and signal research' },
+  'Asset Managers': { icon: Building2,        desc: 'IC memos and portfolio monitoring' },
+  'Private Equity': { icon: ChartCandlestick, desc: 'Deal sourcing and diligence' },
+  'Sell Side':      { icon: Briefcase,        desc: 'Pitch books and sector coverage' },
+};
+const SOLUTIONS = SEGMENTS
+  .filter((name) => name in SOLUTION_BLURBS)
+  .map((name) => ({ key: name.toLowerCase().replace(/\s+/g, '-'), label: name, href: '/#why-finsynth', ...SOLUTION_BLURBS[name] }));
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
 // disagree about what's open; each links to its posting on /careers.
@@ -29,8 +45,38 @@ const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleH
  * own boolean (`flatOpen`/`onToggle`) instead of the bar's single open-menu
  * id: in the sheet both groups can sit expanded at once.
  */
-function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, onNavigate }) {
+function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, onNavigate, grid }) {
   const isOpen = flat ? flatOpen : open === id;
+
+  // One entry. A plain item is a single line; one carrying `icon`/`desc`
+  // (the Solutions menu) is an icon beside a title with a one-line blurb under
+  // it. `soon` entries are listed but go nowhere.
+  const renderItem = (it, onClick) => {
+    if (it.soon) {
+      return (
+        <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
+          {it.label}
+        </span>
+      );
+    }
+    if (it.icon) {
+      const Icon = it.icon;
+      return (
+        <a key={it.key} className="nav-drop-item nav-drop-item--rich" href={it.href} onClick={onClick}>
+          <span className="nav-drop-ico" aria-hidden="true"><Icon strokeWidth={1.6} /></span>
+          <span className="nav-drop-text">
+            <span className="nav-drop-title">{it.label}</span>
+            <span className="nav-drop-desc">{it.desc}</span>
+          </span>
+        </a>
+      );
+    }
+    return (
+      <a key={it.key} className="nav-drop-item" href={it.href} onClick={onClick}>
+        {it.label}
+      </a>
+    );
+  };
 
   if (flat) {
     return (
@@ -48,17 +94,7 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
         </button>
         <div className="nav-drop-fold">
           <div className="nav-drop-fold-inner">
-            {items.map((it) => (
-              it.soon ? (
-                <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
-                  {it.label}
-                </span>
-              ) : (
-                <a key={it.key} className="nav-drop-item" href={it.href} onClick={onNavigate}>
-                  {it.label}
-                </a>
-              )
-            ))}
+            {items.map((it) => renderItem(it, onNavigate))}
           </div>
         </div>
       </div>
@@ -84,23 +120,8 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
         </svg>
       </button>
       <div className="nav-drop-menu">
-        <div className="nav-drop-card">
-          {items.map((it) => (
-            it.soon ? (
-              <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
-                {it.label}
-              </span>
-            ) : (
-              <a
-                key={it.key}
-                className="nav-drop-item"
-                href={it.href}
-                onClick={() => setOpen(null)}
-              >
-                {it.label}
-              </a>
-            )
-          ))}
+        <div className={`nav-drop-card${grid ? ' nav-drop-card--grid' : ''}`}>
+          {items.map((it) => renderItem(it, () => setOpen(null)))}
         </div>
       </div>
     </div>
@@ -111,13 +132,13 @@ export default function Navbar() {
     const { isSignedIn: signedIn } = useUser();
     
   const [hidden, setHidden] = useState(false);
-  // which desktop menu is open, by id — 'product' | 'careers' | null
+  // which desktop menu is open, by id — 'product' | 'solutions' | 'careers' | null
   const [openMenu, setOpenMenu] = useState(null);
   // the sheet's disclosure rows are independent of each other, so a set rather
   // than a single id — both groups can sit expanded at once. They start (and
   // reopen) expanded: the links are what the sheet is opened for, so they
   // shouldn't hide behind a second tap. A tap on the title still folds one away.
-  const allFlats = () => new Set(['product', 'careers']);
+  const allFlats = () => new Set(['product', 'solutions', 'careers']);
   const [openFlats, setOpenFlats] = useState(allFlats);
   const toggleFlat = (id) =>
     setOpenFlats((prev) => {
@@ -286,6 +307,7 @@ export default function Navbar() {
             hidden={!sheetOpen}
           >
             <NavDrop id="product" label="Product" items={PRODUCTS} flat flatOpen={openFlats.has('product')} onToggle={() => toggleFlat('product')} onNavigate={closeSheet} />
+            <NavDrop id="solutions" label="Solutions" items={SOLUTIONS} flat flatOpen={openFlats.has('solutions')} onToggle={() => toggleFlat('solutions')} onNavigate={closeSheet} />
             <a className="nav-link" href="/#security" onClick={closeSheet}>Security</a>
             <a className="nav-link" href="/#pricing" onClick={closeSheet}>Pricing</a>
             <a className="nav-link" href="/#faq" onClick={closeSheet}>FAQ</a>
@@ -305,6 +327,8 @@ export default function Navbar() {
         ) : (
           <div className="navbar-links" ref={linksRef}>
             <NavDrop id="product" label="Product" items={PRODUCTS} open={openMenu} setOpen={setOpenMenu} />
+            {/* two columns of desk + blurb, so it opens as a wide card rather than a list */}
+            <NavDrop id="solutions" label="Solutions" items={SOLUTIONS} open={openMenu} setOpen={setOpenMenu} grid />
             <a className="nav-link" href="/#security">Security</a>
             <a className="nav-link" href="/#pricing">Pricing</a>
             <a className="nav-link" href="/#faq">FAQ</a>

@@ -7,14 +7,8 @@ import TileMosaicCanvas from './TileMosaicCanvas'
 import DotBridgeCanvas from './DotBridgeCanvas'
 import BayBridgePixelCanvas from './BayBridgePixelCanvas'
 import { MatrixDecode } from '@/components/remocn/matrix-decode'
+import { SEGMENTS } from '../data/segments'
 
-const SEGMENTS = [
-  'Hedge Funds',
-  'Asset Managers',
-  'Private Equity',
-  'Family Offices',
-  'Sell Side',
-]
 
 const TYPE_MS = 28      // per character
 const HOLD_MS = 1500    // full word on screen

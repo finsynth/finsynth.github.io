@@ -334,6 +334,64 @@ img, video, svg, picture {
   background: var(--accent-soft);
 }
 
+/* ── Solutions menu: a two-column card of desk + one-line blurb, each row led
+   by a line icon in the brand blue. Same card as the list menus, just wider
+   and on a grid, so the two columns read as one surface. */
+.nav-drop-card--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  /* wide enough that every blurb holds one line; on the narrowest desktop the
+     card would run off the right edge, so it gives way and the blurbs wrap */
+  width: 42rem;
+  max-width: calc(100vw - 20rem);
+  padding: 8px;
+  border-radius: 14px;
+}
+
+.nav-drop-item--rich {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  white-space: normal;
+}
+
+.nav-drop-ico {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
+.nav-drop-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.nav-drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nav-drop-title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.nav-drop-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--secondary);
+}
+
 /* an entry that isn't live yet — listed so the roadmap reads in the menu, but
    it goes nowhere, so no hover face and no pointer */
 .nav-drop-item.is-soon,
@@ -463,6 +521,12 @@ img, video, svg, picture {
   padding: 0.625rem 0.75rem 0.625rem 1.375rem;
   font-size: 1rem;
 }
+/* in the sheet a rich row keeps its icon and blurb, at the sheet's own size */
+.navbar-sheet .nav-drop-item--rich {
+  padding: 0.625rem 0.75rem 0.625rem 1.375rem;
+}
+.navbar-sheet .nav-drop-title { font-size: 1rem; }
+.navbar-sheet .nav-drop-desc { font-size: 0.875rem; }
 /* an expanded row sits at rest in the plain face: the rows start open, so the
    desktop trigger's open tint would read as a button stuck in hover. The
    turned caret marks open; the tint is reserved for an actual pointer... */
