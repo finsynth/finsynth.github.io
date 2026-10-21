@@ -4,6 +4,7 @@ import useMediaQuery from '../hooks/useMediaQuery';
 import { Landmark, Building2, ChartCandlestick, Briefcase } from 'lucide-react';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 import { SEGMENTS } from '../data/segments';
+import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '../data/solutions';
 import { SIGNIN_HREF, APP_HREF } from './AskParts';
 
 
@@ -17,16 +18,20 @@ const PRODUCTS = [
 // Who FinSynth is for, by desk. The names are the hero headline's own
 // rotating segments (data/segments.js) so the menu and the h1 can't disagree;
 // Family Offices is left out of the menu on purpose. There are no per-segment
-// pages yet, so every entry lands on the why-FinSynth section for now.
+// pages for the desks that have one (data/solutions.js); the rest land on the
+// why-FinSynth section until theirs exists.
 const SOLUTION_BLURBS = {
   'Hedge Funds':    { icon: Landmark,         desc: 'Alpha generation and signal research' },
   'Asset Managers': { icon: Building2,        desc: 'IC memos and portfolio monitoring' },
-  'Private Equity': { icon: ChartCandlestick, desc: 'Deal sourcing and diligence' },
+  'Private Equity': { icon: ChartCandlestick, desc: 'LBO build, underwriting and IC decks' },
   'Sell Side':      { icon: Briefcase,        desc: 'Pitch books and sector coverage' },
 };
 const SOLUTIONS = SEGMENTS
   .filter((name) => name in SOLUTION_BLURBS)
-  .map((name) => ({ key: name.toLowerCase().replace(/\s+/g, '-'), label: name, href: '/#why-finsynth', ...SOLUTION_BLURBS[name] }));
+  .map((name) => {
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    return { key: slug, label: name, href: slug in SOLUTION_PAGES ? solutionHref(slug) : '/#why-finsynth', ...SOLUTION_BLURBS[name] };
+  });
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
 // disagree about what's open; each links to its posting on /careers.
