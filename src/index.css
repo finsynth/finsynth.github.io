@@ -5657,3 +5657,257 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-grid-new a,
   .foot-soon { width: auto; white-space: normal; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOLUTIONS PAGES (/solutions/<slug>) — src/pages/Solution.jsx
+   One page per desk. Hero, the site's metrics band, four workflow rows that
+   alternate copy and a drawn product panel on the enterprise blue, then the
+   closing CTA. The drawn panels size everything in em off a stage whose
+   font-size tracks the column width, so a phone gets the same picture smaller
+   rather than a re-flowed one (see .sol-stage).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sol-page { padding-top: var(--navbar-height); background: var(--bg); }
+
+.sol-eyebrow {
+  margin: 0 0 14px;
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--accent);
+}
+
+/* ── hero ── the home hero's headline recipe, with the office photo at right
+   where the home page runs its pixel canvas */
+.sol-hero {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px);
+  align-items: center; padding-top: clamp(48px, 7vh, 88px); padding-bottom: clamp(40px, 6vh, 72px);
+}
+.sol-hero-copy { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+.sol-hero-title {
+  margin: 0 0 20px;
+  font-family: var(--font-body); font-weight: 500; line-height: 1.12;
+  font-size: clamp(34px, 3.4vw, 54px); letter-spacing: var(--ls-display); color: var(--ink);
+  text-wrap: balance;
+}
+.sol-hero-lede {
+  margin: 0 0 28px; max-width: 46ch;
+  font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--secondary);
+}
+.sol-hero-ctas { display: flex; flex-wrap: wrap; gap: 12px }
+.sol-hero-ctas .hero-s2-cta { margin: 0 }
+.sol-hero-photo {
+  position: relative; aspect-ratio: 5 / 4; border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--hair); background: var(--surface);
+  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .12s both;
+}
+.sol-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) }
+
+/* ── metrics ── the home page's band, framed on all four sides since nothing
+   sits on top of it here */
+.sol-stats { padding-bottom: clamp(56px, 8vh, 104px) }
+.sol-stats-band { border: 1px solid var(--hair); border-radius: 14px; background: var(--surface); overflow: hidden }
+.sol-stats-lead {
+  margin: 0; padding: clamp(24px, 3vh, 34px) clamp(32px, 3.8vw, 60px) 0;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; color: var(--ink);
+}
+.sol-stats .wac-num { opacity: 0 }
+.sol-stats.is-in .wac-num { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
+
+/* ── workflow rows ── */
+.sol-works { display: flex; flex-direction: column; gap: clamp(56px, 8vh, 112px); padding-bottom: clamp(56px, 8vh, 112px) }
+.sol-work {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 88px);
+  align-items: center;
+}
+.sol-work--flip .sol-work-copy { order: 2 }
+.sol-work--flip .sol-work-visual { order: 1 }
+.sol-work-copy h2 {
+  margin: 0 0 16px;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(28px, 2.8vw, 40px); line-height: 1.1; color: var(--ink);
+}
+.sol-work-copy p:not(.sol-eyebrow) { margin: 0; font-size: 16px; line-height: 1.6; color: var(--secondary); max-width: 46ch }
+.sol-reveal { opacity: 0 }
+.sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
+@media (prefers-reduced-motion: reduce) {
+  .sol-reveal, .sol-stats .wac-num, .sol-hero-copy, .sol-hero-photo { opacity: 1; animation: none }
+}
+
+/* the blue ground every panel sits on: .ent-panel's recipe */
+.sol-work-visual { container-type: inline-size; min-width: 0 }
+.sol-stage {
+  --stage-pad: 2.4em;
+  font-size: clamp(6px, 1.75cqw, 11.5px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.6em;
+  padding: var(--stage-pad); border-radius: 14px; aspect-ratio: 16 / 11;
+  background-color: var(--accent);
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(206deg, #16299B 0%, #3550C8 46%, #4A6BE0 100%);
+  background-size: 320px 320px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: overlay, normal, normal;
+  color: var(--ink); font-family: var(--font-body);
+}
+.sol-panel {
+  display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
+  background: #fff; border-radius: .9em; padding: 1.6em 1.7em;
+  box-shadow: 0 1.2em 3em rgba(6, 16, 50, .28), 0 0 0 1px rgba(255,255,255,.18);
+}
+.sol-panel h4 { margin: 0; font-size: 1.25em; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2 }
+.sol-panel-sub { margin: .3em 0 0; font-size: 1em; color: var(--muted); line-height: 1.3 }
+.sol-panel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em }
+.sol-pill {
+  display: inline-block; padding: .35em .8em; border-radius: 99em; white-space: nowrap;
+  font-family: var(--font-mono); font-size: .85em; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+}
+
+/* assumptions sliders */
+.sol-assume { gap: 0 }
+.sol-slider { margin-top: 1.9em }
+.sol-slider-row { display: flex; justify-content: space-between; font-size: 1.05em; margin-bottom: .55em }
+.sol-slider-row b { font-weight: 500; font-variant-numeric: tabular-nums }
+.sol-slider-track { position: relative; height: .4em; border-radius: 99em; background: #EAECF0 }
+.sol-slider-track i { position: absolute; inset: 0 auto 0 0; border-radius: 99em; background: var(--accent) }
+.sol-slider-track em {
+  position: absolute; top: 50%; width: 1.3em; height: 1.3em; border-radius: 50%; transform: translate(-50%, -50%);
+  background: #fff; border: 2px solid var(--accent); box-shadow: 0 .1em .3em rgba(0,0,0,.15);
+}
+.sol-assume-hyp {
+  margin: auto 0 0; padding: 1.1em 1.2em; border-radius: .7em; background: var(--bg);
+  font-size: .98em; line-height: 1.45; color: var(--secondary);
+}
+.sol-assume-hyp b { display: block; color: var(--ink); font-weight: 500; margin-bottom: .2em }
+
+/* bridge chart + returns */
+.sol-bridge { width: 100%; height: auto; margin-top: 1.2em; font-family: var(--font-mono); overflow: visible }
+.sol-bridge-bar { fill: var(--accent) }
+.sol-bridge-step { fill: #8EA2EA }
+.sol-bridge-val { font-size: 9.5px; fill: var(--ink); font-family: var(--font-body); font-weight: 500 }
+.sol-bridge-lbl { font-size: 7.5px; fill: var(--muted); letter-spacing: .02em }
+.sol-returns {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; margin: auto 0 0; padding-top: 1.2em;
+  border-top: 1px solid var(--hair);
+}
+.sol-returns dt { font-family: var(--font-mono); font-size: .8em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+.sol-returns dd { margin: .25em 0 0; font-size: 1.6em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
+
+/* driver tree */
+.sol-tree { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4em; align-items: center; margin: 1.8em 0; flex: 1 }
+.sol-tree-col { display: flex; flex-direction: column; gap: 1.2em; justify-content: center; position: relative }
+.sol-tree-col + .sol-tree-col::before {
+  content: ''; position: absolute; left: -1.4em; top: 50%; width: 1.4em; height: 1px; background: #C9D0DB;
+}
+.sol-node {
+  display: flex; flex-direction: column; gap: .2em; padding: .9em 1em; border-radius: .6em;
+  border: 1px solid var(--hair); background: #fff;
+}
+.sol-node small { font-size: .85em; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-family: var(--font-mono) }
+.sol-node b { font-size: 1.3em; font-weight: 500; letter-spacing: -0.01em; font-variant-numeric: tabular-nums }
+.sol-node--sum { border-color: #C9D3F5; background: var(--accent-soft) }
+.sol-node--out { border-color: var(--accent); background: var(--accent); color: #fff }
+.sol-node--out small { color: rgba(255,255,255,.75) }
+.sol-tree-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 1.1em; border-top: 1px solid var(--hair); font-size: 1.05em }
+
+/* the Fia thread */
+.sol-fia { padding: 0 }
+.sol-fia-head {
+  display: flex; align-items: center; gap: .6em; padding: 1.1em 1.6em; border-bottom: 1px solid var(--hair);
+  font-size: 1.05em; font-weight: 500;
+}
+.sol-fia-dot { width: .7em; height: .7em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
+.sol-fia-body { flex: 1; padding: 1.4em 1.6em; display: flex; flex-direction: column; gap: 1.1em; font-size: 1.05em; line-height: 1.4 }
+.sol-fia-ask {
+  margin: 0; align-self: flex-end; max-width: 88%; padding: .8em 1.1em; border-radius: 1em 1em .25em 1em;
+  background: var(--accent); color: #fff;
+}
+.sol-fia-note { margin: 0; color: var(--secondary) }
+.sol-fia-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5em }
+.sol-fia-rows li { display: flex; justify-content: space-between; padding: .65em .9em; border-radius: .5em; background: var(--bg) }
+.sol-fia-rows b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }
+.sol-fia-result { margin: 0; display: flex; gap: .5em; align-items: flex-start; color: var(--ink); font-weight: 500 }
+.sol-fia-result svg { width: 1.3em; height: 1.3em; flex: none; color: #12A150; margin-top: .05em }
+.sol-fia-flag {
+  margin: 0; display: flex; gap: .6em; align-items: flex-start; padding: .8em 1em; border-radius: .5em;
+  background: #FFF7E6; color: #7A4B00;
+}
+.sol-fia-flag-tag {
+  flex: none; padding: .2em .55em; border-radius: .35em; background: #FFE2A8;
+  font-family: var(--font-mono); font-size: .8em; letter-spacing: .05em; text-transform: uppercase; margin-top: .15em;
+}
+.sol-fia-composer {
+  display: flex; justify-content: space-between; align-items: center; margin: 0 1.6em 1.4em;
+  padding: .8em 1em; border-radius: .7em; border: 1px solid var(--hair); color: var(--muted); font-size: 1em;
+}
+.sol-fia-composer i { width: 1.6em; height: 1.6em; border-radius: .4em; background: var(--accent) }
+
+/* spreadsheet + deck */
+.sol-sheet, .sol-deck { padding: 0 }
+.sol-sheet-title { padding: 1em 1.4em; font-size: 1em; font-weight: 500; border-bottom: 1px solid var(--hair) }
+.sol-sheet-fx {
+  display: grid; grid-template-columns: auto auto 1fr; gap: 1em; padding: .55em 1.4em; border-bottom: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .85em; color: var(--muted); white-space: nowrap; overflow: hidden;
+}
+.sol-sheet-fx span:first-child { color: var(--ink) }
+.sol-sheet table { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
+.sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
+.sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
+.sol-sheet-ok { color: #12A150 }
+.sol-sheet-total td { font-weight: 500; background: var(--accent-soft) }
+.sol-sheet-tabs {
+  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .7em 1.4em; border-top: 1px solid var(--hair);
+  font-size: .9em; color: var(--muted);
+}
+.sol-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
+.sol-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
+.sol-sheet-tabs em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .9em }
+
+.sol-deck-body { display: grid; grid-template-columns: 3.4em 1fr; flex: 1; min-height: 0 }
+.sol-deck-rail { list-style: none; margin: 0; padding: 1em .6em; display: flex; flex-direction: column; gap: .7em; border-right: 1px solid var(--hair); background: #FAFAFA }
+.sol-deck-rail li { display: flex; align-items: center; gap: .3em; font-family: var(--font-mono); font-size: .75em; color: var(--muted) }
+.sol-deck-rail li i { flex: 1; height: 1.6em; border-radius: .25em; border: 1px solid var(--hair); background: #fff }
+.sol-deck-rail li.is-on i { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) }
+.sol-slide { display: flex; flex-direction: column; padding: 1.4em 1.6em; min-width: 0 }
+.sol-slide h4 { font-size: 1.3em }
+.sol-slide .sol-bridge { margin-top: .8em }
+.sol-slide .sol-returns { padding-top: 1em; margin-top: .4em }
+.sol-slide-src { margin: 1em 0 0; font-family: var(--font-mono); font-size: .8em; color: var(--muted); letter-spacing: .02em }
+
+/* ── closing CTA ── .ent-panel's blue, centred */
+.sol-close { padding-bottom: clamp(56px, 8vh, 104px) }
+.sol-close-panel {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 22px;
+  padding: clamp(48px, 7vh, 80px) 32px; border-radius: 14px;
+  background-color: var(--accent);
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(206deg, #16299B 0%, #3550C8 46%, #4A6BE0 100%);
+  background-size: 320px 320px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: overlay, normal, normal;
+}
+.sol-close-panel h2 {
+  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(30px, 3.4vw, 48px); line-height: 1.08; color: #fbfbf9;
+}
+.sol-close-panel .ent-ctas { justify-content: center; margin-top: 0 }
+
+/* ── responsive ── one column below 900px; the visual keeps its aspect and
+   proportions and simply shrinks with the column */
+@media (max-width: 900px) {
+  .sol-hero { grid-template-columns: 1fr; padding-top: 36px }
+  .sol-hero-photo { aspect-ratio: 16 / 10 }
+  .sol-work { grid-template-columns: 1fr; gap: 28px }
+  .sol-work--flip .sol-work-copy { order: 1 }
+  .sol-work--flip .sol-work-visual { order: 2 }
+  .sol-stats-lead { padding-left: 24px; padding-right: 24px }
+}
+@media (max-width: 560px) {
+  .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
+  .sol-hero-lede { font-size: 16px }
+  .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
+  .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
+  .sol-close-panel h2 { font-size: 30px }
+}
