@@ -5894,6 +5894,111 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .sol-close-panel .ent-ctas { justify-content: center; margin-top: 0 }
 
+/* ── hedge funds page extras ── strategy chips in the hero, the on-this-page
+   bar, section heads, the pillars grid, the quote, the FAQ and the parts the
+   six hedge fund panels add on top of the PE page's primitives */
+.sol-chips { margin-top: 30px; display: flex; flex-direction: column; gap: 10px }
+.sol-chips-lead {
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--muted);
+}
+.sol-chips ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+.sol-chips li {
+  padding: 6px 12px; border-radius: 99px; border: 1px solid var(--hair); background: var(--surface);
+  font-size: 13px; line-height: 1.3; color: var(--ink);
+}
+
+/* sticks under the navbar; each link is a URL fragment so a section can be
+   linked to directly */
+.sol-anchors {
+  position: sticky; top: var(--navbar-height); z-index: 5;
+  background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
+  margin-bottom: clamp(40px, 6vh, 72px);
+}
+.sol-anchors-row { display: flex; align-items: center; gap: 24px; height: 48px; overflow-x: auto; scrollbar-width: none }
+.sol-anchors-row::-webkit-scrollbar { display: none }
+.sol-anchors-lead {
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.sol-anchors a { font-size: 14px; font-weight: 500; color: var(--secondary); text-decoration: none; white-space: nowrap; transition: color .2s }
+.sol-anchors a:hover { color: var(--accent) }
+.sol-anchor-target { scroll-margin-top: calc(var(--navbar-height) + 64px) }
+
+.sol-sec-head { margin-bottom: clamp(32px, 5vh, 56px); max-width: 60ch }
+.sol-sec-head h2 {
+  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(30px, 3.2vw, 46px); line-height: 1.08; color: var(--ink); text-wrap: balance;
+}
+.sol-more {
+  margin: 0; text-align: center;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(24px, 2.6vw, 36px); line-height: 1.15; color: var(--secondary);
+}
+.sol-more b { font-weight: 450; color: var(--accent) }
+
+.sol-how { padding-bottom: clamp(56px, 8vh, 112px) }
+.sol-pillars {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+  background: var(--hair); border: 1px solid var(--hair); border-radius: 14px; overflow: hidden;
+}
+.sol-pillars li { padding: 28px 28px 30px; background: var(--surface) }
+.sol-pillars h3 { margin: 0 0 8px; font-family: var(--font-body); font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink) }
+.sol-pillars p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--secondary) }
+.sol-how.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
+.sol-quote { margin: clamp(40px, 6vh, 64px) auto 0; max-width: 46ch; text-align: center }
+.sol-quote blockquote {
+  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(22px, 2.3vw, 30px); line-height: 1.25; color: var(--ink); text-wrap: balance;
+}
+.sol-quote figcaption {
+  margin-top: 14px; font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--muted);
+}
+
+.sol-faq { padding-bottom: clamp(56px, 8vh, 112px) }
+.sol-faq-list { border: 1px solid var(--hair); border-radius: 14px; background: var(--surface); overflow: hidden }
+
+.sol-close-sub { margin: -6px 0 0; max-width: 40ch; font-size: 17px; line-height: 1.5; color: rgba(251, 251, 249, .78) }
+
+/* panel parts: source chips, a release document, a points list, evidence
+   rows with a verdict tag, an audit grid and its findings */
+.sol-src {
+  display: inline-block; flex: none; padding: .2em .55em; border-radius: .35em;
+  background: var(--accent-soft); color: var(--accent);
+  font-family: var(--font-mono); font-size: .78em; letter-spacing: .02em; white-space: nowrap;
+}
+.sol-doc { padding: 0 }
+.sol-doc-figs { margin: 0; padding: 1.4em 1.6em; display: flex; flex-direction: column; gap: 1.1em; flex: 1 }
+.sol-doc-figs div { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; padding-bottom: .9em; border-bottom: 1px solid #EEF0F3 }
+.sol-doc-figs dt { font-size: 1.05em; color: var(--secondary) }
+.sol-doc-figs dd { margin: 0; font-size: 1.5em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
+.sol-doc-foot { margin: auto 0 0; padding: .9em 1.6em; border-top: 1px solid var(--hair); font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
+.sol-points { list-style: none; margin: 0; padding: 1.2em 1.6em; display: flex; flex-direction: column; gap: .8em; flex: 1 }
+.sol-points li { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; font-size: 1.02em; line-height: 1.4 }
+.sol-cite .sol-points { padding: 1.2em 0 }
+.sol-cite .sol-fia-result { margin-top: auto; padding-top: 1.1em; border-top: 1px solid var(--hair) }
+.sol-sheet-miss { color: #C2410C }
+.sol-sheet-pick td { background: var(--accent-soft); color: var(--accent) }
+.sol-evidence { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .7em; flex: 1 }
+.sol-evidence li {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .9em;
+  padding: .8em 1em; border-radius: .6em; background: var(--bg); font-size: 1.02em; line-height: 1.35;
+}
+.sol-tag { padding: .2em .55em; border-radius: .35em; font-family: var(--font-mono); font-size: .78em; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap }
+.sol-tag--supported { background: #E6F7EC; color: #0E7A3A }
+.sol-tag--risk { background: #FFE2A8; color: #7A4B00 }
+.sol-sheet .sol-grid td { font-family: var(--font-mono); text-align: right }
+.sol-sheet .sol-grid th { text-align: center }
+.sol-sheet .sol-grid .sol-grid-n { color: var(--muted); text-align: center; background: #FAFAFA }
+.sol-sheet .sol-grid .sol-grid-bad { color: #B42318; background: #FEF3F2; box-shadow: inset 0 0 0 1px #FDA29B }
+.sol-findings { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .6em; flex: 1 }
+.sol-findings li { display: flex; gap: .9em; align-items: baseline; padding: .8em 1em; border-radius: .5em; background: #FFF7E6; color: #7A4B00; font-size: 1.02em; line-height: 1.35 }
+.sol-findings b { font-family: var(--font-mono); font-weight: 500; font-size: .9em; flex: none }
+.sol-audit-ok { margin-top: auto; padding-top: 1.1em; border-top: 1px solid var(--hair) }
+
 /* ── responsive ── one column below 900px; the visual keeps its aspect and
    proportions and simply shrinks with the column */
 @media (max-width: 900px) {
@@ -5903,9 +6008,14 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-work--flip .sol-work-copy { order: 1 }
   .sol-work--flip .sol-work-visual { order: 2 }
   .sol-stats-lead { padding-left: 24px; padding-right: 24px }
+  .sol-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .sol-anchors { margin-bottom: 40px }
 }
 @media (max-width: 560px) {
   .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
+  .sol-pillars { grid-template-columns: 1fr }
+  .sol-pillars li { padding: 22px 20px 24px }
+  .sol-anchors-row { gap: 18px }
   .sol-hero-lede { font-size: 16px }
   .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
   .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
