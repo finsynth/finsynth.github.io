@@ -202,7 +202,15 @@ export function EvidencePanel({ ex, n, focus }) {
             ))}
           </tbody>
         </table>
-        <div className="hw-sheet-tabs"><span className="is-on">Model</span><span>Inputs</span><span>Notes</span></div>
+        <div className="hw-sheet-tabs">
+          <span className="is-on">Model</span><span>Inputs</span><span>Notes</span>
+          <div className={`hw-review${f('review')}`}>
+            <i aria-hidden="true">‹</i>
+            <span>Review citations</span>
+            <b>{cite.reviewed + t} / {cite.total}</b>
+            <i aria-hidden="true">›</i>
+          </div>
+        </div>
       </div>
       <div className={`hw-panel hw-doc${f('cited')}`}>
         <div className="hw-doc-head"><span className="hw-chip">{cite.source}</span><span>{cite.where}</span></div>
@@ -225,12 +233,6 @@ export function EvidencePanel({ ex, n, focus }) {
           <Cursor x={geo.cx} y={geo.cy} />
         </>
       )}
-      <div className={`hw-review${f('review')}`}>
-        <i aria-hidden="true">‹</i>
-        <span>Review citations</span>
-        <b>{cite.reviewed + t} / {cite.total}</b>
-        <i aria-hidden="true">›</i>
-      </div>
     </div>
   )
 }
