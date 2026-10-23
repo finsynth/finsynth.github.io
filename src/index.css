@@ -5694,7 +5694,7 @@ button.play { border: none; padding: 0; appearance: none }
   text-transform: uppercase; color: var(--accent);
 }
 
-/* ── hero ── a full-bleed Wall Street photo, darkened to a near-black ground,
+/* ── hero ── a full-bleed photo of a carved stone capital, darkened to a near-black ground,
    with the copy centred on it the way the home hero centres its cell. No Excel
    grid behind it: the solutions heroes stay plain. The header runs edge to
    edge above the page rails (z-index 5) so the two hairlines stop at its foot;
@@ -5706,18 +5706,18 @@ button.play { border: none; padding: 0; appearance: none }
   padding-top: clamp(64px, 9vh, 112px); padding-bottom: clamp(64px, 9vh, 112px);
   background: #0B1120;
 }
-/* the photo: cover, bottom-anchored so the NYSE columns stay in frame as the
-   hero shrinks, then a dark wash that leaves the stonework readable */
+/* the photo: cover, centred on the capital, its warm stone pulled toward the
+   page's ink, then a dark wash that leaves the carving readable behind the copy */
 .sol-hero-bg { position: absolute; inset: 0; z-index: -1 }
 .sol-hero-bg img {
-  width: 100%; height: 100%; object-fit: cover; object-position: center 70%; display: block;
-  filter: grayscale(1) contrast(1.08) brightness(.9);
+  width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block;
+  filter: saturate(.55) contrast(1.06);
 }
 .sol-hero-bg::after {
   content: ''; position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, rgba(8, 13, 28, .78) 0%, rgba(8, 13, 28, .62) 50%, rgba(8, 13, 28, .84) 100%),
-    radial-gradient(60% 55% at 50% 50%, rgba(8, 13, 28, .35), rgba(8, 13, 28, 0) 100%);
+    linear-gradient(to bottom, rgba(8, 13, 28, .62) 0%, rgba(8, 13, 28, .48) 50%, rgba(8, 13, 28, .74) 100%),
+    radial-gradient(60% 55% at 50% 50%, rgba(8, 13, 28, .3), rgba(8, 13, 28, 0) 100%);
 }
 .sol-hero-copy {
   position: relative; width: 100%;

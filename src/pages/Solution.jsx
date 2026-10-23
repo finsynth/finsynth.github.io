@@ -652,12 +652,12 @@ export default function Solution() {
       </div>
       <Navbar />
       <main className="sol-page">
-        {/* the hero as a full-bleed Wall Street photo, darkened, with the copy
-            centred on it like the home hero's cell. No Excel grid behind it:
+        {/* the hero as a full-bleed photo of a stone capital, darkened, with
+            the copy centred on it like the home hero's cell. No Excel grid behind it:
             the solutions heroes stay plain */}
         <header className="sol-hero sol-hero--photo">
           <div className="sol-hero-bg" aria-hidden="true">
-            <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" fetchPriority="high" />
+            <img src="/assets/img/stone-capital.jpg" alt="" loading="eager" fetchPriority="high" />
           </div>
           <div className="sol-hero-copy wrap">
             <p className="sol-eyebrow">{sol.name}</p>
