@@ -5851,18 +5851,8 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-hx-tpl:empty { display: none }
 @media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
 
-/* ── hedge funds page extras ── the strategies line in the hero and the parts
-   the six use case panels add on top of the shared stage and panel primitives */
-
-/* the strategies line, in the home hero's trust-line voice: the lead in ink
-   on one line and the names in grey on the next, a dot between them, nothing
-   ruled or boxed. Pills and a ruled mini-table were both tried and read as a
-   control or a table sitting in the copy; this reads as two lines of it. */
-.sol-chips { margin-top: 28px; font-size: 15px; line-height: 1.6 }
-.sol-chips-lead { display: block; font-weight: 500; color: var(--ink) }
-.sol-chips ul { list-style: none; margin: 0; padding: 0; display: inline }
-.sol-chips li { display: inline; white-space: nowrap; font-weight: 450; color: var(--secondary) }
-.sol-chips li + li::before { content: '\00B7'; margin: 0 .55em; color: var(--muted) }
+/* ── hedge funds page extras ── the parts the hedge fund visuals add to the
+   shared stage */
 
 /* panel parts: source chips, a release document, a points list, evidence
    rows with a verdict tag, an audit grid and its findings */
@@ -5951,6 +5941,33 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-upd-cell.is-filled span { opacity: 1 }
 .sol-upd-var { opacity: 0; transition: opacity .35s; font-weight: 500 }
 .sol-upd-var.is-on { opacity: 1 }
+/* the ask above the sheet, in the workspace panel's voice: a blue dot and
+   the one instruction */
+.sol-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .7em; align-items: start; padding: .8em 1.4em; border-bottom: 1px solid var(--hair) }
+.sol-ask-dot { width: .65em; height: .65em; margin-top: .4em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .28em var(--accent-soft) }
+.sol-ask p { margin: 0; font-size: .95em; line-height: 1.35; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+/* the formula bar carries the cell's link to the release */
+.sol-sheet-fx--cite { grid-template-columns: auto auto 1fr auto; align-items: center }
+.sol-sheet-fx--cite span:nth-child(3) { color: var(--ink) }
+.sol-sheet-fx--cite .sol-src { font-size: .9em }
+/* the fund's own margin rows recalculate from the filled cells, so they print
+   without the fill highlight: the layout is theirs, the agent only fed it.
+   Six rows and the ask fit the panel at these paddings */
+.sol-upd tr.is-derived td { color: var(--muted) }
+.sol-upd th, .sol-upd td { padding: .4em .55em }
+.sol-upd th:first-child, .sol-upd td:first-child { padding-left: 1.4em }
+.sol-sheet--earn .sol-sheet-title { padding: .75em 1.4em }
+.sol-sheet--earn .sol-sheet-fx { padding: .45em 1.4em }
+.sol-sheet--earn .sol-sheet-tabs { padding: .5em 1.4em }
+.sol-sheet--earn .sol-ask { padding: .6em 1.4em }
+.sol-sheet--earn table { font-size: .9em }
+.sol-upd tr.is-derived .sol-upd-cell.is-filled { background: none; box-shadow: none; color: var(--secondary); font-weight: 400 }
+.sol-upd-var { white-space: nowrap }
+/* each release line takes the reference of the cell it filled, so the link
+   between them is on the page, not implied by the colour */
+.sol-excerpt li { display: grid; grid-template-columns: 2.2em 1fr }
+.sol-excerpt-ref { font-family: var(--font-mono); font-weight: 400; font-size: .82em; letter-spacing: .02em; color: var(--accent); opacity: 0; transition: opacity .35s }
+.sol-excerpt li.is-done .sol-excerpt-ref, .sol-excerpt li.is-lit .sol-excerpt-ref { opacity: 1 }
 
 /* research brief */
 .sol-brief { padding: 0 }
@@ -6319,4 +6336,61 @@ button.play { border: none; padding: 0; appearance: none }
   .hw-copy { padding: 26px var(--x4e-pad-x) 24px }
   .hw-stage--col { font-size: clamp(6px, 2.3cqw, 10px); aspect-ratio: 16 / 11; padding: 2.4em var(--x4e-pad-x) }
   .hw-ent { grid-template-columns: 1fr; gap: 10px; padding: 18px var(--x4e-pad-x) }
+}
+
+/* Earnings update: full-width model and its linked source receipt. */
+.earn-stage {
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  padding: clamp(18px, 4.5cqw, 38px); aspect-ratio: auto; min-height: 490px;
+  font-size: clamp(11px, 2.15cqw, 14px);
+}
+.earn-demo { min-width: 0; }
+.earn-status { display: flex; align-items: center; gap: .7em; margin-bottom: 1.2em; color: #fff; font-size: .92em; min-height: 2em; }
+.earn-agent { display: grid; place-items: center; width: 1.9em; height: 1.9em; border: 1px solid #ffffff55; border-radius: .5em; background: #ffffff1f; }
+.earn-count { margin-left: auto; font-family: var(--font-mono); white-space: nowrap; opacity: .8; }
+.earn-workbook { background: #fff; border: 1px solid #dce2ee; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px #0b24642b; }
+.earn-title { display: flex; align-items: center; gap: .75em; padding: 1.2em; font-weight: 550; }
+.earn-title div > span { display: block; font-weight: 400; color: var(--muted); font-size: .8em; margin-top: .25em; }
+.earn-file { display: grid; place-items: center; width: 2em; height: 2.3em; background: #e8f4ed; color: #237349; border-radius: 4px; font-weight: 600; }
+.earn-template { margin-left: auto; color: var(--secondary); font-size: .75em; font-weight: 400; background: #f3f5f8; padding: .45em .65em; border-radius: 4px; }
+.earn-formula { display: flex; align-items: center; gap: 1em; border-block: 1px solid #e7ebf1; padding: .65em 1.2em; font-family: var(--font-mono); font-size: .8em; }
+.earn-formula b { font-weight: 500; min-width: 2em; }
+.earn-formula i { color: #8a93a3; }
+.earn-formula em { margin-left: auto; font-family: var(--font-body); font-style: normal; color: #5068ab; font-size: .92em; }
+.earn-workbook table { width: 100%; border-collapse: collapse; font-size: .9em; font-variant-numeric: tabular-nums; }
+.earn-workbook th, .earn-workbook td { border-bottom: 1px solid #edf0f5; padding: 1em .65em; text-align: right; white-space: nowrap; font-weight: 400; }
+.earn-workbook thead th { background: #f7f8fb; color: #7b8494; font-size: .74em; padding-block: 1em; }
+.earn-workbook th:nth-child(2) { text-align: left; }
+.earn-workbook tbody th { color: #354052; font-weight: 500; }
+.earn-workbook .earn-rownum { background: #f7f8fb; color: #929aaa; font-size: .8em; padding-inline: .6em; }
+.earn-value { color: #a2aabb; position: relative; transition: background 240ms ease-out; }
+.earn-value.is-filled { color: #304c9b; background: #f0f4ff; }
+.earn-value.is-selected { box-shadow: inset 0 0 0 1.5px #526ed2; background: #e9efff; }
+.earn-value sup { font-size: .65em; margin-left: .3em; }
+.earn-variance { opacity: 0; color: #28734d; background: #edf7f0; border-radius: 4px; padding: .25em .35em; font-size: .9em; transition: opacity 240ms ease-out; }
+.earn-variance.is-visible { opacity: 1; }
+.earn-variance.is-miss { color: #a75a34; background: #fff2e9; }
+.earn-tabs { display: flex; gap: 1.3em; align-items: center; padding: .9em 1.2em; font-size: .8em; color: #818b9e; }
+.earn-tabs b { color: #3d5ab0; font-weight: 500; }
+.earn-tabs em { margin-left: auto; font-style: normal; }
+.earn-source { position: relative; margin-top: 1.5em; padding: 1.2em; background: #fff; border: 1px solid #dce2ee; border-radius: 8px; box-shadow: 0 8px 24px #0b246416; }
+.earn-source::before { content: ''; position: absolute; height: 1.5em; width: 1px; background: #ffffffaa; top: -1.5em; left: 55%; }
+.earn-source-head { display: flex; justify-content: space-between; gap: 1em; color: #7a8495; font-size: .72em; }
+.earn-source-head > span:first-child { color: #5068ab; letter-spacing: .04em; }
+.earn-source p { margin: 1em 0; min-height: 2.8em; font-size: 1em; line-height: 1.5; color: #344054; }
+.earn-source mark { background: #fff1c2; color: inherit; padding: .12em .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.earn-source-foot { display: flex; justify-content: space-between; gap: 1em; font-size: .7em; color: #8b94a3; }
+.earn-controls { display: flex; justify-content: space-between; align-items: center; color: #364e80; font-size: 10px; }
+.earn-controls button { font: inherit; color: inherit; padding: 5px 8px; border: 1px solid #405c8e40; background: #ffffff70; border-radius: 4px; cursor: pointer; }
+.earn-controls button:focus-visible { outline: 2px solid #2349bb; outline-offset: 3px; }
+@media (max-width: 560px) {
+  .earn-stage { padding: 18px 12px; min-height: 440px; font-size: 11px; }
+  .earn-template { display: none; }
+  .earn-workbook th, .earn-workbook td { padding-inline: .45em; }
+  .earn-source-head { flex-wrap: wrap; gap: .5em; font-size: 9px; }
+  .earn-source-foot { font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .earn-value, .earn-variance { transition: none; }
+  .earn-controls button { display: none; }
 }
