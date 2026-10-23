@@ -41,8 +41,6 @@ function Src({ children }) {
   return <span className="sol-src">{children}</span>
 }
 
-/* ── hedge fund visuals ── the six use cases on /solutions/hedge-funds ── */
-
 /* ── hedge fund visuals ────────────────────────────────────────────────────
  * One dominant working screen and one smaller supporting card that overlaps
  * its corner: the source it came from, the finding it points at, or the
