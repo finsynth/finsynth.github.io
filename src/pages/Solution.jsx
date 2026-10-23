@@ -11,7 +11,7 @@ import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
-import HowStages, { EvidencePanel } from '../components/HowStages'
+import HowStages from '../components/HowStages'
 
 /* ── How it works, which layout mounts ─────────────────────────────────────
  * `tabs` ships: the three stages as tabs, each opening its pillars and its
@@ -652,9 +652,14 @@ export default function Solution() {
       </div>
       <Navbar />
       <main className="sol-page">
-        {/* no Excel grid behind this hero: the solutions heroes stay plain */}
-        <header className="sol-hero wrap">
-          <div className="sol-hero-copy">
+        {/* the hero as a full-bleed Wall Street photo, darkened, with the copy
+            centred on it like the home hero's cell. No Excel grid behind it:
+            the solutions heroes stay plain */}
+        <header className="sol-hero sol-hero--photo">
+          <div className="sol-hero-bg" aria-hidden="true">
+            <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" fetchPriority="high" />
+          </div>
+          <div className="sol-hero-copy wrap">
             <p className="sol-eyebrow">{sol.name}</p>
             <h1 className="sol-hero-title">{sol.title}</h1>
             <p className="sol-hero-lede">{sol.lede}</p>
@@ -677,14 +682,9 @@ export default function Solution() {
               </div>
             )}
           </div>
-          {/* the product instead of a stock photo: the approved Review the
-              evidence scene (the model window, the release page it cites and
-              the wire between them) on the page's grey, no stage ground */}
-          <div className="sol-hero-visual" aria-hidden="true">
-            <EvidencePanel ex={sol.how.example} />
-          </div>
         </header>
-        <SectionRule />
+        {/* no rule under the hero: the dark block's own edge is the rule, and
+            the rule's guide nodes would straddle the photo */}
 
         {/* the use cases in one hairline frame on the page's grey ground, head
             band on top, then the rows split down the middle like the home

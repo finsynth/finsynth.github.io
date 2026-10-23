@@ -5694,46 +5694,58 @@ button.play { border: none; padding: 0; appearance: none }
   text-transform: uppercase; color: var(--accent);
 }
 
-/* ── hero ── the home hero's headline recipe with the office photo at right
-   where the home page runs its pixel canvas. No Excel grid behind it: the
-   solutions heroes stay plain on the page ground. */
+/* ── hero ── a full-bleed Wall Street photo, darkened to a near-black ground,
+   with the copy centred on it the way the home hero centres its cell. No Excel
+   grid behind it: the solutions heroes stay plain. The header runs edge to
+   edge above the page rails (z-index 5) so the two hairlines stop at its foot;
+   the copy sits in a .wrap so it lines up with the sections below. */
 .sol-hero {
-  position: relative; z-index: 2;
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 4vw, 64px);
-  align-items: center; padding-top: clamp(48px, 7vh, 88px); padding-bottom: clamp(32px, 5vh, 56px);
+  position: relative; z-index: 6; overflow: hidden; isolation: isolate;
+  min-height: clamp(520px, 72svh, 760px);
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: clamp(64px, 9vh, 112px); padding-bottom: clamp(64px, 9vh, 112px);
+  background: #0B1120;
 }
-.sol-hero-copy { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
+/* the photo: cover, bottom-anchored so the NYSE columns stay in frame as the
+   hero shrinks, then a dark wash that leaves the stonework readable */
+.sol-hero-bg { position: absolute; inset: 0; z-index: -1 }
+.sol-hero-bg img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 70%; display: block;
+  filter: grayscale(1) contrast(1.08) brightness(.9);
+}
+.sol-hero-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(8, 13, 28, .78) 0%, rgba(8, 13, 28, .62) 50%, rgba(8, 13, 28, .84) 100%),
+    radial-gradient(60% 55% at 50% 50%, rgba(8, 13, 28, .35), rgba(8, 13, 28, 0) 100%);
+}
+.sol-hero-copy {
+  position: relative; width: 100%;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
+}
+/* the eyebrow on the dark ground: the accent lifted so it holds its chroma */
+.sol-hero .sol-eyebrow { color: #9DB2FF }
 .sol-hero-title {
-  margin: 0 0 20px;
+  margin: 0 0 22px; max-width: 18ch;
   font-family: var(--font-body); font-weight: 500; line-height: 1.12;
-  font-size: clamp(34px, 3.4vw, 54px); letter-spacing: var(--ls-display); color: var(--ink);
+  font-size: clamp(36px, 3.8vw, 60px); letter-spacing: var(--ls-display); color: #fff;
   text-wrap: balance;
 }
 .sol-hero-lede {
-  margin: 0 0 28px; max-width: 46ch;
-  font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--secondary);
+  margin: 0 auto 30px; max-width: 54ch;
+  font-size: clamp(16px, 1.2vw, 19px); line-height: 1.5; color: rgba(255, 255, 255, .78);
+  text-wrap: pretty;
 }
-.sol-hero-ctas { --hero-scale: 1; display: flex; flex-wrap: wrap; gap: 12px }
+.sol-hero-ctas { --hero-scale: 1; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px }
 .sol-hero-ctas .hero-s2-cta { margin: 0 }
 /* the hover arrow's slot comes out of the right padding, as on the home hero;
    --hero-scale is the home hero's and must be set here or the arrow's calc()
    sizes fail and the svg falls back to its 300x150 default */
 .sol-hero-ctas .hero-s2-cta--ghost { padding-right: 20px }
-/* the hero's product visual: the How it works evidence scene lifted onto the
-   page's grey ground. Its em is the column's width over the 44em the scene
-   spans, so the two panels and the wire scale with the column and never clip;
-   the panels' shadow is the lighter one a white card wears on grey, not the
-   stage's blue-ground shadow */
-.sol-hero-visual {
-  position: relative; container-type: inline-size; min-width: 0;
-  --k-acc: #E7A200; --k-acc-soft: #FFF1C2;
-  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .12s both;
-}
-.sol-hero-visual .hw-evid { font-size: calc(100cqw / 44); max-width: none; padding: .6em 0 .2em; column-gap: 2em }
-/* the sheet is narrower here than on the stage, so the stepper keeps its
-   arrows and count and drops its label, as it does on phones */
-.sol-hero-visual .hw-review > span { display: none }
-.sol-hero-visual .hw-panel { box-shadow: 0 .8em 2.2em rgba(6, 16, 50, .1), 0 0 0 1px var(--hair) }
+/* the blue primary keeps its glow; the white secondary reads as a solid card
+   on the dark ground, no hairline needed */
+.sol-hero-ctas .hero-s2-cta.hero-s2-cta--ghost { border-color: #fff }
 
 /* ── workflow rows ── inside the home page's section frame (.x4e-frame), the
    frame the Security section wears: a hairline on the page's grey ground, not
@@ -5781,7 +5793,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-reveal { opacity: 0 }
 .sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 @media (prefers-reduced-motion: reduce) {
-  .sol-reveal, .sol-hero-copy, .sol-hero-visual { opacity: 1; animation: none }
+  .sol-reveal, .sol-hero-copy { opacity: 1; animation: none }
 }
 
 /* the stage fills its half of the row; its height, from the 16:11 ratio, is
@@ -5886,15 +5898,16 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* the strategies line: a mono lead in the accent, then the names as soft
    accent pills */
-.sol-chips { margin-top: 30px; display: flex; flex-direction: column; gap: 12px }
+.sol-chips { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 12px }
 .sol-chips-lead {
   font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
-  text-transform: uppercase; color: var(--accent);
+  text-transform: uppercase; color: #9DB2FF;
 }
-.sol-chips ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+.sol-chips ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px }
 .sol-chips li {
-  padding: 7px 14px; border-radius: 99px; background: var(--accent-soft);
-  font-size: 14px; line-height: 1.3; font-weight: 450; color: var(--ink);
+  padding: 7px 14px; border-radius: 99px;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16);
+  font-size: 14px; line-height: 1.3; font-weight: 450; color: rgba(255, 255, 255, .92);
 }
 
 /* panel parts: source chips, a release document, a points list, evidence
@@ -6119,8 +6132,7 @@ button.play { border: none; padding: 0; appearance: none }
 /* ── responsive ── one column below 900px; the visual keeps its aspect and
    proportions and simply shrinks with the column */
 @media (max-width: 900px) {
-  .sol-hero { grid-template-columns: 1fr; padding-top: 36px }
-  .sol-hero { padding-left: calc(var(--wrap-pad) + 28px) }
+  .sol-hero { min-height: clamp(460px, 64svh, 640px); padding-top: 56px; padding-bottom: 56px }
   .sol-work { grid-template-columns: 1fr }
   .sol-work::before { display: none }
   .sol-work + .sol-work { border-top: 1px solid var(--hair) }
@@ -6131,6 +6143,7 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 560px) {
   .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
   .sol-hero-lede { font-size: 16px }
+  .sol-hero-ctas { width: 100% }
   .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
   .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
   .sol-stage--focus { font-size: clamp(6px, 2.3cqw, 9px); --stage-pad: 1.4em; aspect-ratio: 16 / 11 }
