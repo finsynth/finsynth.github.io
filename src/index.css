@@ -6023,7 +6023,15 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .sol-win-wrap { position: relative; display: grid; min-width: 0; min-height: 0 }
 .sol-stage--build .sol-status { top: -1.3em }
-.sol-win .sol-dcf { font-size: .9em }
+.sol-win .sol-dcf { font-size: 1em }
+/* the DCF output: a two-column bridge, the value per share bold, the upside an
+   accent chip; it fades in when the window opens the DCF tab */
+.sol-dcf-out { animation: solDcfIn .4s ease both }
+.sol-dcf-out th:first-child, .sol-dcf-out td:first-child { width: 100% }
+.sol-dcf-out tr.is-total td { font-size: 1.08em }
+.sol-dcf-out tr.is-up td { color: var(--secondary) }
+.sol-dcf-up { display: inline-block; padding: .15em .55em; border-radius: .35em; background: var(--accent-soft); color: var(--accent); font-weight: 500 }
+@keyframes solDcfIn { from { opacity: 0; transform: translateY(.4em) } }
 .sol-dcf th, .sol-dcf td { padding: .5em .6em; white-space: nowrap }
 .sol-dcf th:first-child, .sol-dcf td:first-child { width: 100% }
 .sol-dcf th.is-col, .sol-dcf td.is-fc { background: #F7F9FF }
@@ -6039,7 +6047,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-pane-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .7em; align-items: start; padding: 1em 1.2em; border-bottom: 1px solid var(--hair) }
 .sol-pane-dot { width: .7em; height: .7em; margin-top: .35em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
 .sol-pane-ask p { margin: 0; font-size: 1em; line-height: 1.4; color: var(--ink); font-weight: 500 }
-.sol-pane-body { flex: 1; min-height: 0; overflow: hidden; padding: 1em 1.2em; display: flex; flex-direction: column; gap: .85em }
+.sol-pane-body { flex: 1; min-height: 0; overflow: hidden; padding: .9em 1.2em; display: flex; flex-direction: column; gap: .7em }
 .sol-pane-body p { margin: 0; font-size: 1em; line-height: 1.4 }
 .sol-pane-say { color: var(--secondary) }
 .sol-pane-steps { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hair); border-radius: .6em; overflow: hidden; flex: none }
@@ -6066,6 +6074,8 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet--comps th:not(:first-child), .sol-sheet--comps td:not(:first-child) { width: 21% }
 .sol-upd tr.is-self td { color: var(--accent); font-weight: 500 }
 
+.sol-pane-steps li > span { min-width: 0; overflow: hidden; text-overflow: ellipsis }
+.sol-pane-steps li em { flex: none }
 /* thesis: the claim, its evidence, the counter given the room */
 .sol-thesis { padding: 0 }
 .sol-thesis-stmt { margin: 0; padding: .9em 1.4em .1em; font-family: var(--font-display); font-weight: 450; font-size: 1.6em; letter-spacing: -0.015em; line-height: 1.15; color: var(--ink) }
