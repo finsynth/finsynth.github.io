@@ -14,7 +14,6 @@ export const SOLUTIONS = {
     title: 'Do more deals and deepen your analysis, from LBO build and valuation, to creating IC decks',
     lede:
       'FinSynth builds the model to your template, cites every number back to its source and keeps the audit trail, inside Excel and in the Fia workspace',
-    statsLead: 'More capacity. Deeper analysis. Measurable ROI.',
     stats: [
       { value: '80%', label: 'Time saved' },
       { value: '90%', label: 'Less time auditing' },
@@ -67,7 +66,6 @@ export const SOLUTIONS = {
       'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like earnings updates, consensus comparison, model audits and comps, tracing every output back to its source.',
     strategiesLead: 'Built to work across strategies',
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
-    statsLead: 'More capacity. Deeper analysis. Measurable ROI.',
     stats: [
       { value: '80%', label: 'Time saved' },
       { value: '90%', label: 'Less time auditing' },

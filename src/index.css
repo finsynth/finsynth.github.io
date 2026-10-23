@@ -5701,22 +5701,22 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .sol-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) }
 
-/* ── metrics ── the home page's band, framed on all four sides since nothing
-   sits on top of it here */
-.sol-stats { padding-bottom: clamp(56px, 8vh, 104px) }
-.sol-stats-band { border: 1px solid var(--hair); background: var(--surface); overflow: hidden }
-.sol-stats-lead {
-  margin: 0; padding: clamp(24px, 3vh, 34px) clamp(32px, 3.8vw, 60px) 0;
-  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; color: var(--ink);
-}
+/* ── metrics ── the home page's band (.wac-band), hung off the foot of the use
+   cases frame exactly as it hangs off the Excel section at home: it brings its
+   own reveal only, the band's measures are the home page's */
 .sol-stats .wac-num { opacity: 0 }
 .sol-stats.is-in .wac-num { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 
 /* ── workflow rows ── inside the home page's section frame (.x4e-frame): the
    head band on top, then every row ruled off the one above on the frame's own
-   inset, so the section title and the row titles share one left edge */
-.sol-works-wrap { padding-bottom: clamp(56px, 8vh, 112px) }
+   inset, so the section title and the row titles share one left edge. The
+   frame is the Security section's kind, a hairline on the page's grey ground,
+   not the Excel section's white: that white is there to carry a blue stage,
+   and these rows have none, so on white they read as one long blank sheet with
+   the visuals' own white cards lost on it. On grey the cards stand off the
+   ground the way the certification seals do. Section padding is .x4e-sec's. */
+.sol-works-wrap { padding-top: clamp(72px, 9vh, 104px); padding-bottom: clamp(72px, 9vh, 104px) }
+.x4e-frame.sol-works { background: transparent }
 .sol-work {
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 88px);
   align-items: center;
@@ -6126,7 +6126,6 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-work { grid-template-columns: 1fr; gap: 28px }
   .sol-work--flip .sol-work-copy { order: 1 }
   .sol-work--flip .sol-work-visual { order: 2 }
-  .sol-stats-lead { padding-left: 24px; padding-right: 24px }
 }
 @media (max-width: 560px) {
   .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
