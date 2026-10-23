@@ -28,8 +28,10 @@ const DEFAULT_TITLE = <>Curious about FinSynth?<br />We got you <span className=
 
 /* `items` and `title` let the solutions pages render this exact section with
    their own questions instead of a lookalike of it */
-export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq' }) {
-  const [open, setOpen] = useState(-1)
+export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', openFirst = false }) {
+  // openFirst starts with the first answer showing, so the list reads as
+  // questions with answers rather than a closed grey list
+  const [open, setOpen] = useState(openFirst ? 0 : -1)
   const ref = useRef(null)
   const zoomRef = useSectionZoom()
   const listRef = useRef(null)

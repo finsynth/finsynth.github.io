@@ -20,6 +20,10 @@ import HowStages, { EvidencePanel } from '../components/HowStages'
  * this replaced), ?how=columns, ?how=workspace, ?how=evidence. */
 const HOW_LAYOUT_DEFAULT = 'tabs'
 const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence']
+/* the quote ships as a pull-quote; ?quote=band shows the home page's blue band */
+function quoteBand() {
+  return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('quote') === 'band'
+}
 function howLayout() {
   if (typeof window === 'undefined') return HOW_LAYOUT_DEFAULT
   const q = new URLSearchParams(window.location.search).get('how')
@@ -197,10 +201,6 @@ const BUILD_ROWS = [
   ['Free cash flow', '318', '341', '362'],
 ]
 const BUILD_PAGES = ['FY23 10-K · p. 41', 'FY24 10-K · p. 43', 'FY25 10-K · p. 44']
-
-/* the model window beside the FinSynth pane, the way the add-in sits in Excel.
-   Year by year the historical column fills in the fund's template from that
-   year's 10-K, the pane counts the years and the recast, then the DCF tab
 /* the DCF tab's output, what the build is for: the bridge from enterprise
    value to a value per share, and that value against the price */
 const DCF_OUT = [
@@ -212,6 +212,10 @@ const DCF_OUT = [
 ]
 const DCF_PRICE = '$31.40'
 const DCF_UPSIDE = '+22%'
+
+/* the model window beside the FinSynth pane, the way the add-in sits in Excel.
+   Year by year the historical column fills in the fund's template from that
+   year's 10-K, the pane counts the years and the recast, then the DCF tab
    lights and the pill over the sheet turns its spinner into a check. Two
    ticks a year (the column lights, then fills), one for the recast, one for
    the DCF, then a hold on the finished build */
@@ -224,12 +228,12 @@ function ModelBuildVisual() {
   const years = BUILD_YEARS.filter((_, c) => filled(c)).length
   const recast = t >= BUILD_YEARS.length * 2 + 1
   const done = t >= BUILD_YEARS.length * 2 + 2
+  // a tick after the DCF tab lights, the window opens it on the output
+  const dcf = t >= BUILD_YEARS.length * 2 + 3
   const srcCol = Math.min(cur, BUILD_YEARS.length - 1)
   return (
     <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
       <div className="sol-win-wrap">
-  // a tick after the DCF tab lights, the window opens it on the output
-  const dcf = t >= BUILD_YEARS.length * 2 + 3
         <div className="sol-panel sol-sheet sol-sheet--earn sol-win">
           <div className="sol-sheet-title">Northwind Retail · {dcf ? 'DCF' : 'model'}</div>
           {dcf ? (
@@ -698,10 +702,10 @@ export default function Solution() {
           : <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout={howLayout()} id="how-it-works" />)}
 
         {/* the page's quote, in the home page's Customers treatment */}
-        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
+        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} compact={!quoteBand()} />}
 
         {sol.faqs && <SectionRule />}
-        {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} />}
+        {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}
         {sol.faqs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchema(sol.faqs) }} />}
 
       </main>

@@ -37,7 +37,29 @@ const DEFAULT_TITLE = <>Hear what the analysts<br />have to <span className="ttl
 // Other pages pass their own quotes (a solutions page carries the one quote
 // from its outline). With a single card there is no deck to page through, so
 // the arrows go and the stack holds still.
-export default function Testimonial({ quotes = QUOTES, title = DEFAULT_TITLE, id = 'customers' }) {
+export default function Testimonial({ quotes = QUOTES, title = DEFAULT_TITLE, id = 'customers', compact = false }) {
+  return compact ? <PullQuote quotes={quotes} id={id} /> : <Deck quotes={quotes} title={title} id={id} />
+}
+
+// `compact`: one quote as a pull-quote on the page's grey, no band and no
+// deck, for a page that has a single sentence to show (the solutions pages)
+function PullQuote({ quotes, id }) {
+  const revealRef = useReveal()
+  const q = quotes[0]
+  return (
+    <section className="testi-sec testi-sec--compact" id={id}>
+      <div className="wrap testi-compact" ref={revealRef}>
+        <p className="hiw-eyebrow">Customers</p>
+        <figure className="testi-pull">
+          <blockquote>{q.quote}</blockquote>
+          <figcaption>{q.name}{q.role ? <span>{q.role}</span> : null}</figcaption>
+        </figure>
+      </div>
+    </section>
+  )
+}
+
+function Deck({ quotes, title, id }) {
   const revealRef = useReveal()
   const { sectionRef, stackRef, next, prev } = useCardStack(quotes.length)
   const deck = quotes.length > 1
