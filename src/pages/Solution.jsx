@@ -271,46 +271,69 @@ function ModelBuildVisual() {
   )
 }
 
+/* the fund's own comps sheet: the subject on top, four peers the agent fills,
+   and a median row that is the fund's formula, recalculating once they land */
 const COMPS = [
-  { name: 'Northwind Retail', ev: '8.9x', pe: '15.2x', evs: '1.0x', g: '5.6%', self: true },
-  { name: 'Contoso Mart', ev: '9.8x', pe: '16.8x', evs: '1.1x', g: '4.1%', EV: '$14.2bn', ebitda: '$1.45bn', fye: 'January year end, shifted' },
-  { name: 'Fabrikam Stores', ev: '7.6x', pe: '13.9x', evs: '0.8x', g: '3.2%', EV: '$9.1bn', ebitda: '$1.20bn', fye: 'June year end, shifted' },
-  { name: 'Tailspin Retail', ev: '10.4x', pe: '18.1x', evs: '1.3x', g: '7.0%', EV: '$21.7bn', ebitda: '$2.09bn', fye: 'December year end, no shift' },
-  { name: 'Litware Grocers', ev: '8.2x', pe: '14.6x', evs: '0.6x', g: '2.4%' },
+  { name: 'Northwind Retail', ev: '8.9x', pe: '15.2x', evs: '1.0x', self: true },
+  { name: 'Contoso Mart', ev: '9.8x', pe: '16.8x', evs: '1.1x' },
+  { name: 'Fabrikam Stores', ev: '7.6x', pe: '13.9x', evs: '0.8x' },
+  { name: 'Tailspin Retail', ev: '10.4x', pe: '18.1x', evs: '1.3x' },
+  { name: 'Litware Grocers', ev: '8.2x', pe: '14.6x', evs: '0.6x' },
+  { name: 'Peer median', ev: '9.0x', pe: '15.7x', evs: '0.95x', fx: true },
 ]
-const COMPS_PICK = [1, 2, 3]
+const COMPS_PEERS = COMPS.filter((p) => !p.self && !p.fx)
 
-/* the selection walks the peers; the inputs behind each multiple follow it */
+/* one motion, the earnings row's: the peers' multiples fill row by row in the
+   fund's own template, calendarised as they land, the median recalculates,
+   and the pill over the sheet turns its spinner into a check */
 function CompsVisual() {
   const ref = useRef(null)
-  const t = useTicks(COMPS_PICK.length * 5, 600, ref)
-  const sel = COMPS_PICK[Math.floor(t / 5)]
-  const c = COMPS[sel]
+  const HOLD = 8
+  const t = useTicks(COMPS_PEERS.length * 2 + HOLD, 620, ref)
+  const cur = Math.floor(t / 2)
+  const filled = (k) => t >= k * 2 + 1
+  const done = filled(COMPS_PEERS.length - 1)
+  let k = -1
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
-      <div className="sol-panel sol-sheet sol-main">
-        <div className="sol-sheet-title">Peer comps · NTM<em className="sol-sheet-tag">Calendarised to December</em></div>
-        <table className="sol-comps">
-          <thead><tr><th>Company</th><th>EV/EBITDA</th><th>P/E</th><th>EV/Sales</th></tr></thead>
+      <div className="sol-panel sol-sheet sol-sheet--earn sol-sheet--comps sol-main">
+        <div className="sol-sheet-title">Northwind Retail · comps</div>
+        <table className="sol-upd">
+          <thead><tr><th>NTM</th><th className="is-col">EV/EBITDA</th><th className="is-col">P/E</th><th className="is-col">EV/Sales</th></tr></thead>
           <tbody>
-            {COMPS.map((p, i) => (
-              <tr key={p.name} className={p.self ? 'is-self' : i === sel ? 'is-sel' : ''}>
-                <td>{p.name}</td>
-                <td className={i === sel ? 'sol-cell-sel' : ''}><span>{p.ev}</span></td>
-                <td>{p.pe}</td><td>{p.evs}</td>
-              </tr>
-            ))}
+            {COMPS.map((r) => {
+              if (r.self) {
+                return (
+                  <tr key={r.name} className="is-self"><td>{r.name}</td><td>{r.ev}</td><td>{r.pe}</td><td>{r.evs}</td></tr>
+                )
+              }
+              const on = r.fx ? done : filled((k += 1))
+              const i = k
+              const cell = `sol-upd-cell${on ? ' is-filled' : ''}`
+              return (
+                <tr key={r.name} className={r.fx ? 'is-derived' : cur === i && !on ? 'is-lit' : ''}>
+                  <td>{r.name}</td>
+                  <td className={cell}><span>{r.ev}</span></td>
+                  <td className={cell}><span>{r.pe}</span></td>
+                  <td className={cell}><span>{r.evs}</span></td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Comps</span><span>Inputs</span><em>Every input traced</em></div>
+        <div className="sol-sheet-tabs">
+          <span className="is-on">Comps</span>
+          <em><Src>Calendarised to December</Src></em>
+        </div>
       </div>
-      <div className="sol-panel sol-aside sol-inputs" key={sel}>
-        <div className="sol-aside-head"><span>{c.name}</span><b>{c.ev}</b></div>
-        <ul>
-          <li><span>EV</span><b>{c.EV}</b><Src>10-Q, p. 3</Src></li>
-          <li><span>NTM EBITDA</span><b>{c.ebitda}</b><Src>Consensus</Src></li>
-          <li className="sol-inputs-note"><span>{c.fye}</span><Src>Calendarised</Src></li>
-        </ul>
+      <div className={`sol-status${done ? ' is-done' : ''}`}>
+        <span className="sol-status-ico">
+          <span className="sol-status-spin" />
+          <span className="sol-status-check">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+          </span>
+        </span>
+        <span className="sol-status-lbls"><span>Building comps in your template</span><span>Comps built</span></span>
       </div>
     </div>
   )
