@@ -6244,7 +6244,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-evid {
   position: relative; width: 100%; max-width: 64em;
   display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); column-gap: 2.4em; align-items: start;
-  padding: 1.4em 0 .4em;
+  padding: .4em 0;
 }
 .hw-win-bar {
   display: flex; align-items: center; gap: .6em; padding: .85em 1.4em; border-bottom: 1px solid var(--hair);
@@ -6302,21 +6302,19 @@ button.play { border: none; padding: 0; appearance: none }
   filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
   transition: transform .55s cubic-bezier(.32, .72, 0, 1);
 }
-/* the control, a pill across the window's top edge like the status pill of
-   the use case rows */
+/* the control, docked in the sheet's foot bar beside its tabs */
 .hw-review {
-  position: absolute; z-index: 5; top: 1.4em; left: calc((100% - 2.4em) * .59 / 2); transform: translate(-50%, -50%);
-  display: inline-flex; align-items: center; gap: .7em; height: 2.6em; padding: 0 .5em; border-radius: 999px;
-  background: rgba(255, 255, 255, .97); color: var(--ink); font-size: .95em; font-weight: 500; white-space: nowrap;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 0 0 1px rgba(255, 255, 255, .35), 0 .45em 1.3em rgba(6, 12, 40, .32);
+  display: inline-flex; align-items: center; gap: .55em; margin-left: auto; padding: .15em .3em; border-radius: 999px;
+  color: var(--ink); font-weight: 500; white-space: nowrap;
 }
 .hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }
 .hw-review i {
-  width: 1.8em; height: 1.8em; display: grid; place-items: center; border-radius: 50%; background: #F1F3F7;
+  width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 50%; background: #F1F3F7;
   font-style: normal; font-size: 1em; color: var(--secondary);
 }
 .hw-review i:last-child { background: var(--accent); color: #fff }
-.hw-review.is-focus { position: absolute; border-radius: 999px; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 .45em 1.3em rgba(6, 12, 40, .32) }
+.hw-review.is-focus { box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft) }
+@media (max-width: 560px) { .hw-review > span { display: none } }
 .hw-stage .hw-doc.is-focus { border-radius: .9em; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 1.2em 3em rgba(6, 16, 50, .28) }
 .hw-stage--tab .hw-evid { font-size: 1.12em }
 @keyframes hwWire { to { stroke-dashoffset: 0 } }
