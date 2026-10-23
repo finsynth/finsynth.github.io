@@ -569,26 +569,23 @@ function FrameHead({ title }) {
   )
 }
 
-/* ── How it works: "Your house format" on stage ─────────────────────────────
- * Three saved Skills, each tied to one of the fund's own templates. The first
- * is running, with the count of names it is being run across. Sized like the
- * workflow checklist next door (.xv-marquee), so the stage reads at one scale
- * from claim to claim.
+/* ── How it works: the stage visuals drawn here ─────────────────────────────
+ * One card, one list: an eyebrow and three rows, the first of them live. The
+ * rows are the fund's own things (its templates, its folders, the surfaces the
+ * agent runs in, the claims it has cited), so each pillar's picture is the
+ * pillar's own noun. Sized like the workflow checklist next door (.xv-marquee)
+ * so the stage reads at one scale from claim to claim.
  */
-function HowFormatVisual() {
+function HxList({ eyebrow, rows }) {
   return (
     <div className="sol-hx">
-      <p className="sol-hx-eyebrow">Saved skills</p>
+      <p className="sol-hx-eyebrow">{eyebrow}</p>
       <ul className="sol-hx-list">
-        {[
-          ['Earnings update', 'Fund model v12', 'Running on 14 names'],
-          ['Comps refresh', 'Comps template'],
-          ['Model audit', 'Audit memo'],
-        ].map(([name, tpl, state], i) => (
+        {rows.map(([name, tag, state], i) => (
           <li key={name} className={i === 0 ? 'is-on' : ''} style={{ '--i': i }}>
             <i aria-hidden="true" />
             <span className="sol-hx-name">{name}</span>
-            <span className="sol-hx-tpl">{tpl}</span>
+            <span className="sol-hx-tpl">{tag}</span>
             {state && <em className="sol-hx-state">{state}</em>}
           </li>
         ))}
@@ -596,12 +593,48 @@ function HowFormatVisual() {
     </div>
   )
 }
+const HowSurfacesVisual = () => (
+  <HxList eyebrow="Where it runs" rows={[
+    ['Excel add-in', 'Fund_model_v12.xlsx', 'Updating Q3 actuals in your sheet'],
+    ['Web app', 'Northwind thesis', ''],
+    ['Same agent, same citations', 'Both', ''],
+  ]} />
+)
+const HowCitedVisual = () => (
+  <HxList eyebrow="Every number, one source" rows={[
+    ['Revenue 1,284.6', 'Form 10-Q, p. 4', 'Condensed Statements of Operations, line 3'],
+    ['Gross margin 39.9%', 'Q3 release', ''],
+    ['Promo intensity rising', 'Q3 call, 14:32', ''],
+  ]} />
+)
+const HowFormatVisual = () => (
+  <HxList eyebrow="Your templates" rows={[
+    ['Fund model', 'Fund_model_v12.xlsx', 'Applied to the Northwind build'],
+    ['Comps sheet', 'Comps_template.xlsx', ''],
+    ['Investment memo', 'Memo_format.docx', ''],
+  ]} />
+)
+const HowSkillsVisual = () => (
+  <HxList eyebrow="Saved skills" rows={[
+    ['Earnings update', 'Fund model v12', 'Running on 14 names'],
+    ['Comps refresh', 'Comps template', ''],
+    ['Model audit', 'Audit memo', ''],
+  ]} />
+)
+const HowDataroomVisual = () => (
+  <HxList eyebrow="Dataroom" rows={[
+    ['Broker notes', '14 files', 'Attached to this session'],
+    ['Expert call transcripts', '6 files', ''],
+    ['Internal research', '22 files', ''],
+  ]} />
+)
 
-/* the stage visuals the How it works claims can call up: three are the home
-   page's own (the workflow checklist, the citation trace, the certification
-   seals, the source field), one is drawn here */
+/* the stage visuals the How it works pillars call up: four are the home page's
+   own (the workflow checklist, the source field, the citation trace, the
+   certification seals), five are drawn here */
 const HOW_VISUALS = {
-  workflows: VisualWorkflows, cite: VisualAudit, format: HowFormatVisual, sources: VisualIntegrated, enterprise: VisualEnterprise,
+  workflows: VisualWorkflows, surfaces: HowSurfacesVisual, cited: HowCitedVisual, format: HowFormatVisual,
+  skills: HowSkillsVisual, dataroom: HowDataroomVisual, sources: VisualIntegrated, trace: VisualAudit, enterprise: VisualEnterprise,
 }
 
 /* the home page's Excel section, claim for claim: a rail of the steps on the
@@ -767,8 +800,8 @@ export default function Solution() {
         {sol.how && <SectionRule />}
         {sol.how && <HowItWorks how={sol.how} id="how-it-works" />}
 
-        {/* the home page's Customers section, as is */}
-        {sol.testimonials && <Testimonial />}
+        {/* the page's quote, in the home page's Customers treatment */}
+        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
 
         {sol.faqs && <SectionRule />}
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} />}

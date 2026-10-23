@@ -1343,6 +1343,7 @@ button.play { border: none; padding: 0; appearance: none }
    drives translate/scale/z-index on an automatic timer.
    Room below for the deeper cards peeking out (2 × PEEK). */
 .testi-deck { position: relative; width: min(680px, 100%); margin: 0 auto }
+.testi-deck--single .testi-stack { padding-bottom: 0 }
 .testi-stack {
   display: grid;
   width: 100%;
@@ -5914,6 +5915,12 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-hx-state { grid-column: 2 / -1; margin-top: 2px; font-style: normal; font-size: 13.5px; color: var(--accent) }
 @keyframes solHxIn { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
 .x4e-visual:not(.is-active) .sol-hx-list li { animation: none }
+/* nine pillars make the rail taller than the stage: the stage rides along
+   under the navbar while the rail scrolls, so the picture is always beside
+   the claim that is lit */
+.sol-how .x4e-pane { overflow: clip } /* clip, not hidden: hidden makes the pane a scroll container and the stage could not stick */
+.sol-how .x4e-stage:not(.x4e-stage--inline) { position: sticky; top: 72px; align-self: start; height: clamp(440px, 70vh, 680px); max-height: calc(100vh - 96px) }
+.sol-hx-tpl:empty { display: none }
 @media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
 
 /* ── closing CTA ── .ent-panel's blue, centred */

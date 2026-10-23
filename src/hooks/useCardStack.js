@@ -41,6 +41,7 @@ export default function useCardStack(count) {
     const section = sectionRef.current
     const stack = stackRef.current
     if (!section || !stack) return
+    if (count < 2) return // one card: nothing to cycle, nothing to page
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const cards = Array.from(stack.children)
