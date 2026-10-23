@@ -186,38 +186,96 @@ function OverviewVisual() {
   )
 }
 
+/* the model's historical columns, spread from the three 10-Ks. The forecast
+   columns stay empty: the claim is that the analyst starts there */
+const BUILD_YEARS = ['FY23A', 'FY24A', 'FY25A']
 const BUILD_ROWS = [
   ['Revenue', '4,355', '4,610', '4,872'],
+  ['Gross profit', '1,742', '1,857', '1,973'],
   ['EBITDA', '655', '702', '748'],
+  ['D&A', '(182)', '(190)', '(201)'],
   ['Capex', '(195)', '(204)', '(215)'],
   ['Free cash flow', '318', '341', '362'],
 ]
+const BUILD_PAGES = ['FY23 10-K · p. 41', 'FY24 10-K · p. 43', 'FY25 10-K · p. 44']
 
-/* historicals spread from the filings, the forecast columns waiting: the sheet
-   alone, full width, since the claim is the empty forecast columns and a DCF
-   card beside them only said the opposite */
+/* the model window beside the FinSynth pane, the way the add-in sits in Excel.
+   Year by year the historical column fills in the fund's template from that
+   year's 10-K, the pane counts the years and the recast, then the DCF tab
+   lights and the pill over the sheet turns its spinner into a check. Two
+   ticks a year (the column lights, then fills), one for the recast, one for
+   the DCF, then a hold on the finished build */
 function ModelBuildVisual() {
+  const ref = useRef(null)
+  const HOLD = 8
+  const t = useTicks(BUILD_YEARS.length * 2 + 2 + HOLD, 620, ref)
+  const cur = Math.floor(t / 2)
+  const filled = (c) => t >= c * 2 + 1
+  const years = BUILD_YEARS.filter((_, c) => filled(c)).length
+  const recast = t >= BUILD_YEARS.length * 2 + 1
+  const done = t >= BUILD_YEARS.length * 2 + 2
+  const fxCol = Math.min(cur, BUILD_YEARS.length - 1)
   return (
-    <div className="sol-stage sol-stage--focus" aria-hidden="true">
-      <div className="sol-panel sol-sheet sol-main">
-        <div className="sol-sheet-title">Northwind Retail · model build<em className="sol-sheet-tag">Your template</em></div>
-        <div className="sol-sheet-fx"><span>F12</span><span>fx</span><span>=4872 · FY25 10-K, p. 44</span></div>
-        <table className="sol-build">
-          <thead>
-            <tr className="sol-build-span"><th /><th colSpan="3">From the filings</th><th colSpan="2" className="is-fc">Forecast</th></tr>
-            <tr><th>USD m</th><th>FY23A</th><th>FY24A</th><th>FY25A</th><th className="is-fc">FY26E</th><th className="is-fc">FY27E</th></tr>
-          </thead>
-          <tbody>
-            {BUILD_ROWS.map((r) => (
-              <tr key={r[0]}>
-                <td>{r[0]}</td>
-                {r.slice(1).map((v, i) => <td key={i} className="is-hist">{v}</td>)}
-                <td className="is-fc" /><td className="is-fc" />
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>DCF</span><span>Inputs</span><em>FY23 recast applied</em></div>
+    <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
+      <div className="sol-win-wrap">
+        <div className="sol-panel sol-sheet sol-win">
+          <div className="sol-win-bar"><span className="sol-win-dots"><i /><i /><i /></span><b>Northwind.xlsx</b></div>
+          <div className="sol-sheet-fx">
+            <span>{String.fromCharCode(67 + fxCol)}8</span><span>fx</span><span>{filled(fxCol) ? BUILD_ROWS[5][fxCol + 1] : ''}</span>
+          </div>
+          <div className="sol-win-grid">
+          <table className="sol-dcf">
+            <thead>
+              <tr><th /><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-fc">FY26E</th><th className="is-fc">FY27E</th></tr>
+            </thead>
+            <tbody>
+              {BUILD_ROWS.map((r, i) => (
+                <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
+                  <td className="sol-dcf-n">{i + 2}</td>
+                  <td>{r[0]}</td>
+                  {r.slice(1).map((v, c) => (
+                    <td key={c} className={`sol-dcf-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>
+                  ))}
+                  <td className="is-fc" /><td className="is-fc" />
+                </tr>
+              ))}
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <tr key={`e${i}`} className="is-empty"><td className="sol-dcf-n">{BUILD_ROWS.length + 2 + i}</td><td /><td /><td /><td /><td className="is-fc" /><td className="is-fc" /></tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+          <div className="sol-sheet-tabs sol-win-tabs">
+            <span className="is-on">Model</span><span className={done ? 'is-new' : ''}>DCF</span><span>Inputs</span>
+            <em><Src>{BUILD_PAGES[fxCol]}</Src></em>
+          </div>
+        </div>
+        <div className={`sol-status${done ? ' is-done' : ''}`}>
+          <span className="sol-status-ico">
+            <span className="sol-status-spin" />
+            <span className="sol-status-check">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+            </span>
+          </span>
+          <span className="sol-status-lbls"><span>Spreading the historicals</span><span>Model and DCF built</span></span>
+        </div>
+      </div>
+      <div className="sol-panel sol-pane">
+        <div className="sol-pane-tabs">
+          <svg className="sol-pane-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" /><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" /></svg>
+          <span className="is-on">Chat</span><span>Review</span><span>Trace</span>
+        </div>
+        <div className="sol-pane-body">
+          <p className="sol-pane-ask">Build the model and DCF in our template from the last three 10-Ks</p>
+          <p className="sol-pane-say">Spreading the historicals into your template, each figure linked to its page in the filing</p>
+          <ul className="sol-pane-steps">
+            <li className={years ? 'is-on' : ''}><span>Historicals spread</span><em>{years} / {BUILD_YEARS.length} years</em></li>
+            <li className={recast ? 'is-on' : ''}><span>FY23 segment recast</span><em>{recast ? 'Applied' : 'Pending'}</em></li>
+            <li className={done ? 'is-on' : ''}><span>DCF</span><em>{done ? 'Built' : 'Pending'}</em></li>
+          </ul>
+          <p className={`sol-pane-say sol-pane-done${done ? ' is-on' : ''}`}>History lines up across the three years. The forecast columns are yours</p>
+        </div>
+        <div className="sol-pane-in"><span>Type a message, / for commands, @ to mention</span><b>Send ↵</b></div>
       </div>
     </div>
   )
