@@ -5987,13 +5987,77 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-stack li span { overflow: hidden; text-overflow: ellipsis }
 .sol-stack li em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
 
-/* model build: historicals in, the forecast boundary marked */
-.sol-build th:not(:first-child), .sol-build td:not(:first-child) { text-align: right }
-.sol-build-span th { font-size: .72em; text-align: center; padding: .4em .5em; letter-spacing: .06em; text-transform: uppercase }
-.sol-build-span th:first-child { background: #fff }
-.sol-build .is-fc { background: repeating-linear-gradient(135deg, #F3F6FF 0 .35em, #FFFFFF .35em .7em); color: var(--accent) }
-.sol-build th.is-fc { background: #F3F6FF; color: var(--accent) }
-.sol-build .is-hist + .is-fc, .sol-build th:not(.is-fc) + th.is-fc { border-left: 2px solid var(--accent) }
+/* model build: the model window beside the FinSynth pane, as the add-in sits
+   in Excel. The window gets the larger share and the pill across its top edge */
+.sol-stage--build {
+  font-size: clamp(7px, 2.1cqw, 12.5px);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.2em;
+}
+.sol-win-wrap { position: relative; display: grid; min-width: 0; min-height: 0 }
+/* the pill straddles the window's top edge, as in the reference */
+.sol-stage--build .sol-status { top: -1.1em; left: auto; right: -.4em; transform: none }
+.sol-win-bar {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1em;
+  padding: .75em 1.1em; font-size: 1em; font-weight: 500; border-bottom: 1px solid var(--hair); white-space: nowrap; overflow: hidden;
+}
+.sol-win-bar b { font-weight: 500; overflow: hidden; text-overflow: ellipsis }
+.sol-win-dots { display: inline-flex; gap: .4em }
+.sol-win-dots i { width: .6em; height: .6em; border-radius: 50%; background: #E3E5E9 }
+.sol-win .sol-sheet-fx { padding: .5em 1.1em }
+.sol-win .sol-sheet-fx span:nth-child(3) { color: var(--ink) }
+.sol-win-grid { flex: 1; min-height: 0; overflow: hidden }
+.sol-dcf { font-size: .86em }
+.sol-dcf th, .sol-dcf td { padding: .42em .5em; border-right: 1px solid #EEF0F3 }
+.sol-dcf th:last-child, .sol-dcf td:last-child { border-right: 0 }
+.sol-dcf th:nth-child(n + 3), .sol-dcf td:nth-child(n + 3) { text-align: right; font-variant-numeric: tabular-nums }
+.sol-dcf th:nth-child(2), .sol-dcf td:nth-child(2) { width: 100%; text-align: left }
+.sol-dcf .sol-dcf-n, .sol-dcf th:first-child { width: 2.2em; text-align: center; color: var(--muted); background: #FAFAFA; font-family: var(--font-mono); font-size: .85em }
+.sol-dcf th.is-fc, .sol-dcf td.is-fc { background: #F7F9FF; min-width: 2.8em }
+.sol-dcf th.is-fc { color: var(--accent) }
+.sol-dcf th:not(.is-fc) + th.is-fc, .sol-dcf td:not(.is-fc) + td.is-fc { border-left: 2px solid var(--accent) }
+.sol-dcf tr.is-total td:not(.sol-dcf-n) { font-weight: 500 }
+.sol-dcf tr.is-empty td { height: 2em }
+.sol-dcf-cell { transition: background .35s, box-shadow .35s }
+.sol-dcf-cell span { opacity: 0; transition: opacity .35s }
+.sol-dcf-cell.is-lit { background: #FFFBEB }
+.sol-dcf-cell.is-filled { background: #FFF1C2; box-shadow: inset 0 0 0 1px #E7A200 }
+.sol-dcf-cell.is-filled span { opacity: 1 }
+.sol-win-tabs { padding: .45em 1.1em }
+.sol-win-tabs .sol-src { font-size: .9em }
+.sol-win-tabs span { transition: color .35s, background .35s }
+.sol-win-tabs span.is-new { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent) }
+/* the pane: the add-in's tabs, the ask, the agent's reply and the steps it
+   reports, the composer at the foot */
+.sol-pane { padding: 0; font-size: .88em }
+.sol-pane-tabs {
+  display: flex; align-items: center; gap: 1.5em; padding: 0 1.3em; height: 3.2em; border-bottom: 1px solid var(--hair);
+  font-size: 1em; font-weight: 500; color: var(--muted); white-space: nowrap;
+}
+.sol-pane-mark { width: 1.2em; height: 1.2em; color: var(--ink); margin-right: .3em }
+.sol-pane-tabs span { position: relative; height: 100%; display: inline-flex; align-items: center }
+.sol-pane-tabs span.is-on { color: var(--ink) }
+.sol-pane-tabs span.is-on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink) }
+.sol-pane-body { flex: 1; min-height: 0; overflow: hidden; padding: 1.1em 1.2em; display: flex; flex-direction: column; gap: .85em }
+.sol-pane-body p { margin: 0; font-size: 1em; line-height: 1.4 }
+.sol-pane-ask { align-self: flex-end; max-width: 88%; padding: .7em .95em; border-radius: .8em .8em .2em .8em; background: #F2F3F5; color: var(--ink) }
+.sol-pane-say { color: var(--secondary) }
+.sol-pane-steps { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hair); border-radius: .6em; overflow: hidden; flex: none }
+.sol-pane-steps li {
+  display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: .5em .8em; font-size: .95em; color: var(--muted);
+  white-space: nowrap; transition: color .35s;
+}
+.sol-pane-steps li + li { border-top: 1px solid var(--hair) }
+.sol-pane-steps li.is-on { color: var(--ink) }
+.sol-pane-steps li em { font-style: normal; font-family: var(--font-mono); font-size: .85em; color: var(--muted); padding: .15em .5em; border-radius: .3em; background: #F2F3F5; transition: color .35s, background .35s }
+.sol-pane-steps li.is-on em { color: #12A150; background: #E9F8EF }
+.sol-pane-done { opacity: 0; transform: translateY(.4em); transition: opacity .45s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-pane-done.is-on { opacity: 1; transform: none }
+.sol-pane-in {
+  margin: auto 1em 1em; padding: .6em .5em .6em .8em; border: 1px solid var(--hair); border-radius: .7em;
+  display: flex; align-items: center; justify-content: space-between; gap: 1em; font-size: .92em; color: var(--muted); white-space: nowrap; overflow: hidden;
+}
+.sol-pane-in span { overflow: hidden; text-overflow: ellipsis }
+.sol-pane-in b { flex: none; font-weight: 500; color: #fff; background: var(--ink); padding: .35em .8em; border-radius: .45em }
 
 /* comps: the selected multiple and the inputs behind it */
 .sol-comps th:not(:first-child), .sol-comps td:not(:first-child) { text-align: right }
