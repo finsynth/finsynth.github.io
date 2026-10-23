@@ -773,29 +773,30 @@ export default function Solution() {
         </header>
         <SectionRule />
 
-        <section className="sol-stats wrap" ref={statsRef}>
-          <div className="sol-stats-band">
-            <p className="sol-stats-lead">{sol.statsLead}</p>
-            <dl className="wac-nums sol-stats-nums" style={{ '--n': sol.stats.length }}>
-              {sol.stats.map((s, i) => (
-                <div className="wac-num" key={s.label} style={{ '--d': `${0.1 + 0.07 * i}s` }}>
-                  <dt className="wac-num-value">{s.value}</dt>
-                  <dd className="wac-num-label">{s.label}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
-
-        {/* the use cases in one frame, head band on top, the way the home page
-            frames its product sections */}
-        <div className="wrap sol-works-wrap" id="use-cases">
+        {/* the use cases in one hairline frame on the page's grey ground, head
+            band on top, the way the home page frames its Security section;
+            the figures hang off the frame's foot the way the home page's
+            metrics band hangs off its Excel section: same wrap, no top border
+            of its own, the frame's bottom hairline is the one line between */}
+        <section className="wrap sol-works-wrap" id="use-cases">
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
             {sol.more && <p className="sol-more"><b>{sol.more.lead}</b> {sol.more.rest}</p>}
           </div>
-        </div>
+          {sol.stats && (
+            <div className="wac-band sol-stats" ref={statsRef}>
+              <dl className="wac-nums" style={{ '--n': sol.stats.length }}>
+                {sol.stats.map((s, i) => (
+                  <div className="wac-num" key={s.label} style={{ '--d': `${0.1 + 0.07 * i}s` }}>
+                    <dt className="wac-num-value">{s.value}</dt>
+                    <dd className="wac-num-label">{s.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+        </section>
 
         {sol.how && <SectionRule />}
         {sol.how && <HowItWorks how={sol.how} id="how-it-works" />}
