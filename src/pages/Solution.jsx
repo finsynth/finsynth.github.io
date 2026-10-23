@@ -639,6 +639,13 @@ export default function Solution() {
                 </svg>
               </a>
             </div>
+            {/* the strategies the page serves, as pills under the buttons */}
+            {sol.strategies && (
+              <div className="sol-chips">
+                <span className="sol-chips-lead">{sol.strategiesLead}</span>
+                <ul>{sol.strategies.map((name) => <li key={name}>{name}</li>)}</ul>
+              </div>
+            )}
           </div>
           {/* the same Wall Street photo the home hero pixelates, here left as a photograph */}
           <div className="sol-hero-photo">

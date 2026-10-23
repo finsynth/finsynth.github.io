@@ -14,6 +14,8 @@ export const SOLUTIONS = {
     title: 'Take your research from draft to decision',
     lede:
       'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like earnings updates, consensus comparison, model audits and comps, tracing every output back to its source.',
+    strategiesLead: 'Built to work across strategies',
+    strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
     useCasesHead: { eyebrow: 'Use cases', title: 'Where FinSynth fits into hedge fund research' },
     workflows: [
       {
