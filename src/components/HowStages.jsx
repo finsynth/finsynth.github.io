@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 
@@ -57,14 +57,15 @@ function Arrow() {
 
 /* 01 · the sources attached to the session: a filing, the fund's own
    template, a connected source, a Dataroom folder */
-export function SourcesPanel({ ex, n }) {
+const SOURCE_PILLAR = { sheet: 'format', folder: 'dataroom', plug: 'mcp' }
+export function SourcesPanel({ ex, n, focus }) {
   return (
     <div className="hw-panel hw-sources">
       {n && <span className="hw-n">{n}</span>}
       <div className="hw-panel-head"><span>Attached to this session</span><em>{ex.sources.length} sources</em></div>
       <ul className="hw-src-list">
         {ex.sources.map((s, i) => (
-          <li key={s.name} style={{ '--i': i }}>
+          <li key={s.name} style={{ '--i': i }} className={focus && SOURCE_PILLAR[s.icon] === focus ? 'is-focus' : ''}>
             <Ico kind={s.icon} />
             <span className="hw-src-name">{s.name}</span>
             <span className="hw-src-kind">{s.kind}</span>
@@ -78,18 +79,19 @@ export function SourcesPanel({ ex, n }) {
 
 /* 02 · the workspace: the surface tab, one instruction, the saved Skill it
    ran as, and the workbook the stage one documents were written into */
-export function BenchPanel({ ex, n }) {
+export function BenchPanel({ ex, n, focus }) {
+  const f = (k) => (focus === k ? ' is-focus' : '')
   return (
     <div className="hw-panel hw-bench">
       {n && <span className="hw-n">{n}</span>}
-      <div className="hw-bench-bar">
+      <div className={`hw-bench-bar${f('surfaces')}`}>
         {ex.surfaces.map((s, i) => <span key={s} className={`hw-tab${i === 0 ? ' is-on' : ''}`}>{s}</span>)}
         <em>{ex.file}</em>
       </div>
-      <div className="hw-ask">
+      <div className={`hw-ask${f('workflows')}`}>
         <span className="hw-ask-dot" aria-hidden="true" />
         <p>{ex.instruction}</p>
-        <span className="hw-skill"><i aria-hidden="true" />Skill · {ex.skill}</span>
+        <span className={`hw-skill${f('skills')}`}><i aria-hidden="true" />Skill · {ex.skill}</span>
       </div>
       <table className="hw-sheet">
         <thead><tr>{ex.sheet.cols.map((c, i) => <th key={c} className={i === 2 ? 'is-col' : ''}>{c}</th>)}</tr></thead>
@@ -112,13 +114,14 @@ export function BenchPanel({ ex, n }) {
 
 /* 03 · the evidence: the cell stage two wrote, wired to the line in the
    source it came from, and the control that steps through the rest */
-export function EvidencePanel({ ex, n }) {
+export function EvidencePanel({ ex, n, focus }) {
   const { cite, sheet } = ex
   const rows = sheet.rows.slice(0, 3)
+  const f = (k) => (focus === k ? ' is-focus' : '')
   return (
     <div className="hw-panel hw-evid">
       {n && <span className="hw-n">{n}</span>}
-      <div className="hw-evid-grid">
+      <div className={`hw-evid-grid${f('cited')}`}>
         <div className="hw-evid-sheet">
           <div className="hw-evid-fx"><span>{cite.cell}</span><span>fx</span><span>={sheet.rows[cite.row][2]}</span></div>
           <table className="hw-sheet hw-sheet--mini">
@@ -138,7 +141,7 @@ export function EvidencePanel({ ex, n }) {
           <p className="hw-passage">{cite.before}<mark>{cite.mark}</mark>{cite.after}</p>
         </div>
       </div>
-      <div className="hw-review">
+      <div className={`hw-review${f('review')}`}>
         <span>Review citations</span>
         <b>{cite.reviewed} / {cite.total}</b>
         <i aria-hidden="true">‹</i><i aria-hidden="true">›</i>
@@ -149,11 +152,11 @@ export function EvidencePanel({ ex, n }) {
 
 const PANELS = [SourcesPanel, BenchPanel, EvidencePanel]
 
-function Stage({ i, ex, size }) {
+function Stage({ i, ex, size, focus }) {
   const Panel = PANELS[i]
   return (
-    <div className={`hw-stage hw-stage--${size}`} aria-hidden="true">
-      <Panel ex={ex} />
+    <div className={`hw-stage hw-stage--${size}${focus ? ' has-focus' : ''}`} aria-hidden="true">
+      <Panel ex={ex} focus={focus} />
     </div>
   )
 }
@@ -213,11 +216,42 @@ function Pillars({ items, className = '' }) {
   )
 }
 
-/* the open tab: advances on its own while the frame is on screen, and stops
-   for good once the reader picks one */
-function useAutoTab(count, rootRef, dwell = 6500) {
+/* the open tab's pillars as the home page's Excel rail: every pillar is a
+   row, equal rows split the stage's height, and the active row is the one
+   whose part of the scene is lit. Same classes as the Excel section's rail
+   (.x4e-rail / .x4e-item) so the two read as one architecture. */
+function Rail({ items, active, onPick, hold, release }) {
+  return (
+    <ol className="x4e-rail hw-rail">
+      {items.map((p, i) => (
+        <li key={p.key} style={{ '--i': i }}>
+          <button
+            type="button"
+            className={`x4e-item${i === active ? ' is-active' : ''}`}
+            aria-pressed={i === active}
+            onClick={() => onPick(i)}
+            onMouseEnter={hold} onMouseLeave={release} onFocus={hold} onBlur={release}
+          >
+            <span className="x4e-item-body">
+              <span className="x4e-item-title">{p.title}</span>
+              <span className="x4e-item-p">{p.body}</span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+/* the open tab, and the lit pillar inside it, advance on their own while the
+   frame is on screen: the rail steps through its rows and the last row hands
+   on to the next tab. Picking a tab or a row stops the clock for good; the
+   pointer resting on the rail only pauses it. */
+function useAutoTab(counts, rootRef, step = 3200) {
   const [active, setActive] = useState(0)
+  const [row, setRow] = useState(0)
   const [held, setHeld] = useState(false)
+  const [paused, setPaused] = useState(false)
   const [onScreen, setOnScreen] = useState(false)
   useEffect(() => {
     const el = rootRef.current
@@ -227,13 +261,20 @@ function useAutoTab(count, rootRef, dwell = 6500) {
     return () => io.disconnect()
   }, [rootRef])
   useEffect(() => {
-    if (held || !onScreen) return
+    if (held || paused || !onScreen) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const t = setInterval(() => setActive((a) => (a + 1) % count), dwell)
+    const t = setInterval(() => {
+      setRow((r) => {
+        if (r + 1 < counts[active]) return r + 1
+        setActive((a) => (a + 1) % counts.length)
+        return 0
+      })
+    }, step)
     return () => clearInterval(t)
-  }, [held, onScreen, count, dwell])
-  const pick = (i) => { setHeld(true); setActive(i) }
-  return [active, pick]
+  }, [held, paused, onScreen, counts, active, step])
+  const pickTab = (i) => { setHeld(true); setActive(i); setRow(0) }
+  const pickRow = (i) => { setHeld(true); setRow(i) }
+  return { active, row, pickTab, pickRow, hold: () => setPaused(true), release: () => setPaused(false) }
 }
 
 function Head({ how }) {
@@ -265,20 +306,24 @@ function Enterprise() {
 
 /* ── the layouts ── */
 
-/* tabs · the three stages in a row; the open one shows its pillars beside
-   its scene */
+/* tabs · the three stages in a row; under them the open stage's pillars as
+   the rail and its scene on the stage, the home Excel section's pane */
 function Tabs({ ex, steps }) {
   const ref = useRef(null)
-  const [active, pick] = useAutoTab(HOW_STAGES.length, ref)
+  const pillars = HOW_STAGES.map((_, i) => stagePillars(steps, i))
+  const counts = useMemo(() => pillars.map((p) => Math.max(p.length, 1)), [steps]) // eslint-disable-line react-hooks/exhaustive-deps
+  const { active, row, pickTab, pickRow, hold, release } = useAutoTab(counts, ref)
   const onKey = (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
     e.preventDefault()
     const n = HOW_STAGES.length
     const next = (active + (e.key === 'ArrowRight' ? 1 : n - 1)) % n
-    pick(next)
+    pickTab(next)
     e.currentTarget.querySelectorAll('[role="tab"]')[next]?.focus()
   }
   const st = HOW_STAGES[active]
+  const items = pillars[active]
+  const focus = items[row]?.key
   return (
     <div className="hw-tabs" ref={ref}>
       <div className="hw-tablist" role="tablist" aria-label="Stages of the workflow" onKeyDown={onKey}>
@@ -286,15 +331,15 @@ function Tabs({ ex, steps }) {
           <button
             type="button" role="tab" key={s.n} id={`hw-tab-${s.n}`}
             aria-selected={i === active} aria-controls="hw-tabpanel" tabIndex={i === active ? 0 : -1}
-            className={`hw-stagetab${i === active ? ' is-active' : ''}`} onClick={() => pick(i)}
+            className={`hw-stagetab${i === active ? ' is-active' : ''}`} onClick={() => pickTab(i)}
           >
             <Copy st={s} as="span" />
           </button>
         ))}
       </div>
-      <div className="hw-tabbody" role="tabpanel" id="hw-tabpanel" aria-labelledby={`hw-tab-${st.n}`} key={st.n}>
-        <Pillars items={stagePillars(steps, active)} />
-        <Stage i={active} ex={ex} size="tab" />
+      <div className="x4e-pane hw-pane" role="tabpanel" id="hw-tabpanel" aria-labelledby={`hw-tab-${st.n}`} key={st.n}>
+        <Rail items={items} active={row} onPick={pickRow} hold={hold} release={release} />
+        <Stage i={active} ex={ex} size="tab" focus={focus} />
       </div>
     </div>
   )

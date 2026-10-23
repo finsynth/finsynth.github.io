@@ -6245,7 +6245,14 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-stagetab.is-active .hw-p { color: var(--body-gray) }
 .hw-stagetab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent) }
 .hw-stagetab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
-.hw-tabbody { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) }
+/* the open tab's pane: the home Excel section's architecture. Its .x4e-pane
+   sets the .8fr / 1.2fr split and .x4e-rail the equal rows, the hairlines and
+   the accent marker on the active row; the stage keeps the Excel stage's
+   height so the two sections sit at one scale. */
+.hw-pane { border-top: 0 }
+.hw-rail { animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) both }
+.hw-rail .x4e-item { animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .08s) both }
+/* the pillars of a stacked (narrow) tab keep the icon list */
 .hw-pillars { list-style: none; margin: 0; padding: 8px var(--x4e-pad-x) 20px; display: flex; flex-direction: column; justify-content: center }
 .hw-pillar {
   display: grid; grid-template-columns: 34px 1fr; column-gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--hair);
@@ -6256,10 +6263,19 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-pillar h4 { margin: 2px 0 0; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
 .hw-pillar p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--body-gray) }
 .hw-stage--tab {
-  font-size: clamp(5.5px, 1.5cqw, 10px); aspect-ratio: 16 / 10; border-top: 0; border-left: 1px solid var(--hair);
+  font-size: clamp(6px, 1.5cqw, 11.5px); min-height: clamp(440px, 70vh, 680px); border-top: 0;
+  padding: 3em clamp(32px, 6%, 60px);
   animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) both;
 }
-.hw-stage--tab > .hw-panel { max-width: 52em }
+.hw-stage--tab > .hw-panel { max-width: 60em }
+/* the lit part of the scene: the one the active rail row is about. Everything
+   else steps back a little so the ring reads as the answer to the row. */
+.hw-stage .is-focus { position: relative; z-index: 1; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft); border-radius: .5em; transition: box-shadow .35s cubic-bezier(.32, .72, 0, 1) }
+.hw-src-list li.is-focus { padding-left: .6em; padding-right: .6em; margin: 0 -.6em }
+.hw-stage .hw-ask.is-focus, .hw-stage .hw-bench-bar.is-focus { border-radius: 0; box-shadow: inset .25em 0 0 var(--accent), inset 0 0 0 100em var(--accent-soft) }
+.hw-stage .hw-skill.is-focus { box-shadow: 0 0 0 .18em var(--accent) }
+.hw-stage .hw-evid-grid.is-focus { box-shadow: inset 0 0 0 100em var(--accent-soft) }
+.hw-stage .hw-review.is-focus { box-shadow: inset .25em 0 0 var(--accent), inset 0 0 0 100em var(--accent-soft) }
 .hw-pillars--stack { padding: 0 var(--x4e-pad-x) 22px; justify-content: flex-start }
 .hw-pillars--stack .hw-pillar { padding: 14px 0 }
 
@@ -6292,7 +6308,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-ent a:hover { color: var(--accent) }
 
 @keyframes hwIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab { animation: none } }
+@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab, .hw-rail, .hw-rail .x4e-item { animation: none } }
 
 /* narrow: every layout is the columns layout stacked, copy then scene */
 @media (max-width: 900px) {
