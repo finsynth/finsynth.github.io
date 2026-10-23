@@ -6126,3 +6126,220 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-hx-tpl { font-size: 9.5px; padding: 3px 7px }
   .sol-hx-state { font-size: 12px }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOW IT WORKS, THREE STAGES (src/components/HowStages.jsx)
+   The solution pages' shared How it works under comparison: the home page's
+   white frame and blue stage, three stages of one workflow, and one example
+   drawn through all three. ?how=columns|workspace|evidence picks the layout.
+   The scenes are drawn in em off a stage whose font-size tracks its width
+   (container-type: inline-size), so each layout sets one font-size and the
+   panels scale with the cell they are in.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.hw-head { align-items: flex-end }
+.hw-head .sol-eyebrow { margin-bottom: 18px }
+.hw-intro { margin: 0; max-width: 34ch; font-size: 16px; line-height: 1.55; color: var(--secondary) }
+
+/* stage copy: number, title, explanation, on the frame's inset */
+.hw-copy { padding: 30px var(--x4e-pad-x) 32px; min-width: 0 }
+.hw-num {
+  display: block; margin-bottom: 14px;
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--accent);
+}
+.hw-title {
+  margin: 0; font-family: var(--font-display); font-weight: 450;
+  font-size: clamp(19px, 1.7vw, 22px); line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
+}
+.hw-p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--body-gray); max-width: 40ch }
+
+/* the blue stage the scenes sit on (the use case rows' ground) */
+.hw-stage {
+  position: relative; container-type: inline-size;
+  display: flex; align-items: center; justify-content: center; gap: 1.4em;
+  padding: 2.4em;
+  background-color: #1B34A6;
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
+  background-size: 320px 320px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: overlay, normal, normal;
+  color: var(--ink); font-family: var(--font-body);
+  border-top: 1px solid var(--hair);
+}
+.hw-stage--col { font-size: clamp(5.5px, 2.45cqw, 10px); aspect-ratio: 4 / 3.3 }
+.hw-stage--half { font-size: clamp(5.5px, 1.75cqw, 10px); aspect-ratio: 16 / 8.5 }
+.hw-stage--big { font-size: clamp(6px, 1.05cqw, 12px); padding: 3.2em 2.4em }
+.hw-stage--scene { font-size: clamp(5px, .9cqw, 11px); padding: 3em var(--x4e-pad-x); gap: 1.2em; align-items: center }
+.hw-stage > .hw-panel { width: 100% }
+.hw-stage--big > .hw-panel { max-width: 62em }
+.hw-stage--scene > .hw-panel { flex: 1 1 0; min-width: 0 }
+.hw-stage--scene > .hw-bench { flex-grow: 1.25 }
+.hw-stage--scene > .hw-evid { flex-grow: 1.15 }
+.hw-arrow { flex: none; width: 3.6em; height: 1.6em; color: rgba(255, 255, 255, .85) }
+
+/* a white panel on the stage, the use case rows' card */
+.hw-panel {
+  position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
+  background: #fff; border-radius: .9em;
+  box-shadow: 0 1.2em 3em rgba(6, 16, 50, .28), 0 0 0 1px rgba(255, 255, 255, .18);
+  font-size: 1em; line-height: 1.35;
+}
+/* the stage number on a panel's corner, in the continuous scene */
+.hw-n {
+  position: absolute; top: .9em; right: 1em; z-index: 1;
+  font-family: var(--font-mono); font-size: .85em; letter-spacing: .06em; color: var(--accent);
+  padding: .25em .55em; border-radius: .35em; background: var(--accent-soft);
+}
+.hw-panel-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 1em;
+  padding: 1.1em 1.4em; border-bottom: 1px solid var(--hair);
+  font-size: 1em; font-weight: 500; color: var(--ink); white-space: nowrap;
+}
+.hw-panel-head em { font-style: normal; font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
+.hw-n ~ .hw-panel-head em { margin-right: 2.8em }
+
+/* 01 · the sources */
+.hw-src-list { list-style: none; margin: 0; padding: .6em 1.4em 1em; display: flex; flex-direction: column }
+.hw-src-list li {
+  display: grid; grid-template-columns: auto 1fr auto; column-gap: .9em; align-items: center;
+  padding: .8em 0; border-top: 1px solid #EEF0F3;
+  animation: hwIn .6s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .12s + .1s) both;
+}
+.hw-src-list li:first-child { border-top: 0 }
+.hw-ico { grid-row: 1 / 3; width: 2.2em; height: 2.2em; padding: .45em; border-radius: .45em; background: var(--accent-soft); color: var(--accent) }
+.hw-src-name { font-size: 1.05em; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.hw-src-kind {
+  grid-column: 3; grid-row: 1 / 3; align-self: center;
+  padding: .25em .6em; border: 1px solid var(--hair); border-radius: .35em; white-space: nowrap;
+  font-family: var(--font-mono); font-size: .78em; letter-spacing: .03em; color: var(--muted);
+}
+.hw-src-meta { grid-column: 2; font-size: .88em; color: var(--muted) }
+
+/* 02 · the workspace */
+.hw-bench-bar {
+  display: flex; align-items: center; gap: .4em; padding: .8em 1.2em; border-bottom: 1px solid var(--hair);
+  font-size: .9em; white-space: nowrap; overflow: hidden;
+}
+.hw-tab { padding: .35em .8em; border-radius: .35em; color: var(--muted) }
+.hw-tab.is-on { background: var(--accent-soft); color: var(--accent); font-weight: 500 }
+.hw-bench-bar em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .88em; color: var(--muted); overflow: hidden; text-overflow: ellipsis }
+.hw-n ~ .hw-bench-bar em { margin-right: 3em }
+.hw-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .8em; align-items: start; padding: 1.1em 1.4em; border-bottom: 1px solid var(--hair) }
+.hw-ask-dot { width: .7em; height: .7em; margin-top: .4em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
+.hw-ask p { margin: 0; font-size: 1.05em; line-height: 1.4; color: var(--ink); font-weight: 500 }
+.hw-skill {
+  grid-column: 2; justify-self: start; margin-top: .7em;
+  display: inline-flex; align-items: center; gap: .5em;
+  padding: .3em .7em; border-radius: .35em; border: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .8em; letter-spacing: .03em; color: var(--secondary);
+}
+.hw-skill i { width: .6em; height: .6em; border-radius: 50%; background: #12A150 }
+.hw-sheet { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
+.hw-sheet th, .hw-sheet td { padding: .55em .9em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
+.hw-sheet th:not(:first-child), .hw-sheet td:not(:first-child) { text-align: right }
+.hw-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
+.hw-sheet th.is-col { color: var(--accent) }
+.hw-sheet td:first-child { padding-left: 1.4em }
+.hw-sheet td:last-child, .hw-sheet th:last-child { padding-right: 1.4em }
+.hw-cell.is-filled { background: var(--k-acc-soft); box-shadow: inset 0 0 0 1px var(--k-acc); color: var(--ink); font-weight: 500 }
+.hw-ok { color: #12A150; font-weight: 500 }
+.hw-miss { color: #C2410C; font-weight: 500 }
+.hw-bench-foot {
+  margin-top: auto; display: flex; align-items: center; gap: .5em; padding: .9em 1.4em;
+  font-size: .92em; font-weight: 500; color: var(--ink);
+}
+.hw-bench-foot svg { width: 1.2em; height: 1.2em; color: #12A150 }
+
+/* 03 · the evidence: the written cell wired to its line in the source */
+.hw-evid-grid { --hw-gap: 2.4em; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: var(--hw-gap); padding: 1.4em; align-items: start }
+.hw-evid-sheet { border: 1px solid var(--hair); border-radius: .5em; overflow: hidden }
+.hw-evid-fx {
+  display: flex; gap: .8em; padding: .55em .9em; border-bottom: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap;
+}
+.hw-evid-fx span:first-child { color: var(--ink) }
+.hw-sheet--mini td:first-child { padding-left: .9em }
+.hw-sheet--mini td:last-child, .hw-sheet--mini th:last-child { padding-right: .9em }
+.hw-sheet--mini tr:last-child td { border-bottom: 0 }
+.hw-cell.is-sel { position: relative }
+.hw-cell.is-sel span { display: inline-block; padding: .1em .4em; margin: -.1em -.4em; border-radius: .25em; background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); font-weight: 500 }
+/* the wire: out of the selected cell, across the gap, into the passage */
+.hw-cell.is-sel::after {
+  content: ''; position: absolute; left: 100%; top: 50%; z-index: 1;
+  width: calc(var(--hw-gap) + 1.1em); height: 0; margin-left: 1px;
+  border-top: 1.5px solid var(--k-acc);
+}
+.hw-cell.is-sel::before {
+  content: ''; position: absolute; left: calc(100% + var(--hw-gap) + 1.1em - .25em); top: 50%; z-index: 2;
+  width: .55em; height: .55em; margin-top: -.28em; border-radius: 50%; background: var(--k-acc);
+}
+.hw-evid-src { min-width: 0 }
+.hw-src-head { display: flex; align-items: center; gap: .7em; padding: 0 0 .7em; font-family: var(--font-mono); font-size: .82em; color: var(--muted) }
+.hw-chip { padding: .25em .6em; border-radius: .35em; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: .95em; white-space: nowrap }
+.hw-passage { margin: 0; padding: .9em 1em; border-left: 2px solid var(--k-acc); background: var(--bg); font-size: .98em; line-height: 1.5; color: var(--secondary) }
+.hw-passage mark { background: var(--k-acc-soft); color: var(--ink); font-weight: 500; padding: .05em .15em; border-radius: .2em }
+.hw-review {
+  margin-top: auto; display: flex; align-items: center; gap: .8em; padding: .9em 1.4em; border-top: 1px solid var(--hair);
+  font-size: .92em; color: var(--ink); font-weight: 500;
+}
+.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent); margin-left: auto }
+.hw-review i {
+  width: 1.9em; height: 1.9em; display: grid; place-items: center; border: 1px solid var(--hair); border-radius: .35em;
+  font-style: normal; font-size: 1em; color: var(--secondary);
+}
+
+/* 1 · three connected columns: the copy on the frame's white, the scene under
+   it, and a chevron on the shared hairline where one stage hands to the next */
+.hw-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
+.hw-col { position: relative; display: flex; flex-direction: column; min-width: 0 }
+.hw-col + .hw-col { border-left: 1px solid var(--hair) }
+.hw-col .hw-copy { flex: 1 }
+.hw-col + .hw-col::before {
+  content: ''; position: absolute; left: -11px; top: 32px; z-index: 1; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 4 4 4-4 4' fill='none' stroke='%233550C8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+  border: 1px solid var(--hair);
+}
+
+/* 2 · one continuous workspace: three notes in a row, one scene under them */
+.hw-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
+.hw-step + .hw-step { border-left: 1px solid var(--hair) }
+
+/* 5 · preparation over evidence */
+.hw-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
+.hw-cell-wrap { display: flex; flex-direction: column; min-width: 0 }
+.hw-cell-wrap + .hw-cell-wrap { border-left: 1px solid var(--hair) }
+.hw-cell-wrap .hw-copy { flex: 1 }
+.hw-big { border-top: 1px solid var(--hair) }
+.hw-big-copy { display: grid; grid-template-columns: auto 1fr; column-gap: 28px; align-items: baseline }
+.hw-big-copy .hw-num { grid-row: 1 / 3; margin: 0 }
+.hw-big-copy .hw-p { max-width: 62ch }
+
+/* the strip at the foot: a property of the whole workflow, not a fourth step */
+.hw-ent {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px;
+  padding: 20px var(--x4e-pad-x); border-top: 1px solid var(--hair); background: #FAFAFA;
+}
+.hw-ent-label {
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
+}
+.hw-ent-label svg { width: 15px; height: 15px }
+.hw-ent p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--body-gray) }
+.hw-ent a { font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none; white-space: nowrap }
+.hw-ent a:hover { color: var(--accent) }
+
+@keyframes hwIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .hw-src-list li { animation: none } }
+
+/* narrow: every layout is the columns layout stacked, copy then scene */
+@media (max-width: 900px) {
+  .hw-head { flex-direction: column; align-items: flex-start }
+  .hw-cols { grid-template-columns: 1fr }
+  .hw-col + .hw-col { border-left: 0; border-top: 1px solid var(--hair) }
+  .hw-col + .hw-col::before { display: none }
+  .hw-copy { padding: 26px var(--x4e-pad-x) 24px }
+  .hw-stage--col { font-size: clamp(6px, 2.3cqw, 10px); aspect-ratio: 16 / 11; padding: 2.4em var(--x4e-pad-x) }
+  .hw-ent { grid-template-columns: 1fr; gap: 10px; padding: 18px var(--x4e-pad-x) }
+}

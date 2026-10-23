@@ -116,6 +116,35 @@ export const SOLUTIONS = {
     // the auto-step; the citation trace is a 9s loop and gets the longest turn.
     how: {
       title: 'Fast to draft. Faster to trust',
+      // the three-stage layouts (?how=columns|workspace|evidence) run one
+      // example through every stage: the documents brought in at stage one are
+      // the inputs at stage two, and the cell written there is the one verified
+      // at stage three. Only this example changes by audience; the stage labels
+      // and explanations live in src/components/HowStages.jsx
+      eyebrow: 'How your team works with FinSynth',
+      example: {
+        sources: [
+          { icon: 'doc', name: 'Q3 FY26 release', kind: 'Filing', meta: '24 pages' },
+          { icon: 'sheet', name: 'Fund_model_v12.xlsx', kind: 'Your template', meta: 'Northwind Retail' },
+          { icon: 'plug', name: 'Consensus estimates', kind: 'Snowflake via MCP', meta: '14 brokers' },
+          { icon: 'folder', name: 'Broker notes', kind: 'Dataroom', meta: '3 files' },
+        ],
+        surfaces: ['Excel add-in', 'Web app'],
+        file: 'Fund_model_v12.xlsx',
+        instruction: 'Update the Northwind model for Q3 actuals and flag anything off consensus',
+        skill: 'Earnings update',
+        sheet: {
+          cols: ['USD m', 'Q3 FY25A', 'Q3 FY26A', 'Cons.', 'vs cons.'],
+          rows: [
+            ['Revenue', '1,184.2', '1,284.6', '1,258.0', '+2.1%'],
+            ['Gross profit', '470.1', '512.5', '504.0', '+1.7%'],
+            ['Adj. EBITDA', '196.4', '208.3', '210.0', '-0.8%'],
+            ['Diluted EPS', '0.84', '0.91', '0.88', '+3.4%'],
+          ],
+        },
+        done: '4 of 4 cells updated, 12 citations',
+        cite: { cell: 'C8', row: 0, source: 'Q3 FY26 release', where: 'p. 4', before: 'Third quarter ', mark: 'net revenue of $1,284.6m', after: ', up 8.5% on the prior year, with gross profit of $512.5m', reviewed: 3, total: 12 },
+      },
       // the nine pillars as approved in the page outline, word for word
       steps: [
         { key: 'workflows', visual: 'workflows', ms: 4800, title: 'Runs your research workflows', body: 'Earnings updates, model builds, comps, thesis testing, model audits and investment memos, all from one agent' },
