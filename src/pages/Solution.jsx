@@ -130,14 +130,14 @@ function EarningsVisual() {
           <em><Src>Q3 FY26 release · p. 4</Src></em>
         </div>
       </div>
-      <div className={`sol-pill${done ? ' is-done' : ''}`}>
-        <span className="sol-pill-ico">
-          <span className="sol-pill-spin" />
-          <span className="sol-pill-check">
+      <div className={`sol-status${done ? ' is-done' : ''}`}>
+        <span className="sol-status-ico">
+          <span className="sol-status-spin" />
+          <span className="sol-status-check">
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
           </span>
         </span>
-        <span className="sol-pill-lbls"><span>Updating from the release</span><span>Model updated</span></span>
+        <span className="sol-status-lbls"><span>Updating from the release</span><span>Model updated</span></span>
       </div>
     </div>
   )

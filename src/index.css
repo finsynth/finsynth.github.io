@@ -5949,26 +5949,30 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet--earn th:last-child, .sol-sheet--earn td:last-child { padding-right: 1.4em }
 .sol-sheet--earn table { font-size: .95em }
 .sol-sheet--earn .sol-sheet-tabs .sol-src { font-size: .95em }
-/* the step pill from the home Excel section's Fully auditable scene, sized in
-   the stage's em: a spinner while the cells fill, a check once they have */
-.sol-pill {
-  position: absolute; z-index: 4; left: 50%; top: calc(var(--stage-pad) * .55); transform: translateX(-50%);
+/* the sheet alone takes the stage, dropped a little so the status pill from
+   the home Excel section's Fully auditable scene can sit across its top edge:
+   a spinner while the cells fill, a check once they have. (.sol-pill is the
+   uppercase mono chip, hence the different name) */
+.sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
+.sol-sheet--earn th:first-child, .sol-sheet--earn td:first-child { width: 100% }
+.sol-status {
+  position: absolute; z-index: 4; left: 50%; top: calc(var(--stage-pad) - .2em); transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: .6em; height: 2.6em; padding: 0 1.1em 0 .65em; border-radius: 999px;
   background: rgba(255, 255, 255, .96); color: var(--ink); font-size: .95em; font-weight: 500; white-space: nowrap;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 0 0 1px rgba(255, 255, 255, .35), 0 .45em 1.3em rgba(6, 12, 40, .32);
 }
-.sol-pill-ico { position: relative; flex: none; width: 1.4em; height: 1.4em }
-.sol-pill-spin, .sol-pill-check { position: absolute; inset: 0; border-radius: 50%; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
-.sol-pill-spin { border: max(1.5px, .16em) solid rgba(20, 36, 46, .14); border-top-color: rgba(20, 36, 46, .78); animation: xvkRotate .9s linear infinite }
-.sol-pill-check { display: grid; place-items: center; background: var(--positive); color: #fff; opacity: 0; transform: scale(.5) }
-.sol-pill-check svg { width: 64%; height: 64% }
-.sol-pill.is-done .sol-pill-spin { opacity: 0 }
-.sol-pill.is-done .sol-pill-check { opacity: 1; transform: none }
-.sol-pill-lbls { display: grid }
-.sol-pill-lbls span { grid-area: 1 / 1; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
-.sol-pill-lbls span:last-child { opacity: 0; transform: translateY(.5em) }
-.sol-pill.is-done .sol-pill-lbls span:first-child { opacity: 0; transform: translateY(-.5em) }
-.sol-pill.is-done .sol-pill-lbls span:last-child { opacity: 1; transform: none }
+.sol-status-ico { position: relative; flex: none; width: 1.4em; height: 1.4em }
+.sol-status-spin, .sol-status-check { position: absolute; inset: 0; border-radius: 50%; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-status-spin { border: max(1.5px, .16em) solid rgba(20, 36, 46, .14); border-top-color: rgba(20, 36, 46, .78); animation: xvkRotate .9s linear infinite }
+.sol-status-check { display: grid; place-items: center; background: var(--positive); color: #fff; opacity: 0; transform: scale(.5) }
+.sol-status-check svg { width: 64%; height: 64% }
+.sol-status.is-done .sol-status-spin { opacity: 0 }
+.sol-status.is-done .sol-status-check { opacity: 1; transform: none }
+.sol-status-lbls { display: grid }
+.sol-status-lbls span { grid-area: 1 / 1; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-status-lbls span:last-child { opacity: 0; transform: translateY(.5em) }
+.sol-status.is-done .sol-status-lbls span:first-child { opacity: 0; transform: translateY(-.5em) }
+.sol-status.is-done .sol-status-lbls span:last-child { opacity: 1; transform: none }
 
 /* research brief */
 .sol-brief { padding: 0 }
