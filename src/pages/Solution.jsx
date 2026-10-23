@@ -51,11 +51,11 @@ function Src({ children }) {
 
 /* a tick clock that starts once the stage is in view; reduced motion holds
    the last tick (the finished state) */
-function useTicks(total, ms, ref) {
+function useTicks(total, ms, ref, paused = false) {
   const [t, setT] = useState(0)
   useEffect(() => {
     const el = ref.current
-    if (!el) return
+    if (!el || paused) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setT(total - 1)
       return
@@ -67,54 +67,93 @@ function useTicks(total, ms, ref) {
     }, { threshold: 0.35 })
     io.observe(el)
     return () => { io.disconnect(); clearInterval(id) }
-  }, [total, ms, ref])
+  }, [total, ms, ref, paused])
   return t
 }
 
+/* the model's own rows: four reported lines the release fills, and two margin
+   rows that are the fund's formulas, which recalculate when their inputs land.
+   `line` is the sentence in the release each reported figure is taken from */
 const EARN_ROWS = [
-  { label: 'Revenue', prior: '1,184.2', now: '1,284.6', cons: '1,258.0', vs: '+2.1%', cell: 'C8', fx: '=1284.6', line: 'Net revenue of $1,284.6m, up 8.5% on the prior year' },
-  { label: 'Gross profit', prior: '470.1', now: '512.5', cons: '504.0', vs: '+1.7%', cell: 'C9', fx: '=512.5', line: 'Gross profit of $512.5m, a 39.9% gross margin' },
-  { label: 'Adj. EBITDA', prior: '196.4', now: '208.3', cons: '210.0', vs: '-0.8%', cell: 'C11', fx: '=208.3', line: 'Adjusted EBITDA of $208.3m' },
-  { label: 'Diluted EPS', prior: '0.84', now: '0.91', cons: '0.88', vs: '+3.4%', cell: 'C14', fx: '=0.91', line: 'Diluted earnings per share of $0.91' },
+  { label: 'Revenue', prior: '1,184.2', now: '1,284.6', cons: '1,258.0', vs: '2.1%', beat: true, cell: 'C8', line: 'Net revenue of $1,284.6m, up 8.5%' },
+  { label: 'Gross profit', prior: '470.1', now: '512.5', cons: '504.0', vs: '1.7%', beat: true, cell: 'C9', line: 'Gross profit of $512.5m' },
+  { label: 'Gross margin', fx: '=C9/C8', cell: 'C10', prior: '39.7%', now: '39.9%', after: 1 },
+  { label: 'Adj. EBITDA', prior: '196.4', now: '208.3', cons: '210.0', vs: '0.8%', beat: false, cell: 'C11', line: 'Adjusted EBITDA of $208.3m' },
+  { label: 'EBITDA margin', fx: '=C11/C8', cell: 'C12', prior: '16.6%', now: '16.2%', after: 2 },
+  { label: 'Diluted EPS', prior: '0.84', now: '0.91', cons: '0.88', vs: '3.4%', beat: true, cell: 'C14', line: 'Diluted EPS of $0.91' },
 ]
+const EARN_INPUTS = EARN_ROWS.filter((r) => !r.fx)
 
-/* release line lights, the model cell fills from it, the variance prints.
-   Three ticks a row, four rows, then a hold on the finished update */
+/* the ask sits above the sheet, then release line by release line: the line
+   lights, the cell fills from it and takes the line's cell reference as its
+   link, the beat or miss prints. Three ticks a reported row, then a hold on
+   the finished update, with the beats and the miss counted in the foot */
 function EarningsVisual() {
   const ref = useRef(null)
-  const HOLD = 5
-  const t = useTicks(EARN_ROWS.length * 3 + HOLD, 620, ref)
+  const HOLD = 6
+  const t = useTicks(EARN_INPUTS.length * 3 + HOLD, 620, ref)
   const cur = Math.floor(t / 3)
-  const filled = (i) => t >= i * 3 + 1
-  const shown = (i) => t >= i * 3 + 2
-  const done = EARN_ROWS.filter((_, i) => filled(i)).length
-  const fxRow = EARN_ROWS[Math.min(cur, EARN_ROWS.length - 1)]
+  const filled = (k) => t >= k * 3 + 1
+  const shown = (k) => t >= k * 3 + 2
+  const done = EARN_INPUTS.filter((_, k) => filled(k)).length
+  // while the cells fill the formula bar shows the cell being written and its
+  // link to the release; on the hold it rests on one of the fund's own margin
+  // formulas, recalculated from them
+  const holding = cur >= EARN_INPUTS.length
+  const fxRow = holding ? EARN_ROWS[2] : EARN_INPUTS[cur]
+  const beats = EARN_INPUTS.filter((r) => r.beat).length
+  let k = -1
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
-      <div className="sol-panel sol-sheet sol-main">
-        <div className="sol-sheet-title">Northwind Retail · model<em className="sol-sheet-tag">Q3 FY26 update</em></div>
-        <div className="sol-sheet-fx"><span>{fxRow.cell}</span><span>fx</span><span>{fxRow.fx} · Q3 FY26 release, p. 4</span></div>
+      <div className="sol-panel sol-sheet sol-sheet--earn sol-main">
+        <div className="sol-sheet-title">Northwind Retail · model<em className="sol-sheet-tag">Your layout</em></div>
+        <div className="sol-ask"><span className="sol-ask-dot" /><p>Update for Q3 FY26 and flag vs consensus</p></div>
+        <div className="sol-sheet-fx sol-sheet-fx--cite">
+          <span>{fxRow.cell}</span><span>fx</span><span>{holding ? fxRow.fx : fxRow.now}</span>
+          <Src>{holding ? 'Your formula' : 'Q3 FY26 release · p. 4'}</Src>
+        </div>
         <table className="sol-upd">
           <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th><th>Cons.</th><th>vs cons.</th></tr></thead>
           <tbody>
-            {EARN_ROWS.map((r, i) => (
-              <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
-                <td>{r.label}</td>
-                <td>{r.prior}</td>
-                <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
-                <td>{r.cons}</td>
-                <td className={`sol-upd-var ${r.vs.startsWith('+') ? 'sol-sheet-ok' : 'sol-sheet-miss'}${shown(i) ? ' is-on' : ''}`}>{r.vs}</td>
-              </tr>
-            ))}
+            {EARN_ROWS.map((r) => {
+              if (r.fx) {
+                const on = filled(r.after)
+                return (
+                  <tr key={r.label} className="is-derived">
+                    <td>{r.label}</td>
+                    <td>{r.prior}</td>
+                    <td className={`sol-upd-cell${on ? ' is-filled' : ''}`}><span>{r.now}</span></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                )
+              }
+              k += 1
+              const i = k
+              return (
+                <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
+                  <td>{r.label}</td>
+                  <td>{r.prior}</td>
+                  <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
+                  <td>{r.cons}</td>
+                  <td className={`sol-upd-var ${r.beat ? 'sol-sheet-ok' : 'sol-sheet-miss'}${shown(i) ? ' is-on' : ''}`}>{r.beat ? '▲' : '▼'} {r.vs}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Consensus</span><em>{done} of {EARN_ROWS.length} cells updated</em></div>
+        <div className="sol-sheet-tabs">
+          <span className="is-on">Model</span><span>Consensus</span>
+          <em>{done < EARN_INPUTS.length ? `${done} of ${EARN_INPUTS.length} cells updated` : `${beats} beat · ${EARN_INPUTS.length - beats} missed consensus`}</em>
+        </div>
       </div>
       <div className="sol-panel sol-aside sol-excerpt">
         <div className="sol-aside-head"><Src>Q3 FY26 release</Src><span>p. 4</span></div>
         <ul>
-          {EARN_ROWS.map((r, i) => (
-            <li key={r.label} className={cur === i && !filled(i) ? 'is-lit' : filled(i) ? 'is-done' : ''}>{r.line}</li>
+          {EARN_INPUTS.map((r, i) => (
+            <li key={r.label} className={cur === i && !filled(i) ? 'is-lit' : filled(i) ? 'is-done' : ''}>
+              <b className="sol-excerpt-ref">{r.cell}</b>{r.line}
+            </li>
           ))}
         </ul>
       </div>
@@ -547,16 +586,6 @@ export default function Solution() {
                 </svg>
               </a>
             </div>
-            {/* the strategies the page serves, as two plain lines under the
-                buttons in the home hero's trust-line voice: the lead in ink,
-                the names in grey with a dot between them. Pills and a ruled
-                mini-table were both tried and rejected. */}
-            {sol.strategies && (
-              <div className="sol-chips">
-                <span className="sol-chips-lead">{sol.strategiesLead}</span>
-                <ul>{sol.strategies.map((name) => <li key={name}>{name}</li>)}</ul>
-              </div>
-            )}
           </div>
           {/* the same Wall Street photo the home hero pixelates, here left as a photograph */}
           <div className="sol-hero-photo">
