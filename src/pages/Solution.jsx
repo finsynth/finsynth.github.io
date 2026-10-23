@@ -10,17 +10,16 @@ import { useAutoStep, VisualWorkflows, VisualAudit, VisualIntegrated, VisualEnte
 import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
-import { initGrid } from '../utils/gridCanvas'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages from '../components/HowStages'
 
 /* ── How it works, which layout mounts ─────────────────────────────────────
- * `rail` is the nine-pillar rail that ships. The three-stage layouts under
- * comparison (src/components/HowStages.jsx) are previewed with ?how= on the
- * URL: /solutions/hedge-funds?how=columns, ?how=workspace, ?how=evidence.
- * Switch HOW_LAYOUT_DEFAULT once one is chosen. */
-const HOW_LAYOUT_DEFAULT = 'rail'
-const HOW_LAYOUTS = ['rail', 'columns', 'workspace', 'evidence']
+ * `tabs` ships: the three stages as tabs, each opening its pillars and its
+ * scene (src/components/HowStages.jsx). The others stay for comparison with
+ * ?how= on the URL: /solutions/hedge-funds?how=rail (the nine-pillar rail
+ * this replaced), ?how=columns, ?how=workspace, ?how=evidence. */
+const HOW_LAYOUT_DEFAULT = 'tabs'
+const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence']
 function howLayout() {
   if (typeof window === 'undefined') return HOW_LAYOUT_DEFAULT
   const q = new URLSearchParams(window.location.search).get('how')
@@ -513,14 +512,6 @@ export default function Solution() {
   const sol = SOLUTIONS[slug]
   const { isSignedIn: signedIn } = useUser()
   const worksRef = useReveal({ threshold: 0.05 })
-  // the home hero's Excel grid, drawn behind this hero too: the same canvas
-  // and the same sparks, SUM pill and formula echo on hover and drag
-  const gridRef = useRef(null)
-  useEffect(() => {
-    if (!sol || !gridRef.current) return
-    return initGrid(gridRef.current)
-  }, [sol])
-
   useEffect(() => {
     if (!sol) return
     document.title = `FinSynth AI for ${sol.name}`
@@ -539,11 +530,7 @@ export default function Solution() {
       </div>
       <Navbar />
       <main className="sol-page">
-        {/* the hero on the home page's Excel grid: the canvas fills the section
-            behind the copy and the photo, and fades out above the rule */}
-        <section className="sol-hero-sec">
-          <canvas ref={gridRef} className="hero-s2-canvas" data-grid-hero aria-hidden="true"></canvas>
-          <span className="stat-pill" aria-hidden="true"></span>
+        {/* no Excel grid behind this hero: the solutions heroes stay plain */}
         <header className="sol-hero wrap">
           <div className="sol-hero-copy">
             <p className="sol-eyebrow">{sol.name}</p>
@@ -576,7 +563,6 @@ export default function Solution() {
             <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" />
           </div>
         </header>
-        </section>
         <SectionRule />
 
         {/* the use cases in one hairline frame on the page's grey ground, head

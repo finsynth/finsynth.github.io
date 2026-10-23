@@ -5675,17 +5675,9 @@ button.play { border: none; padding: 0; appearance: none }
   text-transform: uppercase; color: var(--accent);
 }
 
-/* ── hero ── the home hero's headline recipe over the home hero's Excel grid,
-   with the office photo at right where the home page runs its pixel canvas.
-   The section covers the page rails as .hero-s2 does, the canvas sits at the
-   back (.hero-s2-canvas), and the same bottom fade lifts the grid out before
-   the rule. */
-.sol-hero-sec { position: relative; z-index: 6; background: var(--bg); overflow: hidden }
-.sol-hero-sec::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 160px;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
-  pointer-events: none; z-index: 1;
-}
+/* ── hero ── the home hero's headline recipe with the office photo at right
+   where the home page runs its pixel canvas. No Excel grid behind it: the
+   solutions heroes stay plain on the page ground. */
 .sol-hero {
   position: relative; z-index: 2;
   display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px);
@@ -6024,7 +6016,6 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 900px) {
   .sol-hero { grid-template-columns: 1fr; padding-top: 36px }
   .sol-hero-photo { aspect-ratio: 16 / 10 }
-  .sol-hero-sec .hero-s2-canvas { opacity: .6 }
   .sol-hero { padding-left: calc(var(--wrap-pad) + 28px) }
   .sol-work { grid-template-columns: 1fr }
   .sol-work::before { display: none }
@@ -6234,6 +6225,44 @@ button.play { border: none; padding: 0; appearance: none }
   border: 1px solid var(--hair);
 }
 
+/* tabs · the three stages as tabs; the open one shows its pillars beside its scene */
+.hw-tablist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair) }
+.hw-stagetab {
+  position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0;
+  text-align: left; font: inherit; color: inherit; background: #FAFAFA; cursor: pointer; appearance: none;
+  transition: background .25s ease;
+}
+.hw-stagetab + .hw-stagetab { border-left: 1px solid var(--hair) }
+.hw-stagetab + .hw-stagetab::before {
+  content: ''; position: absolute; left: -11px; top: 32px; z-index: 1; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 4 4 4-4 4' fill='none' stroke='%233550C8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
+  border: 1px solid var(--hair);
+}
+.hw-stagetab .hw-title { display: block; color: var(--secondary); transition: color .25s ease }
+.hw-stagetab .hw-p { display: block; color: var(--muted); transition: color .25s ease }
+.hw-stagetab:hover, .hw-stagetab.is-active { background: #fff }
+.hw-stagetab.is-active .hw-title { color: var(--ink) }
+.hw-stagetab.is-active .hw-p { color: var(--body-gray) }
+.hw-stagetab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent) }
+.hw-stagetab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.hw-tabbody { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) }
+.hw-pillars { list-style: none; margin: 0; padding: 8px var(--x4e-pad-x) 20px; display: flex; flex-direction: column; justify-content: center }
+.hw-pillar {
+  display: grid; grid-template-columns: 34px 1fr; column-gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--hair);
+  animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .08s) both;
+}
+.hw-pillar:first-child { border-top: 0 }
+.hw-pico { grid-row: 1 / 3; width: 34px; height: 34px; padding: 8px; border-radius: 8px; background: var(--accent); color: #fff }
+.hw-pillar h4 { margin: 2px 0 0; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
+.hw-pillar p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--body-gray) }
+.hw-stage--tab {
+  font-size: clamp(5.5px, 1.5cqw, 10px); aspect-ratio: 16 / 10; border-top: 0; border-left: 1px solid var(--hair);
+  animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) both;
+}
+.hw-stage--tab > .hw-panel { max-width: 52em }
+.hw-pillars--stack { padding: 0 var(--x4e-pad-x) 22px; justify-content: flex-start }
+.hw-pillars--stack .hw-pillar { padding: 14px 0 }
+
 /* 2 · one continuous workspace: three notes in a row, one scene under them */
 .hw-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
 .hw-step + .hw-step { border-left: 1px solid var(--hair) }
@@ -6263,7 +6292,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-ent a:hover { color: var(--accent) }
 
 @keyframes hwIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .hw-src-list li { animation: none } }
+@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab { animation: none } }
 
 /* narrow: every layout is the columns layout stacked, copy then scene */
 @media (max-width: 900px) {
