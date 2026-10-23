@@ -193,7 +193,6 @@ const BUILD_ROWS = [
   ['Revenue', '4,355', '4,610', '4,872'],
   ['Gross profit', '1,742', '1,857', '1,973'],
   ['EBITDA', '655', '702', '748'],
-  ['D&A', '(182)', '(190)', '(201)'],
   ['Capex', '(195)', '(204)', '(215)'],
   ['Free cash flow', '318', '341', '362'],
 ]
@@ -202,6 +201,17 @@ const BUILD_PAGES = ['FY23 10-K · p. 41', 'FY24 10-K · p. 43', 'FY25 10-K · p
 /* the model window beside the FinSynth pane, the way the add-in sits in Excel.
    Year by year the historical column fills in the fund's template from that
    year's 10-K, the pane counts the years and the recast, then the DCF tab
+/* the DCF tab's output, what the build is for: the bridge from enterprise
+   value to a value per share, and that value against the price */
+const DCF_OUT = [
+  ['Enterprise value', '9,420'],
+  ['Net debt', '(1,310)'],
+  ['Equity value', '8,110'],
+  ['Shares (m)', '212'],
+  ['Value per share', '$38.25'],
+]
+const DCF_PRICE = '$31.40'
+const DCF_UPSIDE = '+22%'
    lights and the pill over the sheet turns its spinner into a check. Two
    ticks a year (the column lights, then fills), one for the recast, one for
    the DCF, then a hold on the finished build */
@@ -218,23 +228,39 @@ function ModelBuildVisual() {
   return (
     <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
       <div className="sol-win-wrap">
+  // a tick after the DCF tab lights, the window opens it on the output
+  const dcf = t >= BUILD_YEARS.length * 2 + 3
         <div className="sol-panel sol-sheet sol-sheet--earn sol-win">
-          <div className="sol-sheet-title">Northwind Retail · model</div>
-          <table className="sol-upd sol-dcf">
-            <thead><tr><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-col">FY26E</th><th className="is-col">FY27E</th></tr></thead>
-            <tbody>
-              {BUILD_ROWS.map((r, i) => (
-                <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
-                  <td>{r[0]}</td>
-                  {r.slice(1).map((v, c) => (<td key={c} className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>))}
-                  <td className="is-fc" /><td className="is-fc" />
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="sol-sheet-title">Northwind Retail · {dcf ? 'DCF' : 'model'}</div>
+          {dcf ? (
+            <table className="sol-upd sol-dcf sol-dcf-out">
+              <thead><tr><th>USD m</th><th className="is-col">Base</th></tr></thead>
+              <tbody>
+                {DCF_OUT.map((r, i) => (
+                  <tr key={r[0]} className={i === DCF_OUT.length - 1 ? 'is-total' : ''}>
+                    <td>{r[0]}</td><td className="sol-upd-cell is-filled"><span>{r[1]}</span></td>
+                  </tr>
+                ))}
+                <tr className="is-up"><td>Upside to {DCF_PRICE}</td><td><span className="sol-dcf-up">{DCF_UPSIDE}</span></td></tr>
+              </tbody>
+            </table>
+          ) : (
+            <table className="sol-upd sol-dcf">
+              <thead><tr><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-col">FY26E</th><th className="is-col">FY27E</th></tr></thead>
+              <tbody>
+                {BUILD_ROWS.map((r, i) => (
+                  <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
+                    <td>{r[0]}</td>
+                    {r.slice(1).map((v, c) => (<td key={c} className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>))}
+                    <td className="is-fc" /><td className="is-fc" />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           <div className="sol-sheet-tabs">
-            <span className="is-on">Model</span><span className={done ? 'is-new' : ''}>DCF</span><span>Inputs</span>
-            <em><Src>{BUILD_PAGES[srcCol]}</Src></em>
+            <span className={dcf ? '' : 'is-on'}>Model</span><span className={dcf ? 'is-on' : done ? 'is-new' : ''}>DCF</span><span>Inputs</span>
+            <em>{dcf ? 'WACC 8.6% · g 2.5%' : <Src>{BUILD_PAGES[srcCol]}</Src>}</em>
           </div>
         </div>
         <div className={`sol-status${done ? ' is-done' : ''}`}>
@@ -257,13 +283,13 @@ function ModelBuildVisual() {
           <p>Build the model and DCF in our template from the last three 10-Ks</p>
         </div>
         <div className="sol-pane-body">
-          <p className="sol-pane-say">Spreading the historicals into your template, each figure linked to its page in the filing</p>
+          {/* the agent's running line, which its result replaces once the build is done */}
+          <p className="sol-pane-say" key={done ? 'done' : 'run'}>{done ? 'History ties out across the three years. The forecast columns are yours' : 'Spreading the historicals into your template, each figure linked to its filing page'}</p>
           <ul className="sol-pane-steps">
-            <li className={years ? 'is-on' : ''}><span>Historicals spread</span><em>{years} / {BUILD_YEARS.length} years</em></li>
-            <li className={recast ? 'is-on' : ''}><span>FY23 segment recast</span><em>{recast ? 'Applied' : 'Pending'}</em></li>
+            <li className={years ? 'is-on' : ''}><span>Historicals spread</span><em>{years} / {BUILD_YEARS.length} yrs</em></li>
+            <li className={recast ? 'is-on' : ''}><span>Segment recast</span><em>{recast ? 'Applied' : 'Pending'}</em></li>
             <li className={done ? 'is-on' : ''}><span>DCF</span><em>{done ? 'Built' : 'Pending'}</em></li>
           </ul>
-          <p className={`sol-pane-say sol-pane-done${done ? ' is-on' : ''}`}>History lines up across the three years. The forecast columns are yours</p>
         </div>
         <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
       </div>
