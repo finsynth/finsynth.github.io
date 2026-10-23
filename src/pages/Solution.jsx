@@ -384,7 +384,9 @@ const BUILD_ROWS = [
   ['Free cash flow', '318', '341', '362'],
 ]
 
-/* historicals spread from the filings, the forecast columns waiting */
+/* historicals spread from the filings, the forecast columns waiting: the sheet
+   alone, full width, since the claim is the empty forecast columns and a DCF
+   card beside them only said the opposite */
 function ModelBuildVisual() {
   return (
     <div className="sol-stage sol-stage--focus" aria-hidden="true">
@@ -407,11 +409,6 @@ function ModelBuildVisual() {
           </tbody>
         </table>
         <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>DCF</span><span>Inputs</span><em>FY23 recast applied</em></div>
-      </div>
-      <div className="sol-panel sol-aside sol-dcf">
-        <div className="sol-aside-head"><span>DCF</span><span className="sol-pill">Built</span></div>
-        <Returns items={[{ label: 'WACC', value: '8.5%' }, { label: 'Terminal growth', value: '2.5%' }, { label: 'Implied value', value: '$46.20' }]} />
-        <p className="sol-aside-note"><Tick />FY23 restated to the FY25 segment basis</p>
       </div>
     </div>
   )
@@ -727,7 +724,6 @@ export default function Solution() {
   const { slug } = useParams()
   const sol = SOLUTIONS[slug]
   const { isSignedIn: signedIn } = useUser()
-  const statsRef = useReveal({ threshold: 0.2 })
   const worksRef = useReveal({ threshold: 0.05 })
 
   useEffect(() => {
@@ -755,10 +751,18 @@ export default function Solution() {
             <p className="sol-hero-lede">{sol.lede}</p>
             <div className="sol-hero-ctas">
               <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">Talk to Us</a>
+              {/* the home hero's second button, word for word: the self-serve
+                  path names the price, and the arrow only shows on hover */}
               <a className="hero-s2-cta hero-s2-cta--ghost" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
-                {signedIn ? 'Go to app' : 'Sign in'}
+                {signedIn ? 'Go to app' : 'Try for free'}
+                <svg className="hero-s2-cta-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M2.5 8h10M9 4.5 12.5 8 9 11.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </a>
             </div>
+            {/* the strategies the page serves, as a ruled line under the
+                buttons: a mono label and the names set off by hairlines, the
+                way the visuals' sheet tabs are, not a row of pills */}
             {sol.strategies && (
               <div className="sol-chips">
                 <span className="sol-chips-lead">{sol.strategiesLead}</span>
@@ -774,28 +778,12 @@ export default function Solution() {
         <SectionRule />
 
         {/* the use cases in one hairline frame on the page's grey ground, head
-            band on top, the way the home page frames its Security section;
-            the figures hang off the frame's foot the way the home page's
-            metrics band hangs off its Excel section: same wrap, no top border
-            of its own, the frame's bottom hairline is the one line between */}
+            band on top, the way the home page frames its Security section */}
         <section className="wrap sol-works-wrap" id="use-cases">
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
-            {sol.more && <p className="sol-more"><b>{sol.more.lead}</b> {sol.more.rest}</p>}
           </div>
-          {sol.stats && (
-            <div className="wac-band sol-stats" ref={statsRef}>
-              <dl className="wac-nums" style={{ '--n': sol.stats.length }}>
-                {sol.stats.map((s, i) => (
-                  <div className="wac-num" key={s.label} style={{ '--d': `${0.1 + 0.07 * i}s` }}>
-                    <dt className="wac-num-value">{s.value}</dt>
-                    <dd className="wac-num-label">{s.label}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          )}
         </section>
 
         {sol.how && <SectionRule />}
@@ -808,19 +796,6 @@ export default function Solution() {
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} />}
         {sol.faqs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchema(sol.faqs) }} />}
 
-        <SectionRule />
-        <section className="sol-close wrap">
-          <div className="sol-close-panel">
-            <h2>{sol.closing}</h2>
-            {sol.closingSub && <p className="sol-close-sub">{sol.closingSub}</p>}
-            <div className="ent-ctas">
-              <a className="ent-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">Talk to Us</a>
-              <a className="ent-cta ent-cta--ghost" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
-                {signedIn ? 'Go to app' : 'Get access'}
-              </a>
-            </div>
-          </div>
-        </section>
       </main>
       <SectionRule />
       <Footer />

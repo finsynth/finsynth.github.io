@@ -5692,20 +5692,18 @@ button.play { border: none; padding: 0; appearance: none }
   margin: 0 0 28px; max-width: 46ch;
   font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--secondary);
 }
-.sol-hero-ctas { display: flex; flex-wrap: wrap; gap: 12px }
+.sol-hero-ctas { --hero-scale: 1; display: flex; flex-wrap: wrap; gap: 12px }
 .sol-hero-ctas .hero-s2-cta { margin: 0 }
+/* the hover arrow's slot comes out of the right padding, as on the home hero;
+   --hero-scale is the home hero's and must be set here or the arrow's calc()
+   sizes fail and the svg falls back to its 300x150 default */
+.sol-hero-ctas .hero-s2-cta--ghost { padding-right: 20px }
 .sol-hero-photo {
   position: relative; aspect-ratio: 5 / 4; overflow: hidden;
   border: 1px solid var(--hair); background: var(--surface);
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .12s both;
 }
 .sol-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) }
-
-/* ── metrics ── the home page's band (.wac-band), hung off the foot of the use
-   cases frame exactly as it hangs off the Excel section at home: it brings its
-   own reveal only, the band's measures are the home page's */
-.sol-stats .wac-num { opacity: 0 }
-.sol-stats.is-in .wac-num { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 
 /* ── workflow rows ── inside the home page's section frame (.x4e-frame): the
    head band on top, then every row ruled off the one above on the frame's own
@@ -5737,7 +5735,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-reveal { opacity: 0 }
 .sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 @media (prefers-reduced-motion: reduce) {
-  .sol-reveal, .sol-stats .wac-num, .sol-hero-copy, .sol-hero-photo { opacity: 1; animation: none }
+  .sol-reveal, .sol-hero-copy, .sol-hero-photo { opacity: 1; animation: none }
 }
 
 /* the Excel section's frame: a hairline mat with the stage inside, and its
@@ -5923,50 +5921,26 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-hx-tpl:empty { display: none }
 @media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
 
-/* ── closing CTA ── .ent-panel's blue, centred */
-.sol-close { padding-top: clamp(56px, 8vh, 104px); padding-bottom: clamp(56px, 8vh, 104px) }
-.sol-close-panel {
-  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 22px;
-  padding: clamp(48px, 7vh, 80px) 32px; border-radius: 14px;
-  background-color: var(--accent);
-  background-image:
-    url('/assets/img/grain.svg'),
-    radial-gradient(1200px 600px at 85% -10%, rgba(255, 255, 255, 0.14), transparent 60%),
-    linear-gradient(206deg, #16299B 0%, #3550C8 46%, #4A6BE0 100%);
-  background-size: 320px 320px, auto, auto;
-  background-repeat: repeat, no-repeat, no-repeat;
-  background-blend-mode: overlay, normal, normal;
-}
-.sol-close-panel h2 {
-  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(30px, 3.4vw, 48px); line-height: 1.08; color: #fbfbf9;
-}
-.sol-close-panel .ent-ctas { justify-content: center; margin-top: 0 }
+/* ── hedge funds page extras ── the strategies line in the hero and the parts
+   the six hedge fund panels add on top of the PE page's primitives */
 
-/* ── hedge funds page extras ── strategy chips in the hero, the on-this-page
-   bar, section heads, the pillars grid, the quote, the FAQ and the parts the
-   six hedge fund panels add on top of the PE page's primitives */
-.sol-chips { margin-top: 30px; display: flex; flex-direction: column; gap: 10px }
+/* the strategies line: ruled off the buttons by a hairline, a mono label in
+   the accent (the metrics band's label), and the names set in a row with a
+   hairline between each, the sheet-tabs idiom the visuals use. Pills read as
+   filters or tags; this reads as a line of the page's copy. */
+.sol-chips { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--hair); display: flex; flex-direction: column; gap: 12px }
 .sol-chips-lead {
   font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
-  text-transform: uppercase; color: var(--muted);
+  text-transform: uppercase; color: var(--accent);
 }
-.sol-chips ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+.sol-chips ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, max-content); row-gap: 10px }
 .sol-chips li {
-  padding: 6px 12px; border-radius: 99px; border: 1px solid var(--hair); background: var(--surface);
-  font-size: 13px; line-height: 1.3; color: var(--ink);
+  padding: 0 14px; border-left: 1px solid var(--hair);
+  font-size: 15px; line-height: 1.2; font-weight: 450; color: var(--ink); white-space: nowrap;
 }
-
-/* sticks under the navbar; each link is a URL fragment so a section can be
-   linked to directly */
-.sol-more {
-  margin: 0; text-align: center; padding: clamp(36px, 5vh, 56px) var(--x4e-pad-x); border-top: 1px solid var(--hair);
-  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(24px, 2.6vw, 36px); line-height: 1.15; color: var(--secondary);
-}
-.sol-more b { font-weight: 450; color: var(--accent) }
-
-.sol-close-sub { margin: -6px 0 0; max-width: 40ch; font-size: 17px; line-height: 1.5; color: rgba(251, 251, 249, .78) }
+/* three to a row, so the rows break in the same place at every width and no
+   row starts with a hairline */
+.sol-chips li:nth-child(3n + 1) { padding-left: 0; border-left: 0 }
 
 /* panel parts: source chips, a release document, a points list, evidence
    rows with a verdict tag, an audit grid and its findings */
@@ -6017,6 +5991,7 @@ button.play { border: none; padding: 0; appearance: none }
   position: absolute; left: var(--stage-pad); top: var(--stage-pad); bottom: var(--stage-pad);
   right: calc(var(--stage-pad) + var(--aside-w) + 1.3em);
 }
+.sol-stage--focus .sol-main:only-child { right: var(--stage-pad) }
 .sol-stage--focus .sol-aside {
   position: absolute; right: var(--stage-pad); bottom: var(--stage-pad); width: var(--aside-w);
   max-height: calc(100% - var(--stage-pad) * 2 - 3em);
@@ -6076,9 +6051,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-build .is-fc { background: repeating-linear-gradient(135deg, #F3F6FF 0 .35em, #FFFFFF .35em .7em); color: var(--accent) }
 .sol-build th.is-fc { background: #F3F6FF; color: var(--accent) }
 .sol-build .is-hist + .is-fc, .sol-build th:not(.is-fc) + th.is-fc { border-left: 2px solid var(--accent) }
-.sol-dcf .sol-returns { grid-template-columns: 1fr; gap: .5em; margin: 0; padding: 0; border: 0 }
-.sol-dcf .sol-returns div { display: flex; justify-content: space-between; align-items: baseline; gap: .6em }
-.sol-dcf .sol-returns dd { font-size: 1.15em }
 
 /* comps: the selected multiple and the inputs behind it */
 .sol-comps th:not(:first-child), .sol-comps td:not(:first-child) { text-align: right }
@@ -6143,5 +6115,4 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-hx-name { font-size: 17px; white-space: nowrap }
   .sol-hx-tpl { font-size: 9.5px; padding: 3px 7px }
   .sol-hx-state { font-size: 12px }
-  .sol-close-panel h2 { font-size: 30px }
 }
