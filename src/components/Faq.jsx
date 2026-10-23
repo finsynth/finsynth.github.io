@@ -24,7 +24,11 @@ const FAQS = [
   },
 ]
 
-export default function Faq() {
+const DEFAULT_TITLE = <>Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></>
+
+/* `items` and `title` let the solutions pages render this exact section with
+   their own questions instead of a lookalike of it */
+export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq' }) {
   const [open, setOpen] = useState(-1)
   const ref = useRef(null)
   const zoomRef = useSectionZoom()
@@ -109,11 +113,11 @@ export default function Faq() {
   }, [])
 
   return (
-    <section className="faq" id="faq" ref={ref}>
+    <section className="faq" id={id} ref={ref}>
       <div className="wrap faq-grid" ref={zoomRef}>
         <div className="faq-intro">
           <p className="faq-eyebrow">Frequently Asked Questions</p>
-          <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></h2>
+          <h2 className="faq-title">{title}</h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
             <div className={`faq-contact-chip${copied ? ' is-copied' : ''}`}>
@@ -161,7 +165,7 @@ export default function Faq() {
             aria-hidden="true"
             style={{ '--rail-top': `${rail.top}px`, '--rail-h': `${rail.height}px` }}
           />
-          {FAQS.map((item, i) => {
+          {items.map((item, i) => {
             const isOpen = open === i
             return (
               <div key={item.q} className={`faq-item${isOpen ? ' open' : ''}`}>

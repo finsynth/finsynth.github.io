@@ -67,11 +67,6 @@ export const SOLUTIONS = {
       'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like earnings updates, consensus comparison, model audits and comps, tracing every output back to its source.',
     strategiesLead: 'Built to work across strategies',
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
-    anchors: [
-      { id: 'use-cases', label: 'Use cases' },
-      { id: 'how-it-works', label: 'How it works' },
-      { id: 'faq', label: 'FAQ' },
-    ],
     statsLead: 'More capacity. Deeper analysis. Measurable ROI.',
     stats: [
       { value: '80%', label: 'Time saved' },
@@ -130,25 +125,21 @@ export const SOLUTIONS = {
       },
     ],
     more: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
+    // The same rail + stage the home page's Excel section uses: five claims on
+    // the left, one visual on stage per claim. `ms` is how long each holds on
+    // the auto-step; the citation trace is a 9s loop and gets the longest turn.
     how: {
-      eyebrow: 'How it works',
-      title: 'Fast to draft. Faster to trust.',
-      pillars: [
-        { title: 'Runs your research workflows', body: 'Earnings updates, model builds, comps, thesis testing, model audits and investment memos, all from one agent' },
-        { title: 'Works in Excel and on the web', body: 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos' },
-        { visual: 'citation', title: 'Every output cited', body: 'Each number and claim links to the exact line in the filing, release, transcript or your own documents' },
-        { visual: 'template', title: 'Your house format', body: 'Models, comps and memos built in your templates, the way your fund already works' },
-        { visual: 'skill', title: 'Skills for repeat workflows', body: 'Teach FinSynth your earnings update or comps routine once, then run it on every name in your book' },
-        { visual: 'dataroom', title: 'Dataroom', body: 'Keep broker notes, expert call transcripts and internal research in folders, and attach them to any session' },
-        { title: 'MCP connectors', body: 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365' },
-        { title: 'Review citations', body: 'Select a range of cells and step through the source of every number in one pass' },
-        { title: 'Enterprise ready', body: 'Customer-hosted deployment and SOC 2 Type II certified, built for how funds handle sensitive research' },
+      title: 'Fast to draft, faster to trust',
+      steps: [
+        { key: 'workflows', visual: 'workflows', ms: 5000, title: 'Ask in Excel or on the web', body: 'Earnings updates, model builds, comps, thesis testing, audits and memos from one agent, as an add-in inside your models or in the web app' },
+        { key: 'cite', visual: 'cite', ms: 9000, title: 'Every output cited', body: 'Each number and claim links to the exact line in the filing, release, transcript or your own documents. Select a range and step through the source of every cell in one pass' },
+        { key: 'format', visual: 'format', ms: 5200, title: 'Your house format', body: 'Models, comps and memos built in your templates. Save a routine once as a Skill and run it on every name in your book' },
+        { key: 'sources', visual: 'sources', ms: 5400, title: 'Your own research, connected', body: 'Keep broker notes, expert calls and internal research in the Dataroom, and connect your own data and tools through MCP' },
+        { key: 'enterprise', visual: 'enterprise', ms: 4200, title: 'Enterprise ready', body: 'Customer-hosted deployment and SOC 2 Type II certified, built for how funds handle sensitive research' },
       ],
     },
-    quote: {
-      text: 'It cut my model build time by 80%. What used to be two days of pulling numbers and building, I get through in an afternoon now.',
-      who: 'Long Only Analyst',
-    },
+    // the home page's Customers section, quotes and all: every voice in it is a hedge fund analyst
+    testimonials: true,
     faqHead: { eyebrow: 'FAQ', title: 'Questions hedge fund teams ask' },
     faqs: [
       { q: 'What is FinSynth?', a: 'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like earnings updates, consensus comparison, model audits and comps, tracing every output back to its source. It works as an Excel add-in and as a web app.' },

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@clerk/react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
+import Faq from '../components/Faq'
+import Testimonial from '../components/Testimonial'
+import { useAutoStep, VisualWorkflows, VisualAudit, VisualIntegrated, VisualEnterprise } from '../components/ExcelSection'
 import useReveal from '../hooks/useReveal'
+import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
 
@@ -543,81 +547,130 @@ function AuditVisual() {
 
 /* small drawn fragments for a few of the how-it-works cells, one treatment:
    a hairline strip in the page's grey with a single product detail in it */
-function PillarArt({ kind }) {
-  if (kind === 'citation') return (
-    <div className="sol-pa sol-pa--cite">
-      <span className="sol-pa-cell">4,872</span>
-      <i className="sol-pa-link" />
-      <Src>FY25 10-K · p. 44</Src>
-    </div>
-  )
-  if (kind === 'template') return (
-    <div className="sol-pa sol-pa--tpl">
-      <span className="is-on">Model</span><span>DCF</span><span>Comps</span><span>Memo</span>
-      <em>template.xlsx</em>
-    </div>
-  )
-  if (kind === 'skill') return (
-    <div className="sol-pa sol-pa--skill">
-      <b><i /> Earnings update</b>
-      <em>Saved skill · runs on every name in your book</em>
-    </div>
-  )
-  if (kind === 'dataroom') return (
-    <div className="sol-pa sol-pa--room">
-      {[['Broker notes', 12], ['Expert calls', 4]].map(([n, c]) => (
-        <span key={n}><i />{n}<em>{c}</em></span>
-      ))}
-    </div>
-  )
-  return null
-}
-
 const VISUALS = {
   lbo: LboVisual, underwriting: UnderwritingVisual, valuation: ValuationVisual, deck: DeckVisual,
   earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual,
 }
 
-function SectionHead({ eyebrow, title }) {
+/* the home page's section titles carry one accent word, the last one */
+function highlight(title) {
+  const at = title.lastIndexOf(' ')
+  if (at < 0) return title
+  return <>{title.slice(0, at)} <span className="ttl-hl">{title.slice(at + 1)}</span></>
+}
+
+/* the head band of a framed section, as the home page's Excel section wears it:
+   no kicker label, the title alone on the frame's inset */
+function FrameHead({ title }) {
   return (
-    <div className="sol-sec-head">
-      <p className="sol-eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+    <div className="x4e-head x4e-reveal">
+      <div className="x4e-head-copy"><h2>{highlight(title)}</h2></div>
     </div>
   )
 }
 
-/* the home page's accordion items (.faq-*) in a framed list, plus FAQPage
-   structured data so the questions are quotable by search and agents */
-function SolFaq({ head, items }) {
-  const [open, setOpen] = useState(-1)
-  const schema = {
+/* ── How it works: "Your house format" on stage ─────────────────────────────
+ * Three saved Skills, each tied to one of the fund's own templates. The first
+ * is running, with the count of names it is being run across. Sized like the
+ * workflow checklist next door (.xv-marquee), so the stage reads at one scale
+ * from claim to claim.
+ */
+function HowFormatVisual() {
+  return (
+    <div className="sol-hx">
+      <p className="sol-hx-eyebrow">Saved skills</p>
+      <ul className="sol-hx-list">
+        {[
+          ['Earnings update', 'Fund model v12', 'Running on 14 names'],
+          ['Comps refresh', 'Comps template'],
+          ['Model audit', 'Audit memo'],
+        ].map(([name, tpl, state], i) => (
+          <li key={name} className={i === 0 ? 'is-on' : ''} style={{ '--i': i }}>
+            <i aria-hidden="true" />
+            <span className="sol-hx-name">{name}</span>
+            <span className="sol-hx-tpl">{tpl}</span>
+            {state && <em className="sol-hx-state">{state}</em>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/* the stage visuals the How it works claims can call up: three are the home
+   page's own (the workflow checklist, the citation trace, the certification
+   seals, the source field), one is drawn here */
+const HOW_VISUALS = {
+  workflows: VisualWorkflows, cite: VisualAudit, format: HowFormatVisual, sources: VisualIntegrated, enterprise: VisualEnterprise,
+}
+
+/* the home page's Excel section, claim for claim: a rail of the steps on the
+   left and one visual on stage on the right, scrubbed by scroll and advanced
+   by a clock. Narrow screens mount each claim's visual under its own row. */
+function HowItWorks({ how, id }) {
+  const frameRef = useReveal({ threshold: 0.08 })
+  const paneRef = useRef(null)
+  const stacked = useMediaQuery('(max-width: 900px)')
+  const dwell = useMemo(() => how.steps.map((st) => st.ms), [how])
+  const { step, goTo, hold, release } = useAutoStep(dwell, paneRef, { scrub: !stacked })
+  return (
+    <section className="x4e-sec sol-how" id={id}>
+      <div className="wrap">
+        <div className="x4e-frame" ref={frameRef}>
+          <FrameHead title={how.title} />
+          <div className="x4e-pane" ref={paneRef} onMouseEnter={hold} onMouseLeave={release} onFocusCapture={hold} onBlurCapture={release}>
+            <ol className="x4e-rail">
+              {how.steps.map((st, i) => {
+                const Visual = HOW_VISUALS[st.visual]
+                return (
+                  <li key={st.key}>
+                    <button
+                      type="button"
+                      className={`x4e-item${!stacked && i === step ? ' is-active' : ''}`}
+                      aria-current={!stacked && i === step}
+                      onClick={() => goTo(i)}
+                    >
+                      <span className="x4e-item-body">
+                        <span className="x4e-item-title">{st.title}</span>
+                        <span className="x4e-item-p">{st.body}</span>
+                      </span>
+                    </button>
+                    {stacked && (
+                      <div className="x4e-stage x4e-stage--inline">
+                        <div className="x4e-visual is-active"><Visual /></div>
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
+            </ol>
+            {!stacked && (
+              <div className="x4e-stage">
+                {how.steps.map((st, i) => {
+                  const Visual = HOW_VISUALS[st.visual]
+                  return (
+                    <div key={st.key} className={`x4e-visual${i === step ? ' is-active' : ''}`} aria-hidden={i !== step}>
+                      <Visual />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* FAQPage structured data beside the home page's FAQ section, so the
+   questions are quotable by search and agents */
+function faqSchema(items) {
+  return JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-  }
-  return (
-    <section className="sol-faq wrap sol-anchor-target" id="faq">
-      <SectionHead eyebrow={head.eyebrow} title={head.title} />
-      <div className="sol-faq-list">
-        {items.map((f, i) => {
-          const isOpen = open === i
-          return (
-            <div key={f.q} className={`faq-item${isOpen ? ' open' : ''}`}>
-              <button type="button" className="faq-q" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? -1 : i)}>
-                <span>{f.q}</span>
-                <span className="faq-toggle" aria-hidden="true" />
-              </button>
-              <div className="faq-a" role="region" aria-hidden={!isOpen}>
-                <div className="faq-a-inner"><p>{f.a}</p></div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-    </section>
-  )
+  })
 }
 
 function Workflow({ w, flip }) {
@@ -642,7 +695,7 @@ export default function Solution() {
   const sol = SOLUTIONS[slug]
   const { isSignedIn: signedIn } = useUser()
   const statsRef = useReveal({ threshold: 0.2 })
-  const howRef = useReveal({ threshold: 0.1 })
+  const worksRef = useReveal({ threshold: 0.05 })
 
   useEffect(() => {
     if (!sol) return
@@ -687,15 +740,6 @@ export default function Solution() {
         </header>
         <SectionRule />
 
-        {sol.anchors && (
-          <nav className="sol-anchors" aria-label="On this page">
-            <div className="wrap sol-anchors-row">
-              <span className="sol-anchors-lead">On this page</span>
-              {sol.anchors.map((a) => <a key={a.id} href={`#${a.id}`}>{a.label}</a>)}
-            </div>
-          </nav>
-        )}
-
         <section className="sol-stats wrap" ref={statsRef}>
           <div className="sol-stats-band">
             <p className="sol-stats-lead">{sol.statsLead}</p>
@@ -710,36 +754,25 @@ export default function Solution() {
           </div>
         </section>
 
-        <div className="sol-works wrap sol-anchor-target" id="use-cases">
-          {sol.useCasesHead && <SectionHead {...sol.useCasesHead} />}
-          {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
-          {sol.more && <p className="sol-more"><b>{sol.more.lead}</b> {sol.more.rest}</p>}
+        {/* the use cases in one frame, head band on top, the way the home page
+            frames its product sections */}
+        <div className="wrap sol-works-wrap" id="use-cases">
+          <div className="x4e-frame sol-works" ref={worksRef}>
+            {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
+            {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
+            {sol.more && <p className="sol-more"><b>{sol.more.lead}</b> {sol.more.rest}</p>}
+          </div>
         </div>
 
         {sol.how && <SectionRule />}
-        {sol.how && (
-          <section className="sol-how wrap sol-anchor-target" id="how-it-works" ref={howRef}>
-            <SectionHead eyebrow={sol.how.eyebrow} title={sol.how.title} />
-            <ul className="sol-pillars">
-              {sol.how.pillars.map((p, i) => (
-                <li key={p.title} className="sol-reveal" style={{ '--d': `${0.05 * i}s` }}>
-                  {p.visual && <PillarArt kind={p.visual} />}
-                  <h3>{p.title}</h3>
-                  <p>{p.body}</p>
-                </li>
-              ))}
-            </ul>
-            {sol.quote && (
-              <figure className="sol-quote">
-                <blockquote>{sol.quote.text}</blockquote>
-                <figcaption>{sol.quote.who}</figcaption>
-              </figure>
-            )}
-          </section>
-        )}
+        {sol.how && <HowItWorks how={sol.how} id="how-it-works" />}
+
+        {/* the home page's Customers section, as is */}
+        {sol.testimonials && <Testimonial />}
 
         {sol.faqs && <SectionRule />}
-        {sol.faqs && <SolFaq head={sol.faqHead} items={sol.faqs} />}
+        {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} />}
+        {sol.faqs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchema(sol.faqs) }} />}
 
         <SectionRule />
         <section className="sol-close wrap">
