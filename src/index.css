@@ -5780,87 +5780,8 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--accent); background: var(--accent-soft);
 }
 
-/* assumptions sliders */
-.sol-assume { gap: 0 }
-.sol-slider { margin-top: 1.9em }
-.sol-slider-row { display: flex; justify-content: space-between; font-size: 1.05em; margin-bottom: .55em }
-.sol-slider-row b { font-weight: 500; font-variant-numeric: tabular-nums }
-.sol-slider-track { position: relative; height: .4em; border-radius: 99em; background: #EAECF0 }
-.sol-slider-track i { position: absolute; inset: 0 auto 0 0; border-radius: 99em; background: var(--accent) }
-.sol-slider-track em {
-  position: absolute; top: 50%; width: 1.3em; height: 1.3em; border-radius: 50%; transform: translate(-50%, -50%);
-  background: #fff; border: 2px solid var(--accent); box-shadow: 0 .1em .3em rgba(0,0,0,.15);
-}
-.sol-assume-hyp {
-  margin: auto 0 0; padding: 1.1em 1.2em; border-radius: .7em; background: var(--bg);
-  font-size: .98em; line-height: 1.45; color: var(--secondary);
-}
-.sol-assume-hyp b { display: block; color: var(--ink); font-weight: 500; margin-bottom: .2em }
-
-/* bridge chart + returns */
-.sol-bridge { width: 100%; height: auto; margin-top: 1.2em; font-family: var(--font-mono); overflow: visible }
-.sol-bridge-bar { fill: var(--accent) }
-.sol-bridge-step { fill: #8EA2EA }
-.sol-bridge-val { font-size: 9.5px; fill: var(--ink); font-family: var(--font-body); font-weight: 500 }
-.sol-bridge-lbl { font-size: 7.5px; fill: var(--muted); letter-spacing: .02em }
-.sol-returns {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; margin: auto 0 0; padding-top: 1.2em;
-  border-top: 1px solid var(--hair);
-}
-.sol-returns dt { font-family: var(--font-mono); font-size: .8em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
-.sol-returns dd { margin: .25em 0 0; font-size: 1.6em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
-
-/* driver tree */
-.sol-tree { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4em; align-items: center; margin: 1.8em 0; flex: 1 }
-.sol-tree-col { display: flex; flex-direction: column; gap: 1.2em; justify-content: center; position: relative }
-.sol-tree-col + .sol-tree-col::before {
-  content: ''; position: absolute; left: -1.4em; top: 50%; width: 1.4em; height: 1px; background: #C9D0DB;
-}
-.sol-node {
-  display: flex; flex-direction: column; gap: .2em; padding: .9em 1em; border-radius: .6em;
-  border: 1px solid var(--hair); background: #fff;
-}
-.sol-node small { font-size: .85em; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-family: var(--font-mono) }
-.sol-node b { font-size: 1.3em; font-weight: 500; letter-spacing: -0.01em; font-variant-numeric: tabular-nums }
-.sol-node--sum { border-color: #C9D3F5; background: var(--accent-soft) }
-.sol-node--out { border-color: var(--accent); background: var(--accent); color: #fff }
-.sol-node--out small { color: rgba(255,255,255,.75) }
-.sol-tree-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 1.1em; border-top: 1px solid var(--hair); font-size: 1.05em }
-
-/* the Fia thread */
-.sol-fia { padding: 0 }
-.sol-fia-head {
-  display: flex; align-items: center; gap: .6em; padding: 1.1em 1.6em; border-bottom: 1px solid var(--hair);
-  font-size: 1.05em; font-weight: 500;
-}
-.sol-fia-dot { width: .7em; height: .7em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
-.sol-fia-body { flex: 1; padding: 1.4em 1.6em; display: flex; flex-direction: column; gap: 1.1em; font-size: 1.05em; line-height: 1.4 }
-.sol-fia-ask {
-  margin: 0; align-self: flex-end; max-width: 88%; padding: .8em 1.1em; border-radius: 1em 1em .25em 1em;
-  background: var(--accent); color: #fff;
-}
-.sol-fia-note { margin: 0; color: var(--secondary) }
-.sol-fia-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5em }
-.sol-fia-rows li { display: flex; justify-content: space-between; padding: .65em .9em; border-radius: .5em; background: var(--bg) }
-.sol-fia-rows b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }
-.sol-fia-result { margin: 0; display: flex; gap: .5em; align-items: flex-start; color: var(--ink); font-weight: 500 }
-.sol-fia-result svg { width: 1.3em; height: 1.3em; flex: none; color: #12A150; margin-top: .05em }
-.sol-fia-flag {
-  margin: 0; display: flex; gap: .6em; align-items: flex-start; padding: .8em 1em; border-radius: .5em;
-  background: #FFF7E6; color: #7A4B00;
-}
-.sol-fia-flag-tag {
-  flex: none; padding: .2em .55em; border-radius: .35em; background: #FFE2A8;
-  font-family: var(--font-mono); font-size: .8em; letter-spacing: .05em; text-transform: uppercase; margin-top: .15em;
-}
-.sol-fia-composer {
-  display: flex; justify-content: space-between; align-items: center; margin: 0 1.6em 1.4em;
-  padding: .8em 1em; border-radius: .7em; border: 1px solid var(--hair); color: var(--muted); font-size: 1em;
-}
-.sol-fia-composer i { width: 1.6em; height: 1.6em; border-radius: .4em; background: var(--accent) }
-
-/* spreadsheet + deck */
-.sol-sheet, .sol-deck { padding: 0 }
+/* spreadsheet */
+.sol-sheet { padding: 0 }
 .sol-sheet-title { padding: 1em 1.4em; font-size: 1em; font-weight: 500; border-bottom: 1px solid var(--hair) }
 .sol-sheet-fx {
   display: grid; grid-template-columns: auto auto 1fr; gap: 1em; padding: .55em 1.4em; border-bottom: 1px solid var(--hair);
@@ -5871,7 +5792,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
 .sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
 .sol-sheet-ok { color: #12A150 }
-.sol-sheet-total td { font-weight: 500; background: var(--accent-soft) }
 .sol-sheet-tabs {
   display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .7em 1.4em; border-top: 1px solid var(--hair);
   font-size: .9em; color: var(--muted);
@@ -5880,16 +5800,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
 .sol-sheet-tabs em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .9em }
 
-.sol-deck-body { display: grid; grid-template-columns: 3.4em 1fr; flex: 1; min-height: 0 }
-.sol-deck-rail { list-style: none; margin: 0; padding: 1em .6em; display: flex; flex-direction: column; gap: .7em; border-right: 1px solid var(--hair); background: #FAFAFA }
-.sol-deck-rail li { display: flex; align-items: center; gap: .3em; font-family: var(--font-mono); font-size: .75em; color: var(--muted) }
-.sol-deck-rail li i { flex: 1; height: 1.6em; border-radius: .25em; border: 1px solid var(--hair); background: #fff }
-.sol-deck-rail li.is-on i { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) }
-.sol-slide { display: flex; flex-direction: column; padding: 1.4em 1.6em; min-width: 0 }
-.sol-slide h4 { font-size: 1.3em }
-.sol-slide .sol-bridge { margin-top: .8em }
-.sol-slide .sol-returns { padding-top: 1em; margin-top: .4em }
-.sol-slide-src { margin: 1em 0 0; font-family: var(--font-mono); font-size: .8em; color: var(--muted); letter-spacing: .02em }
 
 /* ── How it works, "Your house format" on stage ── three saved Skills on the
    stage's white card, one running. Row type matches the workflow checklist
@@ -5932,7 +5842,7 @@ button.play { border: none; padding: 0; appearance: none }
 @media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
 
 /* ── hedge funds page extras ── the strategies line in the hero and the parts
-   the six hedge fund panels add on top of the PE page's primitives */
+   the six use case panels add on top of the shared stage and panel primitives */
 
 /* the strategies line: ruled off the buttons by a hairline, a mono label in
    the accent (the metrics band's label), and the names set in a row with a
@@ -5968,7 +5878,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-points { list-style: none; margin: 0; padding: 1.2em 1.6em; display: flex; flex-direction: column; gap: .8em; flex: 1 }
 .sol-points li { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; font-size: 1.02em; line-height: 1.4 }
 .sol-cite .sol-points { padding: 1.2em 0 }
-.sol-cite .sol-fia-result { margin-top: auto; padding-top: 1.1em; border-top: 1px solid var(--hair) }
 .sol-sheet-miss { color: #C2410C }
 .sol-sheet-pick td { background: var(--accent-soft); color: var(--accent) }
 .sol-evidence { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .7em; flex: 1 }
