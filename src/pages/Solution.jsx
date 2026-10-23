@@ -75,56 +75,41 @@ function useTicks(total, ms, ref, paused = false) {
    rows that are the fund's formulas, which recalculate when their inputs land.
    `line` is the sentence in the release each reported figure is taken from */
 const EARN_ROWS = [
-  { label: 'Revenue', prior: '1,184.2', now: '1,284.6', cons: '1,258.0', vs: '2.1%', beat: true, cell: 'C8', line: 'Net revenue of $1,284.6m, up 8.5%' },
-  { label: 'Gross profit', prior: '470.1', now: '512.5', cons: '504.0', vs: '1.7%', beat: true, cell: 'C9', line: 'Gross profit of $512.5m' },
-  { label: 'Gross margin', fx: '=C9/C8', cell: 'C10', prior: '39.7%', now: '39.9%', after: 1 },
-  { label: 'Adj. EBITDA', prior: '196.4', now: '208.3', cons: '210.0', vs: '0.8%', beat: false, cell: 'C11', line: 'Adjusted EBITDA of $208.3m' },
-  { label: 'EBITDA margin', fx: '=C11/C8', cell: 'C12', prior: '16.6%', now: '16.2%', after: 2 },
-  { label: 'Diluted EPS', prior: '0.84', now: '0.91', cons: '0.88', vs: '3.4%', beat: true, cell: 'C14', line: 'Diluted EPS of $0.91' },
+  { label: 'Revenue', prior: '1,184.2', now: '1,284.6' },
+  { label: 'Gross profit', prior: '470.1', now: '512.5' },
+  { label: 'Gross margin', fx: true, prior: '39.7%', now: '39.9%', after: 1 },
+  { label: 'Adj. EBITDA', prior: '196.4', now: '208.3' },
+  { label: 'EBITDA margin', fx: true, prior: '16.6%', now: '16.2%', after: 2 },
+  { label: 'Diluted EPS', prior: '0.84', now: '0.91' },
 ]
 const EARN_INPUTS = EARN_ROWS.filter((r) => !r.fx)
 
-/* the ask sits above the sheet, then release line by release line: the line
-   lights, the cell fills from it and takes the line's cell reference as its
-   link, the beat or miss prints. Three ticks a reported row, then a hold on
-   the finished update, with the beats and the miss counted in the foot */
+/* one motion: the reported column fills cell by cell in the fund's own
+   layout, their margin rows recalculate, and the pill over the sheet turns
+   its spinner into a check and reads Model updated. Two ticks a row (the row
+   lights, the cell fills), then a hold on the finished update */
 function EarningsVisual() {
   const ref = useRef(null)
-  const HOLD = 6
-  const t = useTicks(EARN_INPUTS.length * 3 + HOLD, 620, ref)
-  const cur = Math.floor(t / 3)
-  const filled = (k) => t >= k * 3 + 1
-  const shown = (k) => t >= k * 3 + 2
-  const done = EARN_INPUTS.filter((_, k) => filled(k)).length
-  // while the cells fill the formula bar shows the cell being written and its
-  // link to the release; on the hold it rests on one of the fund's own margin
-  // formulas, recalculated from them
-  const holding = cur >= EARN_INPUTS.length
-  const fxRow = holding ? EARN_ROWS[2] : EARN_INPUTS[cur]
-  const beats = EARN_INPUTS.filter((r) => r.beat).length
+  const HOLD = 8
+  const t = useTicks(EARN_INPUTS.length * 2 + HOLD, 620, ref)
+  const cur = Math.floor(t / 2)
+  const filled = (k) => t >= k * 2 + 1
+  const done = filled(EARN_INPUTS.length - 1)
   let k = -1
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--earn sol-main">
         <div className="sol-sheet-title">Northwind Retail · model<em className="sol-sheet-tag">Your layout</em></div>
-        <div className="sol-ask"><span className="sol-ask-dot" /><p>Update for Q3 FY26 and flag vs consensus</p></div>
-        <div className="sol-sheet-fx sol-sheet-fx--cite">
-          <span>{fxRow.cell}</span><span>fx</span><span>{holding ? fxRow.fx : fxRow.now}</span>
-          <Src>{holding ? 'Your formula' : 'Q3 FY26 release · p. 4'}</Src>
-        </div>
         <table className="sol-upd">
-          <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th><th>Cons.</th><th>vs cons.</th></tr></thead>
+          <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th></tr></thead>
           <tbody>
             {EARN_ROWS.map((r) => {
               if (r.fx) {
-                const on = filled(r.after)
                 return (
                   <tr key={r.label} className="is-derived">
                     <td>{r.label}</td>
                     <td>{r.prior}</td>
-                    <td className={`sol-upd-cell${on ? ' is-filled' : ''}`}><span>{r.now}</span></td>
-                    <td></td>
-                    <td></td>
+                    <td className={`sol-upd-cell${filled(r.after) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
                   </tr>
                 )
               }
@@ -135,27 +120,24 @@ function EarningsVisual() {
                   <td>{r.label}</td>
                   <td>{r.prior}</td>
                   <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
-                  <td>{r.cons}</td>
-                  <td className={`sol-upd-var ${r.beat ? 'sol-sheet-ok' : 'sol-sheet-miss'}${shown(i) ? ' is-on' : ''}`}>{r.beat ? '▲' : '▼'} {r.vs}</td>
                 </tr>
               )
             })}
           </tbody>
         </table>
         <div className="sol-sheet-tabs">
-          <span className="is-on">Model</span><span>Consensus</span>
-          <em>{done < EARN_INPUTS.length ? `${done} of ${EARN_INPUTS.length} cells updated` : `${beats} beat · ${EARN_INPUTS.length - beats} missed consensus`}</em>
+          <span className="is-on">Model</span>
+          <em><Src>Q3 FY26 release · p. 4</Src></em>
         </div>
       </div>
-      <div className="sol-panel sol-aside sol-excerpt">
-        <div className="sol-aside-head"><Src>Q3 FY26 release</Src><span>p. 4</span></div>
-        <ul>
-          {EARN_INPUTS.map((r, i) => (
-            <li key={r.label} className={cur === i && !filled(i) ? 'is-lit' : filled(i) ? 'is-done' : ''}>
-              <b className="sol-excerpt-ref">{r.cell}</b>{r.line}
-            </li>
-          ))}
-        </ul>
+      <div className={`sol-pill${done ? ' is-done' : ''}`}>
+        <span className="sol-pill-ico">
+          <span className="sol-pill-spin" />
+          <span className="sol-pill-check">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+          </span>
+        </span>
+        <span className="sol-pill-lbls"><span>Updating from the release</span><span>Model updated</span></span>
       </div>
     </div>
   )
