@@ -10,6 +10,7 @@ import { useAutoStep, VisualWorkflows, VisualAudit, VisualIntegrated, VisualEnte
 import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
+import { initGrid } from '../utils/gridCanvas'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages from '../components/HowStages'
 
@@ -512,6 +513,13 @@ export default function Solution() {
   const sol = SOLUTIONS[slug]
   const { isSignedIn: signedIn } = useUser()
   const worksRef = useReveal({ threshold: 0.05 })
+  // the home hero's Excel grid, drawn behind this hero too: the same canvas
+  // and the same sparks, SUM pill and formula echo on hover and drag
+  const gridRef = useRef(null)
+  useEffect(() => {
+    if (!sol || !gridRef.current) return
+    return initGrid(gridRef.current)
+  }, [sol])
 
   useEffect(() => {
     if (!sol) return
@@ -531,6 +539,11 @@ export default function Solution() {
       </div>
       <Navbar />
       <main className="sol-page">
+        {/* the hero on the home page's Excel grid: the canvas fills the section
+            behind the copy and the photo, and fades out above the rule */}
+        <section className="sol-hero-sec">
+          <canvas ref={gridRef} className="hero-s2-canvas" data-grid-hero aria-hidden="true"></canvas>
+          <span className="stat-pill" aria-hidden="true"></span>
         <header className="sol-hero wrap">
           <div className="sol-hero-copy">
             <p className="sol-eyebrow">{sol.name}</p>
@@ -547,9 +560,10 @@ export default function Solution() {
                 </svg>
               </a>
             </div>
-            {/* the strategies the page serves, as a ruled line under the
-                buttons: a mono label and the names set off by hairlines, the
-                way the visuals' sheet tabs are, not a row of pills */}
+            {/* the strategies the page serves, as two plain lines under the
+                buttons in the home hero's trust-line voice: the lead in ink,
+                the names in grey with a dot between them. Pills and a ruled
+                mini-table were both tried and rejected. */}
             {sol.strategies && (
               <div className="sol-chips">
                 <span className="sol-chips-lead">{sol.strategiesLead}</span>
@@ -562,10 +576,12 @@ export default function Solution() {
             <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" />
           </div>
         </header>
+        </section>
         <SectionRule />
 
         {/* the use cases in one hairline frame on the page's grey ground, head
-            band on top, the way the home page frames its Security section */}
+            band on top, then the rows split down the middle like the home
+            page's Excel pane: copy on one side, the stage filling the other */}
         <section className="wrap sol-works-wrap" id="use-cases">
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}

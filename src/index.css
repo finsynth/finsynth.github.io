@@ -5667,7 +5667,7 @@ button.play { border: none; padding: 0; appearance: none }
    font-size tracks the column width, so a phone gets the same picture smaller
    rather than a re-flowed one (see .sol-stage).
    ═══════════════════════════════════════════════════════════════════════════ */
-.sol-page { padding-top: var(--navbar-height); background: var(--bg); }
+.sol-page { background: var(--bg); }
 
 .sol-eyebrow {
   margin: 0 0 14px;
@@ -5675,9 +5675,19 @@ button.play { border: none; padding: 0; appearance: none }
   text-transform: uppercase; color: var(--accent);
 }
 
-/* ── hero ── the home hero's headline recipe, with the office photo at right
-   where the home page runs its pixel canvas */
+/* ── hero ── the home hero's headline recipe over the home hero's Excel grid,
+   with the office photo at right where the home page runs its pixel canvas.
+   The section covers the page rails as .hero-s2 does, the canvas sits at the
+   back (.hero-s2-canvas), and the same bottom fade lifts the grid out before
+   the rule. */
+.sol-hero-sec { position: relative; z-index: 6; background: var(--bg); overflow: hidden }
+.sol-hero-sec::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 160px;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
+  pointer-events: none; z-index: 1;
+}
 .sol-hero {
+  position: relative; z-index: 2;
   display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px);
   align-items: center; padding-top: clamp(48px, 7vh, 88px); padding-bottom: clamp(40px, 6vh, 72px);
 }
@@ -5705,14 +5715,14 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .sol-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) }
 
-/* ── workflow rows ── inside the home page's section frame (.x4e-frame): the
-   head band on top, then every row ruled off the one above on the frame's own
-   inset, so the section title and the row titles share one left edge. The
-   frame is the Security section's kind, a hairline on the page's grey ground,
-   not the Excel section's white: that white is there to carry a blue stage,
-   and these rows have none, so on white they read as one long blank sheet with
-   the visuals' own white cards lost on it. On grey the cards stand off the
-   ground the way the certification seals do. Section padding is .x4e-sec's. */
+/* ── workflow rows ── inside the home page's section frame (.x4e-frame), the
+   frame the Security section wears: a hairline on the page's grey ground, not
+   the Excel section's white, so the stages stand off the ground. Under the
+   head band every row is split down the middle like the Excel pane: copy on
+   one half, the stage filling the other edge to edge, with no mat around it
+   and no hairline between rows. The one vertical hairline at the centre runs
+   on through every row, so the stages' edges line up into the frame's own
+   lines and the rows alternate into a checkerboard. */
 .sol-works-wrap { padding-top: clamp(72px, 9vh, 104px); padding-bottom: clamp(72px, 9vh, 104px) }
 .x4e-frame.sol-works { background: transparent }
 /* the head bands on these pages carry the title alone, no lede or badge beside
@@ -5722,20 +5732,26 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-how .x4e-head, .sol-works .x4e-head {
   padding: clamp(60px, 8vh, 84px) var(--x4e-pad-x) clamp(54px, 7vh, 76px);
 }
+.sol-works .x4e-head { border-bottom: 1px solid var(--hair) }
 @media (max-width: 900px) {
   .sol-how .x4e-head, .sol-works .x4e-head { padding: 48px var(--x4e-pad-x) 48px }
 }
 .sol-work {
-  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 88px);
-  align-items: center;
-  padding: clamp(40px, 5.5vh, 72px) var(--x4e-pad-x);
-  border-top: 1px solid var(--hair);
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0;
+  align-items: stretch;
 }
-/* a page with no head band starts straight on the first row */
-.sol-works > .sol-work:first-child { border-top: 0 }
-.sol-work--flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr) }
+/* the centre line, straddling the halves so it meets the next row's exactly */
+.sol-work::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+  transform: translateX(-50%); background: var(--hair); z-index: 1; pointer-events: none;
+}
 .sol-work--flip .sol-work-copy { order: 2 }
 .sol-work--flip .sol-work-visual { order: 1 }
+.sol-work-copy {
+  align-self: center; min-width: 0;
+  padding: clamp(48px, 6vh, 80px) var(--x4e-pad-x);
+}
 .sol-work-copy h2 {
   margin: 0 0 16px;
   font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
@@ -5748,9 +5764,11 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-reveal, .sol-hero-copy, .sol-hero-photo { opacity: 1; animation: none }
 }
 
-/* the Excel section's frame: a hairline mat with the stage inside, and its
-   ground, dark in the top left corner and lifting to the bottom right */
-.sol-work-visual { container-type: inline-size; min-width: 0; padding: clamp(10px, 1.1vw, 14px); border: 1px solid var(--hair); background: var(--surface) }
+/* the stage fills its half of the row; its height, from the 16:11 ratio, is
+   the row's height, and the copy centres beside it */
+.sol-work-visual { container-type: inline-size; min-width: 0; display: grid }
+/* the Excel section's ground: dark in the top left corner and lifting to the
+   bottom right */
 .sol-stage {
   --stage-pad: 2.4em;
   font-size: clamp(6px, 1.75cqw, 11.5px);
@@ -5844,23 +5862,15 @@ button.play { border: none; padding: 0; appearance: none }
 /* ── hedge funds page extras ── the strategies line in the hero and the parts
    the six use case panels add on top of the shared stage and panel primitives */
 
-/* the strategies line: ruled off the buttons by a hairline, a mono label in
-   the accent (the metrics band's label), and the names set in a row with a
-   hairline between each, the sheet-tabs idiom the visuals use. Pills read as
-   filters or tags; this reads as a line of the page's copy. */
-.sol-chips { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--hair); display: flex; flex-direction: column; gap: 12px }
-.sol-chips-lead {
-  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
-  text-transform: uppercase; color: var(--accent);
-}
-.sol-chips ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, max-content); row-gap: 10px }
-.sol-chips li {
-  padding: 0 14px; border-left: 1px solid var(--hair);
-  font-size: 15px; line-height: 1.2; font-weight: 450; color: var(--ink); white-space: nowrap;
-}
-/* three to a row, so the rows break in the same place at every width and no
-   row starts with a hairline */
-.sol-chips li:nth-child(3n + 1) { padding-left: 0; border-left: 0 }
+/* the strategies line, in the home hero's trust-line voice: the lead in ink
+   on one line and the names in grey on the next, a dot between them, nothing
+   ruled or boxed. Pills and a ruled mini-table were both tried and read as a
+   control or a table sitting in the copy; this reads as two lines of it. */
+.sol-chips { margin-top: 28px; font-size: 15px; line-height: 1.6 }
+.sol-chips-lead { display: block; font-weight: 500; color: var(--ink) }
+.sol-chips ul { list-style: none; margin: 0; padding: 0; display: inline }
+.sol-chips li { display: inline; white-space: nowrap; font-weight: 450; color: var(--secondary) }
+.sol-chips li + li::before { content: '\00B7'; margin: 0 .55em; color: var(--muted) }
 
 /* panel parts: source chips, a release document, a points list, evidence
    rows with a verdict tag, an audit grid and its findings */
@@ -6014,9 +6024,14 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 900px) {
   .sol-hero { grid-template-columns: 1fr; padding-top: 36px }
   .sol-hero-photo { aspect-ratio: 16 / 10 }
-  .sol-work { grid-template-columns: 1fr; gap: 28px }
+  .sol-hero-sec .hero-s2-canvas { opacity: .6 }
+  .sol-hero { padding-left: calc(var(--wrap-pad) + 28px) }
+  .sol-work { grid-template-columns: 1fr }
+  .sol-work::before { display: none }
+  .sol-work + .sol-work { border-top: 1px solid var(--hair) }
   .sol-work--flip .sol-work-copy { order: 1 }
   .sol-work--flip .sol-work-visual { order: 2 }
+  .sol-work-copy { padding: 36px var(--x4e-pad-x) 32px }
 }
 @media (max-width: 560px) {
   .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
@@ -6024,7 +6039,6 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
   .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
   .sol-stage--focus { font-size: clamp(6px, 2.3cqw, 9px); --stage-pad: 1.4em; aspect-ratio: 16 / 11 }
-  .sol-work-visual { padding: 8px }
   .sol-hx { gap: 12px }
   .sol-hx-list li { padding: 12px 0; column-gap: 10px; grid-template-columns: auto 1fr; row-gap: 4px }
   .sol-hx-list li > i { grid-row: 1 }
