@@ -6309,6 +6309,9 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 560px) { .hw-review > span { display: none } }
 .hw-stage .hw-doc.is-focus { border-radius: .9em; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 1.2em 3em rgba(6, 16, 50, .28) }
 .hw-stage--tab .hw-evid { font-size: 1.12em }
+/* in a column (phones, the columns variant) the scene is the tab scene scaled
+   down: its em is the stage's content width (what cqw measures) over the 44em it spans there */
+.hw-stage--col .hw-evid { font-size: calc(100cqw / 44) }
 @keyframes hwWire { to { stroke-dashoffset: 0 } }
 @keyframes hwDot { to { opacity: 1 } }
 @keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em rgba(231, 162, 0, .5) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em rgba(231, 162, 0, 0) } }
