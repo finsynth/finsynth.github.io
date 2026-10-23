@@ -11,7 +11,7 @@ import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
-import HowStages from '../components/HowStages'
+import HowStages, { EvidencePanel } from '../components/HowStages'
 
 /* ── How it works, which layout mounts ─────────────────────────────────────
  * `tabs` ships: the three stages as tabs, each opening its pillars and its
@@ -647,9 +647,11 @@ export default function Solution() {
               </div>
             )}
           </div>
-          {/* the same Wall Street photo the home hero pixelates, here left as a photograph */}
-          <div className="sol-hero-photo">
-            <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" />
+          {/* the product instead of a stock photo: the approved Review the
+              evidence scene (the model window, the release page it cites and
+              the wire between them) on the page's grey, no stage ground */}
+          <div className="sol-hero-visual" aria-hidden="true">
+            <EvidencePanel ex={sol.how.example} />
           </div>
         </header>
         <SectionRule />

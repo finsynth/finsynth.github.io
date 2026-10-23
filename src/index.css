@@ -5680,8 +5680,8 @@ button.play { border: none; padding: 0; appearance: none }
    solutions heroes stay plain on the page ground. */
 .sol-hero {
   position: relative; z-index: 2;
-  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px);
-  align-items: center; padding-top: clamp(48px, 7vh, 88px); padding-bottom: clamp(40px, 6vh, 72px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 4vw, 64px);
+  align-items: center; padding-top: clamp(48px, 7vh, 88px); padding-bottom: clamp(32px, 5vh, 56px);
 }
 .sol-hero-copy { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both }
 .sol-hero-title {
@@ -5700,12 +5700,21 @@ button.play { border: none; padding: 0; appearance: none }
    --hero-scale is the home hero's and must be set here or the arrow's calc()
    sizes fail and the svg falls back to its 300x150 default */
 .sol-hero-ctas .hero-s2-cta--ghost { padding-right: 20px }
-.sol-hero-photo {
-  position: relative; aspect-ratio: 5 / 4; overflow: hidden;
-  border: 1px solid var(--hair); background: var(--surface);
+/* the hero's product visual: the How it works evidence scene lifted onto the
+   page's grey ground. Its em is the column's width over the 44em the scene
+   spans, so the two panels and the wire scale with the column and never clip;
+   the panels' shadow is the lighter one a white card wears on grey, not the
+   stage's blue-ground shadow */
+.sol-hero-visual {
+  position: relative; container-type: inline-size; min-width: 0;
+  --k-acc: #E7A200; --k-acc-soft: #FFF1C2;
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) .12s both;
 }
-.sol-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.05) }
+.sol-hero-visual .hw-evid { font-size: calc(100cqw / 44); max-width: none; padding: .6em 0 .2em; column-gap: 2em }
+/* the sheet is narrower here than on the stage, so the stepper keeps its
+   arrows and count and drops its label, as it does on phones */
+.sol-hero-visual .hw-review > span { display: none }
+.sol-hero-visual .hw-panel { box-shadow: 0 .8em 2.2em rgba(6, 16, 50, .1), 0 0 0 1px var(--hair) }
 
 /* ── workflow rows ── inside the home page's section frame (.x4e-frame), the
    frame the Security section wears: a hairline on the page's grey ground, not
@@ -5753,7 +5762,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-reveal { opacity: 0 }
 .sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 @media (prefers-reduced-motion: reduce) {
-  .sol-reveal, .sol-hero-copy, .sol-hero-photo { opacity: 1; animation: none }
+  .sol-reveal, .sol-hero-copy, .sol-hero-visual { opacity: 1; animation: none }
 }
 
 /* the stage fills its half of the row; its height, from the 16:11 ratio, is
@@ -6083,7 +6092,6 @@ button.play { border: none; padding: 0; appearance: none }
    proportions and simply shrinks with the column */
 @media (max-width: 900px) {
   .sol-hero { grid-template-columns: 1fr; padding-top: 36px }
-  .sol-hero-photo { aspect-ratio: 16 / 10 }
   .sol-hero { padding-left: calc(var(--wrap-pad) + 28px) }
   .sol-work { grid-template-columns: 1fr }
   .sol-work::before { display: none }
