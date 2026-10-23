@@ -1324,6 +1324,21 @@ button.play { border: none; padding: 0; appearance: none }
   background: url('/assets/img/testi-glass-bg.webp') top center / 100% 100% no-repeat;
 }
 .testi-sec .wrap { position: relative; z-index: 1; width: 100% }
+/* the compact form: one quote as a pull-quote on the page's grey, the
+   speaker under it after a short ink rule, no band around it */
+.testi-sec--compact { padding: clamp(80px, 10vh, 120px) 0; background: var(--bg) }
+.testi-sec--compact .hiw-eyebrow { color: var(--accent) }
+.testi-pull { margin: 0; max-width: 820px }
+.testi-pull blockquote {
+  margin: 0 0 28px;
+  font-family: var(--font-display); font-weight: 450;
+  font-size: clamp(24px, 2.6vw, 38px); line-height: 1.22; letter-spacing: var(--ls-display);
+  color: var(--ink); text-wrap: balance;
+}
+.testi-pull figcaption { display: flex; align-items: center; gap: 14px; font-size: 15px; font-weight: 500; color: var(--ink) }
+.testi-pull figcaption::before { content: ''; width: 28px; height: 1.5px; background: var(--ink); flex: none }
+.testi-pull figcaption span { font-weight: 400; color: var(--secondary) }
+.testi-pull figcaption span::before { content: '·'; margin-right: 14px; color: var(--muted) }
 /* header sits on the blue field now — invert to white */
 .testi-sec .hiw-eyebrow { color: rgba(255,255,255,.85) }
 .testi-sec .testi-head h2 { color: #fff }
@@ -1544,6 +1559,10 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .faq-contact { margin-top: auto; padding-top: 64px }
 .faq-contact-line { display: block; width: 1.5px; height: 56px; background: var(--ink); margin-left: 16px }
+/* on the solutions pages the chip hangs from the title instead of the column's
+   foot, where the shorter copy left it stranded under empty space */
+.sol-page .faq-contact { margin-top: 0; padding-top: 4px }
+.sol-page .faq-contact-line { height: 36px }
 .faq-contact-chip {
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--ink); color: var(--bg); text-decoration: none;
@@ -6055,12 +6074,13 @@ button.play { border: none; padding: 0; appearance: none }
   display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: .5em .8em; font-size: .95em; color: var(--muted);
   white-space: nowrap; transition: color .35s;
 }
+.sol-pane-steps li > span { min-width: 0; overflow: hidden; text-overflow: ellipsis }
+.sol-pane-steps li em { flex: none }
 .sol-pane-steps li + li { border-top: 1px solid var(--hair) }
 .sol-pane-steps li.is-on { color: var(--ink) }
 .sol-pane-steps li em { font-style: normal; font-family: var(--font-mono); font-size: .85em; color: var(--muted); padding: .15em .5em; border-radius: .3em; background: #F2F3F5; transition: color .35s, background .35s }
 .sol-pane-steps li.is-on em { color: #12A150; background: #E9F8EF }
-.sol-pane-done { opacity: 0; transform: translateY(.4em); transition: opacity .45s, transform .45s cubic-bezier(.32, .72, 0, 1) }
-.sol-pane-done.is-on { opacity: 1; transform: none }
+.sol-pane-say { animation: solDcfIn .45s ease both }
 .sol-pane-in {
   margin: auto 1.1em 1.1em; padding: .45em .45em .45em .9em; border: 1px solid var(--hair); border-radius: .6em;
   display: flex; align-items: center; justify-content: space-between; gap: .8em; font-size: .95em; color: var(--muted); white-space: nowrap;
@@ -6074,8 +6094,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet--comps th:not(:first-child), .sol-sheet--comps td:not(:first-child) { width: 21% }
 .sol-upd tr.is-self td { color: var(--accent); font-weight: 500 }
 
-.sol-pane-steps li > span { min-width: 0; overflow: hidden; text-overflow: ellipsis }
-.sol-pane-steps li em { flex: none }
 /* thesis: the claim, its evidence, the counter given the room */
 .sol-thesis { padding: 0 }
 .sol-thesis-stmt { margin: 0; padding: .9em 1.4em .1em; font-family: var(--font-display); font-weight: 450; font-size: 1.6em; letter-spacing: -0.015em; line-height: 1.15; color: var(--ink) }
@@ -6372,7 +6390,7 @@ button.play { border: none; padding: 0; appearance: none }
   border: 1px solid var(--hair);
 }
 .hw-stagetab .hw-title { display: block; color: var(--secondary); transition: color .25s ease }
-.hw-stagetab .hw-p { display: block; color: var(--muted); transition: color .25s ease }
+.hw-stagetab .hw-p { display: block; color: var(--secondary); transition: color .25s ease }
 .hw-stagetab:hover, .hw-stagetab.is-active { background: #fff }
 .hw-stagetab.is-active .hw-title { color: var(--ink) }
 .hw-stagetab.is-active .hw-p { color: var(--body-gray) }
