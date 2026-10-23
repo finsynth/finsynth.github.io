@@ -5712,13 +5712,18 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-stats .wac-num { opacity: 0 }
 .sol-stats.is-in .wac-num { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 
-/* ── workflow rows ── */
-.sol-works { display: flex; flex-direction: column; gap: clamp(44px, 6.5vh, 88px); padding-bottom: clamp(56px, 8vh, 112px) }
-.sol-work + .sol-work { border-top: 1px solid var(--hair); padding-top: clamp(44px, 6.5vh, 88px) }
+/* ── workflow rows ── inside the home page's section frame (.x4e-frame): the
+   head band on top, then every row ruled off the one above on the frame's own
+   inset, so the section title and the row titles share one left edge */
+.sol-works-wrap { padding-bottom: clamp(56px, 8vh, 112px) }
 .sol-work {
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 88px);
   align-items: center;
+  padding: clamp(40px, 5.5vh, 72px) var(--x4e-pad-x);
+  border-top: 1px solid var(--hair);
 }
+/* a page with no head band starts straight on the first row */
+.sol-works > .sol-work:first-child { border-top: 0 }
 .sol-work--flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr) }
 .sol-work--flip .sol-work-copy { order: 2 }
 .sol-work--flip .sol-work-visual { order: 1 }
@@ -5877,6 +5882,40 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-slide .sol-returns { padding-top: 1em; margin-top: .4em }
 .sol-slide-src { margin: 1em 0 0; font-family: var(--font-mono); font-size: .8em; color: var(--muted); letter-spacing: .02em }
 
+/* ── How it works, "Your house format" on stage ── three saved Skills on the
+   stage's white card, one running. Row type matches the workflow checklist
+   (.xv-marquee .what-item) so the stage holds one scale across the claims.
+   Rows enter staggered each time the claim comes on stage; the gate below
+   restarts them the way the home page restarts its own visuals. */
+.sol-hx { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 540px }
+.sol-hx-eyebrow {
+  margin: 0; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); opacity: .78;
+}
+.sol-hx-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column }
+.sol-hx-list li {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 16px;
+  padding: 18px 0; border-top: 1px solid var(--hair);
+  animation: solHxIn .6s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .14s + .1s) both;
+}
+.sol-hx-list li:first-child { border-top: 0 }
+.sol-hx-list li > i { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #C9D0DB; background: #fff }
+.sol-hx-list li.is-on > i { border-color: var(--accent); background: var(--accent) }
+.sol-hx-list li.is-on > i::after {
+  content: ''; position: absolute; left: 9px; top: 6px; border-left: 9px solid #fff;
+  border-top: 5.5px solid transparent; border-bottom: 5.5px solid transparent;
+}
+.sol-hx-name { font-family: var(--font-display); font-weight: 450; font-size: clamp(20px, 1.9vw, 28px); letter-spacing: var(--ls-display); color: var(--muted) }
+.sol-hx-list li.is-on .sol-hx-name { color: var(--ink) }
+.sol-hx-tpl {
+  padding: 5px 10px; border: 1px solid var(--hair); border-radius: 4px; white-space: nowrap;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--muted);
+}
+.sol-hx-state { grid-column: 2 / -1; margin-top: 2px; font-style: normal; font-size: 13.5px; color: var(--accent) }
+@keyframes solHxIn { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+.x4e-visual:not(.is-active) .sol-hx-list li { animation: none }
+@media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
+
 /* ── closing CTA ── .ent-panel's blue, centred */
 .sol-close { padding-top: clamp(56px, 8vh, 104px); padding-bottom: clamp(56px, 8vh, 104px) }
 .sol-close-panel {
@@ -5913,56 +5952,12 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* sticks under the navbar; each link is a URL fragment so a section can be
    linked to directly */
-.sol-anchors {
-  position: sticky; top: var(--navbar-height); z-index: 5;
-  background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--hair);
-  margin-bottom: clamp(40px, 6vh, 72px);
-}
-.sol-anchors-row { display: flex; align-items: center; gap: 24px; height: 48px; overflow-x: auto; scrollbar-width: none }
-.sol-anchors-row::-webkit-scrollbar { display: none }
-.sol-anchors-lead {
-  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
-  text-transform: uppercase; color: var(--muted); white-space: nowrap;
-}
-.sol-anchors a { font-size: 14px; font-weight: 500; color: var(--secondary); text-decoration: none; white-space: nowrap; transition: color .2s }
-.sol-anchors a:hover { color: var(--accent) }
-.sol-anchor-target { scroll-margin-top: calc(var(--navbar-height) + 64px) }
-
-.sol-sec-head { margin-bottom: clamp(32px, 5vh, 56px); max-width: 60ch }
-.sol-sec-head h2 {
-  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(30px, 3.2vw, 46px); line-height: 1.08; color: var(--ink); text-wrap: balance;
-}
 .sol-more {
-  margin: 0; text-align: center;
+  margin: 0; text-align: center; padding: clamp(36px, 5vh, 56px) var(--x4e-pad-x); border-top: 1px solid var(--hair);
   font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
   font-size: clamp(24px, 2.6vw, 36px); line-height: 1.15; color: var(--secondary);
 }
 .sol-more b { font-weight: 450; color: var(--accent) }
-
-.sol-how { padding-top: clamp(56px, 8vh, 104px); padding-bottom: clamp(56px, 8vh, 112px) }
-.sol-pillars {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
-  background: var(--hair); border: 1px solid var(--hair); border-radius: 14px; overflow: hidden;
-}
-.sol-pillars li { padding: 28px 28px 30px; background: var(--surface) }
-.sol-pillars h3 { margin: 0 0 8px; font-family: var(--font-body); font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink) }
-.sol-pillars p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--secondary) }
-.sol-how.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
-.sol-quote { margin: clamp(40px, 6vh, 64px) auto 0; max-width: 46ch; text-align: center }
-.sol-quote blockquote {
-  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(22px, 2.3vw, 30px); line-height: 1.25; color: var(--ink); text-wrap: balance;
-}
-.sol-quote figcaption {
-  margin-top: 14px; font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
-  text-transform: uppercase; color: var(--muted);
-}
-
-.sol-faq { padding-top: clamp(56px, 8vh, 104px); padding-bottom: clamp(56px, 8vh, 112px) }
-.sol-faq-list { border: 1px solid var(--hair); background: var(--surface); overflow: hidden }
 
 .sol-close-sub { margin: -6px 0 0; max-width: 40ch; font-size: 17px; line-height: 1.5; color: rgba(251, 251, 249, .78) }
 
@@ -6111,26 +6106,6 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* how it works: a few cells carry a small product detail in one treatment,
    a hairline strip in the page's grey */
-.sol-pa {
-  display: flex; align-items: center; gap: 8px; margin: 0 0 18px; padding: 11px 14px; min-height: 48px;
-  border: 1px solid var(--hair); background: var(--bg); font-size: 12px; line-height: 1.3; color: var(--secondary);
-  white-space: nowrap; overflow: hidden;
-}
-.sol-pa .sol-src { font-size: 10.5px }
-.sol-pa-cell { padding: 3px 8px; background: #fff; box-shadow: inset 0 0 0 1px var(--accent); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink) }
-.sol-pa-link { position: relative; flex: 1; min-width: 14px; max-width: 48px; height: 1px; background: var(--accent) }
-.sol-pa-link::after { content: ''; position: absolute; right: -1px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent) }
-.sol-pa--tpl span { padding: 3px 9px; border-radius: 4px; background: #fff; border: 1px solid var(--hair); font-size: 11px; color: var(--ink) }
-.sol-pa--tpl span.is-on { background: var(--accent-soft); color: var(--accent); border-color: transparent }
-.sol-pa--tpl em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis }
-.sol-pa--skill { flex-direction: column; align-items: flex-start; gap: 3px }
-.sol-pa--skill b { display: flex; align-items: center; gap: 7px; font-weight: 500; color: var(--ink) }
-.sol-pa--skill b i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft) }
-.sol-pa--skill em { font-style: normal; font-size: 11px; color: var(--muted) }
-.sol-pa--room { gap: 8px }
-.sol-pa--room span { display: flex; align-items: center; gap: 6px; padding: 3px 8px; background: #fff; border: 1px solid var(--hair); border-radius: 4px; font-size: 11px; color: var(--ink) }
-.sol-pa--room span i { width: 11px; height: 8px; border-radius: 1px 2px 2px 2px; background: var(--accent); opacity: .75 }
-.sol-pa--room span em { font-style: normal; font-family: var(--font-mono); color: var(--muted) }
 @media (prefers-reduced-motion: reduce) {
   .sol-inputs { animation: none }
   .sol-upd td, .sol-upd-cell span, .sol-upd-var, .sol-excerpt li, .sol-comps td, .sol-comps td span, .sol-sheet .sol-grid td span, .sol-aside.sol-findings li { transition: none }
@@ -6145,19 +6120,22 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-work--flip .sol-work-copy { order: 1 }
   .sol-work--flip .sol-work-visual { order: 2 }
   .sol-stats-lead { padding-left: 24px; padding-right: 24px }
-  .sol-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)) }
-  .sol-anchors { margin-bottom: 40px }
 }
 @media (max-width: 560px) {
   .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
-  .sol-pillars { grid-template-columns: 1fr }
-  .sol-pillars li { padding: 22px 20px 24px }
-  .sol-anchors-row { gap: 18px }
   .sol-hero-lede { font-size: 16px }
   .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
   .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
   .sol-stage--focus { font-size: clamp(6px, 2.3cqw, 9px); --stage-pad: 1.4em; aspect-ratio: 16 / 11 }
   .sol-work-visual { padding: 8px }
-  .sol-pa { margin-bottom: 14px }
+  .sol-hx { gap: 12px }
+  .sol-hx-list li { padding: 12px 0; column-gap: 10px; grid-template-columns: auto 1fr; row-gap: 4px }
+  .sol-hx-list li > i { grid-row: 1 }
+  .sol-hx-tpl { grid-column: 2; justify-self: start }
+  .sol-hx-list li > i { width: 20px; height: 20px }
+  .sol-hx-list li.is-on > i::after { left: 7px; top: 4.5px; border-left-width: 7px; border-top-width: 4.5px; border-bottom-width: 4.5px }
+  .sol-hx-name { font-size: 17px; white-space: nowrap }
+  .sol-hx-tpl { font-size: 9.5px; padding: 3px 7px }
+  .sol-hx-state { font-size: 12px }
   .sol-close-panel h2 { font-size: 30px }
 }

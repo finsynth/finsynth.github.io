@@ -112,7 +112,7 @@ function PillRow({ items, offset = 0, className = '' }) {
 
 // 01 · Complex workflows — the self-completing workflow checklist, the same
 // marquee that anchors "One agent, every workflow", scaled to the cell.
-function VisualWorkflows() {
+export function VisualWorkflows() {
   return (
     <div className="xv-marquee">
       <WorkflowMarquee />
@@ -298,7 +298,7 @@ function VisualCascade() {
   )
 }
 
-function VisualAudit() {
+export function VisualAudit() {
   return (
     <div className="xvc">
       <VisualCascade />
@@ -342,7 +342,7 @@ const SHELF = [
   { label: 'Snowflake', mark: 'snowflake', tint: '#29B5E8', s: 'r', x: 99, y: 92, r: -1.8 },
 ]
 
-function VisualIntegrated() {
+export function VisualIntegrated() {
   return (
     <div className="xvi">
       <div className="xvi-field">
@@ -402,7 +402,7 @@ function VisualIntegrated() {
  * where the claim gets made in passing, that section is where it gets spelled
  * out, and the evidence belongs with both. They render from one component
  * (CertSeals) so the two can never disagree about what we hold. */
-function VisualEnterprise() {
+export function VisualEnterprise() {
   return (
     <div className="xvs">
       {/* was SVG text inside the dial, then the shield's caption; with the art
@@ -498,7 +498,7 @@ const SCROLL_IDLE_MS = 1200
  * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
  * the wait, so pressing a row always buys a full turn on the claim it selected.
  */
-function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
+export function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
   const count = dwell.length
   const [step, setStep] = useState(0)
   const [held, setHeld] = useState(false)
