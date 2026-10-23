@@ -214,40 +214,27 @@ function ModelBuildVisual() {
   const years = BUILD_YEARS.filter((_, c) => filled(c)).length
   const recast = t >= BUILD_YEARS.length * 2 + 1
   const done = t >= BUILD_YEARS.length * 2 + 2
-  const fxCol = Math.min(cur, BUILD_YEARS.length - 1)
+  const srcCol = Math.min(cur, BUILD_YEARS.length - 1)
   return (
     <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
       <div className="sol-win-wrap">
-        <div className="sol-panel sol-sheet sol-win">
-          <div className="sol-win-bar"><span className="sol-win-dots"><i /><i /><i /></span><b>Northwind.xlsx</b></div>
-          <div className="sol-sheet-fx">
-            <span>{String.fromCharCode(67 + fxCol)}8</span><span>fx</span><span>{filled(fxCol) ? BUILD_ROWS[5][fxCol + 1] : ''}</span>
-          </div>
-          <div className="sol-win-grid">
-          <table className="sol-dcf">
-            <thead>
-              <tr><th /><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-fc">FY26E</th><th className="is-fc">FY27E</th></tr>
-            </thead>
+        <div className="sol-panel sol-sheet sol-sheet--earn sol-win">
+          <div className="sol-sheet-title">Northwind Retail · model</div>
+          <table className="sol-upd sol-dcf">
+            <thead><tr><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-col">FY26E</th><th className="is-col">FY27E</th></tr></thead>
             <tbody>
               {BUILD_ROWS.map((r, i) => (
                 <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
-                  <td className="sol-dcf-n">{i + 2}</td>
                   <td>{r[0]}</td>
-                  {r.slice(1).map((v, c) => (
-                    <td key={c} className={`sol-dcf-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>
-                  ))}
+                  {r.slice(1).map((v, c) => (<td key={c} className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>))}
                   <td className="is-fc" /><td className="is-fc" />
                 </tr>
               ))}
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <tr key={`e${i}`} className="is-empty"><td className="sol-dcf-n">{BUILD_ROWS.length + 2 + i}</td><td /><td /><td /><td /><td className="is-fc" /><td className="is-fc" /></tr>
-              ))}
             </tbody>
           </table>
-          </div>
-          <div className="sol-sheet-tabs sol-win-tabs">
+          <div className="sol-sheet-tabs">
             <span className="is-on">Model</span><span className={done ? 'is-new' : ''}>DCF</span><span>Inputs</span>
-            <em><Src>{BUILD_PAGES[fxCol]}</Src></em>
+            <em><Src>{BUILD_PAGES[srcCol]}</Src></em>
           </div>
         </div>
         <div className={`sol-status${done ? ' is-done' : ''}`}>
@@ -261,12 +248,15 @@ function ModelBuildVisual() {
         </div>
       </div>
       <div className="sol-panel sol-pane">
-        <div className="sol-pane-tabs">
+        <div className="sol-sheet-tabs sol-pane-tabs">
           <svg className="sol-pane-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" /><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" /></svg>
           <span className="is-on">Chat</span><span>Review</span><span>Trace</span>
         </div>
+        <div className="sol-pane-ask">
+          <span className="sol-pane-dot" />
+          <p>Build the model and DCF in our template from the last three 10-Ks</p>
+        </div>
         <div className="sol-pane-body">
-          <p className="sol-pane-ask">Build the model and DCF in our template from the last three 10-Ks</p>
           <p className="sol-pane-say">Spreading the historicals into your template, each figure linked to its page in the filing</p>
           <ul className="sol-pane-steps">
             <li className={years ? 'is-on' : ''}><span>Historicals spread</span><em>{years} / {BUILD_YEARS.length} years</em></li>
@@ -275,7 +265,7 @@ function ModelBuildVisual() {
           </ul>
           <p className={`sol-pane-say sol-pane-done${done ? ' is-on' : ''}`}>History lines up across the three years. The forecast columns are yours</p>
         </div>
-        <div className="sol-pane-in"><span>Type a message, / for commands, @ to mention</span><b>Send ↵</b></div>
+        <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
       </div>
     </div>
   )
