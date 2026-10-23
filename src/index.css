@@ -6145,6 +6145,7 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--ink); font-family: var(--font-body);
   border-top: 1px solid var(--hair);
 }
+.hw-stage { --k-acc: #E7A200; --k-acc-soft: #FFF1C2 }
 .hw-stage--col { font-size: clamp(5.5px, 2.45cqw, 10px); aspect-ratio: 4 / 3.3 }
 .hw-stage--half { font-size: clamp(5.5px, 1.75cqw, 10px); aspect-ratio: 16 / 8.5 }
 .hw-stage--big { font-size: clamp(6px, 1.05cqw, 12px); padding: 3.2em 2.4em }
@@ -6159,10 +6160,7 @@ button.play { border: none; padding: 0; appearance: none }
    the evidence sheet takes the wider column so no figure is clipped */
 .hw-stage--scene .hw-src-name { grid-column: 2 / 4 }
 .hw-stage--scene .hw-src-kind { grid-row: 3; grid-column: 2 / 4; justify-self: start; margin-top: .4em }
-.hw-stage--scene .hw-evid-grid { --hw-gap: 1.6em; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); padding: 1.2em }
-.hw-n ~ .hw-evid-grid { padding-top: 2.9em }
 .hw-stage--scene .hw-sources .hw-panel-head em { display: none }
-.hw-stage--scene .hw-src-head { white-space: nowrap }
 .hw-arrow { flex: none; width: 3em; height: 1.4em; color: rgba(255, 255, 255, .85) }
 
 /* a white panel on the stage, the use case rows' card */
@@ -6238,44 +6236,92 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .hw-bench-foot svg { width: 1.2em; height: 1.2em; color: #12A150 }
 
-/* 03 · the evidence: the written cell wired to its line in the source */
-.hw-evid-grid { --hw-gap: 2.4em; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: var(--hw-gap); padding: 1.4em; align-items: start }
-.hw-evid-sheet { border: 1px solid var(--hair); border-radius: .5em; overflow: hidden }
+/* 03 · the evidence: the model window, the release page a step lower beside
+   it, the wire from the selected cell to its line, and the Review citations
+   control as a pill across the window's top edge. The wire and the pointer
+   are placed from measured positions (HowStages.jsx) so only their looks live
+   here */
+.hw-evid {
+  position: relative; width: 100%; max-width: 64em;
+  display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); column-gap: 2.4em; align-items: start;
+  padding: 1.4em 0 .4em;
+}
+.hw-win-bar {
+  display: flex; align-items: center; gap: .6em; padding: .85em 1.4em; border-bottom: 1px solid var(--hair);
+  font-size: 1em; font-weight: 500; color: var(--ink); white-space: nowrap;
+}
+.hw-win-bar .hw-ico { width: 1.2em; height: 1.2em; color: var(--accent) }
 .hw-evid-fx {
-  display: flex; gap: .8em; padding: .55em .9em; border-bottom: 1px solid var(--hair);
+  display: flex; align-items: center; gap: .8em; padding: .6em 1.4em; border-bottom: 1px solid var(--hair);
   font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap;
 }
-.hw-evid-fx span:first-child { color: var(--ink) }
-.hw-sheet--mini td:first-child { padding-left: .9em }
-.hw-sheet--mini td:last-child, .hw-sheet--mini th:last-child { padding-right: .9em }
-.hw-sheet--mini tr:last-child td { border-bottom: 0 }
-.hw-cell.is-sel { position: relative }
-.hw-cell.is-sel span { display: inline-block; padding: .1em .4em; margin: -.1em -.4em; border-radius: .25em; background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); font-weight: 500 }
-/* the wire: out of the selected cell, across the gap, into the passage */
-.hw-cell.is-sel::after {
-  content: ''; position: absolute; left: 100%; top: 50%; z-index: 1;
-  width: calc(var(--hw-gap) + 1.1em); height: 0; margin-left: 1px;
-  border-top: 1.5px solid var(--k-acc);
+.hw-evid-fx span:first-child { color: var(--ink); min-width: 2.2em }
+.hw-evid-fx span:last-of-type { color: var(--ink) }
+.hw-evid-fx em {
+  margin-left: auto; display: inline-flex; align-items: center; gap: .45em; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  font-family: var(--font-body); font-style: normal; font-size: 1.05em; color: var(--accent);
 }
-.hw-cell.is-sel::before {
-  content: ''; position: absolute; left: calc(100% + var(--hw-gap) + 1.1em - .25em); top: 50%; z-index: 2;
-  width: .55em; height: .55em; margin-top: -.28em; border-radius: 50%; background: var(--k-acc);
+.hw-evid-fx em .hw-ico { width: 1.25em; height: 1.25em; flex: none }
+.hw-sheet--xl th, .hw-sheet--xl td { padding: .72em 1em }
+.hw-sheet--xl td:first-child, .hw-sheet--xl th:first-child { padding-left: 0 }
+.hw-rn { width: 2.6em; text-align: center !important; padding: 0 !important; font-family: var(--font-mono); font-size: .8em; color: var(--muted); background: #FAFAFA; border-right: 1px solid #EEF0F3 }
+.hw-sheet--xl tr.is-sel td { background: #FBFCFF }
+.hw-sheet--xl tr.is-sel td.hw-rn { background: #F1F3F7; color: var(--ink) }
+.hw-sheet--xl tr:last-child td { border-bottom: 0 }
+/* the cells stage two wrote read in the accent, as its column does; the one
+   under the pointer carries the trace yellow and the ring a click leaves */
+.hw-evid .hw-cell.is-filled { background: none; box-shadow: none; color: var(--accent); font-weight: 500 }
+.hw-evid .hw-cell span { display: inline-block; padding: .12em .45em; margin: -.12em -.45em; border-radius: .3em; transition: background .3s, color .3s, box-shadow .3s }
+.hw-evid .hw-cell.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
+.hw-sheet-tabs {
+  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .6em 1.4em; border-top: 1px solid var(--hair);
+  font-size: .85em; color: var(--muted);
 }
-.hw-evid-src { min-width: 0 }
-.hw-src-head { display: flex; align-items: center; gap: .7em; padding: 0 0 .7em; font-family: var(--font-mono); font-size: .82em; color: var(--muted) }
+.hw-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
+.hw-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
+/* the release page */
+.hw-doc { margin-top: 4.6em; background: #FFFDFA }
+.hw-doc-head {
+  display: flex; align-items: center; gap: .7em; padding: .8em 1.2em; border-bottom: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap; overflow: hidden;
+}
+.hw-doc-head span:last-child { overflow: hidden; text-overflow: ellipsis }
 .hw-chip { padding: .25em .6em; border-radius: .35em; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: .95em; white-space: nowrap }
-.hw-passage { margin: 0; padding: .9em 1em; border-left: 2px solid var(--k-acc); background: var(--bg); font-size: .98em; line-height: 1.5; color: var(--secondary) }
-.hw-passage mark { background: var(--k-acc-soft); color: var(--ink); font-weight: 500; padding: .05em .15em; border-radius: .2em }
-.hw-review {
-  margin-top: auto; display: flex; align-items: center; gap: .8em; padding: .9em 1.4em; border-top: 1px solid var(--hair);
-  font-size: .92em; color: var(--ink); font-weight: 500;
+.hw-doc-page { padding: 1.2em 1.4em 1.4em }
+.hw-doc-page i { display: block; height: .5em; margin: .6em 0; border-radius: .3em; background: #ECEEF2 }
+.hw-doc-page i.is-short { width: 58% }
+.hw-doc-page p { margin: 1em 0; font-size: .96em; line-height: 1.65; color: var(--secondary) }
+.hw-doc-page mark { background: transparent; color: inherit; padding: .05em .15em; margin: 0 -.15em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background .35s, color .35s }
+.hw-doc-page mark.is-on { background: var(--k-acc-soft); color: var(--ink); font-weight: 500 }
+/* the wire and the pointer, over everything */
+.hw-wire { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; overflow: visible }
+.hw-wire path { fill: none; stroke: var(--k-acc); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: hwWire .6s cubic-bezier(.32, .72, 0, 1) .3s forwards }
+.hw-wire circle { fill: var(--k-acc); opacity: 0; animation: hwDot .3s ease .8s forwards }
+.hw-cursor {
+  position: absolute; left: 0; top: 0; z-index: 4; width: 1.6em; height: 1.6em; pointer-events: none;
+  filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
+  transition: transform .55s cubic-bezier(.32, .72, 0, 1);
 }
-.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent); margin-left: auto }
+/* the control, a pill across the window's top edge like the status pill of
+   the use case rows */
+.hw-review {
+  position: absolute; z-index: 5; top: 1.4em; left: calc((100% - 2.4em) * .59 / 2); transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: .7em; height: 2.6em; padding: 0 .5em; border-radius: 999px;
+  background: rgba(255, 255, 255, .97); color: var(--ink); font-size: .95em; font-weight: 500; white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 0 0 1px rgba(255, 255, 255, .35), 0 .45em 1.3em rgba(6, 12, 40, .32);
+}
+.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }
 .hw-review i {
-  width: 1.9em; height: 1.9em; display: grid; place-items: center; border: 1px solid var(--hair); border-radius: .35em;
+  width: 1.8em; height: 1.8em; display: grid; place-items: center; border-radius: 50%; background: #F1F3F7;
   font-style: normal; font-size: 1em; color: var(--secondary);
 }
-
+.hw-review i:last-child { background: var(--accent); color: #fff }
+.hw-review.is-focus { position: absolute; border-radius: 999px; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 .45em 1.3em rgba(6, 12, 40, .32) }
+.hw-stage .hw-doc.is-focus { border-radius: .9em; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 1.2em 3em rgba(6, 16, 50, .28) }
+.hw-stage--tab .hw-evid { font-size: 1.12em }
+@keyframes hwWire { to { stroke-dashoffset: 0 } }
+@keyframes hwDot { to { opacity: 1 } }
+@keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em rgba(231, 162, 0, .5) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em rgba(231, 162, 0, 0) } }
 /* 1 · three connected columns: the copy on the frame's white, the scene under
    it, and a chevron on the shared hairline where one stage hands to the next */
 .hw-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
@@ -6337,8 +6383,6 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-src-list li.is-focus { padding-left: .6em; padding-right: .6em; margin: 0 -.6em }
 .hw-stage .hw-ask.is-focus, .hw-stage .hw-bench-bar.is-focus { border-radius: 0; box-shadow: inset .25em 0 0 var(--accent), inset 0 0 0 100em var(--accent-soft) }
 .hw-stage .hw-skill.is-focus { box-shadow: 0 0 0 .18em var(--accent) }
-.hw-stage .hw-evid-grid.is-focus { box-shadow: inset 0 0 0 100em var(--accent-soft) }
-.hw-stage .hw-review.is-focus { box-shadow: inset .25em 0 0 var(--accent), inset 0 0 0 100em var(--accent-soft) }
 .hw-pillars--stack { padding: 0 var(--x4e-pad-x) 22px; justify-content: flex-start }
 .hw-pillars--stack .hw-pillar { padding: 14px 0 }
 
@@ -6371,7 +6415,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-ent a:hover { color: var(--accent) }
 
 @keyframes hwIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab, .hw-rail, .hw-rail .x4e-item { animation: none } }
+@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab, .hw-rail, .hw-rail .x4e-item, .hw-cell.is-sel span { animation: none } .hw-wire path { animation: none; stroke-dashoffset: 0 } .hw-wire circle { animation: none; opacity: 1 } .hw-cursor { transition: none } }
 
 /* narrow: every layout is the columns layout stacked, copy then scene */
 @media (max-width: 900px) {

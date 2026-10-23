@@ -97,7 +97,17 @@ export const SOLUTIONS = {
           ],
         },
         done: '4 of 4 cells updated, 12 citations',
-        cite: { cell: 'C8', row: 0, source: 'Q3 FY26 release', where: 'p. 4', before: 'Third quarter ', mark: 'net revenue of $1,284.6m', after: ', up 8.5% on the prior year, with gross profit of $512.5m', reviewed: 3, total: 12 },
+        // the release page the stage three scene steps through: one line per
+        // cell the model took from it, in the order the scene visits them
+        cite: {
+          source: 'Q3 FY26 release', where: 'p. 4', from: 8, reviewed: 3, total: 12,
+          lines: [
+            { row: 0, cell: 'C8', before: 'Third quarter ', mark: 'net revenue of $1,284.6m', after: ', up 8.5% on the prior year. ' },
+            { row: 1, cell: 'C9', before: '', mark: 'Gross profit of $512.5m', after: ' represented a gross margin of 39.9%, against 39.7% a year earlier. ' },
+            { row: 2, cell: 'C10', before: '', mark: 'Adjusted EBITDA was $208.3m', after: ', compared with $196.4m in the prior year quarter. ' },
+            { row: 3, cell: 'C11', before: '', mark: 'Diluted earnings per share of $0.91', after: ', up from $0.84' },
+          ],
+        },
       },
       // the nine pillars as approved in the page outline, word for word
       steps: [
