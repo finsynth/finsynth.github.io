@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@clerk/react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SectionRule from '../components/SectionRule'
 import useReveal from '../hooks/useReveal'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
@@ -248,210 +249,328 @@ function DeckVisual() {
 
 /* ── hedge fund visuals ── the six use cases on /solutions/hedge-funds ── */
 
+/* ── hedge fund visuals ────────────────────────────────────────────────────
+ * One dominant working screen and one smaller supporting card that overlaps
+ * its corner: the source it came from, the finding it points at, or the
+ * result it produced. Three of them move, on the home page's source-tracing
+ * pattern: a tick clock steps through the rows, and the completed state is
+ * what the loop rests on, so a still frame still reads.
+ */
+
+/* a tick clock that starts once the stage is in view; reduced motion holds
+   the last tick (the finished state) */
+function useTicks(total, ms, ref) {
+  const [t, setT] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setT(total - 1)
+      return
+    }
+    let id
+    const io = new IntersectionObserver(([e]) => {
+      clearInterval(id)
+      if (e.isIntersecting) id = setInterval(() => setT((v) => (v + 1) % total), ms)
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => { io.disconnect(); clearInterval(id) }
+  }, [total, ms, ref])
+  return t
+}
+
+const EARN_ROWS = [
+  { label: 'Revenue', prior: '1,184.2', now: '1,284.6', cons: '1,258.0', vs: '+2.1%', cell: 'C8', fx: '=1284.6', line: 'Net revenue of $1,284.6m, up 8.5% on the prior year' },
+  { label: 'Gross profit', prior: '470.1', now: '512.5', cons: '504.0', vs: '+1.7%', cell: 'C9', fx: '=512.5', line: 'Gross profit of $512.5m, a 39.9% gross margin' },
+  { label: 'Adj. EBITDA', prior: '196.4', now: '208.3', cons: '210.0', vs: '-0.8%', cell: 'C11', fx: '=208.3', line: 'Adjusted EBITDA of $208.3m' },
+  { label: 'Diluted EPS', prior: '0.84', now: '0.91', cons: '0.88', vs: '+3.4%', cell: 'C14', fx: '=0.91', line: 'Diluted earnings per share of $0.91' },
+]
+
+/* release line lights, the model cell fills from it, the variance prints.
+   Three ticks a row, four rows, then a hold on the finished update */
 function EarningsVisual() {
-  const rows = [['Revenue', '1,284.6', '+2.1%'], ['Gross profit', '512.5', '+1.7%'], ['EBITDA', '208.3', '-0.8%'], ['EPS', '0.91', '+3.4%']]
+  const ref = useRef(null)
+  const HOLD = 5
+  const t = useTicks(EARN_ROWS.length * 3 + HOLD, 620, ref)
+  const cur = Math.floor(t / 3)
+  const filled = (i) => t >= i * 3 + 1
+  const shown = (i) => t >= i * 3 + 2
+  const done = EARN_ROWS.filter((_, i) => filled(i)).length
+  const fxRow = EARN_ROWS[Math.min(cur, EARN_ROWS.length - 1)]
   return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel sol-doc">
-        <div className="sol-sheet-title">Q3 FY26 earnings release</div>
-        <dl className="sol-doc-figs">
-          {[['Net revenue', '$1,284.6m'], ['Gross profit', '$512.5m'], ['Diluted EPS', '$0.91']].map(([l, v]) => (
-            <div key={l}><dt>{l}</dt><dd>{v}</dd></div>
-          ))}
-        </dl>
-        <p className="sol-doc-foot">Condensed statements of operations, p. 4</p>
-      </div>
-      <div className="sol-panel sol-sheet">
-        <div className="sol-sheet-title">Your model</div>
-        <div className="sol-sheet-fx"><span>C8</span><span>fx</span><span>=1284.6 · Q3 FY26 release, p. 4</span></div>
-        <table>
-          <thead><tr><th>USD m</th><th>Q3 FY26A</th><th>vs cons.</th></tr></thead>
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+      <div className="sol-panel sol-sheet sol-main">
+        <div className="sol-sheet-title">Northwind Retail · model<em className="sol-sheet-tag">Q3 FY26 update</em></div>
+        <div className="sol-sheet-fx"><span>{fxRow.cell}</span><span>fx</span><span>{fxRow.fx} · Q3 FY26 release, p. 4</span></div>
+        <table className="sol-upd">
+          <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th><th>Cons.</th><th>vs cons.</th></tr></thead>
           <tbody>
-            {rows.map((r) => (
-              <tr key={r[0]}>
-                <td>{r[0]}</td><td>{r[1]}</td>
-                <td className={r[2].startsWith('+') ? 'sol-sheet-ok' : 'sol-sheet-miss'}>{r[2]}</td>
+            {EARN_ROWS.map((r, i) => (
+              <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
+                <td>{r.label}</td>
+                <td>{r.prior}</td>
+                <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
+                <td>{r.cons}</td>
+                <td className={`sol-upd-var ${r.vs.startsWith('+') ? 'sol-sheet-ok' : 'sol-sheet-miss'}${shown(i) ? ' is-on' : ''}`}>{r.vs}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Consensus</span><em>30 cells updated</em></div>
+        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Consensus</span><em>{done} of {EARN_ROWS.length} cells updated</em></div>
       </div>
-    </div>
-  )
-}
-
-function OverviewVisual() {
-  const points = [
-    ['Two segments: Stores (71% of revenue) and Online (29%)', 'FY25 10-K, p. 41'],
-    ['Online growing 18% y/y while stores are flat', 'Q3 release'],
-    ['Management targets 200bp margin expansion by FY28', 'Q2 call'],
-    ['Street debate centres on private label mix', 'Broker note'],
-    ['Closest peers: Contoso Mart, Fabrikam Stores', 'FY25 10-K, p. 9'],
-  ]
-  return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel sol-doc">
-        <div className="sol-sheet-title">Northwind Retail · company overview</div>
-        <ul className="sol-points">
-          {points.map(([t, src]) => <li key={t}><span>{t}</span><Src>{src}</Src></li>)}
+      <div className="sol-panel sol-aside sol-excerpt">
+        <div className="sol-aside-head"><Src>Q3 FY26 release</Src><span>p. 4</span></div>
+        <ul>
+          {EARN_ROWS.map((r, i) => (
+            <li key={r.label} className={cur === i && !filled(i) ? 'is-lit' : filled(i) ? 'is-done' : ''}>{r.line}</li>
+          ))}
         </ul>
       </div>
-      <FiaPane
-        ask="Get me up to speed on Northwind Retail"
-        note="The business, its segments, key metrics and what management has been saying, each point linked to its source. Broker notes from the Dataroom included"
-        rows={[{ label: 'Sources read', done: 14, total: 14 }, { label: 'Points cited', done: 18, total: 18 }]}
-        result="Overview ready. Ask a follow-up on any point"
-      />
     </div>
   )
 }
 
-function ModelBuildVisual() {
-  const rows = [
-    ['Revenue', '4,102', '4,355', '4,610', '4,872'],
-    ['EBITDA', '610', '655', '702', '748'],
-    ['Capex', '(180)', '(195)', '(204)', '(215)'],
-    ['Free cash flow', '290', '318', '341', '362'],
-  ]
+const OVERVIEW_SOURCES = [
+  ['FY25 10-K', 'Filing'], ['Q3 release', 'Filing'], ['Q3 call', 'Transcript'],
+  ['Broker notes', 'Dataroom'], ['Expert call', 'Dataroom'],
+]
+
+/* a research brief, with the stack of sources that fed it */
+function OverviewVisual() {
   return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel sol-sheet">
-        <div className="sol-sheet-title">Northwind Retail · model build</div>
-        <div className="sol-sheet-fx"><span>E12</span><span>fx</span><span>=4872 · FY25 10-K, p. 44</span></div>
-        <table>
-          <thead><tr><th>USD m</th><th>FY22A</th><th>FY23A</th><th>FY24A</th><th>FY25A</th></tr></thead>
+    <div className="sol-stage sol-stage--focus" aria-hidden="true">
+      <div className="sol-panel sol-main sol-brief">
+        <div className="sol-sheet-title">Northwind Retail · overview<em className="sol-sheet-tag">Drafted by Fia</em></div>
+        <div className="sol-brief-body">
+          <section>
+            <h5>Business</h5>
+            <p>Value grocer with 1,240 stores across the Midwest, two segments: Stores (71% of revenue) and Online (29%) <Src>FY25 10-K, p. 41</Src></p>
+          </section>
+          <section>
+            <h5>Key metrics</h5>
+            <dl className="sol-brief-kpis">
+              <div><dt>Revenue FY25</dt><dd>$4.9bn</dd></div>
+              <div><dt>Margin</dt><dd>15.4%</dd></div>
+              <div><dt>Online growth</dt><dd>+18%</dd></div>
+              <div><dt>Leverage</dt><dd>1.8x</dd></div>
+            </dl>
+          </section>
+          <section>
+            <h5>Management is saying</h5>
+            <p>Targets 200bp of margin expansion by FY28 as private label reaches a third of the mix <Src>Q3 FY26 call</Src></p>
+          </section>
+        </div>
+      </div>
+      <div className="sol-panel sol-aside sol-stack">
+        <div className="sol-aside-head"><span>Sources read</span><b>14 / 14</b></div>
+        <ul>
+          {OVERVIEW_SOURCES.map(([name, kind]) => (
+            <li key={name}><Tick /><span>{name}</span><em>{kind}</em></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const BUILD_ROWS = [
+  ['Revenue', '4,355', '4,610', '4,872'],
+  ['EBITDA', '655', '702', '748'],
+  ['Capex', '(195)', '(204)', '(215)'],
+  ['Free cash flow', '318', '341', '362'],
+]
+
+/* historicals spread from the filings, the forecast columns waiting */
+function ModelBuildVisual() {
+  return (
+    <div className="sol-stage sol-stage--focus" aria-hidden="true">
+      <div className="sol-panel sol-sheet sol-main">
+        <div className="sol-sheet-title">Northwind Retail · model build<em className="sol-sheet-tag">Your template</em></div>
+        <div className="sol-sheet-fx"><span>F12</span><span>fx</span><span>=4872 · FY25 10-K, p. 44</span></div>
+        <table className="sol-build">
+          <thead>
+            <tr className="sol-build-span"><th /><th colSpan="3">From the filings</th><th colSpan="2" className="is-fc">Forecast</th></tr>
+            <tr><th>USD m</th><th>FY23A</th><th>FY24A</th><th>FY25A</th><th className="is-fc">FY26E</th><th className="is-fc">FY27E</th></tr>
+          </thead>
           <tbody>
-            {rows.map((r) => <tr key={r[0]}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}
+            {BUILD_ROWS.map((r) => (
+              <tr key={r[0]}>
+                <td>{r[0]}</td>
+                {r.slice(1).map((v, i) => <td key={i} className="is-hist">{v}</td>)}
+                <td className="is-fc" /><td className="is-fc" />
+              </tr>
+            ))}
           </tbody>
         </table>
         <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>DCF</span><span>Inputs</span><em>FY23 recast applied</em></div>
       </div>
-      <div className="sol-panel">
-        <div className="sol-panel-top">
-          <div>
-            <h4>DCF</h4>
-            <p className="sol-panel-sub">Your template · every historical linked to the filings</p>
-          </div>
-          <span className="sol-pill">Built</span>
-        </div>
+      <div className="sol-panel sol-aside sol-dcf">
+        <div className="sol-aside-head"><span>DCF</span><span className="sol-pill">Built</span></div>
         <Returns items={[{ label: 'WACC', value: '8.5%' }, { label: 'Terminal growth', value: '2.5%' }, { label: 'Implied value', value: '$46.20' }]} />
-        <p className="sol-assume-hyp"><b>Ready to forecast</b> The history lines up before you start, with the FY23 segment recast already applied</p>
+        <p className="sol-aside-note"><Tick />FY23 restated to the FY25 segment basis</p>
       </div>
     </div>
   )
 }
 
+const COMPS = [
+  { name: 'Northwind Retail', ev: '8.9x', pe: '15.2x', evs: '1.0x', g: '5.6%', self: true },
+  { name: 'Contoso Mart', ev: '9.8x', pe: '16.8x', evs: '1.1x', g: '4.1%', EV: '$14.2bn', ebitda: '$1.45bn', fye: 'January year end, shifted' },
+  { name: 'Fabrikam Stores', ev: '7.6x', pe: '13.9x', evs: '0.8x', g: '3.2%', EV: '$9.1bn', ebitda: '$1.20bn', fye: 'June year end, shifted' },
+  { name: 'Tailspin Retail', ev: '10.4x', pe: '18.1x', evs: '1.3x', g: '7.0%', EV: '$21.7bn', ebitda: '$2.09bn', fye: 'December year end, no shift' },
+  { name: 'Litware Grocers', ev: '8.2x', pe: '14.6x', evs: '0.6x', g: '2.4%' },
+]
+const COMPS_PICK = [1, 2, 3]
+
+/* the selection walks the peers; the inputs behind each multiple follow it */
 function CompsVisual() {
-  const rows = [
-    ['Northwind Retail', '8.9x', '15.2x', '5.6%'],
-    ['Contoso Mart', '9.8x', '16.8x', '4.1%'],
-    ['Fabrikam Stores', '7.6x', '13.9x', '3.2%'],
-    ['Tailspin Retail', '10.4x', '18.1x', '7.0%'],
-  ]
+  const ref = useRef(null)
+  const t = useTicks(COMPS_PICK.length * 5, 600, ref)
+  const sel = COMPS_PICK[Math.floor(t / 5)]
+  const c = COMPS[sel]
   return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel sol-sheet">
-        <div className="sol-sheet-title">Peer comps · NTM</div>
-        <table>
-          <thead><tr><th>Company</th><th>EV/EBITDA</th><th>P/E</th><th>Rev. growth</th></tr></thead>
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+      <div className="sol-panel sol-sheet sol-main">
+        <div className="sol-sheet-title">Peer comps · NTM<em className="sol-sheet-tag">Calendarised to December</em></div>
+        <table className="sol-comps">
+          <thead><tr><th>Company</th><th>EV/EBITDA</th><th>P/E</th><th>EV/Sales</th></tr></thead>
           <tbody>
-            {rows.map((r, i) => <tr key={r[0]} className={i === 1 ? 'sol-sheet-pick' : ''}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}
-          </tbody>
-        </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Comps</span><span>Inputs</span><em>Calendarised to December</em></div>
-      </div>
-      <div className="sol-panel sol-cite">
-        <div className="sol-panel-top">
-          <div>
-            <h4>Contoso Mart · EV/EBITDA 9.8x</h4>
-            <p className="sol-panel-sub">The inputs behind the multiple</p>
-          </div>
-        </div>
-        <ul className="sol-points">
-          <li><span>EV $14.2bn</span><Src>Q3 10-Q, p. 3</Src></li>
-          <li><span>NTM EBITDA $1.45bn</span><Src>Consensus, calendarised</Src></li>
-          <li><span>January year end shifted to December</span><Src>Normalised</Src></li>
-        </ul>
-        <p className="sol-fia-result"><Tick />Every input traced to where it came from</p>
-      </div>
-    </div>
-  )
-}
-
-function ThesisVisual() {
-  const evidence = [
-    ['Private label up 4pts of mix in two years', 'Supported', 'FY25 10-K'],
-    ['Gross margin up 120bp year on year', 'Supported', 'Q3 release'],
-    ['Promotional intensity rising in core categories', 'Risk', 'Q3 call'],
-  ]
-  return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel">
-        <div className="sol-panel-top">
-          <div>
-            <h4>Your thesis</h4>
-            <p className="sol-panel-sub">Margins expand as private label grows</p>
-          </div>
-        </div>
-        <ul className="sol-evidence">
-          {evidence.map(([t, k, src]) => (
-            <li key={t}>
-              <span className={`sol-tag sol-tag--${k.toLowerCase()}`}>{k}</span>
-              <span>{t}</span>
-              <Src>{src}</Src>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <FiaPane
-        ask="Test my thesis against the filings and build the strongest case against it"
-        note="Each point is checked against filings, transcripts and your own research, then the counter-case is drafted with every claim cited"
-        rows={[{ label: 'Points tested', done: 3, total: 3 }, { label: 'Claims cited', done: 6, total: 6 }]}
-        result="Counter-case drafted. Promo pressure offsets mix gains"
-        flag={{ level: 'Risk', text: 'Promotional intensity rising in core categories, per the Q3 call' }}
-      />
-    </div>
-  )
-}
-
-function AuditVisual() {
-  const rows = [['12', '4,355', '4,610', '4,872'], ['13', '655', '702', '748'], ['14', '(195)', '(204)', '#REF!'], ['15', '318', '341', '362'], ['16', '7.3%', '7.4%', '7.4%']]
-  const flagged = new Set(['13-2', '14-3', '16-1']) // D13, E14, C16
-  return (
-    <div className="sol-stage" aria-hidden="true">
-      <div className="sol-panel sol-sheet">
-        <div className="sol-sheet-title">Inherited_model.xlsx · audit</div>
-        <div className="sol-sheet-fx"><span>D13</span><span>fx</span><span>=C13*1.072+12</span></div>
-        <table className="sol-grid">
-          <thead><tr><th /><th>C</th><th>D</th><th>E</th></tr></thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r[0]}>
-                {r.map((c, j) => <td key={j} className={j === 0 ? 'sol-grid-n' : flagged.has(`${r[0]}-${j}`) ? 'sol-grid-bad' : ''}>{c}</td>)}
+            {COMPS.map((p, i) => (
+              <tr key={p.name} className={p.self ? 'is-self' : i === sel ? 'is-sel' : ''}>
+                <td>{p.name}</td>
+                <td className={i === sel ? 'sol-cell-sel' : ''}><span>{p.ev}</span></td>
+                <td>{p.pe}</td><td>{p.evs}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Audit</span><em>3 issues · FY24 reconciled</em></div>
+        <div className="sol-sheet-tabs"><span className="is-on">Comps</span><span>Inputs</span><em>Every input traced</em></div>
       </div>
-      <div className="sol-panel">
-        <div className="sol-panel-top">
-          <div>
-            <h4>Audit findings</h4>
-            <p className="sol-panel-sub">Each issue linked to the exact cell</p>
-          </div>
-          <span className="sol-pill">3 open</span>
-        </div>
-        <ul className="sol-findings">
-          <li><b>D13</b><span>Hardcoded number inside a formula</span></li>
-          <li><b>E14</b><span>Broken reference</span></li>
-          <li><b>C16</b><span>Formula differs from the rest of the row</span></li>
+      <div className="sol-panel sol-aside sol-inputs" key={sel}>
+        <div className="sol-aside-head"><span>{c.name}</span><b>{c.ev}</b></div>
+        <ul>
+          <li><span>EV</span><b>{c.EV}</b><Src>10-Q, p. 3</Src></li>
+          <li><span>NTM EBITDA</span><b>{c.ebitda}</b><Src>Consensus</Src></li>
+          <li className="sol-inputs-note"><span>{c.fye}</span><Src>Calendarised</Src></li>
         </ul>
-        <p className="sol-fia-result sol-audit-ok"><Tick />FY24 historicals reconciled to the 10-K</p>
       </div>
     </div>
   )
+}
+
+/* the thesis, its evidence, and the strongest case against it given the room */
+function ThesisVisual() {
+  return (
+    <div className="sol-stage sol-stage--focus" aria-hidden="true">
+      <div className="sol-panel sol-main sol-thesis">
+        <div className="sol-sheet-title">Your thesis<em className="sol-sheet-tag">3 points tested</em></div>
+        <p className="sol-thesis-stmt">Private label lifts margins</p>
+        <ul className="sol-evidence">
+          <li><span className="sol-tag sol-tag--supported">Supported</span><span>Private label mix up 4pts in two years</span><Src>FY25 10-K</Src></li>
+          <li><span className="sol-tag sol-tag--supported">Supported</span><span>Gross margin up 120bp year on year</span><Src>Q3 release</Src></li>
+          <li className="sol-evidence--counter">
+            <span className="sol-tag sol-tag--risk">Strongest counter</span>
+            <span>Rising promotions offset the mix gain</span>
+            <Src>Q3 call, p. 7</Src>
+          </li>
+        </ul>
+      </div>
+      <div className="sol-panel sol-aside sol-excerpt sol-excerpt--quote">
+        <div className="sol-aside-head"><Src>Q3 FY26 call</Src><span>p. 7</span></div>
+        <ul>
+          <li>Private label reached 31% of sales this quarter</li>
+          <li className="is-lit">"We expect promotional activity to remain elevated through the holiday period"</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+const AUDIT_ROWS = [
+  [12, '4,355', '4,610', '4,872'],
+  [13, '655', '702', '748'],
+  [14, '(195)', '(204)', '#REF!'],
+  [15, '318', '341', '362'],
+  [16, '7.3%', '7.4%', '7.4%'],
+]
+const FINDINGS = [
+  { cell: 'D13', fx: '702', text: 'Hardcoded number inside a formula row' },
+  { cell: 'E14', fx: '=D14*(1+#REF!)', text: 'Broken reference' },
+  { cell: 'C16', fx: '=C15/C12', text: 'Formula differs from the rest of the row' },
+]
+
+/* the selected finding walks the list; its cell lights and the formula bar
+   shows what is actually in it */
+function AuditVisual() {
+  const ref = useRef(null)
+  const t = useTicks(FINDINGS.length * 5, 600, ref)
+  const sel = Math.floor(t / 5)
+  const f = FINDINGS[sel]
+  const cols = ['C', 'D', 'E']
+  return (
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+      <div className="sol-panel sol-sheet sol-main">
+        <div className="sol-sheet-title">inherited_model.xlsx · audit<em className="sol-sheet-tag sol-sheet-tag--warn">3 open</em></div>
+        <div className="sol-sheet-fx"><span>{f.cell}</span><span>fx</span><span>{f.fx}</span></div>
+        <table className="sol-grid">
+          <thead><tr><th /><th>C</th><th>D</th><th>E</th></tr></thead>
+          <tbody>
+            {AUDIT_ROWS.map((r) => (
+              <tr key={r[0]}>
+                <td className="sol-grid-n">{r[0]}</td>
+                {r.slice(1).map((v, i) => {
+                  const id = `${cols[i]}${r[0]}`
+                  const bad = FINDINGS.some((x) => x.cell === id)
+                  return <td key={id} className={`${bad ? 'sol-grid-bad' : ''}${f.cell === id ? ' is-sel' : ''}`}><span>{v}</span></td>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Audit</span><em>FY24 historicals reconciled to the 10-K</em></div>
+      </div>
+      <div className="sol-panel sol-aside sol-findings">
+        <div className="sol-aside-head"><span>Audit findings</span><span>3</span></div>
+        <ul>
+          {FINDINGS.map((x, i) => (
+            <li key={x.cell} className={i === sel ? 'is-sel' : ''}><b>{x.cell}</b><span>{x.text}</span></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+/* small drawn fragments for a few of the how-it-works cells, one treatment:
+   a hairline strip in the page's grey with a single product detail in it */
+function PillarArt({ kind }) {
+  if (kind === 'citation') return (
+    <div className="sol-pa sol-pa--cite">
+      <span className="sol-pa-cell">4,872</span>
+      <i className="sol-pa-link" />
+      <Src>FY25 10-K · p. 44</Src>
+    </div>
+  )
+  if (kind === 'template') return (
+    <div className="sol-pa sol-pa--tpl">
+      <span className="is-on">Model</span><span>DCF</span><span>Comps</span><span>Memo</span>
+      <em>template.xlsx</em>
+    </div>
+  )
+  if (kind === 'skill') return (
+    <div className="sol-pa sol-pa--skill">
+      <b><i /> Earnings update</b>
+      <em>Saved skill · runs on every name in your book</em>
+    </div>
+  )
+  if (kind === 'dataroom') return (
+    <div className="sol-pa sol-pa--room">
+      {[['Broker notes', 12], ['Expert calls', 4]].map(([n, c]) => (
+        <span key={n}><i />{n}<em>{c}</em></span>
+      ))}
+    </div>
+  )
+  return null
 }
 
 const VISUALS = {
@@ -537,6 +656,10 @@ export default function Solution() {
 
   return (
     <div className="mainContainer">
+      <div className="page-rails" aria-hidden="true">
+        <span className="rail rail-left" />
+        <span className="rail rail-right" />
+      </div>
       <Navbar />
       <main className="sol-page">
         <header className="sol-hero wrap">
@@ -562,6 +685,7 @@ export default function Solution() {
             <img src="/assets/img/wall-street-bw.webp" alt="" loading="eager" />
           </div>
         </header>
+        <SectionRule />
 
         {sol.anchors && (
           <nav className="sol-anchors" aria-label="On this page">
@@ -592,12 +716,14 @@ export default function Solution() {
           {sol.more && <p className="sol-more"><b>{sol.more.lead}</b> {sol.more.rest}</p>}
         </div>
 
+        {sol.how && <SectionRule />}
         {sol.how && (
           <section className="sol-how wrap sol-anchor-target" id="how-it-works" ref={howRef}>
             <SectionHead eyebrow={sol.how.eyebrow} title={sol.how.title} />
             <ul className="sol-pillars">
               {sol.how.pillars.map((p, i) => (
                 <li key={p.title} className="sol-reveal" style={{ '--d': `${0.05 * i}s` }}>
+                  {p.visual && <PillarArt kind={p.visual} />}
                   <h3>{p.title}</h3>
                   <p>{p.body}</p>
                 </li>
@@ -612,8 +738,10 @@ export default function Solution() {
           </section>
         )}
 
+        {sol.faqs && <SectionRule />}
         {sol.faqs && <SolFaq head={sol.faqHead} items={sol.faqs} />}
 
+        <SectionRule />
         <section className="sol-close wrap">
           <div className="sol-close-panel">
             <h2>{sol.closing}</h2>
@@ -627,6 +755,7 @@ export default function Solution() {
           </div>
         </section>
       </main>
+      <SectionRule />
       <Footer />
     </div>
   )
