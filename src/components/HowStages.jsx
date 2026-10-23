@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 
@@ -112,39 +112,124 @@ export function BenchPanel({ ex, n, focus }) {
   )
 }
 
-/* 03 · the evidence: the cell stage two wrote, wired to the line in the
-   source it came from, and the control that steps through the rest */
+/* the scene's own clock, one step per cell while it is on screen. Reduced
+   motion holds the last step */
+function useSteps(total, ms, ref) {
+  const [t, setT] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setT(total - 1); return }
+    let id
+    const io = new IntersectionObserver(([e]) => {
+      clearInterval(id)
+      if (e.isIntersecting) id = setInterval(() => setT((v) => (v + 1) % total), ms)
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => { io.disconnect(); clearInterval(id) }
+  }, [total, ms, ref])
+  return t
+}
+
+function Cursor({ x, y }) {
+  return (
+    <svg className="hw-cursor" viewBox="0 0 16 16" aria-hidden="true" style={{ transform: `translate(${x}px, ${y}px)` }}>
+      <path d="M2.5 1.5v12.2l3.1-2.8 2.1 4.6 2.2-1-2.1-4.6h4.2z" fill="#fff" stroke="#1C1C1C" strokeWidth=".9" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/* 03 · the evidence: the model window with the cells stage two wrote, the
+   release page beside it a step lower, and the wire from the selected cell to
+   the line it came from. On its own clock the pointer moves to the next cell,
+   the wire redraws to the card's edge at that cell's line and the counter advances: the pass
+   through the citations that the Review citations pillar describes. The wire
+   and the pointer are measured from the live layout, so the composition can
+   scale with the stage */
 export function EvidencePanel({ ex, n, focus }) {
   const { cite, sheet } = ex
-  const rows = sheet.rows.slice(0, 3)
+  const ref = useRef(null)
+  const t = useSteps(cite.lines.length, 2000, ref)
+  const line = cite.lines[t]
+  const [geo, setGeo] = useState(null)
+  useLayoutEffect(() => {
+    const wrap = ref.current
+    if (!wrap) return
+    const measure = () => {
+      const cell = wrap.querySelector('.hw-cell.is-sel span')
+      const doc = wrap.querySelector('.hw-doc')
+      const mark = wrap.querySelector('.hw-doc mark.is-on')
+      if (!cell || !doc || !mark) return
+      const w = wrap.getBoundingClientRect()
+      const a = cell.getBoundingClientRect()
+      const d = doc.getBoundingClientRect()
+      const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
+      setGeo({
+        w: w.width, h: w.height,
+        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
+        x2: d.left - w.left, y2: b.top + b.height / 2 - w.top,
+        cx: a.left + a.width * .58 - w.left, cy: a.top + a.height * .45 - w.top,
+      })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [t])
   const f = (k) => (focus === k ? ' is-focus' : '')
+  const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
   return (
-    <div className="hw-panel hw-evid">
-      {n && <span className="hw-n">{n}</span>}
-      <div className={`hw-evid-grid${f('cited')}`}>
-        <div className="hw-evid-sheet">
-          <div className="hw-evid-fx"><span>{cite.cell}</span><span>fx</span><span>={sheet.rows[cite.row][2]}</span></div>
-          <table className="hw-sheet hw-sheet--mini">
-            <thead><tr><th>{sheet.cols[0]}</th><th className="is-col">{sheet.cols[2]}</th></tr></thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={r[0]}>
-                  <td>{r[0]}</td>
-                  <td className={`hw-cell${i === cite.row ? ' is-sel' : ''}`}><span>{r[2]}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="hw-evid" ref={ref}>
+      <div className="hw-panel hw-evid-sheet">
+        {n && <span className="hw-n">{n}</span>}
+        <div className="hw-win-bar"><Ico kind="sheet" />{ex.file}</div>
+        <div className="hw-evid-fx">
+          <span>{line.cell}</span><span>fx</span><span>={sheet.rows[line.row][2]}</span>
+          <em><Ico kind="doc" />{cite.source}</em>
         </div>
-        <div className="hw-evid-src">
-          <div className="hw-src-head"><span className="hw-chip">{cite.source}</span><span>{cite.where}</span></div>
-          <p className="hw-passage">{cite.before}<mark>{cite.mark}</mark>{cite.after}</p>
+        <table className="hw-sheet hw-sheet--xl">
+          <thead>
+            <tr><th className="hw-rn" /><th>{sheet.cols[0]}</th><th>{sheet.cols[1]}</th><th className="is-col">{sheet.cols[2]}</th></tr>
+          </thead>
+          <tbody>
+            {sheet.rows.map((r, i) => (
+              <tr key={r[0]} className={i === line.row ? 'is-sel' : ''}>
+                <td className="hw-rn">{cite.from + i}</td>
+                <td>{r[0]}</td>
+                <td>{r[1]}</td>
+                <td className={`hw-cell is-filled${i === line.row ? ' is-sel' : ''}`}><span>{r[2]}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="hw-sheet-tabs"><span className="is-on">Model</span><span>Inputs</span><span>Notes</span></div>
+      </div>
+      <div className={`hw-panel hw-doc${f('cited')}`}>
+        <div className="hw-doc-head"><span className="hw-chip">{cite.source}</span><span>{cite.where}</span></div>
+        <div className="hw-doc-page">
+          <i /><i className="is-short" />
+          <p>
+            {cite.lines.map((l, i) => (
+              <span key={l.cell}>{l.before}<mark className={i === t ? 'is-on' : ''}>{l.mark}</mark>{l.after}</span>
+            ))}
+          </p>
+          <i /><i /><i className="is-short" />
         </div>
       </div>
+      {geo && (
+        <>
+          <svg className="hw-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={t}>
+            <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+            <circle cx={geo.x2} cy={geo.y2} r="3" />
+          </svg>
+          <Cursor x={geo.cx} y={geo.cy} />
+        </>
+      )}
       <div className={`hw-review${f('review')}`}>
+        <i aria-hidden="true">‹</i>
         <span>Review citations</span>
-        <b>{cite.reviewed} / {cite.total}</b>
-        <i aria-hidden="true">‹</i><i aria-hidden="true">›</i>
+        <b>{cite.reviewed + t} / {cite.total}</b>
+        <i aria-hidden="true">›</i>
       </div>
     </div>
   )
