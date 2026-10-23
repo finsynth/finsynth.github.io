@@ -32,11 +32,17 @@ const Chevron = ({ back }) => (
   </svg>
 )
 
-export default function Testimonial() {
+const DEFAULT_TITLE = <>Hear what the analysts<br />have to <span className="ttl-hl">say</span></>
+
+// Other pages pass their own quotes (a solutions page carries the one quote
+// from its outline). With a single card there is no deck to page through, so
+// the arrows go and the stack holds still.
+export default function Testimonial({ quotes = QUOTES, title = DEFAULT_TITLE, id = 'customers' }) {
   const revealRef = useReveal()
-  const { sectionRef, stackRef, next, prev } = useCardStack(QUOTES.length)
+  const { sectionRef, stackRef, next, prev } = useCardStack(quotes.length)
+  const deck = quotes.length > 1
   return (
-    <section className="testi-sec" id="customers" ref={sectionRef}>
+    <section className="testi-sec" id={id} ref={sectionRef}>
       {/* the stack cycles through the quotes on an automatic timer */}
       <div className="testi-pin" ref={revealRef}>
         <div className="wrap">
@@ -44,7 +50,7 @@ export default function Testimonial() {
           {/* Head */}
           <div className="testi-head">
             <p className="hiw-eyebrow">Customers</p>
-            <h2>Hear what the analysts<br />have to <span className="ttl-hl">say</span></h2>
+            <h2>{title}</h2>
           </div>
 
           {/* Card stack — front card flies up and tucks behind automatically.
@@ -52,8 +58,8 @@ export default function Testimonial() {
               their own pace, or back to a quote that has already passed. They
               live outside .testi-stack: the hook animates that element's direct
               children, so a control inside it would be dealt as a card. */}
-          <div className="testi-deck">
-            <div className="testi-nav">
+          <div className={`testi-deck${deck ? '' : ' testi-deck--single'}`}>
+            {deck && <div className="testi-nav">
               <button
                 type="button" className="testi-navbtn" onClick={prev}
                 aria-label="Previous testimonial" aria-controls="testi-stack"
@@ -66,9 +72,9 @@ export default function Testimonial() {
               >
                 <Chevron />
               </button>
-            </div>
+            </div>}
             <div className="testi-stack" id="testi-stack" ref={stackRef}>
-              {QUOTES.map(t => (
+              {quotes.map(t => (
                 <div className="testi-card" key={t.name}>
                   <blockquote className="testi-quote">{t.quote}</blockquote>
                   <div className="testi-author">
