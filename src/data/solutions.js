@@ -14,11 +14,6 @@ export const SOLUTIONS = {
     title: 'Do more deals and deepen your analysis, from LBO build and valuation, to creating IC decks',
     lede:
       'FinSynth builds the model to your template, cites every number back to its source and keeps the audit trail, inside Excel and in the Fia workspace',
-    stats: [
-      { value: '80%', label: 'Time saved' },
-      { value: '90%', label: 'Less time auditing' },
-      { value: '2x', label: 'More coverage' },
-    ],
     workflows: [
       {
         key: 'lbo',
@@ -53,7 +48,6 @@ export const SOLUTIONS = {
         visual: 'deck',
       },
     ],
-    closing: 'See for yourself',
   },
 
   // Copy taken from the approved page outline canvas (Oct 2026). The hero lede
@@ -66,11 +60,6 @@ export const SOLUTIONS = {
       'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like earnings updates, consensus comparison, model audits and comps, tracing every output back to its source.',
     strategiesLead: 'Built to work across strategies',
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
-    stats: [
-      { value: '80%', label: 'Time saved' },
-      { value: '90%', label: 'Less time auditing' },
-      { value: '2x', label: 'More coverage' },
-    ],
     useCasesHead: { eyebrow: 'Use cases', title: 'Where FinSynth fits into hedge fund research' },
     workflows: [
       {
@@ -122,7 +111,6 @@ export const SOLUTIONS = {
         visual: 'audit',
       },
     ],
-    more: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
     // The same rail + stage the home page's Excel section uses: five claims on
     // the left, one visual on stage per claim. `ms` is how long each holds on
     // the auto-step; the citation trace is a 9s loop and gets the longest turn.
@@ -158,8 +146,6 @@ export const SOLUTIONS = {
       { q: 'Does it work with our model templates?', a: 'Yes. FinSynth builds models, comps and memos in your own templates, and Skills let you save a routine once and run it again on any name.' },
       { q: 'What markets does FinSynth cover?', a: 'FinSynth has global coverage of public companies, including US, European, Hong Kong and China A-share filings.' },
     ],
-    closing: 'See FinSynth in action',
-    closingSub: 'Book a demo with our team, or start for free today',
   },
 }
 
