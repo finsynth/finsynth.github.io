@@ -78,25 +78,87 @@ function useTicks(total, ms, ref, paused = false) {
 /* the screen's shortlist: the names that passed on the numbers and on what
    management said, each data point with the document it came from */
 const SCREEN_ROWS = [
-  ['Crocs', '+220bp', 'Raised', 'Q3 FY26 release'],
-  ['Deckers', '+180bp', 'Raised', 'Q2 FY26 call'],
-  ['On Holding', '+150bp', 'Reiterated', 'H1 FY26 release'],
-  ['Birkenstock', '+90bp', 'Raised', 'Q3 FY26 call'],
-  ['Skechers', '+70bp', 'Raised', 'Q3 FY26 release'],
-  ['Columbia', '+40bp', 'Reiterated', 'Q3 FY26 call'],
+  ['Crocs', '+120bp', 'Raised', 'Q3 FY26 release'],
+  ['Deckers', '+110bp', 'Raised', 'Q2 FY26 call'],
+  ['On Holding', '+90bp', 'Reiterated', 'H1 FY26 release'],
+  ['Birkenstock', '+70bp', 'Raised', 'Q3 FY26 call'],
+  ['Skechers', '+50bp', 'Raised', 'Q3 FY26 release'],
+  ['Columbia', '+30bp', 'Reiterated', 'Q3 FY26 call'],
 ]
 const SCREEN_CRITERIA = ['Gross margin inflected', 'Guidance raised or held', 'Pricing holding on the call']
+/* the line each of the first three names' data point came from, for the
+   sourced-shortlist scene; the Crocs line is the one the thesis stage cites */
+const SCREEN_CITES = [
+  { doc: 'Q3 FY26 release', where: 'p. 2', before: 'Adjusted gross margin was 59.6%, ', mark: 'up 120 basis points', after: ' on the prior year, driven by channel mix and lower freight.' },
+  { doc: 'Q2 FY26 call', where: 'p. 4', before: 'Given the first half, ', mark: 'we are raising our full-year outlook', after: ', with gross margin now expected to be up around 110 basis points.' },
+  { doc: 'H1 FY26 release', where: 'p. 3', before: 'Gross profit margin ', mark: 'improved by 90 basis points', after: ' to 60.9%, on a higher DTC share and lower freight costs.' },
+]
+
+/* the citation flow's geometry, shared by the scenes that click a source
+   chip: on each tick, the selected chip, the excerpt card and the line lit
+   in it are measured in the stage's own coordinates, so the wire and the
+   pointer can be placed over the panels and scale with the stage */
+function useWire(ref, t, chipSel) {
+  const [geo, setGeo] = useState(null)
+  useLayoutEffect(() => {
+    const wrap = ref.current
+    if (!wrap) return
+    const measure = () => {
+      const chip = wrap.querySelector(chipSel)
+      const card = wrap.querySelector('.sol-excerpt--cite')
+      const mark = wrap.querySelector('.sol-excerpt--cite mark.is-on')
+      if (!chip || !card || !mark) { setGeo(null); return }
+      const w = wrap.getBoundingClientRect()
+      const a = chip.getBoundingClientRect()
+      const d = card.getBoundingClientRect()
+      const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
+      setGeo({
+        w: w.width, h: w.height,
+        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
+        x2: d.left - w.left, y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
+        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
+      })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [ref, t, chipSel])
+  return geo
+}
+
+/* the wire from the chip to the card, and the pointer on the chip; keyed on
+   the tick so the wire redraws for each new source */
+function Wire({ geo, tick }) {
+  if (!geo) return null
+  const dx = (geo.x2 - geo.x1) * .5
+  return (
+    <>
+      <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${tick}`}>
+        <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+        <circle cx={geo.x2} cy={geo.y2} r="3" />
+      </svg>
+      <Cursor x={geo.cx} y={geo.cy} />
+    </>
+  )
+}
 
 /* idea generation: the shortlist prints a name at a time out of the whole
    universe, the criteria tick off beside it, and the pill over the sheet
-   turns its spinner into a check once the list is full */
-function ScreenVisual() {
+   turns its spinner into a check once the list is full. With `cite` the
+   list is already full and the scene walks its sources instead: the pointer
+   clicks a name's source chip, the card beside the sheet opens that
+   document and the data point's line lights in it */
+function ScreenVisual({ cite = false }) {
   const ref = useRef(null)
   const HOLD = 8
-  const t = useTicks(SCREEN_ROWS.length + SCREEN_CRITERIA.length + HOLD, 620, ref)
-  const crit = Math.min(t, SCREEN_CRITERIA.length)
-  const rows = Math.max(0, t - SCREEN_CRITERIA.length)
+  const t = useTicks(cite ? SCREEN_CITES.length : SCREEN_ROWS.length + SCREEN_CRITERIA.length + HOLD, cite ? 2400 : 620, ref)
+  const crit = cite ? SCREEN_CRITERIA.length : Math.min(t, SCREEN_CRITERIA.length)
+  const rows = cite ? SCREEN_ROWS.length : Math.max(0, t - SCREEN_CRITERIA.length)
   const done = rows >= SCREEN_ROWS.length
+  const sel = cite ? t : -1
+  const c = cite ? SCREEN_CITES[t] : null
+  const geo = useWire(ref, sel, '.sol-screen tr.is-sel .sol-src')
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
@@ -105,7 +167,7 @@ function ScreenVisual() {
           <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
           <tbody>
             {SCREEN_ROWS.map(([name, gm, guide, src], i) => (
-              <tr key={name} className={i < rows ? 'is-on' : ''}>
+              <tr key={name} className={`${i < rows ? 'is-on' : ''}${i === sel ? ' is-sel' : ''}`}>
                 <td>{name}</td>
                 <td>{gm}</td>
                 <td>{guide}</td>
@@ -115,14 +177,22 @@ function ScreenVisual() {
           </tbody>
         </table>
       </div>
-      <div className="sol-panel sol-aside sol-stack">
-        <div className="sol-aside-head"><span>Shortlist</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
-        <ul>
-          {SCREEN_CRITERIA.map((c, i) => (
-            <li key={c} className={i < crit ? 'is-on' : ''}><Tick /><span>{c}</span></li>
-          ))}
-        </ul>
-      </div>
+      {c ? (
+        <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
+          <div className="sol-aside-head"><Src>{c.doc}</Src><span>{c.where}</span></div>
+          <p>{c.before}<mark className="is-on">{c.mark}</mark>{c.after}</p>
+        </div>
+      ) : (
+        <div className="sol-panel sol-aside sol-stack">
+          <div className="sol-aside-head"><span>Shortlist</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
+          <ul>
+            {SCREEN_CRITERIA.map((cr, i) => (
+              <li key={cr} className={i < crit ? 'is-on' : ''}><Tick /><span>{cr}</span></li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Wire geo={geo} tick={t} />
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
           <span className="sol-status-spin" />
@@ -439,45 +509,23 @@ const THESIS_POINTS = [
     before: 'On pricing, ', mark: 'we expect promotional activity to remain elevated through the holiday period', after: ', which will weigh on the margin benefit from mix.',
   },
 ]
-function ThesisVisual() {
+function ThesisVisual({
+  ask = 'Test my thesis: DTC mix lifts margins',
+  say = 'Tested against the filings, transcripts and your notes. Two points hold, one has a strong counter',
+}) {
   const ref = useRef(null)
   const t = useTicks(THESIS_POINTS.length, 2400, ref)
   const pt = THESIS_POINTS[t]
-  const [geo, setGeo] = useState(null)
-  useLayoutEffect(() => {
-    const wrap = ref.current
-    if (!wrap) return
-    const measure = () => {
-      const chip = wrap.querySelector('.sol-evidence li.is-sel .sol-src')
-      const card = wrap.querySelector('.sol-excerpt--cite')
-      const mark = wrap.querySelector('.sol-excerpt--cite mark.is-on')
-      if (!chip || !card || !mark) return
-      const w = wrap.getBoundingClientRect()
-      const a = chip.getBoundingClientRect()
-      const d = card.getBoundingClientRect()
-      const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
-      setGeo({
-        w: w.width, h: w.height,
-        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
-        x2: d.left - w.left, y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
-        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
-      })
-    }
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(wrap)
-    return () => ro.disconnect()
-  }, [t])
-  const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
+  const geo = useWire(ref, t, '.sol-evidence li.is-sel .sol-src')
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-pane sol-main sol-pane--thesis">
         <div className="sol-pane-ask">
           <span className="sol-pane-dot" />
-          <p>Test my thesis: DTC mix lifts margins</p>
+          <p>{ask}</p>
         </div>
         <div className="sol-pane-body">
-          <p className="sol-pane-say">Tested against the filings, transcripts and your notes. Two points hold, one has a strong counter</p>
+          <p className="sol-pane-say">{say}</p>
           <ul className="sol-evidence">
             {THESIS_POINTS.map((p, i) => (
               <li key={p.src} className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}>
@@ -494,15 +542,7 @@ function ThesisVisual() {
         <div className="sol-aside-head"><Src>{pt.doc}</Src><span>{pt.where}</span></div>
         <p>{pt.before}<mark className="is-on">{pt.mark}</mark>{pt.after}</p>
       </div>
-      {geo && (
-        <>
-          <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${t}`}>
-            <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
-            <circle cx={geo.x2} cy={geo.y2} r="3" />
-          </svg>
-          <Cursor x={geo.cx} y={geo.cy} />
-        </>
-      )}
+      <Wire geo={geo} tick={t} />
     </div>
   )
 }
@@ -604,20 +644,10 @@ const VISUALS = {
   screen: ScreenVisual, earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual,
 }
 
-/* a use case that spans several screens plays them in turn: each one runs
-   its own loop about once, then the next fades in over the same ground. The
-   ground under them is the stage's blue, so the swap reads as a dissolve */
+/* a use case's scenes play in turn: each screen runs its own loop about
+   once, then the next fades in over the same ground. The ground under them
+   is the stage's blue, so the swap reads as a dissolve */
 const SCENE_MS = 10400
-function Scenes({ list }) {
-  const ref = useRef(null)
-  const t = useTicks(list.length, SCENE_MS, ref)
-  const Visual = VISUALS[list[t]]
-  return (
-    <div className="sol-scenes" ref={ref}>
-      <div className="sol-scene" key={list[t]}><Visual /></div>
-    </div>
-  )
-}
 
 /* the home page's section titles carry one accent word, the last one */
 function highlight(title) {
@@ -773,19 +803,32 @@ function faqSchema(items) {
   })
 }
 
+/* a use case row: its number, its name as the title, the outcome under it,
+   then the paragraph, with the part the stage is showing in ink and the rest
+   held back. The stage and the copy run on one clock, so the picture always
+   matches the words lit beside it */
 function Workflow({ w, flip }) {
   const ref = useReveal({ threshold: 0.12 })
-  const many = Array.isArray(w.visual)
-  const Visual = many ? null : VISUALS[w.visual]
+  const stageRef = useRef(null)
+  const t = useTicks(w.scenes.length, SCENE_MS, stageRef)
+  const scene = w.scenes[t]
+  const Visual = VISUALS[scene.visual]
   return (
     <section className={`sol-work${flip ? ' sol-work--flip' : ''}`} ref={ref} id={w.key}>
       <div className="sol-work-copy sol-reveal">
-        <p className="sol-eyebrow">{w.num && <span className="sol-num">{w.num}</span>}{w.eyebrow}</p>
-        <h2>{w.title}</h2>
-        <p>{w.body}</p>
+        <p className="sol-eyebrow">{w.num}</p>
+        <h2>{w.name}</h2>
+        <p className="sol-work-outcome">{w.outcome}</p>
+        <p className="sol-work-body">
+          {w.scenes.map((s, i) => (
+            <span key={i} className={i === t ? 'is-on' : ''}>{s.copy}{i < w.scenes.length - 1 ? ' ' : ''}</span>
+          ))}
+        </p>
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
-        {many ? <Scenes list={w.visual} /> : <Visual />}
+        <div className="sol-scenes" ref={stageRef}>
+          <div className="sol-scene" key={t}><Visual {...scene.props} /></div>
+        </div>
       </div>
     </section>
   )
