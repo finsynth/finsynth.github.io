@@ -5808,6 +5808,22 @@ button.play { border: none; padding: 0; appearance: none }
   font-size: clamp(28px, 2.8vw, 40px); line-height: 1.1; color: var(--ink);
 }
 .sol-work-copy p:not(.sol-eyebrow) { margin: 0; font-size: 16px; line-height: 1.6; color: var(--secondary); max-width: 46ch }
+/* the row's number ahead of its name, in the eyebrow's mono but quieter */
+.sol-num { margin-right: 1.1em; color: var(--muted) }
+/* the line under the four rows, centred on the frame's own band */
+.sol-works-more {
+  margin: 0; padding: clamp(40px, 5vh, 56px) var(--x4e-pad-x);
+  border-top: 1px solid var(--hair); text-align: center;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(20px, 1.9vw, 26px); line-height: 1.3; color: var(--ink);
+}
+.sol-works-more span { color: var(--accent) }
+/* a use case with several screens: the scenes stack on the stage's blue, and
+   each one fades in over the last */
+.sol-scenes { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; background: #1B34A6 }
+.sol-scene { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; animation: solSceneIn .7s ease both }
+@keyframes solSceneIn { from { opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .sol-scene { animation: none } }
 .sol-reveal { opacity: 0 }
 .sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 @media (prefers-reduced-motion: reduce) {
@@ -6022,6 +6038,16 @@ button.play { border: none; padding: 0; appearance: none }
    a spinner while the cells fill, a check once they have. (.sol-pill is the
    uppercase mono chip, hence the different name) */
 .sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
+/* idea generation: the shortlist under the same pill, the aside card over
+   its corner, and each row printing in turn with its source chip */
+.sol-stage--focus .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + 1.2em) }
+.sol-screen th:first-child, .sol-screen td:first-child { width: 100% }
+.sol-screen th, .sol-screen td { white-space: nowrap }
+.sol-screen tbody tr { opacity: 0; transition: opacity .35s }
+.sol-screen tbody tr.is-on { opacity: 1 }
+.sol-screen tr.is-on td:first-child { color: var(--ink); font-weight: 500 }
+.sol-stack li.is-on { color: var(--ink) }
+.sol-stack li:not(.is-on) svg { opacity: .25 }
 .sol-sheet--earn th:first-child, .sol-sheet--earn td:first-child { width: 100% }
 .sol-status {
   position: absolute; z-index: 4; left: 50%; top: calc(var(--stage-pad) - .2em); transform: translateX(-50%);
