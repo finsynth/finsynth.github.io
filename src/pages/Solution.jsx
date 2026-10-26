@@ -20,9 +20,9 @@ import HowStages from '../components/HowStages'
  * this replaced), ?how=columns, ?how=workspace, ?how=evidence. */
 const HOW_LAYOUT_DEFAULT = 'tabs'
 const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence']
-/* the quote ships as a pull-quote; ?quote=band shows the home page's blue band */
-function quoteBand() {
-  return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('quote') === 'band'
+/* the quote ships in the home page's blue band; ?quote=pull shows it as a pull-quote on the grey */
+function quotePull() {
+  return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('quote') === 'pull'
 }
 function howLayout() {
   if (typeof window === 'undefined') return HOW_LAYOUT_DEFAULT
@@ -369,22 +369,35 @@ function CompsVisual() {
   )
 }
 
-/* the thesis, its evidence, and the strongest case against it given the room */
+/* the thesis as a chat: the ask in the FinSynth pane, the agent's reply the
+   tested points, each with its tag and its source, and the strongest case
+   against it last; the excerpt it leans on sits beside it */
 function ThesisVisual() {
   return (
     <div className="sol-stage sol-stage--focus" aria-hidden="true">
-      <div className="sol-panel sol-main sol-thesis">
-        <div className="sol-sheet-title">Your thesis<em className="sol-sheet-tag">3 points tested</em></div>
-        <p className="sol-thesis-stmt">Private label lifts margins</p>
-        <ul className="sol-evidence">
-          <li><span className="sol-tag sol-tag--supported">Supported</span><span>Private label mix up 4pts in two years</span><Src>FY25 10-K</Src></li>
-          <li><span className="sol-tag sol-tag--supported">Supported</span><span>Gross margin up 120bp year on year</span><Src>Q3 release</Src></li>
-          <li className="sol-evidence--counter">
-            <span className="sol-tag sol-tag--risk">Strongest counter</span>
-            <span>Rising promotions offset the mix gain</span>
-            <Src>Q3 call, p. 7</Src>
-          </li>
-        </ul>
+      <div className="sol-panel sol-pane sol-main sol-pane--thesis">
+        <div className="sol-sheet-tabs sol-pane-tabs">
+          <svg className="sol-pane-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" /><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" /></svg>
+          <span className="is-on">Chat</span><span>Review</span><span>Trace</span>
+          <em className="sol-sheet-tag">3 points tested</em>
+        </div>
+        <div className="sol-pane-ask">
+          <span className="sol-pane-dot" />
+          <p>Test my thesis: private label lifts margins</p>
+        </div>
+        <div className="sol-pane-body">
+          <p className="sol-pane-say">Tested against the filings, transcripts and your notes. Two points hold, one has a strong counter</p>
+          <ul className="sol-evidence">
+            <li><span className="sol-tag sol-tag--supported">Supported</span><span>Private label mix up 4pts in two years</span><Src>FY25 10-K</Src></li>
+            <li><span className="sol-tag sol-tag--supported">Supported</span><span>Gross margin up 120bp year on year</span><Src>Q3 release</Src></li>
+            <li className="sol-evidence--counter">
+              <span className="sol-tag sol-tag--risk">Strongest counter</span>
+              <span>Rising promotions offset the mix gain</span>
+              <Src>Q3 call, p. 7</Src>
+            </li>
+          </ul>
+        </div>
+        <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
       </div>
       <div className="sol-panel sol-aside sol-excerpt sol-excerpt--quote">
         <div className="sol-aside-head"><Src>Q3 FY26 call</Src><span>p. 7</span></div>
@@ -702,7 +715,7 @@ export default function Solution() {
           : <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout={howLayout()} id="how-it-works" />)}
 
         {/* the page's quote, in the home page's Customers treatment */}
-        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} compact={!quoteBand()} />}
+        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} compact={quotePull()} />}
 
         {sol.faqs && <SectionRule />}
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}
