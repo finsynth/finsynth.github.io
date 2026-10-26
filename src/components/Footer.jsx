@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GridReveal from './GridReveal';
+import { SOLUTIONS } from './Navbar';
 
 /**
  * The prompt the "Ask your AI" menu hands off to an assistant.
@@ -165,6 +166,12 @@ export default function Footer() {
                 {/* straight after Fia (feedback), and not a link until it ships
                     (same treatment as the navbar) */}
                 <span className="foot-soon">FinSynth MCP<br className="foot-soon-br" />{' '}(coming soon)</span>
+              </div>
+              {/* feedback: the desks the navbar's Solutions menu lists, from
+                  the same data so the two can't disagree */}
+              <div>
+                <h4>Solutions</h4>
+                {SOLUTIONS.map((s) => <a key={s.key} href={s.href}>{s.label}</a>)}
               </div>
               <div>
                 <h4>Company</h4>
