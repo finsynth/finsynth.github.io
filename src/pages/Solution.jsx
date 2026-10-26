@@ -467,6 +467,34 @@ function AuditVisual() {
   const sel = Math.floor(t / 5)
   const f = FINDINGS[sel]
   const cols = ['C', 'D', 'E']
+  /* feedback: the pointer and the wire here too. On each finding the pointer
+     moves to its cell and clicks it, and the wire draws from the cell to the
+     finding in the list beside it, measured from the live layout as the
+     thesis stage does */
+  const [geo, setGeo] = useState(null)
+  useLayoutEffect(() => {
+    const wrap = ref.current
+    if (!wrap) return
+    const measure = () => {
+      const cell = wrap.querySelector('.sol-grid td.is-sel span')
+      const item = wrap.querySelector('.sol-findings li.is-sel')
+      if (!cell || !item) return
+      const w = wrap.getBoundingClientRect()
+      const a = cell.getBoundingClientRect()
+      const b = item.getBoundingClientRect()
+      setGeo({
+        w: w.width, h: w.height,
+        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
+        x2: b.left - w.left, y2: b.top + b.height / 2 - w.top,
+        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
+      })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [sel])
+  const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-main">
@@ -496,6 +524,15 @@ function AuditVisual() {
           ))}
         </ul>
       </div>
+      {geo && (
+        <>
+          <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${sel}`}>
+            <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+            <circle cx={geo.x2} cy={geo.y2} r="3" />
+          </svg>
+          <Cursor x={geo.cx} y={geo.cy} />
+        </>
+      )}
     </div>
   )
 }
@@ -705,7 +742,7 @@ export default function Solution() {
             the solutions heroes stay plain */}
         <header className="sol-hero sol-hero--photo">
           <div className="sol-hero-bg" aria-hidden="true">
-            <img src="/assets/img/stone-capital.jpg" alt="" loading="eager" fetchPriority="high" />
+            <img src="/assets/img/stone-capital.jpg" alt="" loading="eager" fetchpriority="high" />
           </div>
           <div className="sol-hero-copy wrap">
             <p className="sol-eyebrow">{sol.name}</p>
@@ -750,7 +787,7 @@ export default function Solution() {
           : <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout={howLayout()} id="how-it-works" />)}
 
         {/* the page's quote, in the home page's Customers treatment */}
-        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} compact={quotePull()} />}
+        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} title={sol.quote.title ? highlight(sol.quote.title) : undefined} compact={quotePull()} />}
 
         {sol.faqs && <SectionRule />}
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}

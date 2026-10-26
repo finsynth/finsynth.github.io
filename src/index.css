@@ -5727,7 +5727,23 @@ button.play { border: none; padding: 0; appearance: none }
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
 /* the eyebrow on the dark ground: the accent lifted so it holds its chroma */
-.sol-hero .sol-eyebrow { color: #9DB2FF }
+/* the eyebrow as a highlight (feedback): a frosted-glass pill in the home
+   hero's Backed-by treatment, white capitals with an accent dot, so the
+   page's name reads as a badge on the photo rather than a line lost in it */
+.sol-hero .sol-eyebrow {
+  display: inline-flex; align-items: center; gap: .7em; margin: 0 0 20px; padding: 8px 16px 8px 13px;
+  border-radius: 999px; color: #fff;
+  background: linear-gradient(170deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, .1) 46%, rgba(255, 255, 255, .16) 100%);
+  border: 1px solid rgba(255, 255, 255, .4);
+  backdrop-filter: blur(18px) saturate(160%) brightness(106%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(106%);
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .45);
+  user-select: none; -webkit-user-select: none;
+}
+.sol-hero .sol-eyebrow::before {
+  content: ''; width: .6em; height: .6em; border-radius: 50%; background: #9DB2FF;
+  box-shadow: 0 0 0 .32em rgba(157, 178, 255, .28);
+}
 .sol-hero-title {
   margin: 0 0 22px; max-width: 18ch;
   font-family: var(--font-body); font-weight: 500; line-height: 1.12;
@@ -6127,7 +6143,7 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* audit: the selected finding and its cell */
 .sol-sheet .sol-grid td span { display: inline-block; padding: .1em .4em; margin: -.1em -.4em; border-radius: .25em; transition: box-shadow .3s, background .3s }
-.sol-sheet .sol-grid td.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink) }
+.sol-sheet .sol-grid td.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
 .sol-aside.sol-findings ul { gap: .45em }
 .sol-aside.sol-findings li { padding: .6em .8em; background: var(--bg); color: var(--secondary); font-size: .98em; transition: background .3s, color .3s, box-shadow .3s }
 .sol-aside.sol-findings li.is-sel { background: var(--k-acc-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--k-acc) }

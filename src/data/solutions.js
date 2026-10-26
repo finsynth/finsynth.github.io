@@ -126,6 +126,9 @@ export const SOLUTIONS = {
     },
     // the page's own quote, shown in the home page's Customers treatment
     quote: {
+      // the band's title names who is speaking; the home page's default line
+      // ("the analysts") is not this page's copy
+      title: 'Hear what portfolio managers have to say',
       text: '“We’re seeing the actual leverage of an AI tool, the outputs aren’t just good-looking, they’re easily verifiable.”',
       who: 'L/S Portfolio Manager',
     },
