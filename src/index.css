@@ -6093,6 +6093,11 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-brief-kpis { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8em }
 .sol-brief-kpis dt { font-size: .8em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .sol-brief-kpis dd { margin: .15em 0 0; font-size: 1.35em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
+/* investment memo: the brief's panel under the stage pill, its sections
+   written in turn */
+.sol-stage--focus .sol-memo.sol-main { top: calc(var(--stage-pad) + 1.2em) }
+.sol-memo section { opacity: 0; transform: translateY(.3em); transition: opacity .4s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-memo section.is-on { opacity: 1; transform: none }
 .sol-stack li { display: flex; align-items: center; gap: .55em; font-size: .92em; white-space: nowrap; overflow: hidden }
 .sol-stack li span { overflow: hidden; text-overflow: ellipsis }
 .sol-stack li em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .8em; color: var(--muted) }

@@ -317,6 +317,63 @@ function OverviewVisual() {
   )
 }
 
+/* the memo FinSynth drafts in the committee's format: four sections, each
+   claim carrying its source chip, written in turn under the same pill the
+   other stages wear. The aside lists what the draft was built from. One tick
+   a section, then a hold on the finished draft */
+const MEMO_SECTIONS = [
+  { h: 'Thesis', p: 'Own channels pass half of the mix by FY27 and gross margin crosses 41%, two points ahead of the Street', src: 'Q3 FY26 call' },
+  { h: 'Valuation', p: 'DCF value of $144.80 a share against $118.70 today, 22% upside; trades below the peer set on NTM EV/EBITDA', src: 'Fund_model_v12.xlsx' },
+  { h: 'Risks', p: 'Promotional intensity rising in core categories; HEYDUDE wholesale still shrinking', src: 'Q3 FY26 10-Q, p. 18' },
+  { h: 'Recommendation', p: 'Buy, 2% position, $140 target; revisit after the Q4 print', src: 'Your notes' },
+]
+const MEMO_SOURCES = [
+  ['Fund_model_v12.xlsx', 'Model'],
+  ['FY25 10-K', 'Filing'],
+  ['Q3 FY26 10-Q', 'Filing'],
+  ['Q3 FY26 call', 'Transcript'],
+  ['Broker notes', 'Dataroom'],
+]
+function MemoVisual() {
+  const ref = useRef(null)
+  const HOLD = 5
+  const t = useTicks(MEMO_SECTIONS.length + HOLD, 1150, ref)
+  const on = Math.min(t + 1, MEMO_SECTIONS.length)
+  const done = t >= MEMO_SECTIONS.length
+  return (
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+      <div className="sol-panel sol-main sol-brief sol-memo">
+        <div className="sol-sheet-title">Crocs · investment memo<em className="sol-sheet-tag">Your template</em></div>
+        <div className="sol-brief-body">
+          {MEMO_SECTIONS.map((s, i) => (
+            <section key={s.h} className={i < on ? 'is-on' : ''}>
+              <h5>{s.h}</h5>
+              <p>{s.p} <Src>{s.src}</Src></p>
+            </section>
+          ))}
+        </div>
+      </div>
+      <div className="sol-panel sol-aside sol-stack">
+        <div className="sol-aside-head"><span>Drafted from</span><b>{MEMO_SOURCES.length} sources</b></div>
+        <ul>
+          {MEMO_SOURCES.map(([name, kind]) => (
+            <li key={name} className="is-on"><Tick /><span>{name}</span><em>{kind}</em></li>
+          ))}
+        </ul>
+      </div>
+      <div className={`sol-status${done ? ' is-done' : ''}`}>
+        <span className="sol-status-ico">
+          <span className="sol-status-spin" />
+          <span className="sol-status-check">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+          </span>
+        </span>
+        <span className="sol-status-lbls"><span>Drafting the memo</span><span>Memo ready for review</span></span>
+      </div>
+    </div>
+  )
+}
+
 /* the model's historical columns, spread from the three 10-Ks. The forecast
    columns stay empty: the claim is that the analyst starts there */
 const BUILD_YEARS = ['FY23A', 'FY24A', 'FY25A']
@@ -641,7 +698,7 @@ function AuditVisual() {
 /* small drawn fragments for a few of the how-it-works cells, one treatment:
    a hairline strip in the page's grey with a single product detail in it */
 const VISUALS = {
-  screen: ScreenVisual, earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual,
+  screen: ScreenVisual, earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual, memo: MemoVisual,
 }
 
 /* a use case's scenes play in turn: each screen runs its own loop about
