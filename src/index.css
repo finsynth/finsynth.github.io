@@ -5846,15 +5846,8 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
 .sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
 .sol-sheet-ok { color: #12A150 }
-.sol-sheet-tabs {
-  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .7em 1.4em; border-top: 1px solid var(--hair);
-  font-size: .9em; color: var(--secondary);
-}
-/* the source note at the tabs' far end stays the quieter grey */
-.sol-sheet-tabs em { color: var(--muted) }
-.sol-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
-.sol-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
-.sol-sheet-tabs em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .9em }
+/* no tab row at a sheet's foot (feedback: "remove this bar from all
+   screens"); the source a sheet is reading from sits in its title's tag */
 
 
 /* ── How it works, "Your house format" on stage ── three saved Skills on the
@@ -6008,7 +6001,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet--earn th:first-child, .sol-sheet--earn td:first-child { padding-left: 1.4em }
 .sol-sheet--earn th:last-child, .sol-sheet--earn td:last-child { padding-right: 1.4em }
 .sol-sheet--earn table { font-size: .95em }
-.sol-sheet--earn .sol-sheet-tabs .sol-src { font-size: .95em }
 /* the sheet alone takes the stage, dropped a little so the status pill from
    the home Excel section's Fully auditable scene can sit across its top edge:
    a spinner while the cells fill, a check once they have. (.sol-pill is the
@@ -6074,12 +6066,9 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-dcf th:not(.is-col) + th.is-col, .sol-dcf td:not(.is-fc) + td.is-fc { border-left: 1px solid var(--hair) }
 .sol-dcf tr.is-total td { font-weight: 500 }
 .sol-dcf .sol-upd-cell.is-lit { background: #FFFBEB }
-.sol-sheet-tabs span.is-new { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); transition: color .35s, box-shadow .35s }
-/* the pane: the add-in's tabs in the sheet tabs' design, the ask as the home
-   workspace shows it, the steps the agent reports, a composer at the foot */
+/* the pane: the ask as the home workspace shows it at the top (no tab row,
+   feedback), the steps the agent reports, a composer at the foot */
 .sol-pane { padding: 0; font-size: .88em }
-.sol-pane-tabs { margin-top: 0; border-top: 0; border-bottom: 1px solid var(--hair); padding: .7em 1.1em }
-.sol-pane-mark { width: 1.3em; height: 1.3em; color: var(--ink); margin-right: .4em; flex: none }
 .sol-pane-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .7em; align-items: start; padding: 1em 1.2em; border-bottom: 1px solid var(--hair) }
 .sol-pane-dot { width: .7em; height: .7em; margin-top: .35em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
 .sol-pane-ask p { margin: 0; font-size: 1em; line-height: 1.4; color: var(--ink); font-weight: 500 }
@@ -6112,14 +6101,29 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-upd tr.is-self td { color: var(--accent); font-weight: 500 }
 
 /* thesis: the pane as the stage's main screen, the tested points as the
-   agent's reply under its line, the tag at the tabs' far end */
-.sol-pane--thesis .sol-pane-tabs .sol-sheet-tag { margin-left: auto; font-size: .78em }
+   agent's reply under its line. Each point is cited, so the scene is the
+   evidence stage's citation flow (HowStages): the pointer moves to a point's
+   source chip, clicks it, the wire draws to the excerpt card beside it and
+   the line the point came from lights there */
 .sol-pane--thesis .sol-pane-body { gap: .8em }
 .sol-pane .sol-evidence { margin: 0; gap: .5em; flex: none }
 .sol-pane .sol-evidence li { padding: .65em .9em; font-size: 1em }
 .sol-evidence--counter { background: #FFF7E6; color: var(--ink); font-weight: 500; box-shadow: inset 3px 0 0 #E7A200; grid-template-columns: auto 1fr }
 .sol-evidence--counter .sol-src { grid-column: 2; justify-self: start }
+.sol-evidence .sol-src { transition: box-shadow .3s, background .3s, color .3s }
+.sol-evidence li.is-sel .sol-src { background: var(--k-acc-soft); color: var(--ink); box-shadow: 0 0 0 2px var(--k-acc); animation: hwClick .7s ease .4s }
 .sol-excerpt--quote li.is-lit { font-style: italic }
+.sol-excerpt mark { background: transparent; color: inherit; padding: .05em .15em; margin: 0 -.15em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background .35s, color .35s }
+.sol-excerpt mark.is-on { background: var(--k-acc-soft); color: var(--ink); font-weight: 500 }
+.sol-excerpt p { margin: 0; font-size: 1em; line-height: 1.5; color: var(--secondary) }
+.sol-excerpt--cite { font-size: 1em }
+.sol-excerpt--cite .sol-aside-head { white-space: nowrap }
+.sol-excerpt--cite .sol-aside-head span:last-child { overflow: hidden; text-overflow: ellipsis }
+/* the wire and the pointer, over the two panels, placed from the live layout */
+.sol-wire { position: absolute; left: 0; top: 0; z-index: 5; pointer-events: none; overflow: visible }
+.sol-wire path { fill: none; stroke: var(--k-acc); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: hwWire .6s cubic-bezier(.32, .72, 0, 1) .3s forwards }
+.sol-wire circle { fill: var(--k-acc); opacity: 0; animation: hwDot .3s ease .8s forwards }
+.sol-stage .hw-cursor { z-index: 6 }
 
 /* audit: the selected finding and its cell */
 .sol-sheet .sol-grid td span { display: inline-block; padding: .1em .4em; margin: -.1em -.4em; border-radius: .25em; transition: box-shadow .3s, background .3s }
@@ -6333,17 +6337,12 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-evid .hw-cell.is-filled { background: none; box-shadow: none; color: var(--accent); font-weight: 500 }
 .hw-evid .hw-cell span { display: inline-block; padding: .12em .45em; margin: -.12em -.45em; border-radius: .3em; transition: background .3s, color .3s, box-shadow .3s }
 .hw-evid .hw-cell.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
-/* feedback: the tabs and the review control as a pill out of the sheet, under
-   it, rather than a foot bar inside it. The column wrapper is what the grid
-   places, so the pill hangs off the sheet and not off the taller panel */
-.hw-evid-col { display: flex; flex-direction: column; min-width: 0 }
 .hw-sheet-tabs {
-  display: flex; gap: .3em; align-items: center; margin-top: .9em; padding: .4em .5em; border-radius: 999px;
-  background: #fff; box-shadow: 0 .6em 1.6em rgba(6, 16, 50, .18), 0 0 0 1px rgba(255, 255, 255, .18);
+  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .6em 1.4em; border-top: 1px solid var(--hair);
   font-size: .85em; color: var(--muted);
 }
-.hw-sheet-tabs > span { padding: .4em .95em; border-radius: 999px }
-.hw-sheet-tabs > span.is-on { background: var(--accent-soft); color: var(--accent) }
+.hw-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
+.hw-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
 /* the release page */
 .hw-doc { margin-top: 4.6em; background: #FFFDFA }
 .hw-doc-head {
@@ -6367,18 +6366,20 @@ button.play { border: none; padding: 0; appearance: none }
   filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
   transition: transform .55s cubic-bezier(.32, .72, 0, 1);
 }
-/* the control, at the right end of the pill beside its tabs */
+/* the control: a line of text over the two screens (feedback), the count
+   in the stage's white, the arrows as rings on the blue */
 .hw-review {
-  display: inline-flex; align-items: center; gap: .55em; margin-left: auto; padding: .1em .15em .1em .6em; border-radius: 999px;
-  color: var(--ink); font-weight: 500; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .55em; padding: .15em .3em; border-radius: 999px;
+  color: #fff; font-weight: 500; white-space: nowrap;
 }
-.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }
+.hw-evid-head { grid-column: 1 / -1; justify-self: start; margin: 0 0 .5em -.3em; font-size: .95em }
+.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: #fff; opacity: .78 }
 .hw-review i {
-  width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 50%; background: #F1F3F7;
-  font-style: normal; font-size: 1em; color: var(--secondary);
+  width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .16);
+  font-style: normal; font-size: 1em; color: #fff;
 }
-.hw-review i:last-child { background: var(--accent); color: #fff }
-.hw-review.is-focus { box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft) }
+.hw-review i:last-child { background: #fff; color: var(--accent) }
+.hw-review.is-focus { box-shadow: 0 0 0 .18em #fff, 0 0 0 .55em rgba(255, 255, 255, .35) }
 @media (max-width: 560px) { .hw-review > span { display: none } }
 .hw-stage .hw-doc.is-focus { border-radius: .9em; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 1.2em 3em rgba(6, 16, 50, .28) }
 .hw-stage--tab .hw-evid { font-size: 1.12em }

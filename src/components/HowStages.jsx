@@ -131,7 +131,7 @@ function useSteps(total, ms, ref) {
   return t
 }
 
-function Cursor({ x, y }) {
+export function Cursor({ x, y }) {
   return (
     <svg className="hw-cursor" viewBox="0 0 16 16" aria-hidden="true" style={{ transform: `translate(${x}px, ${y}px)` }}>
       <path d="M2.5 1.5v12.2l3.1-2.8 2.1 4.6 2.2-1-2.1-4.6h4.2z" fill="#fff" stroke="#1C1C1C" strokeWidth=".9" strokeLinejoin="round" />
@@ -180,7 +180,14 @@ export function EvidencePanel({ ex, n, focus }) {
   const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
   return (
     <div className="hw-evid" ref={ref}>
-      <div className="hw-evid-col">
+      {/* feedback: the citation count as a line of text over the screens,
+          out of the sheet's tab row */}
+      <div className={`hw-review hw-evid-head${f('review')}`}>
+        <i aria-hidden="true">‹</i>
+        <span>Review citations</span>
+        <b>{cite.reviewed + t} / {cite.total}</b>
+        <i aria-hidden="true">›</i>
+      </div>
       <div className="hw-panel hw-evid-sheet">
         {n && <span className="hw-n">{n}</span>}
         <div className="hw-win-bar"><Ico kind="sheet" />{ex.file}</div>
@@ -203,19 +210,9 @@ export function EvidencePanel({ ex, n, focus }) {
             ))}
           </tbody>
         </table>
-      </div>
-      {/* feedback: the sheet tabs and the review control as a pill under the
-          sheet, not a foot bar inside it; the column wrapper keeps the pill
-          under the sheet rather than under the taller of the two panels */}
-      <div className="hw-sheet-tabs">
-        <span className="is-on">Model</span><span>Inputs</span><span>Notes</span>
-        <div className={`hw-review${f('review')}`}>
-          <i aria-hidden="true">‹</i>
-          <span>Review citations</span>
-          <b>{cite.reviewed + t} / {cite.total}</b>
-          <i aria-hidden="true">›</i>
+        <div className="hw-sheet-tabs">
+          <span className="is-on">Model</span><span>Inputs</span><span>Notes</span>
         </div>
-      </div>
       </div>
       <div className={`hw-panel hw-doc${f('cited')}`}>
         <div className="hw-doc-head"><span className="hw-chip">{cite.source}</span><span>{cite.where}</span></div>
