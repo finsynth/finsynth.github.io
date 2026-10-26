@@ -18,46 +18,54 @@ export const SOLUTIONS = {
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
     useCasesHead: { eyebrow: 'Use cases', title: 'Where FinSynth fits into hedge fund research' },
     // the four stages of an idea's life, from the approved copy: each row is
-    // an outcome-led headline over one short paragraph, and the use case's
-    // key is its anchor so the block can later lift into its own page. A use
-    // case that spans several screens lists them, and the stage plays each
-    // in turn
+    // the use case's number, its name as the row's title, the outcome it
+    // delivers as the line under it, then its paragraph. The paragraph is
+    // split into scenes: each one names the screen that shows that part,
+    // and the stage plays the screens in turn while the copy lights the
+    // part being shown. The key is the row's anchor so the block can later
+    // lift into its own page
     workflows: [
       {
         key: 'idea-generation',
         num: '01',
-        eyebrow: 'Idea generation',
-        title: 'Surface your next idea from the whole universe',
-        body:
-          'Ask FinSynth to screen a universe on the numbers and the narrative, from margin inflections to guidance changes to what management said on the last call, and it returns a shortlist with every data point sourced. Each name is ready to take further.',
-        visual: 'screen',
+        name: 'Idea generation',
+        outcome: 'Surface your next idea from the whole universe',
+        scenes: [
+          { visual: 'screen', copy: 'Ask FinSynth to screen a universe on the numbers and the narrative, from margin inflections to guidance changes to what management said on the last call,' },
+          { visual: 'screen', props: { cite: true }, copy: 'and it returns a shortlist with every data point sourced. Each name is ready to take further.' },
+        ],
       },
       {
         key: 'get-up-to-speed',
         num: '02',
-        eyebrow: 'Get up to speed',
-        title: 'Form a view on a new name in an afternoon',
-        body:
-          'Point FinSynth at a company, sector or market, along with your own broker notes and expert calls, and it maps the business, its segments, key metrics and what management has been saying, each point linked to its source. Taking over a name? It audits the inherited model for hardcodes, broken references and inconsistent formulas too.',
-        visual: ['overview', 'audit'],
+        name: 'Get up to speed',
+        outcome: 'Form a view on a new name in an afternoon',
+        scenes: [
+          { visual: 'overview', copy: 'Point FinSynth at a company, sector or market, along with your own broker notes and expert calls, and it maps the business, its segments, key metrics and what management has been saying, each point linked to its source.' },
+          { visual: 'audit', copy: 'Taking over a name? It audits the inherited model for hardcodes, broken references and inconsistent formulas too.' },
+        ],
       },
       {
         key: 'models-diligence',
         num: '03',
-        eyebrow: 'Models and diligence',
-        title: 'Model, value and pressure-test a name in your own template',
-        body:
-          'Ask FinSynth to build the model and DCF from the filings, set comps against the peer set and build the strongest case against your thesis, each figure and claim linked to its source. Every historical lines up with the filings before you start forecasting.',
-        visual: ['modelbuild', 'comps', 'thesis'],
+        name: 'Models and diligence',
+        outcome: 'Model, value and pressure-test a name in your own template',
+        scenes: [
+          { visual: 'modelbuild', copy: 'Ask FinSynth to build the model and DCF from the filings,' },
+          { visual: 'comps', copy: 'set comps against the peer set' },
+          { visual: 'thesis', copy: 'and build the strongest case against your thesis, each figure and claim linked to its source.' },
+          { visual: 'modelbuild', copy: 'Every historical lines up with the filings before you start forecasting.' },
+        ],
       },
       {
         key: 'monitoring-updates',
         num: '04',
-        eyebrow: 'Monitoring and updates',
-        title: 'Stay on top of every name in your book',
-        body:
-          'When a name reports, ask FinSynth to update your model and flag where each line item beat or missed consensus, each figure linked to the exact line in the release. Then ask whether your thesis still holds, and it checks it against everything reported and said since.',
-        visual: 'earnings',
+        name: 'Monitoring and updates',
+        outcome: 'Stay on top of every name in your book',
+        scenes: [
+          { visual: 'earnings', copy: 'When a name reports, ask FinSynth to update your model and flag where each line item beat or missed consensus, each figure linked to the exact line in the release.' },
+          { visual: 'thesis', props: { ask: 'Does my thesis still hold after Q3?', say: 'Checked against everything reported and said since. Two points hold, one has a strong counter' }, copy: 'Then ask whether your thesis still holds, and it checks it against everything reported and said since.' },
+        ],
       },
     ],
     // the line under the four rows
