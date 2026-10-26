@@ -1075,7 +1075,7 @@ button.play { border: none; padding: 0; appearance: none }
    column's empty right half between the links and the page edge. */
 .foot-grid-new {
   display: grid;
-  grid-template-columns: repeat(4, max-content);
+  grid-template-columns: repeat(5, max-content);
   width: auto;
   /* feedback: "shift them towards right". The columns sat on the shared
      content edge, 32px inside the wrap; on the full-bleed dark ground that
@@ -1975,7 +1975,7 @@ button.play { border: none; padding: 0; appearance: none }
   /* stacked under the lockup the nav has the full width, so the four columns
      spread across it rather than huddling at the left; each keeps its longest
      link's width so nothing wraps mid-label */
-  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; width: 100%; margin-right: 0 }
+  .foot-grid-new { grid-template-columns: repeat(5, max-content); justify-content: space-between; width: 100%; margin-right: 0 }
 }
 
 @media (max-width: 900px) {
@@ -2022,7 +2022,9 @@ button.play { border: none; padding: 0; appearance: none }
      columns; the links never break mid-label */
   .foot-grid-new > div { padding: 0; border-left: none; }
   .foot-grid-new h4 { margin-bottom: 16px }
-  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; column-gap: 12px; width: 100% }
+  /* five groups at this type size no longer clear a 335px row, so they go
+     three up with the last two under them, rather than wrapping mid-label */
+  .foot-grid-new { grid-template-columns: repeat(3, max-content); justify-content: space-between; column-gap: 12px; row-gap: 20px; width: 100% }
   .foot-grid-new a,
   .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
   /* "FinSynth MCP (coming soon)" on one line widens the Product column
@@ -5673,7 +5675,7 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-cta-copy h3 { font-size: calc((100vw - 72px) / 11.4); }
   /* under ~330px the four footer groups' longest links no longer clear the
      row, so the labels may wrap inside their column here */
-  .foot-grid-new { grid-template-columns: repeat(4, minmax(0, auto)); }
+  .foot-grid-new { grid-template-columns: repeat(3, minmax(0, auto)); }
   .foot-grid-new a,
   .foot-soon { width: auto; white-space: normal; }
 }
@@ -6331,12 +6333,17 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-evid .hw-cell.is-filled { background: none; box-shadow: none; color: var(--accent); font-weight: 500 }
 .hw-evid .hw-cell span { display: inline-block; padding: .12em .45em; margin: -.12em -.45em; border-radius: .3em; transition: background .3s, color .3s, box-shadow .3s }
 .hw-evid .hw-cell.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
+/* feedback: the tabs and the review control as a pill out of the sheet, under
+   it, rather than a foot bar inside it. The column wrapper is what the grid
+   places, so the pill hangs off the sheet and not off the taller panel */
+.hw-evid-col { display: flex; flex-direction: column; min-width: 0 }
 .hw-sheet-tabs {
-  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .6em 1.4em; border-top: 1px solid var(--hair);
+  display: flex; gap: .3em; align-items: center; margin-top: .9em; padding: .4em .5em; border-radius: 999px;
+  background: #fff; box-shadow: 0 .6em 1.6em rgba(6, 16, 50, .18), 0 0 0 1px rgba(255, 255, 255, .18);
   font-size: .85em; color: var(--muted);
 }
-.hw-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
-.hw-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
+.hw-sheet-tabs > span { padding: .4em .95em; border-radius: 999px }
+.hw-sheet-tabs > span.is-on { background: var(--accent-soft); color: var(--accent) }
 /* the release page */
 .hw-doc { margin-top: 4.6em; background: #FFFDFA }
 .hw-doc-head {
@@ -6360,9 +6367,9 @@ button.play { border: none; padding: 0; appearance: none }
   filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
   transition: transform .55s cubic-bezier(.32, .72, 0, 1);
 }
-/* the control, docked in the sheet's foot bar beside its tabs */
+/* the control, at the right end of the pill beside its tabs */
 .hw-review {
-  display: inline-flex; align-items: center; gap: .55em; margin-left: auto; padding: .15em .3em; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: .55em; margin-left: auto; padding: .1em .15em .1em .6em; border-radius: 999px;
   color: var(--ink); font-weight: 500; white-space: nowrap;
 }
 .hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent) }

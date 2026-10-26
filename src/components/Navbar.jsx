@@ -26,7 +26,8 @@ const SOLUTION_BLURBS = {
   'Private Equity': { icon: ChartCandlestick, desc: 'LBO build, underwriting and IC decks' },
   'Sell Side':      { icon: Briefcase,        desc: 'Pitch books and sector coverage' },
 };
-const SOLUTIONS = SEGMENTS
+// exported for the footer's Solutions column, so the two lists are one list
+export const SOLUTIONS = SEGMENTS
   .filter((name) => name in SOLUTION_BLURBS)
   .map((name) => {
     const slug = name.toLowerCase().replace(/\s+/g, '-');

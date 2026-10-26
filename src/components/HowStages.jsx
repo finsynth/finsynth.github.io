@@ -180,6 +180,7 @@ export function EvidencePanel({ ex, n, focus }) {
   const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
   return (
     <div className="hw-evid" ref={ref}>
+      <div className="hw-evid-col">
       <div className="hw-panel hw-evid-sheet">
         {n && <span className="hw-n">{n}</span>}
         <div className="hw-win-bar"><Ico kind="sheet" />{ex.file}</div>
@@ -202,15 +203,19 @@ export function EvidencePanel({ ex, n, focus }) {
             ))}
           </tbody>
         </table>
-        <div className="hw-sheet-tabs">
-          <span className="is-on">Model</span><span>Inputs</span><span>Notes</span>
-          <div className={`hw-review${f('review')}`}>
-            <i aria-hidden="true">‹</i>
-            <span>Review citations</span>
-            <b>{cite.reviewed + t} / {cite.total}</b>
-            <i aria-hidden="true">›</i>
-          </div>
+      </div>
+      {/* feedback: the sheet tabs and the review control as a pill under the
+          sheet, not a foot bar inside it; the column wrapper keeps the pill
+          under the sheet rather than under the taller of the two panels */}
+      <div className="hw-sheet-tabs">
+        <span className="is-on">Model</span><span>Inputs</span><span>Notes</span>
+        <div className={`hw-review${f('review')}`}>
+          <i aria-hidden="true">‹</i>
+          <span>Review citations</span>
+          <b>{cite.reviewed + t} / {cite.total}</b>
+          <i aria-hidden="true">›</i>
         </div>
+      </div>
       </div>
       <div className={`hw-panel hw-doc${f('cited')}`}>
         <div className="hw-doc-head"><span className="hw-chip">{cite.source}</span><span>{cite.where}</span></div>
