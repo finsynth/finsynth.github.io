@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/react';
 import useMediaQuery from '../hooks/useMediaQuery';
-import { Landmark, Building2, ChartCandlestick, Briefcase } from 'lucide-react';
+import { Landmark, Building2, ChartCandlestick, Briefcase, House } from 'lucide-react';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 import { SEGMENTS } from '../data/segments';
 import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '../data/solutions';
@@ -16,22 +16,26 @@ const PRODUCTS = [
 ];
 
 // Who FinSynth is for, by desk. The names are the hero headline's own
-// rotating segments (data/segments.js) so the menu and the h1 can't disagree;
-// Family Offices is left out of the menu on purpose. There are no per-segment
-// pages for the desks that have one (data/solutions.js); the rest land on the
-// why-FinSynth section until theirs exists.
+// rotating segments (data/segments.js) so the menu and the h1 can't disagree.
+// Each desk links to its page in data/solutions.js; a desk whose page is
+// keyed under another slug says so (`slug`), and one with no page lands on
+// the why-FinSynth section until it exists.
 const SOLUTION_BLURBS = {
   'Hedge Funds':    { icon: Landmark,         desc: 'Alpha generation and signal research' },
   'Asset Managers': { icon: Building2,        desc: 'IC memos and portfolio monitoring' },
-  'Private Equity': { icon: ChartCandlestick, desc: 'LBO build, underwriting and IC decks' },
-  'Sell Side':      { icon: Briefcase,        desc: 'Pitch books and sector coverage' },
+  // the page covers buyout, growth equity and private credit, so it is
+  // /solutions/private-markets, broader than the desk's name in the hero
+  'Private Equity': { icon: ChartCandlestick, desc: 'Deal screening, diligence and IC memos', slug: 'private-markets' },
+  'Family Offices': { icon: House,            desc: 'Public holdings and private deals' },
+  'Sell Side':      { icon: Briefcase,        desc: 'Initiations, earnings notes and sector reports' },
 };
 // exported for the footer's Solutions column, so the two lists are one list
 export const SOLUTIONS = SEGMENTS
   .filter((name) => name in SOLUTION_BLURBS)
   .map((name) => {
-    const slug = name.toLowerCase().replace(/\s+/g, '-');
-    return { key: slug, label: name, href: slug in SOLUTION_PAGES ? solutionHref(slug) : '/#why-finsynth', ...SOLUTION_BLURBS[name] };
+    const { slug: pageSlug, ...blurb } = SOLUTION_BLURBS[name];
+    const slug = pageSlug || name.toLowerCase().replace(/\s+/g, '-');
+    return { key: slug, label: name, href: slug in SOLUTION_PAGES ? solutionHref(slug) : '/#why-finsynth', ...blurb };
   });
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
