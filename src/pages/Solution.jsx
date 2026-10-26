@@ -75,6 +75,67 @@ function useTicks(total, ms, ref, paused = false) {
   return t
 }
 
+/* the screen's shortlist: the names that passed on the numbers and on what
+   management said, each data point with the document it came from */
+const SCREEN_ROWS = [
+  ['Crocs', '+220bp', 'Raised', 'Q3 FY26 release'],
+  ['Deckers', '+180bp', 'Raised', 'Q2 FY26 call'],
+  ['On Holding', '+150bp', 'Reiterated', 'H1 FY26 release'],
+  ['Birkenstock', '+90bp', 'Raised', 'Q3 FY26 call'],
+  ['Skechers', '+70bp', 'Raised', 'Q3 FY26 release'],
+  ['Columbia', '+40bp', 'Reiterated', 'Q3 FY26 call'],
+]
+const SCREEN_CRITERIA = ['Gross margin inflected', 'Guidance raised or held', 'Pricing holding on the call']
+
+/* idea generation: the shortlist prints a name at a time out of the whole
+   universe, the criteria tick off beside it, and the pill over the sheet
+   turns its spinner into a check once the list is full */
+function ScreenVisual() {
+  const ref = useRef(null)
+  const HOLD = 8
+  const t = useTicks(SCREEN_ROWS.length + SCREEN_CRITERIA.length + HOLD, 620, ref)
+  const crit = Math.min(t, SCREEN_CRITERIA.length)
+  const rows = Math.max(0, t - SCREEN_CRITERIA.length)
+  const done = rows >= SCREEN_ROWS.length
+  return (
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+      <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
+        <div className="sol-sheet-title">US consumer · screen<em className="sol-sheet-tag">1,840 names</em></div>
+        <table className="sol-upd sol-screen">
+          <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
+          <tbody>
+            {SCREEN_ROWS.map(([name, gm, guide, src], i) => (
+              <tr key={name} className={i < rows ? 'is-on' : ''}>
+                <td>{name}</td>
+                <td>{gm}</td>
+                <td>{guide}</td>
+                <td><Src>{src}</Src></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="sol-panel sol-aside sol-stack">
+        <div className="sol-aside-head"><span>Shortlist</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
+        <ul>
+          {SCREEN_CRITERIA.map((c, i) => (
+            <li key={c} className={i < crit ? 'is-on' : ''}><Tick /><span>{c}</span></li>
+          ))}
+        </ul>
+      </div>
+      <div className={`sol-status${done ? ' is-done' : ''}`}>
+        <span className="sol-status-ico">
+          <span className="sol-status-spin" />
+          <span className="sol-status-check">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+          </span>
+        </span>
+        <span className="sol-status-lbls"><span>Screening the universe</span><span>Shortlist ready</span></span>
+      </div>
+    </div>
+  )
+}
+
 /* the model's own rows: four reported lines the release fills, and two margin
    rows that are the fund's formulas, which recalculate when their inputs land.
    `line` is the sentence in the release each reported figure is taken from */
@@ -540,7 +601,22 @@ function AuditVisual() {
 /* small drawn fragments for a few of the how-it-works cells, one treatment:
    a hairline strip in the page's grey with a single product detail in it */
 const VISUALS = {
-  earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual,
+  screen: ScreenVisual, earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual,
+}
+
+/* a use case that spans several screens plays them in turn: each one runs
+   its own loop about once, then the next fades in over the same ground. The
+   ground under them is the stage's blue, so the swap reads as a dissolve */
+const SCENE_MS = 10400
+function Scenes({ list }) {
+  const ref = useRef(null)
+  const t = useTicks(list.length, SCENE_MS, ref)
+  const Visual = VISUALS[list[t]]
+  return (
+    <div className="sol-scenes" ref={ref}>
+      <div className="sol-scene" key={list[t]}><Visual /></div>
+    </div>
+  )
 }
 
 /* the home page's section titles carry one accent word, the last one */
@@ -699,16 +775,17 @@ function faqSchema(items) {
 
 function Workflow({ w, flip }) {
   const ref = useReveal({ threshold: 0.12 })
-  const Visual = VISUALS[w.visual]
+  const many = Array.isArray(w.visual)
+  const Visual = many ? null : VISUALS[w.visual]
   return (
-    <section className={`sol-work${flip ? ' sol-work--flip' : ''}`} ref={ref}>
+    <section className={`sol-work${flip ? ' sol-work--flip' : ''}`} ref={ref} id={w.key}>
       <div className="sol-work-copy sol-reveal">
-        <p className="sol-eyebrow">{w.eyebrow}</p>
+        <p className="sol-eyebrow">{w.num && <span className="sol-num">{w.num}</span>}{w.eyebrow}</p>
         <h2>{w.title}</h2>
         <p>{w.body}</p>
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
-        <Visual />
+        {many ? <Scenes list={w.visual} /> : <Visual />}
       </div>
     </section>
   )
@@ -778,6 +855,11 @@ export default function Solution() {
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
+            {/* the line under the rows: the four are the shape of the work,
+                not the whole of it */}
+            {sol.useCasesMore && (
+              <p className="sol-works-more"><span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}</p>
+            )}
           </div>
         </section>
 
