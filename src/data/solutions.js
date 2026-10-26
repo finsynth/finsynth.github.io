@@ -81,13 +81,13 @@ export const SOLUTIONS = {
       example: {
         sources: [
           { icon: 'doc', name: 'Q3 FY26 release', kind: 'Filing', meta: '24 pages' },
-          { icon: 'sheet', name: 'Fund_model_v12.xlsx', kind: 'Your template', meta: 'Northwind Retail' },
+          { icon: 'sheet', name: 'Fund_model_v12.xlsx', kind: 'Your template', meta: 'Crocs' },
           { icon: 'plug', name: 'Consensus estimates', kind: 'Snowflake via MCP', meta: '14 brokers' },
           { icon: 'folder', name: 'Broker notes', kind: 'Dataroom', meta: '3 files' },
         ],
         surfaces: ['Excel add-in', 'Web app'],
         file: 'Fund_model_v12.xlsx',
-        instruction: 'Update the Northwind model for Q3 actuals and flag anything off consensus',
+        instruction: 'Update the Crocs model for Q3 actuals and flag anything off consensus',
         skill: 'Earnings update',
         sheet: {
           cols: ['USD m', 'Q3 FY25A', 'Q3 FY26A', 'Cons.', 'vs cons.'],

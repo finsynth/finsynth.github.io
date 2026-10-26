@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@clerk/react'
 import Navbar from '../components/Navbar'
@@ -11,7 +11,7 @@ import useReveal from '../hooks/useReveal'
 import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
-import HowStages from '../components/HowStages'
+import HowStages, { Cursor } from '../components/HowStages'
 
 /* ── How it works, which layout mounts ─────────────────────────────────────
  * `tabs` ships: the three stages as tabs, each opening its pillars and its
@@ -103,7 +103,7 @@ function EarningsVisual() {
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--earn sol-main">
-        <div className="sol-sheet-title">Northwind Retail · model<em className="sol-sheet-tag">Your layout</em></div>
+        <div className="sol-sheet-title">Crocs · model<em className="sol-sheet-tag">Your layout</em></div>
         <table className="sol-upd">
           <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th></tr></thead>
           <tbody>
@@ -129,10 +129,6 @@ function EarningsVisual() {
             })}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs">
-          <span className="is-on">Model</span>
-          <em><Src>Q3 FY26 release · p. 4</Src></em>
-        </div>
       </div>
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
@@ -157,24 +153,24 @@ function OverviewVisual() {
   return (
     <div className="sol-stage sol-stage--focus" aria-hidden="true">
       <div className="sol-panel sol-main sol-brief">
-        <div className="sol-sheet-title">Northwind Retail · overview<em className="sol-sheet-tag">Drafted by Fia</em></div>
+        <div className="sol-sheet-title">Crocs · overview<em className="sol-sheet-tag">Drafted by Fia</em></div>
         <div className="sol-brief-body">
           <section>
             <h5>Business</h5>
-            <p>Value grocer with 1,240 stores across the Midwest, two segments: Stores (71% of revenue) and Online (29%) <Src>FY25 10-K, p. 41</Src></p>
+            <p>Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites <Src>FY25 10-K, p. 41</Src></p>
           </section>
           <section>
             <h5>Key metrics</h5>
             <dl className="sol-brief-kpis">
-              <div><dt>Revenue FY25</dt><dd>$4.9bn</dd></div>
-              <div><dt>Margin</dt><dd>15.4%</dd></div>
-              <div><dt>Online growth</dt><dd>+18%</dd></div>
-              <div><dt>Leverage</dt><dd>1.8x</dd></div>
+              <div><dt>Revenue FY25</dt><dd>$4.2bn</dd></div>
+              <div><dt>Margin</dt><dd>25.1%</dd></div>
+              <div><dt>DTC growth</dt><dd>+11%</dd></div>
+              <div><dt>Leverage</dt><dd>1.4x</dd></div>
             </dl>
           </section>
           <section>
             <h5>Management is saying</h5>
-            <p>Targets 200bp of margin expansion by FY28 as private label reaches a third of the mix <Src>Q3 FY26 call</Src></p>
+            <p>Targets 200bp of margin expansion by FY28 as its own channels pass half of the mix <Src>Q3 FY26 call</Src></p>
           </section>
         </div>
       </div>
@@ -194,11 +190,11 @@ function OverviewVisual() {
    columns stay empty: the claim is that the analyst starts there */
 const BUILD_YEARS = ['FY23A', 'FY24A', 'FY25A']
 const BUILD_ROWS = [
-  ['Revenue', '4,355', '4,610', '4,872'],
-  ['Gross profit', '1,742', '1,857', '1,973'],
-  ['EBITDA', '655', '702', '748'],
-  ['Capex', '(195)', '(204)', '(215)'],
-  ['Free cash flow', '318', '341', '362'],
+  ['Revenue', '3,962', '4,102', '4,236'],
+  ['Gross profit', '2,210', '2,398', '2,482'],
+  ['EBITDA', '1,045', '1,118', '1,164'],
+  ['Capex', '(110)', '(86)', '(95)'],
+  ['Free cash flow', '782', '904', '948'],
 ]
 const BUILD_PAGES = ['FY23 10-K · p. 41', 'FY24 10-K · p. 43', 'FY25 10-K · p. 44']
 /* the DCF tab's output, what the build is for: the bridge from enterprise
@@ -207,10 +203,10 @@ const DCF_OUT = [
   ['Enterprise value', '9,420'],
   ['Net debt', '(1,310)'],
   ['Equity value', '8,110'],
-  ['Shares (m)', '212'],
-  ['Value per share', '$38.25'],
+  ['Shares (m)', '56'],
+  ['Value per share', '$144.80'],
 ]
-const DCF_PRICE = '$31.40'
+const DCF_PRICE = '$118.70'
 const DCF_UPSIDE = '+22%'
 
 /* the model window beside the FinSynth pane, the way the add-in sits in Excel.
@@ -235,7 +231,7 @@ function ModelBuildVisual() {
     <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
       <div className="sol-win-wrap">
         <div className="sol-panel sol-sheet sol-sheet--earn sol-win">
-          <div className="sol-sheet-title">Northwind Retail · {dcf ? 'DCF' : 'model'}</div>
+          <div className="sol-sheet-title">Crocs · {dcf ? 'DCF' : 'model'}<em className="sol-sheet-tag">{dcf ? 'WACC 8.6% · g 2.5%' : BUILD_PAGES[srcCol]}</em></div>
           {dcf ? (
             <table className="sol-upd sol-dcf sol-dcf-out">
               <thead><tr><th>USD m</th><th className="is-col">Base</th></tr></thead>
@@ -262,10 +258,6 @@ function ModelBuildVisual() {
               </tbody>
             </table>
           )}
-          <div className="sol-sheet-tabs">
-            <span className={dcf ? '' : 'is-on'}>Model</span><span className={dcf ? 'is-on' : done ? 'is-new' : ''}>DCF</span><span>Inputs</span>
-            <em>{dcf ? 'WACC 8.6% · g 2.5%' : <Src>{BUILD_PAGES[srcCol]}</Src>}</em>
-          </div>
         </div>
         <div className={`sol-status${done ? ' is-done' : ''}`}>
           <span className="sol-status-ico">
@@ -278,10 +270,6 @@ function ModelBuildVisual() {
         </div>
       </div>
       <div className="sol-panel sol-pane">
-        <div className="sol-sheet-tabs sol-pane-tabs">
-          <svg className="sol-pane-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" /><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" /></svg>
-          <span className="is-on">Chat</span><span>Review</span><span>Trace</span>
-        </div>
         <div className="sol-pane-ask">
           <span className="sol-pane-dot" />
           <p>Build the model and DCF in our template from the last three 10-Ks</p>
@@ -304,12 +292,12 @@ function ModelBuildVisual() {
 /* the fund's own comps sheet: the subject on top, four peers the agent fills,
    and a median row that is the fund's formula, recalculating once they land */
 const COMPS = [
-  { name: 'Northwind Retail', ev: '8.9x', pe: '15.2x', evs: '1.0x', self: true },
-  { name: 'Contoso Mart', ev: '9.8x', pe: '16.8x', evs: '1.1x' },
-  { name: 'Fabrikam Stores', ev: '7.6x', pe: '13.9x', evs: '0.8x' },
-  { name: 'Tailspin Retail', ev: '10.4x', pe: '18.1x', evs: '1.3x' },
-  { name: 'Litware Grocers', ev: '8.2x', pe: '14.6x', evs: '0.6x' },
-  { name: 'Peer median', ev: '9.0x', pe: '15.7x', evs: '0.95x', fx: true },
+  { name: 'Crocs', ev: '8.9x', pe: '15.2x', evs: '2.1x', self: true },
+  { name: 'Deckers', ev: '14.8x', pe: '22.6x', evs: '3.4x' },
+  { name: 'Skechers', ev: '9.6x', pe: '15.9x', evs: '1.1x' },
+  { name: 'Birkenstock', ev: '15.2x', pe: '24.1x', evs: '4.6x' },
+  { name: 'On Holding', ev: '28.4x', pe: '41.0x', evs: '6.2x' },
+  { name: 'Peer median', ev: '15.0x', pe: '23.4x', evs: '4.0x', fx: true },
 ]
 const COMPS_PEERS = COMPS.filter((p) => !p.self && !p.fx)
 
@@ -327,7 +315,7 @@ function CompsVisual() {
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--earn sol-sheet--comps sol-main">
-        <div className="sol-sheet-title">Northwind Retail · comps</div>
+        <div className="sol-sheet-title">Crocs · comps<em className="sol-sheet-tag">Calendarised to December</em></div>
         <table className="sol-upd">
           <thead><tr><th>NTM</th><th className="is-col">EV/EBITDA</th><th className="is-col">P/E</th><th className="is-col">EV/Sales</th></tr></thead>
           <tbody>
@@ -351,10 +339,6 @@ function CompsVisual() {
             })}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs">
-          <span className="is-on">Comps</span>
-          <em><Src>Calendarised to December</Src></em>
-        </div>
       </div>
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
@@ -371,41 +355,93 @@ function CompsVisual() {
 
 /* the thesis as a chat: the ask in the FinSynth pane, the agent's reply the
    tested points, each with its tag and its source, and the strongest case
-   against it last; the excerpt it leans on sits beside it */
+   against it last. Each point is cited, so the scene runs the evidence
+   stage's citation flow (HowStages): on its clock the pointer moves to the
+   next point's source chip and clicks it, the excerpt card beside the pane
+   opens that source, the wire draws from the chip to the card and the line
+   the point came from lights there. Measured from the live layout, so the
+   composition scales with the stage */
+const THESIS_POINTS = [
+  {
+    tag: 'Supported', text: 'DTC mix up 4pts in two years', src: 'FY25 10-K',
+    doc: 'FY25 10-K', where: 'p. 38',
+    before: 'Direct-to-consumer revenues were 51% of total revenues, ', mark: 'up from 47% two years earlier', after: ', as the brand added stores and grew its digital channels.',
+  },
+  {
+    tag: 'Supported', text: 'Gross margin up 120bp year on year', src: 'Q3 release',
+    doc: 'Q3 FY26 release', where: 'p. 2',
+    before: 'Adjusted gross margin was 59.6%, ', mark: 'up 120 basis points', after: ' on the prior year, driven by channel mix and lower freight.',
+  },
+  {
+    tag: 'Strongest counter', text: 'Rising promotions offset the mix gain', src: 'Q3 call, p. 7', counter: true,
+    doc: 'Q3 FY26 call', where: 'p. 7',
+    before: 'On pricing, ', mark: 'we expect promotional activity to remain elevated through the holiday period', after: ', which will weigh on the margin benefit from mix.',
+  },
+]
 function ThesisVisual() {
+  const ref = useRef(null)
+  const t = useTicks(THESIS_POINTS.length, 2400, ref)
+  const pt = THESIS_POINTS[t]
+  const [geo, setGeo] = useState(null)
+  useLayoutEffect(() => {
+    const wrap = ref.current
+    if (!wrap) return
+    const measure = () => {
+      const chip = wrap.querySelector('.sol-evidence li.is-sel .sol-src')
+      const card = wrap.querySelector('.sol-excerpt--cite')
+      const mark = wrap.querySelector('.sol-excerpt--cite mark.is-on')
+      if (!chip || !card || !mark) return
+      const w = wrap.getBoundingClientRect()
+      const a = chip.getBoundingClientRect()
+      const d = card.getBoundingClientRect()
+      const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
+      setGeo({
+        w: w.width, h: w.height,
+        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
+        x2: d.left - w.left, y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
+        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
+      })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [t])
+  const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
   return (
-    <div className="sol-stage sol-stage--focus" aria-hidden="true">
+    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-pane sol-main sol-pane--thesis">
-        <div className="sol-sheet-tabs sol-pane-tabs">
-          <svg className="sol-pane-mark" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" /><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35" /><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" /></svg>
-          <span className="is-on">Chat</span><span>Review</span><span>Trace</span>
-          <em className="sol-sheet-tag">3 points tested</em>
-        </div>
         <div className="sol-pane-ask">
           <span className="sol-pane-dot" />
-          <p>Test my thesis: private label lifts margins</p>
+          <p>Test my thesis: DTC mix lifts margins</p>
         </div>
         <div className="sol-pane-body">
           <p className="sol-pane-say">Tested against the filings, transcripts and your notes. Two points hold, one has a strong counter</p>
           <ul className="sol-evidence">
-            <li><span className="sol-tag sol-tag--supported">Supported</span><span>Private label mix up 4pts in two years</span><Src>FY25 10-K</Src></li>
-            <li><span className="sol-tag sol-tag--supported">Supported</span><span>Gross margin up 120bp year on year</span><Src>Q3 release</Src></li>
-            <li className="sol-evidence--counter">
-              <span className="sol-tag sol-tag--risk">Strongest counter</span>
-              <span>Rising promotions offset the mix gain</span>
-              <Src>Q3 call, p. 7</Src>
-            </li>
+            {THESIS_POINTS.map((p, i) => (
+              <li key={p.src} className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}>
+                <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>{p.tag}</span>
+                <span>{p.text}</span>
+                <Src>{p.src}</Src>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
       </div>
-      <div className="sol-panel sol-aside sol-excerpt sol-excerpt--quote">
-        <div className="sol-aside-head"><Src>Q3 FY26 call</Src><span>p. 7</span></div>
-        <ul>
-          <li>Private label reached 31% of sales this quarter</li>
-          <li className="is-lit">"We expect promotional activity to remain elevated through the holiday period"</li>
-        </ul>
+      <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
+        <div className="sol-aside-head"><Src>{pt.doc}</Src><span>{pt.where}</span></div>
+        <p>{pt.before}<mark className="is-on">{pt.mark}</mark>{pt.after}</p>
       </div>
+      {geo && (
+        <>
+          <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${t}`}>
+            <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+            <circle cx={geo.x2} cy={geo.y2} r="3" />
+          </svg>
+          <Cursor x={geo.cx} y={geo.cy} />
+        </>
+      )}
     </div>
   )
 }
@@ -451,7 +487,6 @@ function AuditVisual() {
             ))}
           </tbody>
         </table>
-        <div className="sol-sheet-tabs"><span className="is-on">Model</span><span>Audit</span><em>FY24 historicals reconciled to the 10-K</em></div>
       </div>
       <div className="sol-panel sol-aside sol-findings">
         <div className="sol-aside-head"><span>Audit findings</span><span>3</span></div>
@@ -515,7 +550,7 @@ function HxList({ eyebrow, rows }) {
 const HowSurfacesVisual = () => (
   <HxList eyebrow="Where it runs" rows={[
     ['Excel add-in', 'Fund_model_v12.xlsx', 'Updating Q3 actuals in your sheet'],
-    ['Web app', 'Northwind thesis', ''],
+    ['Web app', 'Crocs thesis', ''],
     ['Same agent, same citations', 'Both', ''],
   ]} />
 )
@@ -528,7 +563,7 @@ const HowCitedVisual = () => (
 )
 const HowFormatVisual = () => (
   <HxList eyebrow="Your templates" rows={[
-    ['Fund model', 'Fund_model_v12.xlsx', 'Applied to the Northwind build'],
+    ['Fund model', 'Fund_model_v12.xlsx', 'Applied to the Crocs build'],
     ['Comps sheet', 'Comps_template.xlsx', ''],
     ['Investment memo', 'Memo_format.docx', ''],
   ]} />
