@@ -149,12 +149,15 @@ function Wire({ geo, tick }) {
    list is already full and the scene walks its sources instead: the pointer
    clicks a name's source chip, the card beside the sheet opens that
    document and the data point's line lights in it */
-function ScreenVisual({ cite = false }) {
+function ScreenVisual({
+  cite = false, title = 'US consumer · screen', tag = '1,840 names', criteria = SCREEN_CRITERIA,
+  head = 'Shortlist', status = ['Screening the universe', 'Shortlist ready'],
+}) {
   const ref = useRef(null)
   const HOLD = 8
-  const t = useTicks(cite ? SCREEN_CITES.length : SCREEN_ROWS.length + SCREEN_CRITERIA.length + HOLD, cite ? 2400 : 620, ref)
-  const crit = cite ? SCREEN_CRITERIA.length : Math.min(t, SCREEN_CRITERIA.length)
-  const rows = cite ? SCREEN_ROWS.length : Math.max(0, t - SCREEN_CRITERIA.length)
+  const t = useTicks(cite ? SCREEN_CITES.length : SCREEN_ROWS.length + criteria.length + HOLD, cite ? 2400 : 620, ref)
+  const crit = cite ? criteria.length : Math.min(t, criteria.length)
+  const rows = cite ? SCREEN_ROWS.length : Math.max(0, t - criteria.length)
   const done = rows >= SCREEN_ROWS.length
   const sel = cite ? t : -1
   const c = cite ? SCREEN_CITES[t] : null
@@ -162,7 +165,7 @@ function ScreenVisual({ cite = false }) {
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
-        <div className="sol-sheet-title">US consumer · screen<em className="sol-sheet-tag">1,840 names</em></div>
+        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
         <table className="sol-upd sol-screen">
           <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
           <tbody>
@@ -184,9 +187,9 @@ function ScreenVisual({ cite = false }) {
         </div>
       ) : (
         <div className="sol-panel sol-aside sol-stack">
-          <div className="sol-aside-head"><span>Shortlist</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
+          <div className="sol-aside-head"><span>{head}</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
           <ul>
-            {SCREEN_CRITERIA.map((cr, i) => (
+            {criteria.map((cr, i) => (
               <li key={cr} className={i < crit ? 'is-on' : ''}><Tick /><span>{cr}</span></li>
             ))}
           </ul>
@@ -200,7 +203,7 @@ function ScreenVisual({ cite = false }) {
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
           </span>
         </span>
-        <span className="sol-status-lbls"><span>Screening the universe</span><span>Shortlist ready</span></span>
+        <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
       </div>
     </div>
   )
@@ -278,41 +281,60 @@ const OVERVIEW_SOURCES = [
   ['FY25 10-K', 'Filing'], ['Q3 release', 'Filing'], ['Q3 call', 'Transcript'],
   ['Broker notes', 'Dataroom'], ['Expert call', 'Dataroom'],
 ]
+const OVERVIEW_SECTIONS = [
+  { h: 'Business', p: 'Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites', src: 'FY25 10-K, p. 41' },
+  { h: 'Key metrics', kpis: [['Revenue FY25', '$4.2bn'], ['Margin', '25.1%'], ['DTC growth', '+11%'], ['Leverage', '1.4x']] },
+  { h: 'Management is saying', p: 'Targets 200bp of margin expansion by FY28 as its own channels pass half of the mix', src: 'Q3 FY26 call' },
+]
 
-/* a research brief, with the stack of sources that fed it */
-function OverviewVisual() {
+/* one section of a drafted brief: a heading over a cited sentence, or over
+   a row of key figures */
+function BriefSection({ s, className = '' }) {
+  return (
+    <section className={className}>
+      <h5>{s.h}</h5>
+      {s.kpis ? (
+        <dl className="sol-brief-kpis">
+          {s.kpis.map(([dt, dd]) => <div key={dt}><dt>{dt}</dt><dd>{dd}</dd></div>)}
+        </dl>
+      ) : (
+        <p>{s.p} <Src>{s.src}</Src></p>
+      )}
+    </section>
+  )
+}
+
+/* the stack of sources beside a drafted panel: what was read, or what the
+   draft was built from */
+function SourceStack({ head, sources, on = false }) {
+  return (
+    <div className="sol-panel sol-aside sol-stack">
+      <div className="sol-aside-head"><span>{head[0]}</span><b>{head[1]}</b></div>
+      <ul>
+        {sources.map(([name, kind]) => (
+          <li key={name} className={on ? 'is-on' : ''}><Tick /><span>{name}</span><em>{kind}</em></li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/* a research brief, with the stack of sources that fed it. The scene passes
+   what the brief is of and what was read, so the same stage draws a company
+   overview, an initiation's groundwork or a first read of a deal */
+function OverviewVisual({
+  title = 'Crocs · overview', tag = 'Drafted by Fia', sections = OVERVIEW_SECTIONS,
+  head = ['Sources read', '14 / 14'], sources = OVERVIEW_SOURCES,
+}) {
   return (
     <div className="sol-stage sol-stage--focus" aria-hidden="true">
       <div className="sol-panel sol-main sol-brief">
-        <div className="sol-sheet-title">Crocs · overview<em className="sol-sheet-tag">Drafted by Fia</em></div>
+        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
         <div className="sol-brief-body">
-          <section>
-            <h5>Business</h5>
-            <p>Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites <Src>FY25 10-K, p. 41</Src></p>
-          </section>
-          <section>
-            <h5>Key metrics</h5>
-            <dl className="sol-brief-kpis">
-              <div><dt>Revenue FY25</dt><dd>$4.2bn</dd></div>
-              <div><dt>Margin</dt><dd>25.1%</dd></div>
-              <div><dt>DTC growth</dt><dd>+11%</dd></div>
-              <div><dt>Leverage</dt><dd>1.4x</dd></div>
-            </dl>
-          </section>
-          <section>
-            <h5>Management is saying</h5>
-            <p>Targets 200bp of margin expansion by FY28 as its own channels pass half of the mix <Src>Q3 FY26 call</Src></p>
-          </section>
+          {sections.map((s) => <BriefSection key={s.h} s={s} />)}
         </div>
       </div>
-      <div className="sol-panel sol-aside sol-stack">
-        <div className="sol-aside-head"><span>Sources read</span><b>14 / 14</b></div>
-        <ul>
-          {OVERVIEW_SOURCES.map(([name, kind]) => (
-            <li key={name}><Tick /><span>{name}</span><em>{kind}</em></li>
-          ))}
-        </ul>
-      </div>
+      <SourceStack head={head} sources={sources} />
     </div>
   )
 }
@@ -320,7 +342,9 @@ function OverviewVisual() {
 /* the memo FinSynth drafts in the committee's format: four sections, each
    claim carrying its source chip, written in turn under the same pill the
    other stages wear. The aside lists what the draft was built from. One tick
-   a section, then a hold on the finished draft */
+   a section, then a hold on the finished draft. The scene passes the memo's
+   name, sections and sources, so the stage also draws an earnings note or
+   an IC memo from a dataroom */
 const MEMO_SECTIONS = [
   { h: 'Thesis', p: 'Own channels pass half of the mix by FY27 and gross margin crosses 41%, two points ahead of the Street', src: 'Q3 FY26 call' },
   { h: 'Valuation', p: 'DCF value of $144.80 a share against $118.70 today, 22% upside; trades below the peer set on NTM EV/EBITDA', src: 'Fund_model_v12.xlsx' },
@@ -328,39 +352,31 @@ const MEMO_SECTIONS = [
   { h: 'Recommendation', p: 'Buy, 2% position, $140 target; revisit after the Q4 print', src: 'Your notes' },
 ]
 const MEMO_SOURCES = [
-  ['Fund_model_v12.xlsx', 'Model'],
+  ['Fund model', 'Model'],
   ['FY25 10-K', 'Filing'],
   ['Q3 FY26 10-Q', 'Filing'],
-  ['Q3 FY26 call', 'Transcript'],
+  ['Q3 call', 'Transcript'],
   ['Broker notes', 'Dataroom'],
 ]
-function MemoVisual() {
+function MemoVisual({
+  title = 'Crocs · investment memo', tag = 'Your template', sections = MEMO_SECTIONS,
+  sources = MEMO_SOURCES, head = ['Drafted from', `${sources.length} sources`],
+  status = ['Drafting the memo', 'Memo ready for review'],
+}) {
   const ref = useRef(null)
   const HOLD = 5
-  const t = useTicks(MEMO_SECTIONS.length + HOLD, 1150, ref)
-  const on = Math.min(t + 1, MEMO_SECTIONS.length)
-  const done = t >= MEMO_SECTIONS.length
+  const t = useTicks(sections.length + HOLD, 1150, ref)
+  const on = Math.min(t + 1, sections.length)
+  const done = t >= sections.length
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-main sol-brief sol-memo">
-        <div className="sol-sheet-title">Crocs · investment memo<em className="sol-sheet-tag">Your template</em></div>
+        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
         <div className="sol-brief-body">
-          {MEMO_SECTIONS.map((s, i) => (
-            <section key={s.h} className={i < on ? 'is-on' : ''}>
-              <h5>{s.h}</h5>
-              <p>{s.p} <Src>{s.src}</Src></p>
-            </section>
-          ))}
+          {sections.map((s, i) => <BriefSection key={s.h} s={s} className={i < on ? 'is-on' : ''} />)}
         </div>
       </div>
-      <div className="sol-panel sol-aside sol-stack">
-        <div className="sol-aside-head"><span>Drafted from</span><b>{MEMO_SOURCES.length} sources</b></div>
-        <ul>
-          {MEMO_SOURCES.map(([name, kind]) => (
-            <li key={name} className="is-on"><Tick /><span>{name}</span><em>{kind}</em></li>
-          ))}
-        </ul>
-      </div>
+      <SourceStack head={head} sources={sources} on />
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
           <span className="sol-status-spin" />
@@ -368,7 +384,7 @@ function MemoVisual() {
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
           </span>
         </span>
-        <span className="sol-status-lbls"><span>Drafting the memo</span><span>Memo ready for review</span></span>
+        <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
       </div>
     </div>
   )
@@ -569,10 +585,11 @@ const THESIS_POINTS = [
 function ThesisVisual({
   ask = 'Test my thesis: DTC mix lifts margins',
   say = 'Tested against the filings, transcripts and your notes. Two points hold, one has a strong counter',
+  points = THESIS_POINTS,
 }) {
   const ref = useRef(null)
-  const t = useTicks(THESIS_POINTS.length, 2400, ref)
-  const pt = THESIS_POINTS[t]
+  const t = useTicks(points.length, 2400, ref)
+  const pt = points[t]
   const geo = useWire(ref, t, '.sol-evidence li.is-sel .sol-src')
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
@@ -584,7 +601,7 @@ function ThesisVisual({
         <div className="sol-pane-body">
           <p className="sol-pane-say">{say}</p>
           <ul className="sol-evidence">
-            {THESIS_POINTS.map((p, i) => (
+            {points.map((p, i) => (
               <li key={p.src} className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}>
                 <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>{p.tag}</span>
                 <span>{p.text}</span>
