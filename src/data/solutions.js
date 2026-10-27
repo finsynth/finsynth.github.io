@@ -76,6 +76,32 @@ const howFor = (example, pillars) => ({
   steps: howSteps(pillars),
 });
 
+/* the private deal the family offices and private markets desks work through
+   on their drawn screens, under the codename a live deal would carry */
+const TIDE_BUSINESS = { h: 'Business', p: 'Regional specialty retailer, 64 stores across the Southwest and 31% of sales online; founder-led, raising growth capital', src: 'CIM, p. 6' }
+const TIDE_NUMBERS = { h: 'The numbers', kpis: [['Revenue FY25', '$212m'], ['Margin', '14.8%'], ['Leverage', '2.1x'], ['Growth, 3y', '+14%']] }
+const TIDE_RISKS = { h: 'Key risks', p: 'Lease renewals on 19 stores fall in FY27; the two largest suppliers are 41% of purchases', src: 'CIM, p. 31' }
+const TIDE_ROOM = [['CIM', 'Deck'], ['Mgmt accounts', 'Excel'], ['QoE report', 'PDF'], ['Loan agreement', 'PDF'], ['Lease schedule', 'Excel']]
+/* the dataroom read as a thesis test: two findings that hold and the risk to
+   raise, each with the line in the room it came from */
+const TIDE_POINTS = [
+  {
+    tag: 'Supported', text: 'Revenue up 14% a year since FY23', src: 'Mgmt accounts',
+    doc: 'Mgmt accounts', where: 'p. 4',
+    before: 'Net sales of $212.4m in FY25, ', mark: 'up 14.2% on FY24', after: ', with like-for-like growth of 6% and eight new stores.',
+  },
+  {
+    tag: 'Supported', text: 'Margin held through the DC build', src: 'QoE report',
+    doc: 'QoE report', where: 'p. 11',
+    before: 'Adjusted EBITDA margin was 14.8%, ', mark: 'broadly flat on the prior year', after: ' after $3.1m of one-off distribution centre costs.',
+  },
+  {
+    tag: 'Risk to raise', text: 'Change of control resets the revolver', src: 'Loan agreement', counter: true,
+    doc: 'Loan agreement', where: '§7.2',
+    before: 'Upon a Change of Control, ', mark: 'all outstanding amounts shall become immediately due and payable', after: ' unless waived by the Required Lenders.',
+  },
+]
+
 export const SOLUTIONS = {
   // Copy taken from the approved page outline canvas (Oct 2026). The hero lede
   // is the sentence agents are meant to quote, so it stays word-for-word the
@@ -236,7 +262,11 @@ export const SOLUTIONS = {
         name: 'Investment memos',
         outcome: 'From research to a committee-ready memo',
         scenes: [
-          { visual: 'memo', copy: 'Ask FinSynth to draft a memo in your committee’s format and it brings together the thesis, valuation, risks and supporting data from your research, each claim linked to its source.' },
+          {
+            visual: 'memo',
+            props: { title: 'Crocs · IC memo', tag: 'Committee format', status: ['Drafting the memo', 'Ready for committee'] },
+            copy: 'Ask FinSynth to draft a memo in your committee’s format and it brings together the thesis, valuation, risks and supporting data from your research, each claim linked to its source.',
+          },
         ],
       },
       {
@@ -296,7 +326,20 @@ export const SOLUTIONS = {
         name: 'Initiations',
         outcome: 'Initiate on a new name in days, not weeks',
         scenes: [
-          { visual: 'overview', copy: 'Point FinSynth at a company and it pulls together the groundwork for an initiation: the business, its segment history, the key debates and what management has been saying, each point linked to its source. You bring the view and the call.' },
+          {
+            visual: 'overview',
+            props: {
+              title: 'Crocs · initiation', tag: 'Groundwork',
+              sections: [
+                { h: 'Business', p: 'Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites', src: 'FY25 10-K, p. 41' },
+                { h: 'Segment history', kpis: [['Crocs, 3y', '+9%'], ['HEYDUDE, 3y', '-4%'], ['DTC share', '51%'], ['Op. margin', '25.1%']] },
+                { h: 'Key debates', p: 'Whether HEYDUDE wholesale has found a floor; management says the reset is done, with wholesale orders flat in Q3', src: 'Q3 FY26 call, p. 5' },
+              ],
+              head: ['Sources read', '22 / 22'],
+              sources: [['Three 10-Ks', 'Filing'], ['Eight calls', 'Transcript'], ['Past notes', 'Dataroom'], ['Consensus', 'Snowflake']],
+            },
+            copy: 'Point FinSynth at a company and it pulls together the groundwork for an initiation: the business, its segment history, the key debates and what management has been saying, each point linked to its source. You bring the view and the call.',
+          },
         ],
       },
       {
@@ -315,7 +358,21 @@ export const SOLUTIONS = {
         name: 'Earnings notes',
         outcome: 'From preview to published note, every results season',
         scenes: [
-          { visual: 'memo', copy: 'Ask FinSynth for the preview before the print, then to update your coverage model and draft the earnings note in your house format, each figure linked to the exact line in the release.' },
+          {
+            visual: 'memo',
+            props: {
+              title: 'Crocs · Q3 FY26 note', tag: 'House format',
+              sections: [
+                { h: 'Headline', p: 'Revenue of $1,284.6m, up 8.5% and 2% ahead of consensus; adjusted EPS of $0.91 against $0.87 expected', src: 'Q3 FY26 release, p. 1' },
+                { h: 'Estimates', p: 'FY26 EPS to $3.62 from $3.55 on the Q3 beat and a stronger gross margin; FY27 unchanged', src: 'CROX_coverage_model.xlsx' },
+                { h: 'What changed', p: 'Promotional intensity rising in core categories; HEYDUDE wholesale still shrinking', src: 'Q3 FY26 call, p. 7' },
+                { h: 'Rating', p: 'Buy, price target $140, unchanged; the margin story holds against peers', src: 'House view' },
+              ],
+              sources: [['Coverage model', 'Model'], ['Q3 release', 'Filing'], ['Q3 call', 'Transcript'], ['Consensus', 'Snowflake'], ['Past notes', 'Dataroom']],
+              status: ['Drafting the note', 'Note ready for review'],
+            },
+            copy: 'Ask FinSynth for the preview before the print, then to update your coverage model and draft the earnings note in your house format, each figure linked to the exact line in the release.',
+          },
           { visual: 'earnings', copy: 'It also flags where results beat or missed consensus and where your estimates may need revising.' },
         ],
       },
@@ -325,8 +382,16 @@ export const SOLUTIONS = {
         name: 'Thematic and sector reports',
         outcome: 'Pull a sector-wide view together in days',
         scenes: [
-          { visual: 'screen', copy: 'Give FinSynth a theme or a sector and it works across every company in scope, bringing the data, disclosures and management commentary into one view, each point linked to its source.' },
-          { visual: 'screen', props: { cite: true }, copy: 'Comparisons that used to take weeks of reading come together in one session.' },
+          {
+            visual: 'screen',
+            props: { title: 'US footwear · sector view', tag: 'Q3 FY26', criteria: ['Three years of data', 'Guidance', 'Commentary'], head: 'In scope', status: ['Working across the sector', 'Sector view ready'] },
+            copy: 'Give FinSynth a theme or a sector and it works across every company in scope, bringing the data, disclosures and management commentary into one view, each point linked to its source.',
+          },
+          {
+            visual: 'screen',
+            props: { cite: true, title: 'US footwear · sector view', tag: 'Q3 FY26' },
+            copy: 'Comparisons that used to take weeks of reading come together in one session.',
+          },
         ],
       },
       {
@@ -397,7 +462,11 @@ export const SOLUTIONS = {
         outcome: 'Test public ideas and work through private deals',
         scenes: [
           { visual: 'thesis', copy: 'Give FinSynth your thesis on a listed name and it tests each point against filings and transcripts, then builds the strongest case against it.' },
-          { visual: 'overview', copy: 'For a direct deal or co-investment, add the documents to the Dataroom and it summarises the business, the numbers and the key risks, each point linked to the page it came from.' },
+          {
+            visual: 'overview',
+            props: { title: 'Project Tide · deal summary', tag: 'From the Dataroom', sections: [TIDE_BUSINESS, TIDE_NUMBERS, TIDE_RISKS], head: ['Dataroom read', '9 / 9'], sources: TIDE_ROOM },
+            copy: 'For a direct deal or co-investment, add the documents to the Dataroom and it summarises the business, the numbers and the key risks, each point linked to the page it came from.',
+          },
         ],
       },
       {
@@ -416,7 +485,20 @@ export const SOLUTIONS = {
         name: 'Investment memos',
         outcome: 'From research to a decision-ready memo',
         scenes: [
-          { visual: 'memo', copy: 'Ask FinSynth to draft a memo for your principals or investment committee and it brings together the thesis, valuation, risks and supporting data from your research, each claim linked to its source.' },
+          {
+            visual: 'memo',
+            props: {
+              sections: [
+                { h: 'Thesis', p: 'Own channels pass half of the mix by FY27 and gross margin crosses 41%, two points ahead of the Street', src: 'Q3 FY26 call' },
+                { h: 'Valuation', p: 'DCF value of $144.80 a share against $118.70 today, 22% upside; trades below the peer set on NTM EV/EBITDA', src: 'Portfolio_model_v4.xlsx' },
+                { h: 'Risks', p: 'Promotional intensity rising in core categories; HEYDUDE wholesale still shrinking', src: 'Q3 FY26 10-Q, p. 18' },
+                { h: 'Recommendation', p: 'Buy, 2% of the portfolio, $140 target; revisit after the Q4 print', src: 'Your notes' },
+              ],
+              sources: [['Portfolio model', 'Model'], ['FY25 10-K', 'Filing'], ['Q3 FY26 10-Q', 'Filing'], ['Q3 call', 'Transcript'], ['Broker notes', 'Dataroom']],
+              status: ['Drafting the memo', 'Ready for the principals'],
+            },
+            copy: 'Ask FinSynth to draft a memo for your principals or investment committee and it brings together the thesis, valuation, risks and supporting data from your research, each claim linked to its source.',
+          },
         ],
       },
       {
@@ -482,7 +564,19 @@ export const SOLUTIONS = {
         name: 'Deal screening',
         outcome: 'A first read on every deal that lands',
         scenes: [
-          { visual: 'overview', copy: 'Add a CIM or teaser and ask FinSynth for a first read: the business, the numbers, the sector and the questions worth asking, each point linked to the page it came from. Decide quickly which deals deserve the team’s time.' },
+          {
+            visual: 'overview',
+            props: {
+              title: 'Project Tide · first read', tag: 'From the CIM',
+              sections: [
+                TIDE_BUSINESS, TIDE_NUMBERS,
+                { h: 'Questions worth asking', p: 'Why online margin trails the stores by six points, and whether the FY26 plan assumes the new distribution centre is live', src: 'CIM, p. 23' },
+              ],
+              head: ['Sources read', '3 / 3'],
+              sources: [['CIM', '48 pp'], ['Teaser', '2 pp'], ['Comps set', 'Model']],
+            },
+            copy: 'Add a CIM or teaser and ask FinSynth for a first read: the business, the numbers, the sector and the questions worth asking, each point linked to the page it came from. Decide quickly which deals deserve the team’s time.',
+          },
         ],
       },
       {
@@ -491,7 +585,7 @@ export const SOLUTIONS = {
         name: 'Due diligence',
         outcome: 'Work through the full dataroom in hours, not weeks',
         scenes: [
-          { visual: 'thesis', props: { ask: 'Work through the dataroom: what holds up, and what are the risks?', say: 'Read every document in the room. Two points hold, one risk to raise with the deal team' }, copy: 'Add the full dataroom and ask FinSynth to work through every document, summarising the findings and risks with each one linked to its source. For credit deals, it pulls the key terms and covenants from the credit documents too.' },
+          { visual: 'thesis', props: { ask: 'Work through the dataroom: what holds up, and what are the risks?', say: 'Read every document in the room. Two points hold, one risk to raise with the deal team', points: TIDE_POINTS }, copy: 'Add the full dataroom and ask FinSynth to work through every document, summarising the findings and risks with each one linked to its source. For credit deals, it pulls the key terms and covenants from the credit documents too.' },
         ],
       },
       {
@@ -510,7 +604,21 @@ export const SOLUTIONS = {
         name: 'Credit and IC memos',
         outcome: 'Drafted in your template, ready for committee',
         scenes: [
-          { visual: 'memo', copy: 'Ask FinSynth to draft an IC or credit memo in your template and it brings together the investment case, financials, risks and diligence findings, each claim linked to its source.' },
+          {
+            visual: 'memo',
+            props: {
+              title: 'Project Tide · IC memo', tag: 'Your template',
+              sections: [
+                { h: 'Investment case', p: 'A founder-led regional retailer with room to double the store base; growth capital at 7.2x EBITDA against public comps at 9.6x', src: 'Comps_set_v3.xlsx' },
+                { h: 'Financials', p: 'Revenue of $212m growing 14% a year, EBITDA margin of 14.8% and net debt at 2.1x', src: 'QoE report, p. 11' },
+                { h: 'Risks', p: 'Lease renewals on 19 stores fall in FY27; the two largest suppliers are 41% of purchases', src: 'CIM, p. 31' },
+                { h: 'Diligence findings', p: 'Change of control resets the revolver; working capital normalises $2.4m below the CIM figure', src: 'Loan agreement, §7.2' },
+              ],
+              sources: TIDE_ROOM,
+              status: ['Drafting the IC memo', 'Ready for committee'],
+            },
+            copy: 'Ask FinSynth to draft an IC or credit memo in your template and it brings together the investment case, financials, risks and diligence findings, each claim linked to its source.',
+          },
         ],
       },
       {
