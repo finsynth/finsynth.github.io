@@ -5314,14 +5314,11 @@ button.play { border: none; padding: 0; appearance: none }
   .fiag-stage .x4e-visual > * { width: 86%; max-width: none; }
 }
 
-/* ── Support ── one screen between the navbar and the footer, the copy centred
-   on a rounded panel inset from the page edges (Arcade's closing band): the
-   page's grey at the top dissolving into a pale accent blue at the base, so
-   the ground is barely there and the dark ink and the blue button carry it. */
 .support-container {
   position: relative; z-index: 6; isolation: isolate;
   width: 100%;
   /* the navbar is sticky and in flow, so the screen is what's left under it */
+  min-height: calc(100vh - var(--navbar-height));
   min-height: calc(100svh - var(--navbar-height));
   padding: 48px 24px 72px;
   display: grid;
@@ -5393,47 +5390,6 @@ button.play { border: none; padding: 0; appearance: none }
 @media (max-width: 560px) {
   .support-container { padding-inline: 20px; padding-block: 40px 56px; }
   .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
-}
-
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.button a {
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.button-cta {
-  border-radius: 0.35rem;
-  background-color: #4265cc;
-  color: #ffffff;
-  border: none;
-}
-
-.button-cta:hover {
-  background-color: #3350a4;
-}
-
-.button-cta-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.button-cta-link img {
-  height: 1.5rem;
-  width: 1.5rem;
 }
 
 /* ── /careers — the postings page. One reading column, a card per role.
