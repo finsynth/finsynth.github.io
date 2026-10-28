@@ -5315,80 +5315,81 @@ button.play { border: none; padding: 0; appearance: none }
 }
 
 .support-container {
-  flex: 1 1 auto;
+  position: relative; z-index: 6; isolation: isolate;
+  width: 100%;
+  /* the navbar is sticky and in flow, so the screen is what's left under it */
   min-height: calc(100vh - var(--navbar-height));
   min-height: calc(100svh - var(--navbar-height));
-  width: 100%;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; 
-  gap: 1rem;
+  padding: 48px 24px 72px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
 }
-
+.support-bg {
+  position: absolute; z-index: -1;
+  top: 20px; bottom: 20px; left: 20px; right: 20px;
+  border-radius: 14px;
+  background: linear-gradient(to bottom,
+    rgba(53, 80, 200, 0) 0%,
+    rgba(53, 80, 200, .025) 28%,
+    rgba(53, 80, 200, .06) 64%,
+    rgba(53, 80, 200, .09) 100%);
+  pointer-events: none;
+  overflow: hidden;
+}
 .support-content {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   align-items: center;
-}
-
-.support-heading {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #4265cc;
-}
-
-.support-description {
   text-align: center;
-  text-wrap: balance;
+  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
-
-.support-content button {
-  width: fit-content;
-  padding: 0.25rem 0.5rem;
+.support-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 24px;
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--secondary);
+  box-shadow: 0 1px 2px rgba(20, 36, 46, .04);
 }
-
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.support-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 34px);
   font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  color: var(--ink);
 }
-
-.button a {
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: inherit;
+.support-description {
+  margin: 14px 0 0;
+  max-width: 390px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--secondary);
+  text-wrap: pretty;
 }
-
-.button-cta {
-  border-radius: 0.35rem;
-  background-color: #4265cc;
-  color: #ffffff;
-  border: none;
+.support-content .support-cta {
+  margin: 28px 0 0;
+  min-height: 46px;
+  padding: 12px 22px;
+  gap: 10px;
+  font-size: 15px;
 }
-
-.button-cta:hover {
-  background-color: #3350a4;
+.support-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
 }
-
-.button-cta-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.button-cta-link img {
-  height: 1.5rem;
-  width: 1.5rem;
+@media (max-width: 560px) {
+  .support-container { padding-inline: 20px; padding-block: 40px 56px; }
+  .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
 }
 
 /* ── /careers — the postings page. One reading column, a card per role.
