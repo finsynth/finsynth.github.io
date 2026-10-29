@@ -818,7 +818,8 @@ button.play { border: none; padding: 0; appearance: none }
 .hiw-eyebrow,
 .secx-eyebrow,
 .plans-eyebrow,
-.faq-eyebrow { display: none !important; }
+.faq-eyebrow,
+.hw-head .sol-eyebrow { display: none !important; } /* the solutions pages' How it works head follows the same rule */
 
 @keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
 /* hiwPulse went with the live tool-call row's blinking dot — nothing pulses here now */
@@ -5400,40 +5401,85 @@ button.play { border: none; padding: 0; appearance: none }
   .fiag-stage .x4e-visual > * { width: 86%; max-width: none; }
 }
 
+/* ── Support ── one screen between the navbar and the footer, the copy centred
+   on a rounded panel inset from the page edges (Arcade's closing band): the
+   page's grey at the top dissolving into a pale accent blue at the base, so
+   the ground is barely there and the dark ink and the blue button carry it. */
 .support-container {
-  flex: 1 1 auto;
-  min-height: calc(100vh - var(--navbar-height));
-  min-height: calc(100svh - var(--navbar-height));
+  position: relative; z-index: 6; isolation: isolate;
   width: 100%;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; 
-  gap: 1rem;
+  /* the navbar is sticky and in flow, so the screen is what's left under it */
+  min-height: calc(100svh - var(--navbar-height));
+  padding: 48px 24px 72px;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
 }
-
+.support-bg {
+  position: absolute; z-index: -1;
+  top: 20px; bottom: 20px; left: 20px; right: 20px;
+  border-radius: 14px;
+  background: linear-gradient(to bottom,
+    rgba(53, 80, 200, 0) 0%,
+    rgba(53, 80, 200, .025) 28%,
+    rgba(53, 80, 200, .06) 64%,
+    rgba(53, 80, 200, .09) 100%);
+  pointer-events: none;
+  overflow: hidden;
+}
 .support-content {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   align-items: center;
-}
-
-.support-heading {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #4265cc;
-}
-
-.support-description {
   text-align: center;
-  text-wrap: balance;
+  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
-
-.support-content button {
-  width: fit-content;
-  padding: 0.25rem 0.5rem;
+.support-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 24px;
+  border: 1px solid var(--hair);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--secondary);
+  box-shadow: 0 1px 2px rgba(20, 36, 46, .04);
+}
+.support-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 34px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  color: var(--ink);
+}
+.support-description {
+  margin: 14px 0 0;
+  max-width: 390px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--secondary);
+  text-wrap: pretty;
+}
+.support-content .support-cta {
+  margin: 28px 0 0;
+  min-height: 46px;
+  padding: 12px 22px;
+  gap: 10px;
+  font-size: 15px;
+}
+.support-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+@media (max-width: 560px) {
+  .support-container { padding-inline: 20px; padding-block: 40px 56px; }
+  .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
 }
 
 .button {
@@ -5805,27 +5851,19 @@ button.play { border: none; padding: 0; appearance: none }
   align-self: center; min-width: 0;
   padding: clamp(48px, 6vh, 80px) var(--x4e-pad-x);
 }
-/* the row's number alone on the eyebrow line, quieter than the page's
-   accent eyebrows, over the use case's name as the title (feedback: the
-   name bold and title-like) and the outcome as the accent line under it */
-.sol-work-copy .sol-eyebrow { margin: 0 0 12px; color: var(--secondary) }
+/* the use case's name as the title (feedback: the name bold and title-like),
+   then one paragraph: the outcome as its first sentence, running straight
+   into the body in the same voice (feedback: the explainer line and the
+   paragraph clubbed together, no accent on the lead). The title is at the
+   home page's size for a title within a section (`.x4e-item-title`,
+   `.secx-point-title`), not a section head's. The row number that sat on
+   the eyebrow line is gone */
 .sol-work-copy h2 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
-  font-size: clamp(30px, 3vw, 44px); line-height: 1.08; color: var(--ink);
+  font-size: clamp(17px, 1.6vw, 20px); line-height: 1.25; color: var(--ink);
 }
-.sol-work-copy p:not(.sol-eyebrow) { margin: 0; font-size: 16px; line-height: 1.6; color: var(--secondary); max-width: 46ch }
-.sol-work-copy p.sol-work-outcome {
-  margin: 0 0 18px; max-width: 34ch;
-  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.4; font-weight: 500; color: var(--accent);
-}
-/* the paragraph's parts: the one the stage is showing in ink, the rest held
-   back, and the change eased so the eye follows the stage's dissolve */
-.sol-work-body span { color: var(--muted); transition: color .6s ease }
-.sol-work-body span.is-on { color: var(--ink) }
-@media (prefers-reduced-motion: reduce) {
-  .sol-work-body span { color: var(--secondary); transition: none }
-}
+.sol-work-copy p:not(.sol-eyebrow) { margin: 0; font-size: 15px; line-height: 1.6; color: var(--secondary); max-width: 48ch }
 /* the line under the four rows, centred on the frame's own band */
 .sol-works-more {
   margin: 0; padding: clamp(40px, 5vh, 56px) var(--x4e-pad-x);
@@ -6054,9 +6092,62 @@ button.play { border: none; padding: 0; appearance: none }
    a spinner while the cells fill, a check once they have. (.sol-pill is the
    uppercase mono chip, hence the different name) */
 .sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
-/* idea generation: the shortlist under the same pill, the aside card over
-   its corner, and each row printing in turn with its source chip */
+/* screening: the ask as a card across the top of the stage, the shortlist
+   under it with the pill on its top edge, the aside card over its corner,
+   and each row printing in turn with its source chip. Without the prompt
+   (the sell side's sector view) the sheet sits under the pill as before */
 .sol-stage--focus .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + 1.2em) }
+.sol-stage--prompt { --prompt-h: 6.2em }
+.sol-stage--prompt .sol-prompt {
+  position: absolute; left: var(--stage-pad); right: var(--stage-pad); top: var(--stage-pad); height: var(--prompt-h);
+  display: flex; flex-direction: row; align-items: flex-start; gap: 1em; padding: 1em 1.4em;
+  animation: solSceneIn .6s ease both;
+}
+.sol-prompt-who {
+  flex: none; margin-top: .15em; padding: .2em .6em; border-radius: 999px;
+  background: var(--accent-soft, #EEF1FF); color: var(--accent);
+  font-family: var(--font-mono); font-size: .78em; letter-spacing: .06em; text-transform: uppercase;
+}
+.sol-prompt p { margin: 0; min-width: 0; font-size: 1em; line-height: 1.4; color: var(--ink); font-weight: 500; white-space: normal }
+.sol-stage--prompt .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + var(--prompt-h) + 1.6em) }
+.sol-stage--prompt .sol-status { top: calc(var(--stage-pad) + var(--prompt-h) + .2em) }
+/* the prompt takes a band off the top, so the sheet's title and rows sit a
+   touch tighter and the sixth name stays on the stage */
+.sol-stage--prompt .sol-sheet--screen .sol-sheet-title { padding: .8em 1.4em }
+.sol-stage--prompt .sol-screen th, .sol-stage--prompt .sol-screen td { padding-top: .42em; padding-bottom: .42em }
+/* the run: FinSynth's calls under the prompt, the full width of the stage,
+   each appearing as it starts, spinner to check with the universe it leaves.
+   While it runs the sheet and the trail beside it are not there yet; when it
+   is through they fade in where the run panel was and the panel goes */
+.sol-stage--prompt .sol-run.sol-main {
+  top: calc(var(--stage-pad) + var(--prompt-h) + 1.6em); right: var(--stage-pad); bottom: auto;
+  flex-direction: row; align-items: flex-start; gap: 1em; padding: 1.7em 1.4em 1.3em;
+  transition: opacity .5s;
+}
+.sol-stage--prompt:not(.sol-stage--run) .sol-run { opacity: 0; pointer-events: none }
+.sol-stage--prompt .sol-sheet--screen, .sol-stage--prompt .sol-aside { transition: opacity .5s }
+.sol-stage--run .sol-sheet--screen, .sol-stage--run .sol-aside { opacity: 0 }
+.sol-run-who { margin-top: .1em }
+.sol-run ol { list-style: none; margin: 0; padding: 0; min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .6em }
+.sol-run li {
+  display: flex; align-items: center; gap: .7em; min-width: 0; white-space: nowrap;
+  opacity: 0; transform: translateY(.3em); transition: opacity .35s, transform .4s cubic-bezier(.32, .72, 0, 1);
+}
+.sol-run li.is-live, .sol-run li.is-done { opacity: 1; transform: none }
+.sol-run-ico { position: relative; flex: none; width: 1.25em; height: 1.25em }
+.sol-run-spin { position: absolute; inset: 0; border-radius: 50%; border: max(1.5px, .14em) solid rgba(20, 36, 46, .14); border-top-color: rgba(20, 36, 46, .78); animation: xvkRotate .9s linear infinite; transition: opacity .3s }
+.sol-run-ico svg { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--positive); opacity: 0; transform: scale(.5); transition: opacity .3s, transform .4s cubic-bezier(.32, .72, 0, 1) }
+.sol-run li.is-done .sol-run-spin { opacity: 0 }
+.sol-run li.is-done .sol-run-ico svg { opacity: 1; transform: none }
+.sol-run code { flex: none; font-family: var(--font-mono); font-size: .86em; color: var(--ink); background: var(--accent-soft); padding: .18em .5em; border-radius: .35em }
+.sol-run-arg { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--secondary) }
+.sol-run li em { margin-left: auto; flex: none; font-style: normal; font-family: var(--font-mono); font-size: .85em; color: var(--muted); opacity: 0; transition: opacity .3s }
+.sol-run li.is-done em { opacity: 1 }
+/* the trail beside the shortlist: the same calls, named, with what each
+   left, set small enough that the longest name fits the card's width */
+.sol-stack.sol-run-sum li { font-size: .76em; gap: .5em }
+.sol-stack.sol-run-sum li span { font-family: var(--font-mono) }
+.sol-run-sum li svg { color: var(--positive) }
 .sol-screen th:first-child, .sol-screen td:first-child { width: 100% }
 .sol-screen th, .sol-screen td { white-space: nowrap }
 .sol-screen tbody tr { opacity: 0; transition: opacity .35s }
@@ -6241,7 +6332,6 @@ button.play { border: none; padding: 0; appearance: none }
    panels scale with the cell they are in.
    ═══════════════════════════════════════════════════════════════════════════ */
 .hw-head { align-items: flex-end }
-.hw-head .sol-eyebrow { margin-bottom: 18px }
 .hw-intro { margin: 0; max-width: 34ch; font-size: 16px; line-height: 1.55; color: var(--secondary) }
 
 /* stage copy: number, title, explanation, on the frame's inset */
@@ -6515,6 +6605,30 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-stage .hw-skill.is-focus { box-shadow: 0 0 0 .18em var(--accent) }
 .hw-pillars--stack { padding: 0 var(--x4e-pad-x) 22px; justify-content: flex-start }
 .hw-pillars--stack .hw-pillar { padding: 14px 0 }
+
+/* grid · the nine pillars as cards in three stage columns, all on the page
+   at once with nothing to open. No scene: the use case rows above carry the
+   product pictures, and this section is the inventory (feedback: the scene
+   over the grid was dropped) */
+.hw-grid-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
+.hw-grid-col { display: flex; flex-direction: column; min-width: 0 }
+.hw-grid-col + .hw-grid-col { border-left: 1px solid var(--hair) }
+.hw-grid-head { display: flex; align-items: baseline; gap: 12px; padding: 26px 30px 20px }
+.hw-grid-head .hw-num { margin: 0 }
+.hw-grid-head h3 {
+  margin: 0; font-family: var(--font-display); font-weight: 450;
+  font-size: 17px; line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
+}
+.hw-cards { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; grid-auto-rows: 1fr }
+.hw-cards > li { border-top: 1px solid var(--hair) }
+.hw-card {
+  width: 100%;
+  display: grid; grid-template-columns: 32px 1fr; column-gap: 16px; align-items: start; align-content: start;
+  padding: 28px 30px 30px;
+}
+.hw-card .hw-pico { grid-row: 1 / 3; width: 32px; height: 32px; padding: 8px }
+.hw-card h4 { margin: 3px 0 0; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
+.hw-card p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--body-gray) }
 
 /* 2 · one continuous workspace: three notes in a row, one scene under them */
 .hw-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }

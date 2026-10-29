@@ -125,10 +125,10 @@ export const SOLUTIONS = {
       {
         key: 'idea-generation',
         num: '01',
-        name: 'Idea generation',
+        name: 'Screening and idea generation',
         outcome: 'Surface your next idea from the whole universe',
         scenes: [
-          { visual: 'screen', copy: 'Ask FinSynth to screen a universe on the numbers and the narrative, from margin inflections to guidance changes to what management said on the last call,' },
+          { visual: 'screen', copy: 'Ask FinSynth to screen a universe on the numbers and the narrative, from margin inflections to guidance changes to what management said on the last call, as specific as you like,' },
           { visual: 'screen', props: { cite: true }, copy: 'and it returns a shortlist with every data point sourced. Each name is ready to take further.' },
         ],
       },
@@ -181,7 +181,7 @@ export const SOLUTIONS = {
       example: CROCS_EXAMPLE,
       // the nine pillars as approved in the page outline, word for word
       steps: [
-        { key: 'workflows', visual: 'workflows', ms: 4800, title: 'Runs your research workflows', body: 'Idea generation, getting up to speed, models and diligence, and monitoring and updates, all from one agent' },
+        { key: 'workflows', visual: 'workflows', ms: 4800, title: 'Runs your research workflows', body: 'Screening and idea generation, getting up to speed, models and diligence, and monitoring and updates, all from one agent' },
         { key: 'surfaces', visual: 'surfaces', ms: 4200, title: 'Works in Excel and on the web', body: 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos' },
         { key: 'cited', visual: 'cited', ms: 4200, title: 'Every output cited', body: 'Each number and claim links to the exact line in the filing, release, transcript or your own documents' },
         { key: 'format', visual: 'format', ms: 4200, title: 'Your house format', body: 'Models, comps and memos built in your templates, the way your fund already works' },
@@ -230,7 +230,7 @@ export const SOLUTIONS = {
       {
         key: 'idea-generation',
         num: '01',
-        name: 'Idea generation',
+        name: 'Screening and idea generation',
         outcome: 'Surface your next idea from the whole universe',
         scenes: [
           { visual: 'screen', copy: 'Ask FinSynth to screen your investment universe on the numbers and the narrative, from margin trends to guidance changes to what management said on the last call,' },
@@ -282,7 +282,7 @@ export const SOLUTIONS = {
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
     how: howFor(exampleFor({ file: 'Fund_model_v12.xlsx' }), [
-      ['Runs your research workflows', 'Idea generation, getting up to speed, models and valuation, investment memos and holding reviews, all from one agent'],
+      ['Runs your research workflows', 'Screening and idea generation, getting up to speed, models and valuation, investment memos and holding reviews, all from one agent'],
       ['Works in Excel and on the web', 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos'],
       ['Every output cited', 'Each number and claim links to the exact line in the filing, release, transcript or your own documents'],
       ['Your house format', 'Models, comps and memos built in your templates, the way your firm already works'],
@@ -384,12 +384,12 @@ export const SOLUTIONS = {
         scenes: [
           {
             visual: 'screen',
-            props: { title: 'US footwear · sector view', tag: 'Q3 FY26', criteria: ['Three years of data', 'Guidance', 'Commentary'], head: 'In scope', status: ['Working across the sector', 'Sector view ready'] },
+            props: { title: 'US footwear · sector view', tag: 'Q3 FY26', criteria: ['Three years of data', 'Guidance', 'Commentary'], head: 'In scope', status: ['Working across the sector', 'Sector view ready'], prompt: null },
             copy: 'Give FinSynth a theme or a sector and it works across every company in scope, bringing the data, disclosures and management commentary into one view, each point linked to its source.',
           },
           {
             visual: 'screen',
-            props: { cite: true, title: 'US footwear · sector view', tag: 'Q3 FY26' },
+            props: { cite: true, title: 'US footwear · sector view', tag: 'Q3 FY26', prompt: null },
             copy: 'Comparisons that used to take weeks of reading come together in one session.',
           },
         ],
