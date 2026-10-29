@@ -17,9 +17,10 @@ import HowStages, { Cursor } from '../components/HowStages'
  * `tabs` ships: the three stages as tabs, each opening its pillars and its
  * scene (src/components/HowStages.jsx). The others stay for comparison with
  * ?how= on the URL: /solutions/hedge-funds?how=rail (the nine-pillar rail
- * this replaced), ?how=columns, ?how=workspace, ?how=evidence. */
+ * this replaced), ?how=columns, ?how=workspace, ?how=evidence, and ?how=grid
+ * (one scene over all nine pillars as cards in three stage columns). */
 const HOW_LAYOUT_DEFAULT = 'tabs'
-const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence']
+const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence', 'grid']
 /* the quote ships in the home page's blue band; ?quote=pull shows it as a pull-quote on the grey */
 function quotePull() {
   return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('quote') === 'pull'
@@ -143,27 +144,68 @@ function Wire({ geo, tick }) {
   )
 }
 
-/* idea generation: the shortlist prints a name at a time out of the whole
-   universe, the criteria tick off beside it, and the pill over the sheet
-   turns its spinner into a check once the list is full. With `cite` the
-   list is already full and the scene walks its sources instead: the pointer
-   clicks a name's source chip, the card beside the sheet opens that
-   document and the data point's line lights in it */
+/* screening and idea generation: the ask sits at the top as the user typed
+   it, as niche as a real one (feedback: a very specific prompt, and the
+   product still finds the names). Under it FinSynth works: one specific tool
+   call after another appears in the run panel, each with the universe it
+   narrows to, spinner to check. When the run is through the shortlist takes
+   the panel's place, prints a name at a time, the calls stay listed beside it
+   as the trail, and the pill over the sheet turns its spinner into a check.
+   With `cite` the list is already full and the scene walks its sources
+   instead: the pointer clicks a name's source chip, the card beside the sheet
+   opens that document and the data point's line lights in it. Without a
+   `prompt` there is no run: the criteria tick beside the sheet as the rows
+   print, as the sell side's sector view uses it */
+const SCREEN_PROMPT = 'Screen US consumer for footwear names where gross margin inflected this quarter, guidance was raised or held, and management said pricing is holding on the last call'
+/* the calls the prompt turns into, in order, and the universe each leaves */
+const SCREEN_CALLS = [
+  { fn: 'screen_universe', arg: 'US consumer, footwear', n: '1,840' },
+  { fn: 'pull_financials', arg: 'gross margin inflected, 8 quarters', n: '212' },
+  { fn: 'read_guidance', arg: 'latest release, FY guidance vs prior', n: '64' },
+  { fn: 'search_transcripts', arg: '"pricing" in remarks on the last call', n: '23' },
+  { fn: 'rank_matches', arg: 'all three criteria, by margin move', n: '6' },
+]
 function ScreenVisual({
   cite = false, title = 'US consumer · screen', tag = '1,840 names', criteria = SCREEN_CRITERIA,
-  head = 'Shortlist', status = ['Screening the universe', 'Shortlist ready'],
+  head = 'Shortlist', status = ['Screening 1,840 names', '6 names match'], prompt = SCREEN_PROMPT,
 }) {
   const ref = useRef(null)
   const HOLD = 8
-  const t = useTicks(cite ? SCREEN_CITES.length : SCREEN_ROWS.length + criteria.length + HOLD, cite ? 2400 : 620, ref)
+  const run = Boolean(prompt) && !cite
+  /* run: the prompt alone, two ticks a call, the sheet, a row a tick, a hold */
+  const outAt = 1 + SCREEN_CALLS.length * 2
+  const total = cite ? SCREEN_CITES.length : run ? outAt + 1 + SCREEN_ROWS.length + 2 : SCREEN_ROWS.length + criteria.length + HOLD
+  const t = useTicks(total, cite ? 2400 : run ? 520 : 620, ref)
+  const out = cite || !run || t >= outAt
   const crit = cite ? criteria.length : Math.min(t, criteria.length)
-  const rows = cite ? SCREEN_ROWS.length : Math.max(0, t - criteria.length)
+  const rows = cite ? SCREEN_ROWS.length : run ? Math.max(0, t - outAt) : Math.max(0, t - criteria.length)
   const done = rows >= SCREEN_ROWS.length
   const sel = cite ? t : -1
   const c = cite ? SCREEN_CITES[t] : null
   const geo = useWire(ref, sel, '.sol-screen tr.is-sel .sol-src')
   return (
-    <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
+    <div className={`sol-stage sol-stage--focus${prompt ? ' sol-stage--prompt' : ''}${out ? '' : ' sol-stage--run'}`} ref={ref} aria-hidden="true">
+      {prompt && (
+        <div className="sol-panel sol-prompt">
+          <span className="sol-prompt-who">You</span>
+          <p>{prompt}</p>
+        </div>
+      )}
+      {run && (
+        <div className="sol-panel sol-run sol-main">
+          <span className="sol-prompt-who sol-run-who">FinSynth</span>
+          <ol>
+            {SCREEN_CALLS.map((call, i) => (
+              <li key={call.fn} className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}>
+                <span className="sol-run-ico"><span className="sol-run-spin" /><Tick /></span>
+                <code>{call.fn}</code>
+                <span className="sol-run-arg">{call.arg}</span>
+                <em>{call.n} names</em>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
       <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
         <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
         <table className="sol-upd sol-screen">
@@ -184,6 +226,15 @@ function ScreenVisual({
         <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
           <div className="sol-aside-head"><Src>{c.doc}</Src><span>{c.where}</span></div>
           <p>{c.before}<mark className="is-on">{c.mark}</mark>{c.after}</p>
+        </div>
+      ) : run ? (
+        <div className="sol-panel sol-aside sol-stack sol-run-sum">
+          <div className="sol-aside-head"><span>Tool calls</span><b>{SCREEN_CALLS.length}</b></div>
+          <ul>
+            {SCREEN_CALLS.map((call) => (
+              <li key={call.fn} className="is-on"><Tick /><span>{call.fn}</span><em>{call.n}</em></li>
+            ))}
+          </ul>
         </div>
       ) : (
         <div className="sol-panel sol-aside sol-stack">
@@ -877,10 +928,11 @@ function faqSchema(items) {
   })
 }
 
-/* a use case row: its number, its name as the title, the outcome under it,
-   then the paragraph, with the part the stage is showing in ink and the rest
-   held back. The stage and the copy run on one clock, so the picture always
-   matches the words lit beside it */
+/* a use case row: its name as the title, then one paragraph that opens with
+   the outcome as its lead sentence and runs on into the body (feedback: the
+   explainer line and the paragraph clubbed together). The stage runs through
+   the use case's scenes on its own clock; the copy no longer lights sentence
+   by sentence and the row number is gone from the eyebrow line */
 function Workflow({ w, flip }) {
   const ref = useReveal({ threshold: 0.12 })
   const stageRef = useRef(null)
@@ -890,14 +942,8 @@ function Workflow({ w, flip }) {
   return (
     <section className={`sol-work${flip ? ' sol-work--flip' : ''}`} ref={ref} id={w.key}>
       <div className="sol-work-copy sol-reveal">
-        <p className="sol-eyebrow">{w.num}</p>
         <h2>{w.name}</h2>
-        <p className="sol-work-outcome">{w.outcome}</p>
-        <p className="sol-work-body">
-          {w.scenes.map((s, i) => (
-            <span key={i} className={i === t ? 'is-on' : ''}>{s.copy}{i < w.scenes.length - 1 ? ' ' : ''}</span>
-          ))}
-        </p>
+        <p className="sol-work-body">{w.outcome}. {w.scenes.map((s) => s.copy).join(' ')}</p>
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
         <div className="sol-scenes" ref={stageRef}>

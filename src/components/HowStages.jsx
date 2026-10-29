@@ -16,6 +16,8 @@ import useMediaQuery from '../hooks/useMediaQuery'
  *   columns    three connected columns, each stage with its own scene
  *   workspace  three short stage notes over one continuous scene
  *   evidence   two compact preparation cells over one large evidence stage
+ *   grid       all nine pillars as cards in three stage columns, every card
+ *              visible, no scene
  * Narrow screens stack every layout the same way: each stage's copy, its
  * pillars when the layout shows them, then its own scene under it.
  */
@@ -504,19 +506,49 @@ function Evidence({ ex }) {
   )
 }
 
-const LAYOUTS = { tabs: Tabs, columns: Columns, workspace: Workspace, evidence: Evidence }
+/* grid · all nine pillars as cards in three columns, one per stage, so the
+   whole inventory is on the page at once with nothing to open. No scene: the
+   use case rows above carry the product pictures (feedback: the scene over
+   the grid was dropped). Enterprise ready is the ninth card here, under
+   Review, so the frame's foot strip is not drawn in this layout. */
+const GRID_STEPS = [STAGE_STEPS[0], STAGE_STEPS[1], [...STAGE_STEPS[2], 'enterprise']]
+function Grid({ steps }) {
+  return (
+    <div className="hw-grid-cols">
+      {HOW_STAGES.map((st, i) => (
+        <div className="hw-grid-col" key={st.n}>
+          <div className="hw-grid-head">
+            <span className="hw-num">{st.n}</span>
+            <h3>{st.title}</h3>
+          </div>
+          <ul className="hw-cards">
+            {GRID_STEPS[i].map((k) => steps.find((p) => p.key === k)).filter(Boolean).map((p) => (
+              <li className="hw-card" key={p.key}>
+                <PillarIco kind={p.key} />
+                <h4>{p.title}</h4>
+                <p>{p.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const LAYOUTS = { tabs: Tabs, columns: Columns, workspace: Workspace, evidence: Evidence, grid: Grid }
 
 export default function HowStages({ how, layout, id }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const stacked = useMediaQuery('(max-width: 900px)')
-  const Layout = stacked ? (layout === 'tabs' ? Stacked : Columns) : (LAYOUTS[layout] || Tabs)
+  const Layout = stacked ? (layout === 'tabs' || layout === 'grid' ? Stacked : Columns) : (LAYOUTS[layout] || Tabs)
   return (
     <section className={`x4e-sec sol-how hw hw--${layout}`} id={id}>
       <div className="wrap">
         <div className="x4e-frame" ref={frameRef}>
           <Head how={how} />
           <Layout ex={how.example} steps={how.steps || []} />
-          <Enterprise />
+          {!(layout === 'grid' && !stacked) && <Enterprise />}
         </div>
       </div>
     </section>
