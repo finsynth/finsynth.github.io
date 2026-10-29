@@ -6042,7 +6042,7 @@ button.play { border: none; padding: 0; appearance: none }
    the source lights, the cell fills, the result prints; the loop rests on
    the finished state so a still frame reads the same */
 .sol-stage--focus {
-  --stage-pad: 1.9em; --aside-w: 29%; --k-acc: #E7A200; --k-acc-soft: #FFF1C2;
+  --stage-pad: 1.9em; --aside-w: 29%; --k-acc: var(--accent); --k-acc-soft: #DCE3FA;
   display: block; position: relative; font-size: clamp(7px, 2.25cqw, 13px);
 }
 .sol-stage--focus .sol-main {
@@ -6082,7 +6082,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-upd th:not(:first-child), .sol-upd td:not(:first-child) { text-align: right }
 .sol-upd th.is-col { color: var(--accent) }
 .sol-upd td { transition: background .35s, box-shadow .35s }
-.sol-upd tr.is-lit td { background: #FFFBEB }
+.sol-upd tr.is-lit td { background: #EEF1FB }
 .sol-upd-cell span { opacity: 0; transition: opacity .35s }
 .sol-upd-cell.is-filled { background: var(--k-acc-soft); box-shadow: inset 0 0 0 1px var(--k-acc); color: var(--ink); font-weight: 500 }
 .sol-upd-cell.is-filled span { opacity: 1 }
@@ -6206,7 +6206,7 @@ button.play { border: none; padding: 0; appearance: none }
    accent column headers, the status pill across its top edge); the forecast
    columns stay empty, they are the fund's to fill */
 .sol-stage--build {
-  --k-acc: #E7A200; --k-acc-soft: #FFF1C2;
+  --k-acc: var(--accent); --k-acc-soft: #DCE3FA;
   font-size: clamp(7px, 2.1cqw, 12.5px);
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.2em;
   padding-top: calc(var(--stage-pad) + 1.2em);
@@ -6227,7 +6227,7 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-dcf th.is-col, .sol-dcf td.is-fc { background: #F7F9FF }
 .sol-dcf th:not(.is-col) + th.is-col, .sol-dcf td:not(.is-fc) + td.is-fc { border-left: 1px solid var(--hair) }
 .sol-dcf tr.is-total td { font-weight: 500 }
-.sol-dcf .sol-upd-cell.is-lit { background: #FFFBEB }
+.sol-dcf .sol-upd-cell.is-lit { background: #EEF1FB }
 /* the pane: the ask as the home workspace shows it at the top (no tab row,
    feedback), the steps the agent reports, a composer at the foot */
 .sol-pane { padding: 0; font-size: .88em }
@@ -6370,7 +6370,7 @@ button.play { border: none; padding: 0; appearance: none }
   color: var(--ink); font-family: var(--font-body);
   border-top: 1px solid var(--hair);
 }
-.hw-stage { --k-acc: #E7A200; --k-acc-soft: #FFF1C2 }
+.hw-stage { --k-acc: var(--accent); --k-acc-soft: #DCE3FA }
 .hw-stage--col { font-size: clamp(5.5px, 2.45cqw, 10px); aspect-ratio: 4 / 3.3 }
 .hw-stage--half { font-size: clamp(5.5px, 1.75cqw, 10px); aspect-ratio: 16 / 8.5 }
 .hw-stage--big { font-size: clamp(6px, 1.05cqw, 12px); padding: 3.2em 2.4em }
@@ -6494,7 +6494,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-sheet--xl tr.is-sel td.hw-rn { background: #F1F3F7; color: var(--ink) }
 .hw-sheet--xl tr:last-child td { border-bottom: 0 }
 /* the cells stage two wrote read in the accent, as its column does; the one
-   under the pointer carries the trace yellow and the ring a click leaves */
+   under the pointer carries the trace blue and the ring a click leaves */
 .hw-evid .hw-cell.is-filled { background: none; box-shadow: none; color: var(--accent); font-weight: 500 }
 .hw-evid .hw-cell span { display: inline-block; padding: .12em .45em; margin: -.12em -.45em; border-radius: .3em; transition: background .3s, color .3s, box-shadow .3s }
 .hw-evid .hw-cell.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
@@ -6549,7 +6549,7 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-stage--col .hw-evid { font-size: calc(100cqw / 44) }
 @keyframes hwWire { to { stroke-dashoffset: 0 } }
 @keyframes hwDot { to { opacity: 1 } }
-@keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em rgba(231, 162, 0, .5) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em rgba(231, 162, 0, 0) } }
+@keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em color-mix(in srgb, var(--k-acc) 50%, transparent) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em color-mix(in srgb, var(--k-acc) 0%, transparent) } }
 /* 1 · three connected columns: the copy on the frame's white, the scene under
    it, and a chevron on the shared hairline where one stage hands to the next */
 .hw-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
