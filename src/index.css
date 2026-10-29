@@ -5831,6 +5831,7 @@ button.play { border: none; padding: 0; appearance: none }
    open tab is told by its accent underline and ink title alone. */
 .sol-how .x4e-frame { background: transparent }
 .sol-how .hw-stagetab, .sol-how .hw-stagetab:hover, .sol-how .hw-stagetab.is-active, .sol-how .hw-ent { background: transparent }
+.sol-how .x4e-rail, .sol-how .x4e-item:hover, .sol-how .x4e-item.is-active { background: transparent } /* the open tab's pillar rail too; the active row is told by its accent bar */
 /* the head bands on these pages carry the title alone, no lede or badge beside
    it, and on the homepage's measures that one line sat in a shallow strip that
    read as cramped against the rows under it. Taller on both sides, so the
