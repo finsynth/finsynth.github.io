@@ -14,12 +14,13 @@ import { SOLUTIONS } from '../data/solutions'
 import HowStages, { Cursor } from '../components/HowStages'
 
 /* ── How it works, which layout mounts ─────────────────────────────────────
- * `tabs` ships: the three stages as tabs, each opening its pillars and its
- * scene (src/components/HowStages.jsx). The others stay for comparison with
- * ?how= on the URL: /solutions/hedge-funds?how=rail (the nine-pillar rail
- * this replaced), ?how=columns, ?how=workspace, ?how=evidence, and ?how=grid
- * (one scene over all nine pillars as cards in three stage columns). */
-const HOW_LAYOUT_DEFAULT = 'tabs'
+ * `grid` ships: all nine pillars as cards in three stage columns, every card
+ * visible (src/components/HowStages.jsx). The others stay for comparison
+ * with ?how= on the URL: /solutions/hedge-funds?how=tabs (the three stages
+ * as tabs, each opening its pillars and its scene, which the grid replaced),
+ * ?how=rail (the nine-pillar rail before that), ?how=columns, ?how=workspace
+ * and ?how=evidence. */
+const HOW_LAYOUT_DEFAULT = 'grid'
 const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence', 'grid']
 /* the quote ships in the home page's blue band; ?quote=pull shows it as a pull-quote on the grey */
 function quotePull() {
@@ -162,12 +163,14 @@ const SCREEN_CALLS = [
   { fn: 'screen_universe', arg: 'US consumer, footwear', n: '1,840' },
   { fn: 'pull_financials', arg: 'gross margin inflected, 8 quarters', n: '212' },
   { fn: 'read_guidance', arg: 'latest release, FY guidance vs prior', n: '64' },
-  { fn: 'search_transcripts', arg: '"pricing" in remarks on the last call', n: '23' },
+  { fn: 'search_transcripts', arg: '"pricing" on the last call', n: '23' },
   { fn: 'rank_matches', arg: 'all three criteria, by margin move', n: '6' },
 ]
+/* what FinSynth says over the shortlist once the run is through */
+const SCREEN_SAY = '6 names match on all three, each sourced to its filing'
 function ScreenVisual({
   cite = false, title = 'US consumer · screen', tag = '1,840 names', criteria = SCREEN_CRITERIA,
-  head = 'Shortlist', status = ['Screening 1,840 names', '6 names match'], prompt = SCREEN_PROMPT,
+  head = 'Shortlist', status = ['Screening 1,840 names', '6 names match'], prompt = SCREEN_PROMPT, say = SCREEN_SAY,
 }) {
   const ref = useRef(null)
   const HOLD = 8
@@ -183,45 +186,72 @@ function ScreenVisual({
   const sel = cite ? t : -1
   const c = cite ? SCREEN_CITES[t] : null
   const geo = useWire(ref, sel, '.sol-screen tr.is-sel .sol-src')
+  /* with a prompt the stage is one chat: the ask at the top of the pane,
+     FinSynth's reply under it (its calls while it runs, then the shortlist
+     as its answer), the ask box at the foot, as the thesis stage draws it.
+     Without one (the sell side's sector view) the sheet sits under the pill */
+  const chat = Boolean(prompt)
+  const shortlist = (
+    <table className="sol-upd sol-screen">
+      <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
+      <tbody>
+        {SCREEN_ROWS.map(([name, gm, guide, src], i) => (
+          <tr key={name} className={`${i < rows ? 'is-on' : ''}${i === sel ? ' is-sel' : ''}`}>
+            <td>{name}</td>
+            <td>{gm}</td>
+            <td>{guide}</td>
+            <td><Src>{src}</Src></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+  const statusIco = (
+    <span className="sol-status-ico">
+      <span className="sol-status-spin" />
+      <span className="sol-status-check">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+      </span>
+    </span>
+  )
   return (
-    <div className={`sol-stage sol-stage--focus${prompt ? ' sol-stage--prompt' : ''}${out ? '' : ' sol-stage--run'}`} ref={ref} aria-hidden="true">
-      {prompt && (
-        <div className="sol-panel sol-prompt">
-          <span className="sol-prompt-who">You</span>
-          <p>{prompt}</p>
+    <div className={`sol-stage sol-stage--focus${chat ? ' sol-stage--chat' : ''}${out ? '' : ' sol-stage--run'}`} ref={ref} aria-hidden="true">
+      {chat ? (
+        <div className="sol-panel sol-pane sol-main sol-pane--screen">
+          <div className="sol-pane-ask">
+            <span className="sol-pane-dot" />
+            <p>{prompt}</p>
+          </div>
+          <div className="sol-pane-body">
+            <p className={`sol-pane-say sol-pane-say--status${done ? ' is-done' : ''}`} key={done ? 'done' : 'live'}>
+              {statusIco}
+              <span>{done ? say : status[0]}</span>
+            </p>
+            {out ? (
+              <div className="sol-sheet sol-pane-out">{shortlist}</div>
+            ) : (
+              <div className="sol-run sol-pane-calls">
+                <ol>
+                  {SCREEN_CALLS.map((call, i) => (
+                    <li key={call.fn} className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}>
+                      <span className="sol-run-ico"><span className="sol-run-spin" /><Tick /></span>
+                      <code>{call.fn}</code>
+                      <span className="sol-run-arg">{call.arg}</span>
+                      <em>{call.n} names</em>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </div>
+          <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
+        </div>
+      ) : (
+        <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
+          <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
+          {shortlist}
         </div>
       )}
-      {run && (
-        <div className="sol-panel sol-run sol-main">
-          <span className="sol-prompt-who sol-run-who">FinSynth</span>
-          <ol>
-            {SCREEN_CALLS.map((call, i) => (
-              <li key={call.fn} className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}>
-                <span className="sol-run-ico"><span className="sol-run-spin" /><Tick /></span>
-                <code>{call.fn}</code>
-                <span className="sol-run-arg">{call.arg}</span>
-                <em>{call.n} names</em>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-      <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
-        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
-        <table className="sol-upd sol-screen">
-          <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
-          <tbody>
-            {SCREEN_ROWS.map(([name, gm, guide, src], i) => (
-              <tr key={name} className={`${i < rows ? 'is-on' : ''}${i === sel ? ' is-sel' : ''}`}>
-                <td>{name}</td>
-                <td>{gm}</td>
-                <td>{guide}</td>
-                <td><Src>{src}</Src></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
       {c ? (
         <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
           <div className="sol-aside-head"><Src>{c.doc}</Src><span>{c.where}</span></div>
@@ -247,15 +277,12 @@ function ScreenVisual({
         </div>
       )}
       <Wire geo={geo} tick={t} />
-      <div className={`sol-status${done ? ' is-done' : ''}`}>
-        <span className="sol-status-ico">
-          <span className="sol-status-spin" />
-          <span className="sol-status-check">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
-          </span>
-        </span>
-        <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
-      </div>
+      {!chat && (
+        <div className={`sol-status${done ? ' is-done' : ''}`}>
+          {statusIco}
+          <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
+        </div>
+      )}
     </div>
   )
 }

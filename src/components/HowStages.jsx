@@ -12,12 +12,12 @@ import useMediaQuery from '../hooks/useMediaQuery'
  *
  * Layouts, picked by ?how= on the URL (see Solution.jsx):
  *   tabs       the three stages as tabs; the open one shows the pillars that
- *              belong to it (from how.steps) beside its scene. Ships.
+ *              belong to it (from how.steps) beside its scene
  *   columns    three connected columns, each stage with its own scene
  *   workspace  three short stage notes over one continuous scene
  *   evidence   two compact preparation cells over one large evidence stage
  *   grid       all nine pillars as cards in three stage columns, every card
- *              visible, no scene
+ *              visible, no scene. Ships.
  * Narrow screens stack every layout the same way: each stage's copy, its
  * pillars when the layout shows them, then its own scene under it.
  */

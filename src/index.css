@@ -6100,41 +6100,13 @@ button.play { border: none; padding: 0; appearance: none }
    a spinner while the cells fill, a check once they have. (.sol-pill is the
    uppercase mono chip, hence the different name) */
 .sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
-/* screening: the ask as a card across the top of the stage, the shortlist
-   under it with the pill on its top edge, the aside card over its corner,
-   and each row printing in turn with its source chip. Without the prompt
-   (the sell side's sector view) the sheet sits under the pill as before */
+/* screening without a prompt (the sell side's sector view): the sheet sits
+   under the pill. With a prompt the stage is a chat pane, below */
 .sol-stage--focus .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + 1.2em) }
-.sol-stage--prompt { --prompt-h: 6.2em }
-.sol-stage--prompt .sol-prompt {
-  position: absolute; left: var(--stage-pad); right: var(--stage-pad); top: var(--stage-pad); height: var(--prompt-h);
-  display: flex; flex-direction: row; align-items: flex-start; gap: 1em; padding: 1em 1.4em;
-  animation: solSceneIn .6s ease both;
-}
-.sol-prompt-who {
-  flex: none; margin-top: .15em; padding: .2em .6em; border-radius: 999px;
-  background: var(--accent-soft, #EEF1FF); color: var(--accent);
-  font-family: var(--font-mono); font-size: .78em; letter-spacing: .06em; text-transform: uppercase;
-}
-.sol-prompt p { margin: 0; min-width: 0; font-size: 1em; line-height: 1.4; color: var(--ink); font-weight: 500; white-space: normal }
-.sol-stage--prompt .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + var(--prompt-h) + 1.6em) }
-.sol-stage--prompt .sol-status { top: calc(var(--stage-pad) + var(--prompt-h) + .2em) }
-/* the prompt takes a band off the top, so the sheet's title and rows sit a
-   touch tighter and the sixth name stays on the stage */
-.sol-stage--prompt .sol-sheet--screen .sol-sheet-title { padding: .8em 1.4em }
-.sol-stage--prompt .sol-screen th, .sol-stage--prompt .sol-screen td { padding-top: .42em; padding-bottom: .42em }
-/* the run: FinSynth's calls under the prompt, the full width of the stage,
-   each appearing as it starts, spinner to check with the universe it leaves.
-   While it runs the sheet and the trail beside it are not there yet; when it
-   is through they fade in where the run panel was and the panel goes */
-.sol-stage--prompt .sol-run.sol-main {
-  top: calc(var(--stage-pad) + var(--prompt-h) + 1.6em); right: var(--stage-pad); bottom: auto;
-  flex-direction: row; align-items: flex-start; gap: 1em; padding: 1.7em 1.4em 1.3em;
-  transition: opacity .5s;
-}
-.sol-stage--prompt:not(.sol-stage--run) .sol-run { opacity: 0; pointer-events: none }
-.sol-stage--prompt .sol-sheet--screen, .sol-stage--prompt .sol-aside { transition: opacity .5s }
-.sol-stage--run .sol-sheet--screen, .sol-stage--run .sol-aside { opacity: 0 }
+/* the run: FinSynth's calls in the pane, each appearing as it starts,
+   spinner to check with the universe it leaves. While it runs the trail
+   beside the pane is not there yet; it fades in when the run is through */
+.sol-stage--run .sol-aside { opacity: 0 }
 .sol-run-who { margin-top: .1em }
 .sol-run ol { list-style: none; margin: 0; padding: 0; min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .6em }
 .sol-run li {
@@ -6156,6 +6128,21 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-stack.sol-run-sum li { font-size: .76em; gap: .5em }
 .sol-stack.sol-run-sum li span { font-family: var(--font-mono) }
 .sol-run-sum li svg { color: var(--positive) }
+/* screening as a chat: the pane the thesis stage draws, the ask at its top,
+   FinSynth's line with the spinner or check in it, then its calls while it
+   runs and the shortlist once it is through as its answer, the ask box at
+   the foot. The trail beside it is not there while the run is on */
+.sol-pane--screen .sol-pane-body { gap: .8em }
+.sol-pane-say--status { display: flex; align-items: flex-start; gap: .6em }
+.sol-pane-say--status .sol-status-ico { width: 1.3em; height: 1.3em; margin-top: .05em }
+.sol-pane-say--status.is-done .sol-status-spin { opacity: 0 }
+.sol-pane-say--status.is-done .sol-status-check { opacity: 1; transform: none }
+.sol-pane-out { flex: none; border: 1px solid var(--hair); border-radius: .6em; overflow: hidden; animation: solDcfIn .45s ease both }
+.sol-pane-out th, .sol-pane-out td { padding: .3em .8em }
+.sol-pane-out tr:last-child td { border-bottom: 0 }
+.sol-pane-calls { flex: none; padding: .1em 0 }
+.sol-pane-calls ol { gap: .55em }
+.sol-stage--chat .sol-aside { transition: opacity .5s }
 .sol-screen th:first-child, .sol-screen td:first-child { width: 100% }
 .sol-screen th, .sol-screen td { white-space: nowrap }
 .sol-screen tbody tr { opacity: 0; transition: opacity .35s }
