@@ -1046,10 +1046,10 @@ button.play { border: none; padding: 0; appearance: none }
   /* Beside the nav the headline is the lockup's widest line, so its size is
      what decides whether the two collide (feedback at 1275: "the words are
      colliding"). Second term is the room the nav leaves: the band's width
-     less the 555px grid, its 32px overhang into the wrap padding and a 48px
+     less the 794px grid, its 32px overhang into the wrap padding and a 48px
      breathing gap, divided by the headline's measured 8.68px of width per
      font px. 3.4vw still governs where there is room to spare. */
-  font-size: clamp(30px, min(3.4vw, (100cqw - 571px) / 8.68), 46px);
+  font-size: clamp(30px, min(3.4vw, (100cqw - 810px) / 8.68), 46px);
   line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
@@ -1963,12 +1963,14 @@ button.play { border: none; padding: 0; appearance: none }
 .cl-checkout-root { position: relative; z-index: 1200; }
 
 /* ════════ RESPONSIVE ════════ */
-/* Footer stacks (lockup above, nav below) from 1300 down. The 1100 this used
-   to be predates the Social column: the four-column nav is 555px, and the
-   lockup can't shrink under the 311px of its two buttons, so below ~1300 the
-   two are left with less than 48px between them however small the headline. */
-@media (max-width: 1300px) {
+/* Footer stacks (lockup above, nav below) from 1600 down. The 1300 this used
+   to be predates the Solutions and Social columns: the five-column nav is
+   794px, and the lockup can't shrink under the 311px of its two buttons, so
+   below ~1600 the two are left with less than 48px between them however small
+   the headline (feedback: the headline ran over the Product column) */
+@media (max-width: 1600px) {
   .foot-cols { flex-direction: column; gap: 56px; padding-inline: 0 }
+  .foot-cta-copy h3 br { display: none }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
   /* stacked, the headline has the whole width, so the nav term above no
      longer applies */
@@ -5743,7 +5745,11 @@ button.play { border: none; padding: 0; appearance: none }
    the copy sits in a .wrap so it lines up with the sections below. */
 .sol-hero {
   position: relative; z-index: 6; overflow: hidden; isolation: isolate;
-  min-height: clamp(520px, 72svh, 760px);
+  /* fills the first screen under the sticky navbar on every device, as the
+     home photo hero does, so the fold lands on the hero's own edge
+     (feedback: it ended abruptly partway down the screen) */
+  min-height: calc(100vh - var(--navbar-height));
+  min-height: calc(100svh - var(--navbar-height));
   display: flex; flex-direction: column; justify-content: center;
   padding-top: clamp(64px, 9vh, 112px); padding-bottom: clamp(64px, 9vh, 112px);
   background: #0B1120;
@@ -6285,7 +6291,7 @@ button.play { border: none; padding: 0; appearance: none }
 /* ── responsive ── one column below 900px; the visual keeps its aspect and
    proportions and simply shrinks with the column */
 @media (max-width: 900px) {
-  .sol-hero { min-height: clamp(460px, 64svh, 640px); padding-top: 56px; padding-bottom: 56px }
+  .sol-hero { padding-top: 56px; padding-bottom: 56px }
   .sol-work { grid-template-columns: 1fr }
   .sol-work::before { display: none }
   .sol-work + .sol-work { border-top: 1px solid var(--hair) }
@@ -6599,8 +6605,14 @@ button.play { border: none; padding: 0; appearance: none }
    at once with nothing to open. No scene: the use case rows above carry the
    product pictures, and this section is the inventory (feedback: the scene
    over the grid was dropped) */
-.hw-grid-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
-.hw-grid-col { display: flex; flex-direction: column; min-width: 0 }
+/* the columns share one set of rows (subgrid), so every card is the height
+   of the tallest; Review's two cards keep that height and leave the third
+   row empty rather than stretching to fill it (feedback) */
+.hw-grid-cols {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto repeat(3, 1fr); border-top: 1px solid var(--hair);
+}
+.hw-grid-col { display: grid; grid-row: 1 / -1; grid-template-rows: subgrid; min-width: 0 }
 .hw-grid-col + .hw-grid-col { border-left: 1px solid var(--hair) }
 .hw-grid-head { display: flex; align-items: baseline; gap: 12px; padding: 26px 30px 20px }
 .hw-grid-head .hw-num { margin: 0 }
@@ -6608,8 +6620,20 @@ button.play { border: none; padding: 0; appearance: none }
   margin: 0; font-family: var(--font-display); font-weight: 450;
   font-size: 17px; line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
 }
-.hw-cards { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; grid-auto-rows: 1fr }
+.hw-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-row: 2 / -1; grid-template-rows: subgrid; align-content: start }
 .hw-cards > li { border-top: 1px solid var(--hair) }
+/* a short column closes its last card with a rule, above the empty row */
+.hw-cards > li:nth-child(2):last-child { border-bottom: 1px solid var(--hair) }
+/* the frame's right and bottom edges are drawn piece by piece so the empty
+   cell under Review stays open, with no frame line on its right or foot
+   (feedback) */
+@media (min-width: 901px) {
+  .hw--grid .x4e-frame { border-right: 0; border-bottom: 0 }
+  .hw--grid .x4e-head { border-right: 1px solid var(--hair) }
+  .hw--grid .hw-grid-col:not(:last-child) { border-bottom: 1px solid var(--hair) }
+  .hw--grid .hw-grid-col:last-child .hw-grid-head,
+  .hw--grid .hw-grid-col:last-child .hw-cards > li { border-right: 1px solid var(--hair) }
+}
 .hw-card {
   width: 100%;
   display: grid; grid-template-columns: 32px 1fr; column-gap: 16px; align-items: start; align-content: start;
@@ -6618,6 +6642,15 @@ button.play { border: none; padding: 0; appearance: none }
 .hw-card .hw-pico { grid-row: 1 / 3; width: 32px; height: 32px; padding: 8px }
 .hw-card h4 { margin: 3px 0 0; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
 .hw-card p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--body-gray) }
+@media (max-width: 900px) {
+  .hw-grid-cols { grid-template-columns: 1fr; grid-template-rows: none }
+  .hw-grid-col { display: block; grid-row: auto }
+  .hw-cards { display: block }
+  .hw-cards > li:nth-child(2):last-child { border-bottom: 0 }
+  .hw-grid-col + .hw-grid-col { border-left: 0; border-top: 1px solid var(--hair) }
+  .hw-grid-head { padding: 22px var(--x4e-pad-x) 16px }
+  .hw-card { padding: 20px var(--x4e-pad-x) 22px }
+}
 
 /* 2 · one continuous workspace: three notes in a row, one scene under them */
 .hw-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }

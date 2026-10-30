@@ -88,6 +88,8 @@ export default function Footer() {
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
+              {/* one line wherever the footer stacks (feedback); the break only
+                  holds beside the nav, where one line would reach it */}
               <h3>See it in <br />your own workflows</h3>
             </div>
             <div className="foot-cta-actions">

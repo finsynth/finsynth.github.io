@@ -6,7 +6,7 @@
  * side, family offices and private markets (the menu's Private Equity).
  */
 
-// the nine pillars run in the same order on every page; only the wording
+// the eight pillars run in the same order on every page; only the wording
 // changes by audience, so each page lists [title, body] pairs and this maps
 // them onto the keys, visuals and timings HowStages expects
 const PILLAR_SHAPE = [
@@ -18,7 +18,6 @@ const PILLAR_SHAPE = [
   ['dataroom', 'dataroom', 4200],
   ['mcp', 'sources', 5000],
   ['review', 'trace', 9000],
-  ['enterprise', 'enterprise', 4200],
 ];
 const howSteps = (pillars) => pillars.map(([title, body], i) => {
   const [key, visual, ms] = PILLAR_SHAPE[i];
@@ -179,7 +178,7 @@ export const SOLUTIONS = {
       // and explanations live in src/components/HowStages.jsx
       eyebrow: 'How your team works with FinSynth',
       example: CROCS_EXAMPLE,
-      // the nine pillars as approved in the page outline, word for word
+      // the pillars as approved in the page outline, word for word (Enterprise ready dropped)
       steps: [
         { key: 'workflows', visual: 'workflows', ms: 4800, title: 'Runs your research workflows', body: 'Screening and idea generation, getting up to speed, models and diligence, and monitoring and updates, all from one agent' },
         { key: 'surfaces', visual: 'surfaces', ms: 4200, title: 'Works in Excel and on the web', body: 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos' },
@@ -189,14 +188,11 @@ export const SOLUTIONS = {
         { key: 'dataroom', visual: 'dataroom', ms: 4200, title: 'Dataroom', body: 'Keep broker notes, expert call transcripts and internal research in folders, and attach them to any session' },
         { key: 'mcp', visual: 'sources', ms: 5000, title: 'MCP connectors', body: 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365' },
         { key: 'review', visual: 'trace', ms: 9000, title: 'Review citations', body: 'Select a range of cells and step through the source of every number in one pass' },
-        { key: 'enterprise', visual: 'enterprise', ms: 4200, title: 'Enterprise ready', body: 'Customer-hosted deployment and SOC 2 Type II certified, built for how funds handle sensitive research' },
       ],
     },
-    // the page's own quote, shown in the home page's Customers treatment
+    // the page’s own quote, shown in the home page’s Customers treatment under
+    // its default title, "Hear what the analysts have to say" (feedback)
     quote: {
-      // the band's title names who is speaking; the home page's default line
-      // ("the analysts") is not this page's copy
-      title: 'Hear what portfolio managers have to say',
       text: '“We’re seeing the actual leverage of an AI tool, the outputs aren’t just good-looking, they’re easily verifiable.”',
       who: 'L/S Portfolio Manager',
     },
@@ -205,7 +201,7 @@ export const SOLUTIONS = {
       { q: 'What is FinSynth?', a: 'FinSynth is auditable AI research infrastructure, purpose-built for hedge fund research teams. Its AI agent runs complex institutional-grade workflows like idea generation, model builds, comps and earnings updates, tracing every output back to its source. It works as an Excel add-in and as a web app.' },
       { q: 'How do hedge funds use FinSynth?', a: 'Hedge fund teams use FinSynth across the life of an idea: generating ideas, getting up to speed on new names, building models and doing diligence, and monitoring positions through earnings, along with hundreds of other research workflows.' },
       { q: 'Does FinSynth work for credit funds?', a: 'Yes. Credit teams use FinSynth to build and audit issuer models, reconcile historicals to the filings, benchmark against peers and test a thesis against filings and transcripts, with every figure cited.' },
-      { q: 'How do multi-strategy platforms use FinSynth?', a: "Mostly to get up to speed on new names and inherited models quickly, run earnings updates across a large book, and use Skills to keep every analyst's output in the platform's house format." },
+      { q: 'How do multi-strategy platforms use FinSynth?', a: 'Multi-strategy platforms use FinSynth to get analysts up to speed on new names and inherited models quickly, run earnings updates across large books, and use Skills so each pod can save its own routines once and run them on every name, with every output sourced.' },
       { q: 'Is FinSynth useful for event-driven strategies?', a: "Yes. Before a catalyst, ask FinSynth to test your thesis against filings and transcripts, or to show how management's story on a topic has shifted across recent calls, with every claim traced to its source." },
       { q: 'Does FinSynth work inside Excel?', a: 'Yes. FinSynth runs as an Excel add-in inside your existing models, and as a web app for research and memos.' },
       { q: 'Can FinSynth use our own research?', a: 'Yes. Keep broker notes, expert call transcripts and internal documents in the Dataroom and attach them to any session. FinSynth can also connect to your own data and tools through MCP.' },
@@ -290,10 +286,8 @@ export const SOLUTIONS = {
       ['Dataroom', 'Keep broker notes, expert call transcripts and internal research in folders, and attach them to any session'],
       ['MCP connectors', 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Select a range of cells and step through the source of every number in one pass'],
-      ['Enterprise ready', 'Customer-hosted deployment and SOC 2 Type II certified, built for how firms handle sensitive research'],
     ]),
     quote: {
-      title: 'Hear what analysts have to say',
       text: '“It cut my model build time by 80%. What used to be two days of pulling numbers and building, I get through in an afternoon now.”',
       who: 'Long Only Analyst',
     },
@@ -414,12 +408,10 @@ export const SOLUTIONS = {
       ['Dataroom', 'Keep company presentations, management meeting notes, industry reports and your past notes in folders, and attach them to any session'],
       ['MCP connectors', 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Before a note goes out, select any range and step through the source of every number in one pass'],
-      ['Enterprise ready', 'Customer-hosted deployment and SOC 2 Type II certified, built for how firms handle sensitive research'],
     ]),
     // PLACEHOLDER per the outline canvas: a dummy quote for layout only.
     // Replace with a real sell-side pilot quote before this page goes live.
     quote: {
-      title: 'Hear what research analysts have to say',
       text: '“Results season used to mean late nights rebuilding the model and checking every number twice. Now the note is drafted, sourced and ready for review before the morning meeting.”',
       who: 'Equity Research Analyst',
     },
@@ -522,13 +514,11 @@ export const SOLUTIONS = {
       ['Dataroom', 'Keep deal documents, broker notes, expert call transcripts and internal research in folders, and attach them to any session'],
       ['MCP connectors', 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Select a range of cells and step through the source of every number in one pass'],
-      ['Enterprise ready', 'Customer-hosted deployment and SOC 2 Type II certified, built for how family offices handle sensitive information'],
     ]),
     // PLACEHOLDER per the outline canvas: a dummy quote for layout only.
     // Replace with a real family office pilot quote before this page goes live.
     quote: {
-      title: 'Hear what investment teams have to say',
-      text: '“We’re a small team covering public names and private deals at the same time. Now we can go deeper on both, and every number holds up when the principals ask where it came from.”',
+      text: '“We’re a small team looking at listed names and private deals at the same time. FinSynth lets us go a lot deeper on both without adding people.”',
       who: 'Family Office Investment Director',
     },
     faqHead: { eyebrow: 'FAQ', title: 'Questions family office teams ask' },
@@ -641,10 +631,8 @@ export const SOLUTIONS = {
       ['Dataroom', 'Keep CIMs, deal datarooms, management accounts and credit documents in folders, and attach them to any session'],
       ['MCP connectors', 'Connect FinSynth to your data providers and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Before a memo goes to IC, select any range and step through the source of every number in one pass'],
-      ['Enterprise ready', 'Customer-hosted deployment and SOC 2 Type II certified, built for how investment teams handle confidential deal information'],
     ]),
     quote: {
-      title: 'Hear what deal teams have to say',
       text: '“Our associates basically stopped doing tie-outs. Click a number in the IC memo and it opens the right page of the CIM.”',
       who: 'Private Equity Fund',
     },

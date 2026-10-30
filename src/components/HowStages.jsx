@@ -28,13 +28,6 @@ export const HOW_STAGES = [
   { n: '03', title: 'Review the evidence', body: 'Every number links to the line it came from. Select a range and step through each source in one pass' },
 ]
 
-const ENTERPRISE = {
-  label: 'Enterprise ready',
-  text: 'Customer-hosted deployment and SOC 2 Type II certified, across every stage of the workflow',
-  link: 'Security and deployment',
-  href: '/#security',
-}
-
 /* ── small drawn parts ── */
 function Ico({ kind }) {
   const d = {
@@ -266,9 +259,9 @@ function Copy({ st, as: Tag = 'h3', className = '' }) {
 }
 
 /* ── the pillars, grouped under the stage each belongs to ──
- * The nine approved pillars (how.steps) read as the detail of the three
+ * The eight approved pillars (how.steps) read as the detail of the three
  * stages: what you can bring, what you can run, how you check it. Enterprise
- * ready is the strip at the frame's foot, not a pillar of any one stage. */
+ * ready was dropped from the section on every layout (feedback). */
 const STAGE_STEPS = [
   ['format', 'dataroom', 'mcp'],
   ['workflows', 'surfaces', 'skills'],
@@ -376,21 +369,6 @@ function Head({ how }) {
         <h2>{how.titleNode}</h2>
       </div>
       {how.intro && <p className="hw-intro">{how.intro}</p>}
-    </div>
-  )
-}
-
-/* the strip at the frame's foot: a property of the whole workflow, not a
-   fourth step */
-function Enterprise() {
-  return (
-    <div className="hw-ent">
-      <span className="hw-ent-label">
-        <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"><path d="M8 1.8 13 3.6v3.9c0 3.1-2.1 5.4-5 6.7-2.9-1.3-5-3.6-5-6.7V3.6z" /><path d="m5.8 8 1.6 1.6L10.4 6.4" strokeLinecap="round" /></svg>
-        {ENTERPRISE.label}
-      </span>
-      <p>{ENTERPRISE.text}</p>
-      <a href={ENTERPRISE.href}>{ENTERPRISE.link} <span aria-hidden="true">→</span></a>
     </div>
   )
 }
@@ -509,9 +487,7 @@ function Evidence({ ex }) {
 /* grid · all nine pillars as cards in three columns, one per stage, so the
    whole inventory is on the page at once with nothing to open. No scene: the
    use case rows above carry the product pictures (feedback: the scene over
-   the grid was dropped). Enterprise ready is the ninth card here, under
-   Review, so the frame's foot strip is not drawn in this layout. */
-const GRID_STEPS = [STAGE_STEPS[0], STAGE_STEPS[1], [...STAGE_STEPS[2], 'enterprise']]
+   the grid was dropped). */
 function Grid({ steps }) {
   return (
     <div className="hw-grid-cols">
@@ -522,7 +498,7 @@ function Grid({ steps }) {
             <h3>{st.title}</h3>
           </div>
           <ul className="hw-cards">
-            {GRID_STEPS[i].map((k) => steps.find((p) => p.key === k)).filter(Boolean).map((p) => (
+            {STAGE_STEPS[i].map((k) => steps.find((p) => p.key === k)).filter(Boolean).map((p) => (
               <li className="hw-card" key={p.key}>
                 <PillarIco kind={p.key} />
                 <h4>{p.title}</h4>
@@ -541,14 +517,15 @@ const LAYOUTS = { tabs: Tabs, columns: Columns, workspace: Workspace, evidence: 
 export default function HowStages({ how, layout, id }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const stacked = useMediaQuery('(max-width: 900px)')
-  const Layout = stacked ? (layout === 'tabs' || layout === 'grid' ? Stacked : Columns) : (LAYOUTS[layout] || Tabs)
+  // the grid keeps its cards on narrow screens too, stacked by CSS, so no
+  // scenes show under the heading on mobile (feedback)
+  const Layout = layout === 'grid' ? Grid : stacked ? (layout === 'tabs' ? Stacked : Columns) : (LAYOUTS[layout] || Tabs)
   return (
     <section className={`x4e-sec sol-how hw hw--${layout}`} id={id}>
       <div className="wrap">
         <div className="x4e-frame" ref={frameRef}>
           <Head how={how} />
           <Layout ex={how.example} steps={how.steps || []} />
-          {!(layout === 'grid' && !stacked) && <Enterprise />}
         </div>
       </div>
     </section>

@@ -955,9 +955,9 @@ function faqSchema(items) {
   })
 }
 
-/* a use case row: its name as the title, then one paragraph that opens with
-   the outcome as its lead sentence and runs on into the body (feedback: the
-   explainer line and the paragraph clubbed together). The stage runs through
+/* a use case row: its name as the title, then one paragraph of the scenes'
+   copy (the outcome no longer leads it; it stays in the data unused). The
+   stage runs through
    the use case's scenes on its own clock; the copy no longer lights sentence
    by sentence and the row number is gone from the eyebrow line */
 function Workflow({ w, flip }) {
@@ -970,7 +970,7 @@ function Workflow({ w, flip }) {
     <section className={`sol-work${flip ? ' sol-work--flip' : ''}`} ref={ref} id={w.key}>
       <div className="sol-work-copy sol-reveal">
         <h2>{w.name}</h2>
-        <p className="sol-work-body">{w.outcome}. {w.scenes.map((s) => s.copy).join(' ')}</p>
+        <p className="sol-work-body">{w.scenes.map((s) => s.copy).join(' ')}</p>
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
         <div className="sol-scenes" ref={stageRef}>
