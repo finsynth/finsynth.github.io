@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react'
-import { BOOK_URL, SIGNIN_HREF } from './AskParts'
+import { BOOK_URL, APP_HREF } from './AskParts'
 import EnterpriseDiagram from './EnterpriseDiagram'
 
 
@@ -56,12 +56,9 @@ export default function EnterpriseBanner() {
           >
             Talk to Us
           </a>
-          {/* Signed-out route only, unlike the hero's version of this button:
-              anyone reading an enterprise pitch is being asked to start, and a
-              signed-in user lands on the same app either way. */}
           <a
             className="ent-cta ent-cta--ghost"
-            href={SIGNIN_HREF}
+            href={APP_HREF}
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useUser } from '@clerk/react'
 import { initGrid } from '../utils/gridCanvas'
-import { BOOK_URL, SIGNIN_HREF, APP_HREF } from './AskParts'
+import { BOOK_URL, APP_HREF } from './AskParts'
 import MosaicCanvas from './MosaicCanvas'
 import TileMosaicCanvas from './TileMosaicCanvas'
 import DotBridgeCanvas from './DotBridgeCanvas'
@@ -189,11 +188,6 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
     return initGrid(canvasRef.current)
   }, [mosaic])
 
-  // "Try for free" sends signed-out visitors through sign-in and signed-in
-  // ones straight to the agent — same split the navbar makes, so a returning
-  // user isn't asked to sign in again from the hero.
-  const { isSignedIn } = useUser()
-
   // A "Best viewed on desktop" popup and a standing advisory banner used to open
   // this section on phones. Both are gone: the page is laid out for phones now,
   // and an apology in front of a working page only teaches the visitor to leave.
@@ -296,7 +290,7 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
             </a>
             <a
               className="hero-s2-cta hero-s2-cta--ghost"
-              href={isSignedIn ? APP_HREF : SIGNIN_HREF}
+              href={APP_HREF}
               target="_blank"
               rel="noopener noreferrer"
             >

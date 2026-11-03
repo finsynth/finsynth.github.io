@@ -13,5 +13,8 @@ dist
 # Agent session decision logs
 _agent_session_decision_logs
 
+# Claude Code local config (preview launch.json etc.)
+.claude/
+
 # Vite dep cache
 .vite

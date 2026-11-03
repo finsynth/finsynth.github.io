@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useUser } from '@clerk/react';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
-import { SIGNIN_HREF, APP_HREF } from './AskParts';
+import { APP_HREF } from './AskParts';
 
 
 const PRODUCTS = [
@@ -108,8 +107,6 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
 }
 
 export default function Navbar() {
-    const { isSignedIn: signedIn } = useUser();
-    
   const [hidden, setHidden] = useState(false);
   // which desktop menu is open, by id — 'product' | 'careers' | null
   const [openMenu, setOpenMenu] = useState(null);
@@ -294,12 +291,8 @@ export default function Navbar() {
             {/* both actions come down here, stacked as buttons at the foot of
                 the panel — the bar itself keeps only the burger */}
             <div className="nav-sheet-actions">
-              <a className="nav-signin nav-sheet-btn" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
-                {signedIn ? 'Go to app' : 'Sign in'}
-              </a>
-              {!signedIn && (
-                <a className="nav-demo nav-sheet-btn" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
-              )}
+              <a className="nav-signin nav-sheet-btn" href={APP_HREF} target="_blank" rel="noopener noreferrer">Go to app</a>
+              <a className="nav-demo nav-sheet-btn" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
             </div>
           </div>
         ) : (
@@ -315,14 +308,10 @@ export default function Navbar() {
         )}
         <div className="navbar-right">
           {!compact && (
-            signedIn ? (
-              <a className="nav-signin" href={APP_HREF} target="_blank" rel="noopener noreferrer">Go to app</a>
-            ) : (
-              <a className="nav-signin" href={SIGNIN_HREF} target="_blank" rel="noopener noreferrer">Sign in</a>
-            )
+            <a className="nav-signin" href={APP_HREF} target="_blank" rel="noopener noreferrer">Go to app</a>
           )}
-          {/* on compact this moves into the sheet's footer, beside Sign in */}
-          {!signedIn && !compact && (
+          {/* on compact this moves into the sheet's footer, beside Go to app */}
+          {!compact && (
             <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
           )}
           {compact && (
