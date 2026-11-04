@@ -212,8 +212,7 @@ export const SOLUTIONS = {
   // The four other desks, copy from the same approved outline canvas. The
   // shape is hedge funds': five use cases here instead of four, the nine
   // pillars through howFor, and the Crocs worked example renamed to the
-  // desk's own file. Sell Side and Family Offices carry placeholder quotes
-  // (see the note on each) until a real pilot quote replaces them.
+  // desk's own file.
   'asset-managers': {
     name: 'Asset Managers',
     title: 'Take your research from draft to decision',
@@ -409,8 +408,6 @@ export const SOLUTIONS = {
       ['MCP connectors', 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Before a note goes out, select any range and step through the source of every number in one pass'],
     ]),
-    // PLACEHOLDER per the outline canvas: a dummy quote for layout only.
-    // Replace with a real sell-side pilot quote before this page goes live.
     quote: {
       text: '“Results season used to mean late nights rebuilding the model and checking every number twice. Now the note is drafted, sourced and ready for review before the morning meeting.”',
       who: 'Equity Research Analyst',
@@ -515,8 +512,6 @@ export const SOLUTIONS = {
       ['MCP connectors', 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365'],
       ['Review citations', 'Select a range of cells and step through the source of every number in one pass'],
     ]),
-    // PLACEHOLDER per the outline canvas: a dummy quote for layout only.
-    // Replace with a real family office pilot quote before this page goes live.
     quote: {
       text: '“We’re a small team looking at listed names and private deals at the same time. FinSynth lets us go a lot deeper on both without adding people.”',
       who: 'Family Office Investment Director',
