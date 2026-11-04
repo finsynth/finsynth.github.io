@@ -1,8 +1,8 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/react'
-import Home from './pages/Home'
-import Support from './pages/Support'
-import Careers from './pages/Careers'
+import Home from './views/Home'
+import Support from './views/Support'
+import Careers from './views/Careers'
 import { ENV } from '@/config/env'
 
 const PUBLISHABLE_KEY = ENV.clerkPublishableKey
