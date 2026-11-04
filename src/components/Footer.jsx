@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import GridReveal from './GridReveal';
+import { LINKS } from '@/config/site';
 
 /**
  * The prompt the "Ask your AI" menu hands off to an assistant.
@@ -92,7 +93,7 @@ export default function Footer() {
             <div className="foot-cta-actions">
               <a
                 className="cta-cta"
-                href="https://calendly.com/kartik-finsynth/intro"
+                href={LINKS.bookCall}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -173,20 +174,20 @@ export default function Footer() {
                 <a href="/support">Support</a>
                 {/* the company's posture (SOC 2, GDPR, ISO), not a product feature */}
                 <a href="/#security">Security</a>
-                <a href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Contact</a>
+                <a href={LINKS.bookCall} target="_blank" rel="noopener noreferrer">Contact</a>
               </div>
               <div>
                 <h4>Legal</h4>
-                <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-                <a href="https://nj5uoj11j293i3fb-help.finsynth.ai/legal/terms-of-service.pdf" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                <a href={LINKS.privacyPolicy} target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                <a href={LINKS.termsOfService} target="_blank" rel="noopener noreferrer">Terms of Service</a>
                 <a href="/#security">Compliance</a>
               </div>
               {/* feedback: the socials get their own section rather than
                   riding under Company */}
               <div>
                 <h4>Social</h4>
-                <a href="https://www.linkedin.com/company/finsynthai/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="https://x.com/FinsynthAI" target="_blank" rel="noopener noreferrer">X</a>
+                <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href={LINKS.x} target="_blank" rel="noopener noreferrer">X</a>
               </div>
             </div>
           </div>

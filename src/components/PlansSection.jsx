@@ -1,10 +1,11 @@
 import { Component } from 'react'
 import { PricingTable, useUser, useOrganizationList } from '@clerk/react'
 import useSectionZoom from '../hooks/useSectionZoom'
+import { LINKS } from '@/config/site'
 
 // Where a finished checkout's "Continue" lands. External URL — leaves via the
 // router bridge in App.jsx.
-const APP_HREF = 'https://webapp.finsynth.ai/agent'
+const APP_HREF = LINKS.app
 
 const SHOW_ORG_PLANS = false
 
@@ -23,7 +24,7 @@ class PlansBoundary extends Component {
           <p>Unable to load at the moment</p>
           <a
             className="plan-card-cta plans-error-cta"
-            href="https://calendly.com/kartik-finsynth/intro"
+            href={LINKS.bookCall}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -49,7 +50,7 @@ function CreateOrgButton() {
   return (
     <a
       className="plans-create-org"
-      href="https://accounts.finsynth.ai/create-organization"
+      href={LINKS.createOrg}
       target="_blank"
       rel="noopener noreferrer"
     >

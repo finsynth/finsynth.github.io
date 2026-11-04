@@ -1,3 +1,5 @@
+import { EMAILS } from '@/config/site'
+
 // Where a prompt + email captured in the "Say hello to your new co-worker"
 // composer actually goes.
 //
@@ -81,7 +83,7 @@ export async function submitAsk({ prompt, email, example, source = 'landing:how-
 
 // The fallback: everything we captured, packed into a mail the visitor sends
 // themselves. Used whenever delivered === false.
-export const CONTACT_EMAIL = 'support@finsynth.ai'
+export const CONTACT_EMAIL = EMAILS.support
 
 export function askMailto({ prompt, email }) {
   const subject = 'Run this on FinSynth — cited answer request'

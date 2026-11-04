@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { ROLES, roleHref, roleLabel } from '../data/roles';
 import { APP_HREF } from './AskParts';
+import { LINKS, SITE } from '@/config/site';
 
 
 const PRODUCTS = [
@@ -273,7 +274,7 @@ export default function Navbar() {
           className="navbar-logo"
           src="/assets/img/full-logo.svg"
           alt="FinSynth Logo"
-          onClick={() => window.location.href = 'https://finsynth.ai/'}
+          onClick={() => window.location.href = SITE.url}
         />
         {compact ? (
           <div
@@ -292,7 +293,7 @@ export default function Navbar() {
                 the panel — the bar itself keeps only the burger */}
             <div className="nav-sheet-actions">
               <a className="nav-signin nav-sheet-btn" href={APP_HREF} target="_blank" rel="noopener noreferrer">Go to app</a>
-              <a className="nav-demo nav-sheet-btn" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
+              <a className="nav-demo nav-sheet-btn" href={LINKS.bookCall} target="_blank" rel="noopener noreferrer">Talk to Us</a>
             </div>
           </div>
         ) : (
@@ -312,7 +313,7 @@ export default function Navbar() {
           )}
           {/* on compact this moves into the sheet's footer, beside Go to app */}
           {!compact && (
-            <a className="nav-demo" href="https://calendly.com/kartik-finsynth/intro" target="_blank" rel="noopener noreferrer">Talk to Us</a>
+            <a className="nav-demo" href={LINKS.bookCall} target="_blank" rel="noopener noreferrer">Talk to Us</a>
           )}
           {compact && (
             <button

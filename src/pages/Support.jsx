@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Headphones, ArrowUpRight } from 'lucide-react'
+import { LINKS } from '@/config/site'
 
 function Support() {
   useEffect(() => {
@@ -26,7 +27,7 @@ function Support() {
           </p>
           <a
             className="hero-s2-cta support-cta"
-            href="https://forms.office.com/r/kD0Y2Fmexb"
+            href={LINKS.supportForm}
             target="_blank"
             rel="noopener noreferrer"
           >

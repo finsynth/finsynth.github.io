@@ -1,12 +1,9 @@
-// Outbound links shared across the page, kept in one place so the hero and the
-// navbar can't drift apart:
+// Outbound links shared across the page, re-exported from the site config so
+// the hero, navbar and banners can't drift apart:
 //   BOOK_URL   — the demo-booking link (hero CTA, and anywhere else a
 //                "book a demo" action is offered)
-//   APP_HREF   — the "try it" / "go to app" action. The webapp guards /agent
-//                itself: signed-out visitors are bounced to its sign-in and
-//                land back on the agent, signed-in ones go straight there, so
-//                the site never needs to know who is signed in.
+//   APP_HREF   — the "try it" / "go to app" action
+import { LINKS } from '@/config/site'
 
-export const BOOK_URL = 'https://calendly.com/kartik-finsynth/intro'
-
-export const APP_HREF = 'https://webapp.finsynth.ai/agent'
+export const BOOK_URL = LINKS.bookCall
+export const APP_HREF = LINKS.app

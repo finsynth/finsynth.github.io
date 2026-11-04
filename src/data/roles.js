@@ -1,3 +1,5 @@
+import { EMAILS, SITE } from '@/config/site'
+
 /**
  * The open roles, in one place. The footer's Careers column, the navbar's
  * Careers menu, and the /careers page all read this list, so a role can't be
@@ -10,7 +12,7 @@
  * in, applyHref falls back to the mailto the site always published, so the
  * Apply buttons never point at a dead URL.
  */
-export const CAREERS_EMAIL = 'support@finsynth.ai'
+export const CAREERS_EMAIL = EMAILS.support
 
 // The Tally form ID — the trailing segment of the form's share URL
 // (https://tally.so/r/<id>). Hardcoded on purpose, like the Formspree endpoint
@@ -20,12 +22,7 @@ export const CAREERS_EMAIL = 'support@finsynth.ai'
 export const TALLY_FORM_ID = import.meta.env?.VITE_TALLY_FORM_ID || 'GxEy8Q'
 
 
-export const ABOUT_US =
-  'FinSynth is building auditable AI research infrastructure for investment ' +
-  'research teams. Its AI agent helps teams execute complex research workflows ' +
-  'while tracing every output back to its source, making AI-generated research ' +
-  'verifiable and decision-ready. FinSynth is backed by Accel and industry ' +
-  'veterans.'
+export const ABOUT_US = SITE.description
 
 // Each role: `about` opens the posting; `sections` are rendered in order as a
 // heading, an optional intro line, and a bullet list. A bullet's optional

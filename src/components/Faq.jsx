@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSectionZoom from '../hooks/useSectionZoom'
+import { EMAILS } from '@/config/site'
 
 const FAQS = [
   {
@@ -35,7 +36,7 @@ export default function Faq() {
   const [copied, setCopied] = useState(false)
   const copyTimer = useRef(null)
 
-  const CONTACT_EMAIL = 'support@finsynth.ai'
+  const CONTACT_EMAIL = EMAILS.support
   const copyEmail = () => {
     const done = () => {
       setCopied(true)
