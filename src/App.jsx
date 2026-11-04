@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/react'
 import Home from './pages/Home'
 import Support from './pages/Support'
 import Careers from './pages/Careers'
+import Solution from './pages/Solution'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
   || 'pk_live_Y2xlcmsuZmluc3ludGguYWkk'
@@ -50,6 +51,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/support" element={<Support />} />
         <Route path="/careers" element={<Careers />} />
+        {/* one page per desk, content keyed by slug in data/solutions.js */}
+        <Route path="/solutions/:slug" element={<Solution />} />
       </Routes>
     </ClerkProvider>
   )
