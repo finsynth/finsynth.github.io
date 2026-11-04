@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useUser } from '@clerk/react'
 import Navbar from '../components/Navbar'
@@ -6,31 +6,10 @@ import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
 import Faq from '../components/Faq'
 import Testimonial from '../components/Testimonial'
-import { useAutoStep, VisualWorkflows, VisualAudit, VisualIntegrated, VisualEnterprise } from '../components/ExcelSection'
 import useReveal from '../hooks/useReveal'
-import useMediaQuery from '../hooks/useMediaQuery'
 import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages, { Cursor } from '../components/HowStages'
-
-/* ── How it works, which layout mounts ─────────────────────────────────────
- * `grid` ships: all nine pillars as cards in three stage columns, every card
- * visible (src/components/HowStages.jsx). The others stay for comparison
- * with ?how= on the URL: /solutions/hedge-funds?how=tabs (the three stages
- * as tabs, each opening its pillars and its scene, which the grid replaced),
- * ?how=rail (the nine-pillar rail before that), ?how=columns, ?how=workspace
- * and ?how=evidence. */
-const HOW_LAYOUT_DEFAULT = 'grid'
-const HOW_LAYOUTS = ['rail', 'tabs', 'columns', 'workspace', 'evidence', 'grid']
-/* the quote ships in the home page's blue band; ?quote=pull shows it as a pull-quote on the grey */
-function quotePull() {
-  return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('quote') === 'pull'
-}
-function howLayout() {
-  if (typeof window === 'undefined') return HOW_LAYOUT_DEFAULT
-  const q = new URLSearchParams(window.location.search).get('how')
-  return HOW_LAYOUTS.includes(q) ? q : HOW_LAYOUT_DEFAULT
-}
 
 /* ── drawn product panels ──────────────────────────────────────────────────
  * Every visual is drawn, not a screenshot, so the numbers in it are
@@ -818,133 +797,6 @@ function FrameHead({ title }) {
   )
 }
 
-/* ── How it works: the stage visuals drawn here ─────────────────────────────
- * One card, one list: an eyebrow and three rows, the first of them live. The
- * rows are the fund's own things (its templates, its folders, the surfaces the
- * agent runs in, the claims it has cited), so each pillar's picture is the
- * pillar's own noun. Sized like the workflow checklist next door (.xv-marquee)
- * so the stage reads at one scale from claim to claim.
- */
-function HxList({ eyebrow, rows }) {
-  return (
-    <div className="sol-hx">
-      <p className="sol-hx-eyebrow">{eyebrow}</p>
-      <ul className="sol-hx-list">
-        {rows.map(([name, tag, state], i) => (
-          <li key={name} className={i === 0 ? 'is-on' : ''} style={{ '--i': i }}>
-            <i aria-hidden="true" />
-            <span className="sol-hx-name">{name}</span>
-            <span className="sol-hx-tpl">{tag}</span>
-            {state && <em className="sol-hx-state">{state}</em>}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-const HowSurfacesVisual = () => (
-  <HxList eyebrow="Where it runs" rows={[
-    ['Excel add-in', 'Fund_model_v12.xlsx', 'Updating Q3 actuals in your sheet'],
-    ['Web app', 'Crocs thesis', ''],
-    ['Same agent, same citations', 'Both', ''],
-  ]} />
-)
-const HowCitedVisual = () => (
-  <HxList eyebrow="Every number, one source" rows={[
-    ['Revenue 1,284.6', 'Form 10-Q, p. 4', 'Condensed Statements of Operations, line 3'],
-    ['Gross margin 39.9%', 'Q3 release', ''],
-    ['Promo intensity rising', 'Q3 call, 14:32', ''],
-  ]} />
-)
-const HowFormatVisual = () => (
-  <HxList eyebrow="Your templates" rows={[
-    ['Fund model', 'Fund_model_v12.xlsx', 'Applied to the Crocs build'],
-    ['Comps sheet', 'Comps_template.xlsx', ''],
-    ['Investment memo', 'Memo_format.docx', ''],
-  ]} />
-)
-const HowSkillsVisual = () => (
-  <HxList eyebrow="Saved skills" rows={[
-    ['Earnings update', 'Fund model v12', 'Running on 14 names'],
-    ['Comps refresh', 'Comps template', ''],
-    ['Model audit', 'Audit memo', ''],
-  ]} />
-)
-const HowDataroomVisual = () => (
-  <HxList eyebrow="Dataroom" rows={[
-    ['Broker notes', '14 files', 'Attached to this session'],
-    ['Expert call transcripts', '6 files', ''],
-    ['Internal research', '22 files', ''],
-  ]} />
-)
-
-/* the stage visuals the How it works pillars call up: four are the home page's
-   own (the workflow checklist, the source field, the citation trace, the
-   certification seals), five are drawn here */
-const HOW_VISUALS = {
-  workflows: VisualWorkflows, surfaces: HowSurfacesVisual, cited: HowCitedVisual, format: HowFormatVisual,
-  skills: HowSkillsVisual, dataroom: HowDataroomVisual, sources: VisualIntegrated, trace: VisualAudit, enterprise: VisualEnterprise,
-}
-
-/* the home page's Excel section, claim for claim: a rail of the steps on the
-   left and one visual on stage on the right, scrubbed by scroll and advanced
-   by a clock. Narrow screens mount each claim's visual under its own row. */
-function HowItWorks({ how, id }) {
-  const frameRef = useReveal({ threshold: 0.08 })
-  const paneRef = useRef(null)
-  const stacked = useMediaQuery('(max-width: 900px)')
-  const dwell = useMemo(() => how.steps.map((st) => st.ms), [how])
-  const { step, goTo, hold, release } = useAutoStep(dwell, paneRef, { scrub: !stacked })
-  return (
-    <section className="x4e-sec sol-how" id={id}>
-      <div className="wrap">
-        <div className="x4e-frame" ref={frameRef}>
-          <FrameHead title={how.title} />
-          <div className="x4e-pane" ref={paneRef} onMouseEnter={hold} onMouseLeave={release} onFocusCapture={hold} onBlurCapture={release}>
-            <ol className="x4e-rail">
-              {how.steps.map((st, i) => {
-                const Visual = HOW_VISUALS[st.visual]
-                return (
-                  <li key={st.key}>
-                    <button
-                      type="button"
-                      className={`x4e-item${!stacked && i === step ? ' is-active' : ''}`}
-                      aria-current={!stacked && i === step}
-                      onClick={() => goTo(i)}
-                    >
-                      <span className="x4e-item-body">
-                        <span className="x4e-item-title">{st.title}</span>
-                        <span className="x4e-item-p">{st.body}</span>
-                      </span>
-                    </button>
-                    {stacked && (
-                      <div className="x4e-stage x4e-stage--inline">
-                        <div className="x4e-visual is-active"><Visual /></div>
-                      </div>
-                    )}
-                  </li>
-                )
-              })}
-            </ol>
-            {!stacked && (
-              <div className="x4e-stage">
-                {how.steps.map((st, i) => {
-                  const Visual = HOW_VISUALS[st.visual]
-                  return (
-                    <div key={st.key} className={`x4e-visual${i === step ? ' is-active' : ''}`} aria-hidden={i !== step}>
-                      <Visual />
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 /* FAQPage structured data beside the home page's FAQ section, so the
    questions are quotable by search and agents */
 function faqSchema(items) {
@@ -1054,12 +906,10 @@ export default function Solution() {
         </section>
 
         {sol.how && <SectionRule />}
-        {sol.how && (howLayout() === 'rail' || !sol.how.example
-          ? <HowItWorks how={sol.how} id="how-it-works" />
-          : <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout={howLayout()} id="how-it-works" />)}
+        {sol.how && <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout="grid" id="how-it-works" />}
 
         {/* the page's quote, in the home page's Customers treatment */}
-        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} title={sol.quote.title ? highlight(sol.quote.title) : undefined} compact={quotePull()} />}
+        {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
 
         {sol.faqs && <SectionRule />}
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}
