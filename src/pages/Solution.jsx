@@ -906,7 +906,7 @@ export default function Solution() {
         </section>
 
         {sol.how && <SectionRule />}
-        {sol.how && <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} layout="grid" id="how-it-works" />}
+        {sol.how && <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} id="how-it-works" />}
 
         {/* the page's quote, in the home page's Customers treatment */}
         {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
