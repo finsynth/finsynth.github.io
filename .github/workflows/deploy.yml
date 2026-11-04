@@ -49,6 +49,13 @@ jobs:
       - name: Static /careers page (careers.html)
         run: cp dist/index.html dist/careers.html
 
+      - name: Static /solutions/* pages
+        run: |
+          mkdir -p dist/solutions
+          for slug in hedge-funds asset-managers sell-side family-offices private-markets; do
+            cp dist/index.html "dist/solutions/$slug.html"
+          done
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
