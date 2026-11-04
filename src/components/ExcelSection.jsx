@@ -132,7 +132,7 @@ function VisualWorkflows() {
  * Drawn in HTML rather than SVG so the type stays type: the cards carry real
  * titles, headings and cells, and everything is sized in cqw off the scene's
  * own width so the composition scales as one piece. Timing lives in the
- * .xvk-* keyframes in index.css — a 9s loop, three 3s beats, matching the
+ * .xvk-* keyframes in styles/global.css — a 9s loop, three 3s beats, matching the
  * `ms` the claim holds the stage for. */
 // the three sources the trace runs through, in the order they are read. Each
 // one supports a single cell in the analyst's own workbook: `hit` is that
@@ -418,7 +418,7 @@ function VisualEnterprise() {
    still visuals cut the animated ones off part-way through, and one long enough
    for the animated ones parked the still ones on screen with nothing happening.
    The audit cascade is the constraint — it loops three beats over 9s (one per
-   source; see the .xvk-* keyframes in index.css), and at the 4.2s every claim
+   source; see the .xvk-* keyframes in styles/global.css), and at the 4.2s every claim
    used to get, the last two beats never played at all. */
 const PILLARS = [
   {

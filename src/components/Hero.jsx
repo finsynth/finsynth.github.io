@@ -256,7 +256,7 @@ function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
                 row one does have to wrap (narrow laptops), it breaks after
                 "AI" instead of splitting the noun phrase. Phones relax it:
                 below 560px letting the phrase split is what lets the type
-                grow past ~20px at all (index.css documents the numbers).
+                grow past ~20px at all (styles/global.css documents the numbers).
               Below 1100px neither row fits and the headline runs to three rows;
               .hero-s2-title reserves that height there so the rotating segment
               can't shove the CTAs around mid-cycle. */}
