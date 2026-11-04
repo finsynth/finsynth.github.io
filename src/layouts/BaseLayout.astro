@@ -1,21 +1,15 @@
 ---
+import type { ComponentProps } from 'astro/types'
 import Seo from '@/components/seo/Seo.astro'
 import '@/styles/global.css'
 
-interface Props {
-  title?: string
-  description?: string
-  image?: string
-}
-
-const { title, description, image } = Astro.props
+type Props = ComponentProps<typeof Seo>
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="robots" content="noodp" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="/assets/img/icon-64.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,7 +18,7 @@ const { title, description, image } = Astro.props
       href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <Seo title={title} description={description} image={image} />
+    <Seo {...Astro.props} />
   </head>
   <body>
     <slot />

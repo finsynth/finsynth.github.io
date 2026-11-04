@@ -5,9 +5,15 @@ interface Props {
   title?: string
   description?: string
   image?: string
+  noindex?: boolean
 }
 
-const { title = SITE.title, description = SITE.description, image = SITE.ogImage } = Astro.props
+const {
+  title = SITE.title,
+  description = SITE.description,
+  image = SITE.ogImage,
+  noindex = false,
+} = Astro.props
 
 // build.format 'file' makes pathname '/careers.html' at build; canonical must be '/careers'
 const path = Astro.url.pathname.replace(/(\/index)?\.html$/, '').replace(/\/$/, '') || '/'
@@ -16,9 +22,10 @@ const imageUrl = new URL(image, SITE.url).href
 ---
 
 <title>{title}</title>
+<meta name="robots" content={noindex ? 'noindex' : 'noodp'} />
 <meta name="title" content={title} />
 <meta name="description" content={description} />
-<link rel="canonical" href={url} />
+{!noindex && <link rel="canonical" href={url} />}
 
 <meta property="og:type" content="website" />
 <meta property="og:url" content={url} />
