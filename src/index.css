@@ -1325,21 +1325,6 @@ button.play { border: none; padding: 0; appearance: none }
   background: url('/assets/img/testi-glass-bg.webp') top center / 100% 100% no-repeat;
 }
 .testi-sec .wrap { position: relative; z-index: 1; width: 100% }
-/* the compact form: one quote as a pull-quote on the page's grey, the
-   speaker under it after a short ink rule, no band around it */
-.testi-sec--compact { padding: clamp(80px, 10vh, 120px) 0; background: var(--bg) }
-.testi-sec--compact .hiw-eyebrow { color: var(--accent) }
-.testi-pull { margin: 0; max-width: 820px }
-.testi-pull blockquote {
-  margin: 0 0 28px;
-  font-family: var(--font-display); font-weight: 450;
-  font-size: clamp(24px, 2.6vw, 38px); line-height: 1.22; letter-spacing: var(--ls-display);
-  color: var(--ink); text-wrap: balance;
-}
-.testi-pull figcaption { display: flex; align-items: center; gap: 14px; font-size: 15px; font-weight: 500; color: var(--ink) }
-.testi-pull figcaption::before { content: ''; width: 28px; height: 1.5px; background: var(--ink); flex: none }
-.testi-pull figcaption span { font-weight: 400; color: var(--secondary) }
-.testi-pull figcaption span::before { content: '·'; margin-right: 14px; color: var(--muted) }
 /* header sits on the blue field now — invert to white */
 .testi-sec .hiw-eyebrow { color: rgba(255,255,255,.85) }
 .testi-sec .testi-head h2 { color: #fff }
@@ -5827,8 +5812,6 @@ button.play { border: none; padding: 0; appearance: none }
    drop the grey and white fills they carried against the white frame; the
    open tab is told by its accent underline and ink title alone. */
 .sol-how .x4e-frame { background: transparent }
-.sol-how .hw-stagetab, .sol-how .hw-stagetab:hover, .sol-how .hw-stagetab.is-active, .sol-how .hw-ent { background: transparent }
-.sol-how .x4e-rail, .sol-how .x4e-item:hover, .sol-how .x4e-item.is-active { background: transparent } /* the open tab's pillar rail too; the active row is told by its accent bar */
 /* the head bands on these pages carry the title alone, no lede or badge beside
    it, and on the homepage's measures that one line sat in a shallow strip that
    read as cramped against the rows under it. Taller on both sides, so the
@@ -5939,47 +5922,6 @@ button.play { border: none; padding: 0; appearance: none }
 .sol-sheet-ok { color: #12A150 }
 /* no tab row at a sheet's foot (feedback: "remove this bar from all
    screens"); the source a sheet is reading from sits in its title's tag */
-
-
-/* ── How it works, "Your house format" on stage ── three saved Skills on the
-   stage's white card, one running. Row type matches the workflow checklist
-   (.xv-marquee .what-item) so the stage holds one scale across the claims.
-   Rows enter staggered each time the claim comes on stage; the gate below
-   restarts them the way the home page restarts its own visuals. */
-.sol-hx { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 540px }
-.sol-hx-eyebrow {
-  margin: 0; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--accent); opacity: .78;
-}
-.sol-hx-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column }
-.sol-hx-list li {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 16px;
-  padding: 18px 0; border-top: 1px solid var(--hair);
-  animation: solHxIn .6s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .14s + .1s) both;
-}
-.sol-hx-list li:first-child { border-top: 0 }
-.sol-hx-list li > i { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #C9D0DB; background: #fff }
-.sol-hx-list li.is-on > i { border-color: var(--accent); background: var(--accent) }
-.sol-hx-list li.is-on > i::after {
-  content: ''; position: absolute; left: 9px; top: 6px; border-left: 9px solid #fff;
-  border-top: 5.5px solid transparent; border-bottom: 5.5px solid transparent;
-}
-.sol-hx-name { font-family: var(--font-display); font-weight: 450; font-size: clamp(20px, 1.9vw, 28px); letter-spacing: var(--ls-display); color: var(--muted) }
-.sol-hx-list li.is-on .sol-hx-name { color: var(--ink) }
-.sol-hx-tpl {
-  padding: 5px 10px; border: 1px solid var(--hair); border-radius: 4px; white-space: nowrap;
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--muted);
-}
-.sol-hx-state { grid-column: 2 / -1; margin-top: 2px; font-style: normal; font-size: 13.5px; color: var(--accent) }
-@keyframes solHxIn { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
-.x4e-visual:not(.is-active) .sol-hx-list li { animation: none }
-/* nine pillars make the rail taller than the stage: the stage rides along
-   under the navbar while the rail scrolls, so the picture is always beside
-   the claim that is lit */
-.sol-how .x4e-pane { overflow: clip } /* clip, not hidden: hidden makes the pane a scroll container and the stage could not stick */
-.sol-how .x4e-stage:not(.x4e-stage--inline) { position: sticky; top: 72px; align-self: start; height: clamp(440px, 70vh, 680px); max-height: calc(100vh - 96px) }
-.sol-hx-tpl:empty { display: none }
-@media (prefers-reduced-motion: reduce) { .sol-hx-list li { animation: none } }
 
 /* ── hedge funds page extras ── the strategies pills in the hero and the
    parts the hedge fund visuals add to the shared stage */
@@ -6303,302 +6245,30 @@ button.play { border: none; padding: 0; appearance: none }
   .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
   .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
   .sol-stage--focus { font-size: clamp(6px, 2.3cqw, 9px); --stage-pad: 1.4em; aspect-ratio: 16 / 11 }
-  .sol-hx { gap: 12px }
-  .sol-hx-list li { padding: 12px 0; column-gap: 10px; grid-template-columns: auto 1fr; row-gap: 4px }
-  .sol-hx-list li > i { grid-row: 1 }
-  .sol-hx-tpl { grid-column: 2; justify-self: start }
-  .sol-hx-list li > i { width: 20px; height: 20px }
-  .sol-hx-list li.is-on > i::after { left: 7px; top: 4.5px; border-left-width: 7px; border-top-width: 4.5px; border-bottom-width: 4.5px }
-  .sol-hx-name { font-size: 17px; white-space: nowrap }
-  .sol-hx-tpl { font-size: 9.5px; padding: 3px 7px }
-  .sol-hx-state { font-size: 12px }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HOW IT WORKS, THREE STAGES (src/components/HowStages.jsx)
-   The solution pages' shared How it works under comparison: the home page's
-   white frame and blue stage, three stages of one workflow, and one example
-   drawn through all three. ?how=columns|workspace|evidence picks the layout.
-   The scenes are drawn in em off a stage whose font-size tracks its width
-   (container-type: inline-size), so each layout sets one font-size and the
-   panels scale with the cell they are in.
+   The solution pages' How it works: the three stages as columns, each with
+   its pillars as cards.
    ═══════════════════════════════════════════════════════════════════════════ */
 .hw-head { align-items: flex-end }
 .hw-intro { margin: 0; max-width: 34ch; font-size: 16px; line-height: 1.55; color: var(--secondary) }
-
-/* stage copy: number, title, explanation, on the frame's inset */
-.hw-copy { padding: 30px var(--x4e-pad-x) 32px; min-width: 0 }
 .hw-num {
   display: block; margin-bottom: 14px;
   font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--accent);
 }
-.hw-title {
-  margin: 0; font-family: var(--font-display); font-weight: 450;
-  font-size: clamp(19px, 1.7vw, 22px); line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
-}
-.hw-p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--body-gray); max-width: 40ch }
-
-/* the blue stage the scenes sit on (the use case rows' ground) */
-.hw-stage {
-  position: relative; container-type: inline-size;
-  display: flex; align-items: center; justify-content: center; gap: 1.4em;
-  padding: 2.4em;
-  background-color: #1B34A6;
-  background-image:
-    url('/assets/img/grain.svg'),
-    radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
-  background-size: 320px 320px, auto, auto;
-  background-repeat: repeat, no-repeat, no-repeat;
-  background-blend-mode: overlay, normal, normal;
-  color: var(--ink); font-family: var(--font-body);
-  border-top: 1px solid var(--hair);
-}
-.hw-stage { --k-acc: var(--accent); --k-acc-soft: #DCE3FA }
-.hw-stage--col { font-size: clamp(5.5px, 2.45cqw, 10px); aspect-ratio: 4 / 3.3 }
-.hw-stage--half { font-size: clamp(5.5px, 1.75cqw, 10px); aspect-ratio: 16 / 8.5 }
-.hw-stage--big { font-size: clamp(6px, 1.05cqw, 12px); padding: 3.2em 2.4em }
-.hw-stage--scene { font-size: clamp(5px, .8cqw, 11px); padding: 3em var(--x4e-pad-x); gap: 1em; align-items: center }
-.hw-stage > .hw-panel { width: 100% }
-.hw-stage--big > .hw-panel { max-width: 62em }
-.hw-stage--scene > .hw-panel { flex: 1 1 0; min-width: 0 }
-.hw-stage--scene > .hw-sources { flex-grow: .9 }
-.hw-stage--scene > .hw-bench { flex-grow: 1.4 }
-.hw-stage--scene > .hw-evid { flex-grow: 1.25 }
-/* the narrower scene panels: the source's kind chip drops under its name, and
-   the evidence sheet takes the wider column so no figure is clipped */
-.hw-stage--scene .hw-src-name { grid-column: 2 / 4 }
-.hw-stage--scene .hw-src-kind { grid-row: 3; grid-column: 2 / 4; justify-self: start; margin-top: .4em }
-.hw-stage--scene .hw-sources .hw-panel-head em { display: none }
-.hw-arrow { flex: none; width: 3em; height: 1.4em; color: rgba(255, 255, 255, .85) }
-
-/* a white panel on the stage, the use case rows' card */
-.hw-panel {
-  position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
-  background: #fff; border-radius: .9em;
-  box-shadow: 0 1.2em 3em rgba(6, 16, 50, .28), 0 0 0 1px rgba(255, 255, 255, .18);
-  font-size: 1em; line-height: 1.35;
-}
-/* the stage number on a panel's corner, in the continuous scene */
-.hw-n {
-  position: absolute; top: .9em; right: 1em; z-index: 1;
-  font-family: var(--font-mono); font-size: .85em; letter-spacing: .06em; color: var(--accent);
-  padding: .25em .55em; border-radius: .35em; background: var(--accent-soft);
-}
-.hw-panel-head {
-  display: flex; justify-content: space-between; align-items: center; gap: 1em;
-  padding: 1.1em 1.4em; border-bottom: 1px solid var(--hair);
-  font-size: 1em; font-weight: 500; color: var(--ink); white-space: nowrap;
-}
-.hw-panel-head em { font-style: normal; font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
-.hw-n ~ .hw-panel-head em { margin-right: 2.8em }
-
-/* 01 · the sources */
-.hw-src-list { list-style: none; margin: 0; padding: .6em 1.4em 1em; display: flex; flex-direction: column }
-.hw-src-list li {
-  display: grid; grid-template-columns: auto 1fr auto; column-gap: .9em; align-items: center;
-  padding: .8em 0; border-top: 1px solid #EEF0F3;
-  animation: hwIn .6s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .12s + .1s) both;
-}
-.hw-src-list li:first-child { border-top: 0 }
-.hw-ico { grid-row: 1 / 3; width: 2.2em; height: 2.2em; padding: .45em; border-radius: .45em; background: var(--accent-soft); color: var(--accent) }
-.hw-src-name { font-size: 1.05em; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.hw-src-kind {
-  grid-column: 3; grid-row: 1 / 3; align-self: center;
-  padding: .25em .6em; border: 1px solid var(--hair); border-radius: .35em; white-space: nowrap;
-  font-family: var(--font-mono); font-size: .78em; letter-spacing: .03em; color: var(--muted);
-}
-.hw-src-meta { grid-column: 2; font-size: .88em; color: var(--muted) }
-
-/* 02 · the workspace */
-.hw-bench-bar {
-  display: flex; align-items: center; gap: .4em; padding: .8em 1.2em; border-bottom: 1px solid var(--hair);
-  font-size: .9em; white-space: nowrap; overflow: hidden;
-}
-.hw-tab { padding: .35em .8em; border-radius: .35em; color: var(--muted) }
-.hw-tab.is-on { background: var(--accent-soft); color: var(--accent); font-weight: 500 }
-.hw-bench-bar em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .88em; color: var(--muted); overflow: hidden; text-overflow: ellipsis }
-.hw-n ~ .hw-bench-bar em { margin-right: 3em }
-.hw-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .8em; align-items: start; padding: 1.1em 1.4em; border-bottom: 1px solid var(--hair) }
-.hw-ask-dot { width: .7em; height: .7em; margin-top: .4em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
-.hw-ask p { margin: 0; font-size: 1.05em; line-height: 1.4; color: var(--ink); font-weight: 500 }
-.hw-skill {
-  grid-column: 2; justify-self: start; margin-top: .7em;
-  display: inline-flex; align-items: center; gap: .5em;
-  padding: .3em .7em; border-radius: .35em; border: 1px solid var(--hair);
-  font-family: var(--font-mono); font-size: .8em; letter-spacing: .03em; color: var(--secondary);
-}
-.hw-skill i { width: .6em; height: .6em; border-radius: 50%; background: #12A150 }
-.hw-sheet { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
-.hw-sheet th, .hw-sheet td { padding: .55em .9em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
-.hw-sheet th:not(:first-child), .hw-sheet td:not(:first-child) { text-align: right }
-.hw-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
-.hw-sheet th.is-col { color: var(--accent) }
-.hw-sheet td:first-child { padding-left: 1.4em }
-.hw-sheet td:last-child, .hw-sheet th:last-child { padding-right: 1.4em }
-.hw-cell.is-filled { background: var(--k-acc-soft); box-shadow: inset 0 0 0 1px var(--k-acc); color: var(--ink); font-weight: 500 }
-.hw-ok { color: #12A150; font-weight: 500 }
-.hw-miss { color: #C2410C; font-weight: 500 }
-.hw-bench-foot {
-  margin-top: auto; display: flex; align-items: center; gap: .5em; padding: .9em 1.4em;
-  font-size: .92em; font-weight: 500; color: var(--ink);
-}
-.hw-bench-foot svg { width: 1.2em; height: 1.2em; color: #12A150 }
-
-/* 03 · the evidence: the model window, the release page a step lower beside
-   it, the wire from the selected cell to its line, and the Review citations
-   control as a pill across the window's top edge. The wire and the pointer
-   are placed from measured positions (HowStages.jsx) so only their looks live
-   here */
-.hw-evid {
-  position: relative; width: 100%; max-width: 64em;
-  display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); column-gap: 2.4em; align-items: start;
-  padding: .4em 0;
-}
-.hw-win-bar {
-  display: flex; align-items: center; gap: .6em; padding: .85em 1.4em; border-bottom: 1px solid var(--hair);
-  font-size: 1em; font-weight: 500; color: var(--ink); white-space: nowrap;
-}
-.hw-win-bar .hw-ico { width: 1.2em; height: 1.2em; color: var(--accent) }
-.hw-evid-fx {
-  display: flex; align-items: center; gap: .8em; padding: .6em 1.4em; border-bottom: 1px solid var(--hair);
-  font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap;
-}
-.hw-evid-fx span:first-child { color: var(--ink); min-width: 2.2em }
-.hw-evid-fx span:last-of-type { color: var(--ink) }
-.hw-evid-fx em {
-  margin-left: auto; display: inline-flex; align-items: center; gap: .45em; min-width: 0; overflow: hidden; text-overflow: ellipsis;
-  font-family: var(--font-body); font-style: normal; font-size: 1.05em; color: var(--accent);
-}
-.hw-evid-fx em .hw-ico { width: 1.25em; height: 1.25em; flex: none }
-.hw-sheet--xl th, .hw-sheet--xl td { padding: .72em 1em }
-.hw-sheet--xl td:first-child, .hw-sheet--xl th:first-child { padding-left: 0 }
-.hw-rn { width: 2.6em; text-align: center !important; padding: 0 !important; font-family: var(--font-mono); font-size: .8em; color: var(--muted); background: #FAFAFA; border-right: 1px solid #EEF0F3 }
-.hw-sheet--xl tr.is-sel td { background: #FBFCFF }
-.hw-sheet--xl tr.is-sel td.hw-rn { background: #F1F3F7; color: var(--ink) }
-.hw-sheet--xl tr:last-child td { border-bottom: 0 }
-/* the cells stage two wrote read in the accent, as its column does; the one
-   under the pointer carries the trace blue and the ring a click leaves */
-.hw-evid .hw-cell.is-filled { background: none; box-shadow: none; color: var(--accent); font-weight: 500 }
-.hw-evid .hw-cell span { display: inline-block; padding: .12em .45em; margin: -.12em -.45em; border-radius: .3em; transition: background .3s, color .3s, box-shadow .3s }
-.hw-evid .hw-cell.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
-.hw-sheet-tabs {
-  display: flex; gap: .4em; align-items: center; margin-top: auto; padding: .6em 1.4em; border-top: 1px solid var(--hair);
-  font-size: .85em; color: var(--muted);
-}
-.hw-sheet-tabs span { padding: .3em .8em; border-radius: .35em }
-.hw-sheet-tabs span.is-on { background: var(--accent-soft); color: var(--accent) }
-/* the release page */
-.hw-doc { margin-top: 4.6em; background: #FFFDFA }
-.hw-doc-head {
-  display: flex; align-items: center; gap: .7em; padding: .8em 1.2em; border-bottom: 1px solid var(--hair);
-  font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap; overflow: hidden;
-}
-.hw-doc-head span:last-child { overflow: hidden; text-overflow: ellipsis }
-.hw-chip { padding: .25em .6em; border-radius: .35em; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: .95em; white-space: nowrap }
-.hw-doc-page { padding: 1.2em 1.4em 1.4em }
-.hw-doc-page i { display: block; height: .5em; margin: .6em 0; border-radius: .3em; background: #ECEEF2 }
-.hw-doc-page i.is-short { width: 58% }
-.hw-doc-page p { margin: 1em 0; font-size: .96em; line-height: 1.65; color: var(--secondary) }
-.hw-doc-page mark { background: transparent; color: inherit; padding: .05em .15em; margin: 0 -.15em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background .35s, color .35s }
-.hw-doc-page mark.is-on { background: var(--k-acc-soft); color: var(--ink); font-weight: 500 }
-/* the wire and the pointer, over everything */
-.hw-wire { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; overflow: visible }
-.hw-wire path { fill: none; stroke: var(--k-acc); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: hwWire .6s cubic-bezier(.32, .72, 0, 1) .3s forwards }
-.hw-wire circle { fill: var(--k-acc); opacity: 0; animation: hwDot .3s ease .8s forwards }
 .hw-cursor {
   position: absolute; left: 0; top: 0; z-index: 4; width: 1.6em; height: 1.6em; pointer-events: none;
   filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
   transition: transform .55s cubic-bezier(.32, .72, 0, 1);
 }
-/* the control: a line of text over the two screens (feedback), the count
-   in the stage's white, the arrows as rings on the blue */
-.hw-review {
-  display: inline-flex; align-items: center; gap: .55em; padding: .15em .3em; border-radius: 999px;
-  color: #fff; font-weight: 500; white-space: nowrap;
-}
-.hw-evid-head { grid-column: 1 / -1; justify-self: start; margin: 0 0 .5em -.3em; font-size: .95em }
-.hw-review b { font-weight: 500; font-variant-numeric: tabular-nums; color: #fff; opacity: .78 }
-.hw-review i {
-  width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .16);
-  font-style: normal; font-size: 1em; color: #fff;
-}
-.hw-review i:last-child { background: #fff; color: var(--accent) }
-.hw-review.is-focus { box-shadow: 0 0 0 .18em #fff, 0 0 0 .55em rgba(255, 255, 255, .35) }
-@media (max-width: 560px) { .hw-review > span { display: none } }
-.hw-stage .hw-doc.is-focus { border-radius: .9em; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft), 0 1.2em 3em rgba(6, 16, 50, .28) }
-.hw-stage--tab .hw-evid { font-size: 1.12em }
-/* in a column (phones, the columns variant) the scene is the tab scene scaled
-   down: its em is the stage's content width (what cqw measures) over the 44em it spans there */
-.hw-stage--col .hw-evid { font-size: calc(100cqw / 44) }
 @keyframes hwWire { to { stroke-dashoffset: 0 } }
 @keyframes hwDot { to { opacity: 1 } }
 @keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em color-mix(in srgb, var(--k-acc) 50%, transparent) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em color-mix(in srgb, var(--k-acc) 0%, transparent) } }
-/* 1 · three connected columns: the copy on the frame's white, the scene under
-   it, and a chevron on the shared hairline where one stage hands to the next */
-.hw-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
-.hw-col { position: relative; display: flex; flex-direction: column; min-width: 0 }
-.hw-col + .hw-col { border-left: 1px solid var(--hair) }
-.hw-col .hw-copy { flex: 1 }
-.hw-col + .hw-col::before {
-  content: ''; position: absolute; left: -11px; top: 32px; z-index: 1; width: 20px; height: 20px; border-radius: 50%;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 4 4 4-4 4' fill='none' stroke='%233550C8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
-  border: 1px solid var(--hair);
-}
-
-/* tabs · the three stages as tabs; the open one shows its pillars beside its scene */
-.hw-tablist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair) }
-.hw-stagetab {
-  position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0;
-  text-align: left; font: inherit; color: inherit; background: #FAFAFA; cursor: pointer; appearance: none;
-  transition: background .25s ease;
-}
-.hw-stagetab + .hw-stagetab { border-left: 1px solid var(--hair) }
-.hw-stagetab + .hw-stagetab::before {
-  content: ''; position: absolute; left: -11px; top: 32px; z-index: 1; width: 20px; height: 20px; border-radius: 50%;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m6 4 4 4-4 4' fill='none' stroke='%233550C8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat;
-  border: 1px solid var(--hair);
-}
-.hw-stagetab .hw-title { display: block; color: var(--secondary); transition: color .25s ease }
-.hw-stagetab .hw-p { display: block; color: var(--secondary); transition: color .25s ease }
-.hw-stagetab:hover, .hw-stagetab.is-active { background: #fff }
-.hw-stagetab.is-active .hw-title { color: var(--ink) }
-.hw-stagetab.is-active .hw-p { color: var(--body-gray) }
-.hw-stagetab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent) }
-.hw-stagetab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
-/* the open tab's pane: the home Excel section's architecture. Its .x4e-pane
-   sets the .8fr / 1.2fr split and .x4e-rail the equal rows, the hairlines and
-   the accent marker on the active row; the stage keeps the Excel stage's
-   height so the two sections sit at one scale. */
-.hw-pane { border-top: 0 }
-.hw-rail { animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) both }
-.hw-rail .x4e-item { animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .08s) both }
-/* the pillars of a stacked (narrow) tab keep the icon list */
-.hw-pillars { list-style: none; margin: 0; padding: 8px var(--x4e-pad-x) 20px; display: flex; flex-direction: column; justify-content: center }
-.hw-pillar {
-  display: grid; grid-template-columns: 34px 1fr; column-gap: 14px; align-items: start; padding: 18px 0; border-top: 1px solid var(--hair);
-  animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) calc(var(--i, 0) * .08s) both;
-}
-.hw-pillar:first-child { border-top: 0 }
 .hw-pico { grid-row: 1 / 3; width: 34px; height: 34px; padding: 8px; border-radius: 8px; background: var(--accent); color: #fff }
-.hw-pillar h4 { margin: 2px 0 0; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
-.hw-pillar p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--body-gray) }
-.hw-stage--tab {
-  font-size: clamp(6px, 1.5cqw, 11.5px); min-height: clamp(440px, 70vh, 680px); border-top: 0;
-  padding: 3em clamp(32px, 6%, 60px);
-  animation: hwIn .5s cubic-bezier(.32, .72, 0, 1) both;
-}
-.hw-stage--tab > .hw-panel { max-width: 60em }
-/* the lit part of the scene: the one the active rail row is about. Everything
-   else steps back a little so the ring reads as the answer to the row. */
-.hw-stage .is-focus { position: relative; z-index: 1; box-shadow: 0 0 0 .18em var(--accent), 0 0 0 .55em var(--accent-soft); border-radius: .5em; transition: box-shadow .35s cubic-bezier(.32, .72, 0, 1) }
-.hw-src-list li.is-focus { padding-left: .6em; padding-right: .6em; margin: 0 -.6em }
-.hw-stage .hw-ask.is-focus, .hw-stage .hw-bench-bar.is-focus { border-radius: 0; box-shadow: inset .25em 0 0 var(--accent), inset 0 0 0 100em var(--accent-soft) }
-.hw-stage .hw-skill.is-focus { box-shadow: 0 0 0 .18em var(--accent) }
-.hw-pillars--stack { padding: 0 var(--x4e-pad-x) 22px; justify-content: flex-start }
-.hw-pillars--stack .hw-pillar { padding: 14px 0 }
 
-/* grid · the nine pillars as cards in three stage columns, all on the page
+/* grid · the pillars as cards in three stage columns, all on the page
    at once with nothing to open. No scene: the use case rows above carry the
    product pictures, and this section is the inventory (feedback: the scene
    over the grid was dropped) */
@@ -6648,102 +6318,9 @@ button.play { border: none; padding: 0; appearance: none }
   .hw-grid-head { padding: 22px var(--x4e-pad-x) 16px }
   .hw-card { padding: 20px var(--x4e-pad-x) 22px }
 }
-
-/* 2 · one continuous workspace: three notes in a row, one scene under them */
-.hw-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
-.hw-step + .hw-step { border-left: 1px solid var(--hair) }
-
-/* 5 · preparation over evidence */
-.hw-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--hair) }
-.hw-cell-wrap { display: flex; flex-direction: column; min-width: 0 }
-.hw-cell-wrap + .hw-cell-wrap { border-left: 1px solid var(--hair) }
-.hw-cell-wrap .hw-copy { flex: 1 }
-.hw-big { border-top: 1px solid var(--hair) }
-.hw-big-copy { display: grid; grid-template-columns: auto 1fr; column-gap: 28px; align-items: baseline }
-.hw-big-copy .hw-num { grid-row: 1 / 3; margin: 0 }
-.hw-big-copy .hw-p { max-width: 62ch }
-
-/* the strip at the foot: a property of the whole workflow, not a fourth step */
-.hw-ent {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px;
-  padding: 20px var(--x4e-pad-x); border-top: 1px solid var(--hair); background: #FAFAFA;
-}
-.hw-ent-label {
-  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
-  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--accent);
-}
-.hw-ent-label svg { width: 15px; height: 15px }
-.hw-ent p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--body-gray) }
-.hw-ent a { font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none; white-space: nowrap }
-.hw-ent a:hover { color: var(--accent) }
-
-@keyframes hwIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
-@media (prefers-reduced-motion: reduce) { .hw-src-list li, .hw-pillar, .hw-stage--tab, .hw-rail, .hw-rail .x4e-item, .hw-cell.is-sel span { animation: none } .hw-wire path { animation: none; stroke-dashoffset: 0 } .hw-wire circle { animation: none; opacity: 1 } .hw-cursor { transition: none } }
+@media (prefers-reduced-motion: reduce) { .hw-cursor { transition: none } }
 
 /* narrow: every layout is the columns layout stacked, copy then scene */
 @media (max-width: 900px) {
   .hw-head { flex-direction: column; align-items: flex-start }
-  .hw-cols { grid-template-columns: 1fr }
-  .hw-col + .hw-col { border-left: 0; border-top: 1px solid var(--hair) }
-  .hw-col + .hw-col::before { display: none }
-  .hw-copy { padding: 26px var(--x4e-pad-x) 24px }
-  .hw-stage--col { font-size: clamp(6px, 2.3cqw, 10px); aspect-ratio: 16 / 11; padding: 2.4em var(--x4e-pad-x) }
-  .hw-ent { grid-template-columns: 1fr; gap: 10px; padding: 18px var(--x4e-pad-x) }
-}
-
-/* Earnings update: full-width model and its linked source receipt. */
-.earn-stage {
-  display: flex; flex-direction: column; justify-content: center; gap: 16px;
-  padding: clamp(18px, 4.5cqw, 38px); aspect-ratio: auto; min-height: 490px;
-  font-size: clamp(11px, 2.15cqw, 14px);
-}
-.earn-demo { min-width: 0; }
-.earn-status { display: flex; align-items: center; gap: .7em; margin-bottom: 1.2em; color: #fff; font-size: .92em; min-height: 2em; }
-.earn-agent { display: grid; place-items: center; width: 1.9em; height: 1.9em; border: 1px solid #ffffff55; border-radius: .5em; background: #ffffff1f; }
-.earn-count { margin-left: auto; font-family: var(--font-mono); white-space: nowrap; opacity: .8; }
-.earn-workbook { background: #fff; border: 1px solid #dce2ee; border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px #0b24642b; }
-.earn-title { display: flex; align-items: center; gap: .75em; padding: 1.2em; font-weight: 550; }
-.earn-title div > span { display: block; font-weight: 400; color: var(--muted); font-size: .8em; margin-top: .25em; }
-.earn-file { display: grid; place-items: center; width: 2em; height: 2.3em; background: #e8f4ed; color: #237349; border-radius: 4px; font-weight: 600; }
-.earn-template { margin-left: auto; color: var(--secondary); font-size: .75em; font-weight: 400; background: #f3f5f8; padding: .45em .65em; border-radius: 4px; }
-.earn-formula { display: flex; align-items: center; gap: 1em; border-block: 1px solid #e7ebf1; padding: .65em 1.2em; font-family: var(--font-mono); font-size: .8em; }
-.earn-formula b { font-weight: 500; min-width: 2em; }
-.earn-formula i { color: #8a93a3; }
-.earn-formula em { margin-left: auto; font-family: var(--font-body); font-style: normal; color: #5068ab; font-size: .92em; }
-.earn-workbook table { width: 100%; border-collapse: collapse; font-size: .9em; font-variant-numeric: tabular-nums; }
-.earn-workbook th, .earn-workbook td { border-bottom: 1px solid #edf0f5; padding: 1em .65em; text-align: right; white-space: nowrap; font-weight: 400; }
-.earn-workbook thead th { background: #f7f8fb; color: #7b8494; font-size: .74em; padding-block: 1em; }
-.earn-workbook th:nth-child(2) { text-align: left; }
-.earn-workbook tbody th { color: #354052; font-weight: 500; }
-.earn-workbook .earn-rownum { background: #f7f8fb; color: #929aaa; font-size: .8em; padding-inline: .6em; }
-.earn-value { color: #a2aabb; position: relative; transition: background 240ms ease-out; }
-.earn-value.is-filled { color: #304c9b; background: #f0f4ff; }
-.earn-value.is-selected { box-shadow: inset 0 0 0 1.5px #526ed2; background: #e9efff; }
-.earn-value sup { font-size: .65em; margin-left: .3em; }
-.earn-variance { opacity: 0; color: #28734d; background: #edf7f0; border-radius: 4px; padding: .25em .35em; font-size: .9em; transition: opacity 240ms ease-out; }
-.earn-variance.is-visible { opacity: 1; }
-.earn-variance.is-miss { color: #a75a34; background: #fff2e9; }
-.earn-tabs { display: flex; gap: 1.3em; align-items: center; padding: .9em 1.2em; font-size: .8em; color: #818b9e; }
-.earn-tabs b { color: #3d5ab0; font-weight: 500; }
-.earn-tabs em { margin-left: auto; font-style: normal; }
-.earn-source { position: relative; margin-top: 1.5em; padding: 1.2em; background: #fff; border: 1px solid #dce2ee; border-radius: 8px; box-shadow: 0 8px 24px #0b246416; }
-.earn-source::before { content: ''; position: absolute; height: 1.5em; width: 1px; background: #ffffffaa; top: -1.5em; left: 55%; }
-.earn-source-head { display: flex; justify-content: space-between; gap: 1em; color: #7a8495; font-size: .72em; }
-.earn-source-head > span:first-child { color: #5068ab; letter-spacing: .04em; }
-.earn-source p { margin: 1em 0; min-height: 2.8em; font-size: 1em; line-height: 1.5; color: #344054; }
-.earn-source mark { background: #fff1c2; color: inherit; padding: .12em .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.earn-source-foot { display: flex; justify-content: space-between; gap: 1em; font-size: .7em; color: #8b94a3; }
-.earn-controls { display: flex; justify-content: space-between; align-items: center; color: #364e80; font-size: 10px; }
-.earn-controls button { font: inherit; color: inherit; padding: 5px 8px; border: 1px solid #405c8e40; background: #ffffff70; border-radius: 4px; cursor: pointer; }
-.earn-controls button:focus-visible { outline: 2px solid #2349bb; outline-offset: 3px; }
-@media (max-width: 560px) {
-  .earn-stage { padding: 18px 12px; min-height: 440px; font-size: 11px; }
-  .earn-template { display: none; }
-  .earn-workbook th, .earn-workbook td { padding-inline: .45em; }
-  .earn-source-head { flex-wrap: wrap; gap: .5em; font-size: 9px; }
-  .earn-source-foot { font-size: 8px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .earn-value, .earn-variance { transition: none; }
-  .earn-controls button { display: none; }
 }
