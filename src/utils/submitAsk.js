@@ -1,4 +1,5 @@
 import { EMAILS } from '@/config/site'
+import { ENV } from '@/config/env'
 
 // Where a prompt + email captured in the "Say hello to your new co-worker"
 // composer actually goes.
@@ -8,8 +9,8 @@ import { EMAILS } from '@/config/site'
 // has to be a third-party endpoint that accepts a JSON POST from the browser:
 // a Formspree / Basin / Getform form endpoint, a HubSpot forms URL, a Zapier or
 // Make catch hook, or a Google Apps Script web app. We use a Formspree form; the
-// URL is hardcoded in ENDPOINT below (public by design — it ships in the bundle
-// either way), with an optional VITE_ASK_ENDPOINT override for local testing.
+// URL comes from ENV.askEndpoint, with an optional PUBLIC_ASK_ENDPOINT override
+// for local testing.
 //
 // If the POST fails, submitAsk reports
 // { delivered: false } and the composer does NOT tell the visitor we'll be in
@@ -17,11 +18,7 @@ import { EMAILS } from '@/config/site'
 // support@finsynth.ai under their own send. Nothing is silently dropped either
 // way; the only difference is whether it arrives automatically.
 
-// Formspree endpoint for the "FinSynth landing asks" form. Hardcoded on purpose:
-// this URL is public by design (it ships in the client bundle either way), and
-// the site deploys as a prebuilt bundle, so there is no build-time env to read.
-// An env override still wins if VITE_ASK_ENDPOINT is ever set.
-const ENDPOINT = import.meta.env?.VITE_ASK_ENDPOINT || 'https://formspree.io/f/mnpanynp'
+const ENDPOINT = ENV.askEndpoint
 
 export const configured = Boolean(ENDPOINT)
 
@@ -50,7 +47,7 @@ export async function submitAsk({ prompt, email, example, source = 'landing:how-
   if (!ENDPOINT) {
     // eslint-disable-next-line no-console
     console.warn(
-      '[FinSynth] VITE_ASK_ENDPOINT is not set — this ask was NOT delivered. ' +
+      '[FinSynth] PUBLIC_ASK_ENDPOINT is not set — this ask was NOT delivered. ' +
         'The visitor is being offered the mail-to fallback.',
       payload
     )

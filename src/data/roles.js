@@ -1,4 +1,5 @@
 import { EMAILS, SITE } from '@/config/site'
+import { ENV } from '@/config/env'
 
 /**
  * The open roles, in one place. The footer's Careers column, the navbar's
@@ -14,12 +15,7 @@ import { EMAILS, SITE } from '@/config/site'
  */
 export const CAREERS_EMAIL = EMAILS.support
 
-// The Tally form ID — the trailing segment of the form's share URL
-// (https://tally.so/r/<id>). Hardcoded on purpose, like the Formspree endpoint
-// in utils/submitAsk.js: it is public by design (it ships in the bundle either
-// way), and the site deploys as a prebuilt bundle. An env override still wins
-// if VITE_TALLY_FORM_ID is ever set (e.g. to point local dev at a test form).
-export const TALLY_FORM_ID = import.meta.env?.VITE_TALLY_FORM_ID || 'GxEy8Q'
+export const TALLY_FORM_ID = ENV.tallyFormId
 
 
 export const ABOUT_US = SITE.description

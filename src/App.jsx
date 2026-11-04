@@ -3,9 +3,9 @@ import { ClerkProvider } from '@clerk/react'
 import Home from './pages/Home'
 import Support from './pages/Support'
 import Careers from './pages/Careers'
+import { ENV } from '@/config/env'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-  || 'pk_live_Y2xlcmsuZmluc3ludGguYWkk'
+const PUBLISHABLE_KEY = ENV.clerkPublishableKey
 
 
 const APPEARANCE = {
