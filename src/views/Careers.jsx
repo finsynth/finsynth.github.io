@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { ROLES, ABOUT_US, applyHref } from '../data/roles'
@@ -12,16 +12,18 @@ function Careers() {
     }
   }, [])
 
-  useHashScroll()
-
   // Tally's "redirect on completion" sends the applicant back here with
   // ?applied=1 (set in the form's settings), so the thank-you is our page,
   // not Tally's "create your own form" screen. Read once at mount — the flag
   // shouldn't survive into copied/bookmarked URLs, so strip it after reading.
-  const applied = new URLSearchParams(window.location.search).has('applied')
+  const [applied, setApplied] = useState(false)
   useEffect(() => {
-    if (applied) window.history.replaceState(null, '', window.location.pathname)
-  }, [applied])
+    if (!new URLSearchParams(window.location.search).has('applied')) return
+    setApplied(true)
+    window.history.replaceState(null, '', window.location.pathname)
+  }, [])
+
+  useHashScroll()
 
   return (
     <div className="mainContainer">
