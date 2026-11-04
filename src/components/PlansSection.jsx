@@ -3,8 +3,7 @@ import { PricingTable, useUser, useOrganizationList } from '@clerk/react'
 import useSectionZoom from '../hooks/useSectionZoom'
 import { LINKS } from '@/config/site'
 
-// Where a finished checkout's "Continue" lands. External URL — leaves via the
-// router bridge in App.jsx.
+// Where a finished checkout's "Continue" lands.
 const APP_HREF = LINKS.app
 
 const SHOW_ORG_PLANS = false
