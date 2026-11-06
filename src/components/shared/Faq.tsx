@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import useZoom from '@/hooks/useZoom'
 import { EMAILS } from '@/config/site'
 
@@ -33,18 +33,33 @@ const DEFAULT_TITLE = <>Curious about FinSynth?<br />We got you <span className=
 
 /* `items` and `title` let the solutions pages render this exact section with
    their own questions instead of a lookalike of it */
-export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', openFirst = false }) {
+interface FaqItem {
+  q: string
+  a: ReactNode
+}
+
+export default function Faq({
+  items = FAQS,
+  title = DEFAULT_TITLE,
+  id = 'faq',
+  openFirst = false,
+}: {
+  items?: FaqItem[]
+  title?: ReactNode
+  id?: string
+  openFirst?: boolean
+}) {
   // openFirst starts with the first answer showing, so the list reads as
   // questions with answers rather than a closed grey list
   const [open, setOpen] = useState(openFirst ? 0 : -1)
-  const ref = useRef(null)
-  const zoomRef = useZoom()
-  const listRef = useRef(null)
-  const btnRefs = useRef([])
-  const innerRefs = useRef([])
+  const ref = useRef<HTMLElement>(null)
+  const zoomRef = useZoom<HTMLDivElement>()
+  const listRef = useRef<HTMLDivElement>(null)
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const innerRefs = useRef<(HTMLDivElement | null)[]>([])
   const [rail, setRail] = useState({ top: 0, height: 0, on: false })
   const [copied, setCopied] = useState(false)
-  const copyTimer = useRef(null)
+  const copyTimer = useRef<ReturnType<typeof setTimeout>>()
 
   const CONTACT_EMAIL = EMAILS.support
   const copyEmail = () => {
@@ -179,7 +194,7 @@ export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', o
                 <button
                   type="button"
                   className="faq-q"
-                  ref={el => (btnRefs.current[i] = el)}
+                  ref={(el) => { btnRefs.current[i] = el }}
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >
@@ -187,7 +202,7 @@ export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', o
                   <span className="faq-toggle" aria-hidden="true" />
                 </button>
                 <div className="faq-a" role="region" aria-hidden={!isOpen}>
-                  <div className="faq-a-inner" ref={el => (innerRefs.current[i] = el)}>
+                  <div className="faq-a-inner" ref={(el) => { innerRefs.current[i] = el }}>
                     <p>{item.a}</p>
                   </div>
                 </div>

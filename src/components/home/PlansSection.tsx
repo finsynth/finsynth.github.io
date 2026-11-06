@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import { Component, type ReactNode } from 'react'
 import { ClerkProvider, PricingTable, useUser, useOrganizationList } from '@clerk/react'
 import useZoom from '@/hooks/useZoom'
 import { LINKS } from '@/config/site'
@@ -15,7 +15,7 @@ const SHOW_ORG_PLANS = false
  * this section may die, never the page. React unmounts the whole tree on an
  * uncaught render error, so the boundary is not optional here.
  */
-class PlansBoundary extends Component {
+class PlansBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false }
   static getDerivedStateFromError() { return { failed: true } }
   render() {
@@ -61,7 +61,7 @@ function CreateOrgButton() {
 }
 
 export default function PlansSection() {
-  const zoomRef = useZoom()
+  const zoomRef = useZoom<HTMLDivElement>()
 
   return (
     <section className="plans" id="pricing">

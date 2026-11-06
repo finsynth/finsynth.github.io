@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react'
 function ScrollNextButton() {
   const [atBottom, setAtBottom] = useState(false)
   const [onDark, setOnDark] = useState(false)
-  const btnRef = useRef(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const doc = document.documentElement

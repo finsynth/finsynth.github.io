@@ -28,8 +28,8 @@ const AGENTS = [
 ];
 
 export default function Footer() {
-  const ref = useRef(null);
-  const askRef = useRef(null);
+  const ref = useRef<HTMLElement>(null);
+  const askRef = useRef<HTMLDivElement>(null);
   const [askOpen, setAskOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -54,10 +54,10 @@ export default function Footer() {
   // Ask-AI dropdown — close on outside click / Escape
   useEffect(() => {
     if (!askOpen) return;
-    const onDown = (e) => {
-      if (askRef.current && !askRef.current.contains(e.target)) setAskOpen(false);
+    const onDown = (e: MouseEvent) => {
+      if (askRef.current && !askRef.current.contains(e.target as Node)) setAskOpen(false);
     };
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setAskOpen(false);
     };
     document.addEventListener('mousedown', onDown);

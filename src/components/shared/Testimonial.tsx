@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import useReveal from '@/hooks/useReveal'
 import useCardStack from '@/hooks/useCardStack'
 
@@ -23,7 +24,7 @@ const QUOTES = [
 ]
 
 // ← / → chevrons for the deck controls
-const Chevron = ({ back }) => (
+const Chevron = ({ back = false }: { back?: boolean }) => (
   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path
       d={back ? 'M10 3.5L5.5 8l4.5 4.5' : 'M6 3.5L10.5 8 6 12.5'}
@@ -37,8 +38,22 @@ const DEFAULT_TITLE = <>Hear what the analysts<br />have to <span className="ttl
 // Other pages pass their own quotes (a solutions page carries the one quote
 // from its outline). With a single card there is no deck to page through, so
 // the arrows go and the stack holds still.
-export default function Testimonial({ quotes = QUOTES, title = DEFAULT_TITLE, id = 'customers' }) {
-  const revealRef = useReveal()
+interface Quote {
+  quote: string
+  name: string
+  role?: string
+}
+
+export default function Testimonial({
+  quotes = QUOTES,
+  title = DEFAULT_TITLE,
+  id = 'customers',
+}: {
+  quotes?: Quote[]
+  title?: ReactNode
+  id?: string
+}) {
+  const revealRef = useReveal<HTMLDivElement>()
   const { sectionRef, stackRef, next, prev } = useCardStack(quotes.length)
   const deck = quotes.length > 1
   return (

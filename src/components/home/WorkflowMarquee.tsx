@@ -46,8 +46,8 @@ function Tick() {
 const ACTIVE_LINE = 0.42
 
 export default function WorkflowMarquee() {
-  const viewportRef = useRef(null)
-  const itemRefs = useRef([])
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([])
 
   // Duplicated once so the vertical marquee loops seamlessly (translateY -50%).
   const loop = [...WORKFLOWS, ...WORKFLOWS]
@@ -88,7 +88,7 @@ export default function WorkflowMarquee() {
         {loop.map((w, i) => (
           <li
             key={i}
-            ref={(el) => (itemRefs.current[i] = el)}
+            ref={(el) => { itemRefs.current[i] = el }}
             className={`what-item${active[i] ? ' is-checked' : ''}`}
             aria-hidden={i >= WORKFLOWS.length}
           >

@@ -67,6 +67,10 @@ const LINES = [
 const VB_W = 1350
 const VB_H = 610
 
+/**
+ * @param {{ reach?: number, core?: number, idle?: boolean, idleLevel?: number,
+ *   asBackground?: boolean, pointerTargetRef?: import('react').RefObject<HTMLElement> | null }} props
+ */
 function GridReveal({
   reach = 520,   // spotlight radius (viewBox units) where fill reaches zero
   core = 140,    // inner radius held at full fill
