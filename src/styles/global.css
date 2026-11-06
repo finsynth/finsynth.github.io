@@ -1785,7 +1785,11 @@ button.play { border: none; padding: 0; appearance: none }
    duo so it can only ever reach the two Clerk-backed groups. */
 .plans-duo .plans-group:not(:has(.cl-pricingTable)),
 .plans-duo .plans-group:has(.cl-pricingTable:empty) { display: none }
+/* hold the table's loaded height while Clerk fetches it, so nothing below jumps;
+   floor of the live table's height (re-measure if the plan count changes) */
+#pricing .plans-table { min-height: 493px }
 @media (max-width: 900px) {
+  #pricing .plans-table { min-height: 832px }
   .plans-duo { flex-direction: column; align-items: stretch }
   .plans-group { width: auto }
   .plans-duo .cl-pricingTable {
@@ -3763,8 +3767,11 @@ button.play { border: none; padding: 0; appearance: none }
 
 /* the band and the frame have to touch, so the section above gives up its
    bottom padding when this one follows it. Only the first <ExcelSection />
-   does — the FIA Agent teaser is followed by a rule and keeps its padding. */
-.x4e-sec:has(+ .wac-sec) { padding-bottom: 0 }
+   does — the FIA Agent teaser is followed by a rule and keeps its padding.
+   The second selector covers the section rendered as an Astro island, whose
+   <astro-island> wrapper is the band's sibling instead. */
+.x4e-sec:has(+ .wac-sec),
+astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 
 .wac-sec {
   position: relative;
