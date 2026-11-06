@@ -21,8 +21,6 @@ import CertSeals from './CertSeals'
  * .x4e-visual and the cell takes care of the rest.
  */
 
-const VB = '0 0 640 320'
-
 /* ── shared source badges ─────────────────────────────────────────────────
  * Each pill carries one of three badge kinds:
  *   · glyph — a drawn outline mark for the categorical sources (filings,
