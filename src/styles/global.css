@@ -220,10 +220,14 @@ img, video, svg, picture {
   gap: 2rem;
 }
 
+.navbar-logo-link {
+  display: flex;
+  flex-shrink: 0;
+}
+
 .navbar-logo {
   height: 1.5rem;
   width: fit-content;
-  cursor: pointer;
   flex-shrink: 0;
 }
 

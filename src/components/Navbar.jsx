@@ -5,7 +5,7 @@ import { ROLES, roleHref, roleLabel } from '../data/roles';
 import { SEGMENTS } from '../data/segments';
 import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '../data/solutions';
 import { APP_HREF } from './AskParts';
-import { LINKS, SITE } from '@/config/site';
+import { LINKS } from '@/config/site';
 
 
 const PRODUCTS = [
@@ -301,12 +301,9 @@ export default function Navbar() {
       ref={navRef}
     >
       <div className="navbar-inner">
-        <img
-          className="navbar-logo"
-          src="/assets/img/full-logo.svg"
-          alt="FinSynth Logo"
-          onClick={() => window.location.href = SITE.url}
-        />
+        <a className="navbar-logo-link" href="/">
+          <img className="navbar-logo" src="/assets/img/full-logo.svg" alt="FinSynth Logo" />
+        </a>
         {compact ? (
           <div
             id="nav-sheet"
