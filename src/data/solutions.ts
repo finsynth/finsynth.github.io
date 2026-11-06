@@ -9,7 +9,9 @@
 // the eight pillars run in the same order on every page; only the wording
 // changes by audience, so each page lists [title, body] pairs and this maps
 // them onto the keys, visuals and timings HowStages expects
-const PILLAR_SHAPE = [
+type Pillar = [title: string, body: string]
+
+const PILLAR_SHAPE: [key: string, visual: string, ms: number][] = [
   ['workflows', 'workflows', 4800],
   ['surfaces', 'surfaces', 4200],
   ['cited', 'cited', 4200],
@@ -19,7 +21,7 @@ const PILLAR_SHAPE = [
   ['mcp', 'sources', 5000],
   ['review', 'trace', 9000],
 ];
-const howSteps = (pillars) => pillars.map(([title, body], i) => {
+const howSteps = (pillars: Pillar[]) => pillars.map(([title, body], i) => {
   const [key, visual, ms] = PILLAR_SHAPE[i];
   return { key, visual, ms, title, body };
 });
@@ -60,7 +62,14 @@ const CROCS_EXAMPLE = {
   },
 };
 // the example with the desk's own file name and folder swapped in
-const exampleFor = ({ file, kind = 'Your template', folder = 'Broker notes', instruction, skill }) => ({
+interface ExampleOverrides {
+  file: string
+  kind?: string
+  folder?: string
+  instruction?: string
+  skill?: string
+}
+const exampleFor = ({ file, kind = 'Your template', folder = 'Broker notes', instruction, skill }: ExampleOverrides) => ({
   ...CROCS_EXAMPLE,
   file,
   instruction: instruction || CROCS_EXAMPLE.instruction,
@@ -68,7 +77,7 @@ const exampleFor = ({ file, kind = 'Your template', folder = 'Broker notes', ins
   sources: CROCS_EXAMPLE.sources.map((s) =>
     s.icon === 'sheet' ? { ...s, name: file, kind } : s.icon === 'folder' ? { ...s, name: folder } : s),
 });
-const howFor = (example, pillars) => ({
+const howFor = (example: ReturnType<typeof exampleFor>, pillars: Pillar[]) => ({
   title: 'Fast to draft. Faster to trust',
   eyebrow: 'How your team works with FinSynth',
   example,
@@ -646,4 +655,4 @@ export const SOLUTIONS = {
   },
 }
 
-export const solutionHref = (slug) => `/solutions/${slug}`
+export const solutionHref = (slug: string) => `/solutions/${slug}`

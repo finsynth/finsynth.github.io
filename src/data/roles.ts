@@ -21,9 +21,23 @@ export const TALLY_FORM_ID = ENV.tallyFormId
 export const ABOUT_US = SITE.description
 
 // Each role: `about` opens the posting; `sections` are rendered in order as a
-// heading, an optional intro line, and a bullet list. A bullet's optional
+// heading and a bullet list. A bullet's optional
 // `lead` is the bolded first sentence ("Drive engineering execution.").
-export const ROLES = [
+export interface RoleItem {
+  lead?: string
+  text: string
+}
+
+export interface Role {
+  key: string
+  title: string
+  place: string
+  meta: string
+  about: string
+  sections: { heading: string; items: RoleItem[] }[]
+}
+
+export const ROLES: Role[] = [
   {
     key: 'gtm',
     title: 'Founding GTM Lead',
@@ -97,18 +111,17 @@ export const ROLES = [
 // Location in brackets, so the role reads first and the city is the aside:
 // "Founding GTM Lead (NYC)". The footer column and the navbar menu render
 // this, and it is also the role value an application arrives under.
-export const roleLabel = (r) => `${r.title} (${r.place})`
+export const roleLabel = (r: Role) => `${r.title} (${r.place})`
 
 // Where the navbar/footer role links land: the posting on /careers. Hash ids
-// match `key`, and Careers.jsx scrolls to them on load (the content is
-// client-rendered, so the browser's native anchor jump fires too early).
-export const roleHref = (r) => `/careers#${r.key}`
+// match `key`; the browser jumps to them natively.
+export const roleHref = (r: Role) => `/careers#${r.key}`
 
 // Where "Apply" goes: the Tally form, with the role prefilled into a hidden
 // `role` field (create it in Tally with exactly that name). Falls back to the
 // mailto the site published before the form existed, so the button always
 // lands somewhere real.
-export const applyHref = (r) =>
+export const applyHref = (r: Role) =>
   TALLY_FORM_ID
     ? `https://tally.so/r/${TALLY_FORM_ID}?role=${encodeURIComponent(roleLabel(r))}`
     : `mailto:${CAREERS_EMAIL}?subject=${encodeURIComponent(`Application: ${roleLabel(r)}`)}`

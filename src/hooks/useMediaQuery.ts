@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
  * Starts false so the first server/hydration pass matches the desktop markup,
  * then corrects on mount.
  */
-export default function useMediaQuery(query) {
+export default function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false)
 
   useEffect(() => {

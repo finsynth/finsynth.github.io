@@ -6,8 +6,8 @@ import { zoom } from '@/lib/scroll-effects'
  * to an INNER content wrapper, not an ancestor of a `position: sticky` child.
  * Static sections use `data-zoom` instead.
  */
-export default function useZoom() {
-  const ref = useRef(null)
+export default function useZoom<T extends HTMLElement = HTMLElement>() {
+  const ref = useRef<T>(null)
 
   useEffect(() => {
     if (ref.current) return zoom(ref.current)

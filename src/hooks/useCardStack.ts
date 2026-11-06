@@ -31,11 +31,11 @@ const HOLD_MS = 2800 // rest time with a card at the front
 const FLIGHT_MS = 950 // duration of the up-and-over flight
 const FADE = 0.92 // opacity the flying card sheds at the apex of its arc
 
-export default function useCardStack(count) {
-  const sectionRef = useRef(null)
-  const stackRef = useRef(null)
+export default function useCardStack(count: number) {
+  const sectionRef = useRef<HTMLElement>(null)
+  const stackRef = useRef<HTMLDivElement>(null)
   // set up by the effect below; a no-op before mount and under reduced motion
-  const stepRef = useRef(null)
+  const stepRef = useRef<((d: 1 | -1) => void) | null>(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -44,24 +44,24 @@ export default function useCardStack(count) {
     if (count < 2) return // one card: nothing to cycle, nothing to page
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    const cards = Array.from(stack.children)
+    const cards = Array.from(stack.children) as HTMLElement[]
     let raf = 0
     let base = 0 // index of the card currently at the front
-    let phase = 'hold' // 'hold' | 'flight'
-    let dir = 1 // 1 = flight plays forward, -1 = the same flight in reverse
+    let phase: 'hold' | 'flight' = 'hold'
+    let dir: 1 | -1 = 1 // 1 = flight plays forward, -1 = the same flight in reverse
     let phaseStart = 0
     let visible = false
     let hovered = false // true while the pointer is over the deck — pauses at rest
 
-    const ease = (t) => t * t * (3 - 2 * t) // smoothstep
+    const ease = (t: number) => t * t * (3 - 2 * t) // smoothstep
 
-    const render = (t) => {
+    const render = (t: number) => {
       // t: 0 at rest → 1 when the front card has landed at the back
       const cardH = cards[0] ? cards[0].offsetHeight : 320
       const lift = cardH * 0.6 + 40 // apex clears the stack's top edge
       cards.forEach((el, i) => {
         const raw = (i - base + count * 2) % count // 0 = front slot
-        let y, s, z, o
+        let y: number, s: number, z: number, o: number
         if (raw === 0 && t > 0) {
           // in flight: up and over the top, then down behind the deck. The card
           // thins out to a ghost across the arc — at the apex it overlaps the
@@ -83,12 +83,12 @@ export default function useCardStack(count) {
           o = 1
         }
         el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${s.toFixed(4)})`
-        el.style.zIndex = z
+        el.style.zIndex = String(z)
         el.style.opacity = o.toFixed(3)
       })
     }
 
-    const tick = (now) => {
+    const tick = (now: number) => {
       raf = requestAnimationFrame(tick)
       if (!visible) {
         phaseStart = now // hold the timer while offscreen
@@ -124,7 +124,7 @@ export default function useCardStack(count) {
     // Hand-driven step, off the arrow controls. Forward is the timer's own move;
     // backward pulls the card at the rear of the deck to the front by putting
     // the deck one slot back and running its flight in reverse.
-    stepRef.current = (d) => {
+    stepRef.current = (d: 1 | -1) => {
       if (phase === 'flight') return
       dir = d
       if (d === -1) base = (base - 1 + count) % count

@@ -1,4 +1,4 @@
-function SectionRule({ label = undefined }) {
+function SectionRule({ label }: { label?: string }) {
   return (
     <div className="section-rule" aria-hidden="true">
       <div className="sr-track">

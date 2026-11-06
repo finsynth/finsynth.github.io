@@ -16,8 +16,10 @@ const CYCLE_SECONDS = 7
 const U = 95                 // cube edge, in projection units
 const C = 1.5 * U            // half the 3-cube, so the lattice centres on 0
 
-const P = (x, y, z) => [(x - y) * 0.866, (x + y) * 0.5 - z]
-const pt = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`
+type Point = [number, number]
+
+const P = (x: number, y: number, z: number): Point => [(x - y) * 0.866, (x + y) * 0.5 - z]
+const pt = (p: Point) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`
 
 /* t/r/l = top, right, left face. Every piece is the same white cube outlined in
    the page accent (the stroke lives in .ent-viz-face), so the design's four
@@ -29,7 +31,9 @@ const FACE = { t: '#FFFFFF', r: '#F6F8FE', l: '#ECF0FC' }
    short — a little under one cube edge — so a piece reads as easing into place
    rather than flying across the panel; the direction is what says which way it
    came from, and the distance past that is only travel. */
-const PIECES = [
+type Vec3 = [number, number, number]
+
+const PIECES: { cells: Vec3[]; from: Vec3 }[] = [
   { cells: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0], [0, 2, 0]], from: [-85, 0, 0] },
   { cells: [[1, 1, 0], [2, 1, 0], [1, 2, 0], [2, 2, 0]], from: [0, 85, 0] },
   { cells: [[0, 0, 1], [1, 0, 1], [2, 0, 1]], from: [0, -85, 0] },
@@ -68,13 +72,13 @@ const KEYFRAMES = PIECES.map((p, pi) => {
   + '@media (prefers-reduced-motion: reduce){'
   + '.ent-viz-piece{animation:none!important;opacity:1!important;transform:none!important}}'
 
-function Cell({ c, pi }) {
+function Cell({ c, pi }: { c: Vec3; pi: number }) {
   const [i, j, k] = c
   const x0 = i * U - C, x1 = x0 + U
   const y0 = j * U - C, y1 = y0 + U
   const z0 = k * U, z1 = z0 + U
 
-  const face = (pts, fill) => (
+  const face = (pts: Point[], fill: string) => (
     <path key={fill} className="ent-viz-face" d={`M ${pts.map(pt).join(' L ')} Z`} fill={fill} />
   )
 
