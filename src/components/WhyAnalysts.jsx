@@ -1,4 +1,3 @@
-import useReveal from '../hooks/useReveal'
 
 /**
  * The verifiable stats, as a metrics band hung off the bottom of the Excel
@@ -31,10 +30,8 @@ const NUMBERS = [
 ]
 
 export default function WhyAnalysts() {
-  const revealRef = useReveal({ threshold: 0.08 })
-
   return (
-    <section className="wac-sec" id="why-finsynth" ref={revealRef}>
+    <section className="wac-sec" id="why-finsynth" data-reveal="0.08">
       {/* .wrap, not a stage of its own: it's the same container the Excel
           section's frame uses, which is what makes the two line up */}
       <div className="wrap">

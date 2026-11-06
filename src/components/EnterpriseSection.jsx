@@ -1,13 +1,10 @@
-import useZoom from '../hooks/useZoom'
 import EnterpriseBanner from './EnterpriseBanner'
 
 
 export default function EnterpriseSection() {
-  const zoomRef = useZoom()
-
   return (
     <section className="plans" id="enterprise-plan">
-      <div className="wrap plans-wrap" ref={zoomRef}>
+      <div className="wrap plans-wrap" data-zoom>
         <p className="plans-eyebrow">Enterprise</p>
         <h2 className="plans-title">Get your team on <span className="ttl-hl">FinSynth</span></h2>
 

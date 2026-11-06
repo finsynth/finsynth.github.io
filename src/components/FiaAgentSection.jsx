@@ -1,4 +1,3 @@
-import useReveal from '../hooks/useReveal'
 
 /**
  * "Fia" — split out of ExcelSection into its own file so the Excel frame
@@ -51,12 +50,10 @@ function ChatWindow() {
 }
 
 export default function FiaAgentSection({ id = 'fia-agent' }) {
-  const frameRef = useReveal({ threshold: 0.08 })
-
   return (
     <section className="x4e-sec" id={id}>
       <div className="wrap">
-        <div className="x4e-frame" ref={frameRef}>
+        <div className="x4e-frame" data-reveal="0.08">
 
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
