@@ -334,6 +334,64 @@ img, video, svg, picture {
   background: var(--accent-soft);
 }
 
+/* ── Solutions menu: a two-column card of desk + one-line blurb, each row led
+   by a line icon in the brand blue. Same card as the list menus, just wider
+   and on a grid, so the two columns read as one surface. */
+.nav-drop-card--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  /* wide enough that every blurb holds one line; on the narrowest desktop the
+     card would run off the right edge, so it gives way and the blurbs wrap */
+  width: 42rem;
+  max-width: calc(100vw - 20rem);
+  padding: 8px;
+  border-radius: 14px;
+}
+
+.nav-drop-item--rich {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  white-space: normal;
+}
+
+.nav-drop-ico {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
+.nav-drop-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.nav-drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.nav-drop-title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.nav-drop-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--secondary);
+}
+
 /* an entry that isn't live yet — listed so the roadmap reads in the menu, but
    it goes nowhere, so no hover face and no pointer */
 .nav-drop-item.is-soon,
@@ -463,6 +521,12 @@ img, video, svg, picture {
   padding: 0.625rem 0.75rem 0.625rem 1.375rem;
   font-size: 1rem;
 }
+/* in the sheet a rich row keeps its icon and blurb, at the sheet's own size */
+.navbar-sheet .nav-drop-item--rich {
+  padding: 0.625rem 0.75rem 0.625rem 1.375rem;
+}
+.navbar-sheet .nav-drop-title { font-size: 1rem; }
+.navbar-sheet .nav-drop-desc { font-size: 0.875rem; }
 /* an expanded row sits at rest in the plain face: the rows start open, so the
    desktop trigger's open tint would read as a button stuck in hover. The
    turned caret marks open; the tint is reserved for an actual pointer... */
@@ -754,7 +818,8 @@ button.play { border: none; padding: 0; appearance: none }
 .hiw-eyebrow,
 .secx-eyebrow,
 .plans-eyebrow,
-.faq-eyebrow { display: none !important; }
+.faq-eyebrow,
+.hw-head .sol-eyebrow { display: none !important; } /* the solutions pages' How it works head follows the same rule */
 
 @keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
 /* hiwPulse went with the live tool-call row's blinking dot — nothing pulses here now */
@@ -981,10 +1046,10 @@ button.play { border: none; padding: 0; appearance: none }
   /* Beside the nav the headline is the lockup's widest line, so its size is
      what decides whether the two collide (feedback at 1275: "the words are
      colliding"). Second term is the room the nav leaves: the band's width
-     less the 555px grid, its 32px overhang into the wrap padding and a 48px
+     less the 794px grid, its 32px overhang into the wrap padding and a 48px
      breathing gap, divided by the headline's measured 8.68px of width per
      font px. 3.4vw still governs where there is room to spare. */
-  font-size: clamp(30px, min(3.4vw, (100cqw - 571px) / 8.68), 46px);
+  font-size: clamp(30px, min(3.4vw, (100cqw - 810px) / 8.68), 46px);
   line-height: 1.08;
   letter-spacing: var(--ls-display); color: #fff;
 }
@@ -1011,7 +1076,7 @@ button.play { border: none; padding: 0; appearance: none }
    column's empty right half between the links and the page edge. */
 .foot-grid-new {
   display: grid;
-  grid-template-columns: repeat(4, max-content);
+  grid-template-columns: repeat(5, max-content);
   width: auto;
   /* feedback: "shift them towards right". The columns sat on the shared
      content edge, 32px inside the wrap; on the full-bleed dark ground that
@@ -1279,6 +1344,7 @@ button.play { border: none; padding: 0; appearance: none }
    drives translate/scale/z-index on an automatic timer.
    Room below for the deeper cards peeking out (2 × PEEK). */
 .testi-deck { position: relative; width: min(680px, 100%); margin: 0 auto }
+.testi-deck--single .testi-stack { padding-bottom: 0 }
 .testi-stack {
   display: grid;
   width: 100%;
@@ -1479,6 +1545,10 @@ button.play { border: none; padding: 0; appearance: none }
 }
 .faq-contact { margin-top: auto; padding-top: 64px }
 .faq-contact-line { display: block; width: 1.5px; height: 56px; background: var(--ink); margin-left: 16px }
+/* on the solutions pages the chip hangs from the title instead of the column's
+   foot, where the shorter copy left it stranded under empty space */
+.sol-page .faq-contact { margin-top: 0; padding-top: 4px }
+.sol-page .faq-contact-line { height: 36px }
 .faq-contact-chip {
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--ink); color: var(--bg); text-decoration: none;
@@ -1878,12 +1948,14 @@ button.play { border: none; padding: 0; appearance: none }
 .cl-checkout-root { position: relative; z-index: 1200; }
 
 /* ════════ RESPONSIVE ════════ */
-/* Footer stacks (lockup above, nav below) from 1300 down. The 1100 this used
-   to be predates the Social column: the four-column nav is 555px, and the
-   lockup can't shrink under the 311px of its two buttons, so below ~1300 the
-   two are left with less than 48px between them however small the headline. */
-@media (max-width: 1300px) {
+/* Footer stacks (lockup above, nav below) from 1600 down. The 1300 this used
+   to be predates the Solutions and Social columns: the five-column nav is
+   794px, and the lockup can't shrink under the 311px of its two buttons, so
+   below ~1600 the two are left with less than 48px between them however small
+   the headline (feedback: the headline ran over the Product column) */
+@media (max-width: 1600px) {
   .foot-cols { flex-direction: column; gap: 56px; padding-inline: 0 }
+  .foot-cta-copy h3 br { display: none }
   .foot-right { align-items: flex-start; gap: 44px; width: 100% }
   /* stacked, the headline has the whole width, so the nav term above no
      longer applies */
@@ -1891,7 +1963,7 @@ button.play { border: none; padding: 0; appearance: none }
   /* stacked under the lockup the nav has the full width, so the four columns
      spread across it rather than huddling at the left; each keeps its longest
      link's width so nothing wraps mid-label */
-  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; width: 100%; margin-right: 0 }
+  .foot-grid-new { grid-template-columns: repeat(5, max-content); justify-content: space-between; width: 100%; margin-right: 0 }
 }
 
 @media (max-width: 900px) {
@@ -1938,7 +2010,9 @@ button.play { border: none; padding: 0; appearance: none }
      columns; the links never break mid-label */
   .foot-grid-new > div { padding: 0; border-left: none; }
   .foot-grid-new h4 { margin-bottom: 16px }
-  .foot-grid-new { grid-template-columns: repeat(4, max-content); justify-content: space-between; column-gap: 12px; width: 100% }
+  /* five groups at this type size no longer clear a 335px row, so they go
+     three up with the last two under them, rather than wrapping mid-label */
+  .foot-grid-new { grid-template-columns: repeat(3, max-content); justify-content: space-between; column-gap: 12px; row-gap: 20px; width: 100% }
   .foot-grid-new a,
   .foot-soon { width: max-content; white-space: nowrap; margin-bottom: 8px }
   /* "FinSynth MCP (coming soon)" on one line widens the Product column
@@ -5341,6 +5415,9 @@ button.play { border: none; padding: 0; appearance: none }
   position: relative;
   width: 100%;
   max-width: 420px;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -5358,6 +5435,38 @@ button.play { border: none; padding: 0; appearance: none }
   background: var(--surface);
   color: var(--secondary);
   box-shadow: 0 1px 2px rgba(20, 36, 46, .04);
+}
+.support-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 34px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  color: var(--ink);
+}
+.support-description {
+  margin: 14px 0 0;
+  max-width: 390px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--secondary);
+  text-wrap: pretty;
+}
+.support-content .support-cta {
+  margin: 28px 0 0;
+  min-height: 46px;
+  padding: 12px 22px;
+  gap: 10px;
+  font-size: 15px;
+}
+.support-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+@media (max-width: 560px) {
+  .support-container { padding-inline: 20px; padding-block: 40px 56px; }
+  .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
 }
 .support-heading {
   margin: 0;
@@ -5590,7 +5699,628 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-cta-copy h3 { font-size: calc((100vw - 72px) / 11.4); }
   /* under ~330px the four footer groups' longest links no longer clear the
      row, so the labels may wrap inside their column here */
-  .foot-grid-new { grid-template-columns: repeat(4, minmax(0, auto)); }
+  .foot-grid-new { grid-template-columns: repeat(3, minmax(0, auto)); }
   .foot-grid-new a,
   .foot-soon { width: auto; white-space: normal; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOLUTIONS PAGES (/solutions/<slug>) — src/pages/Solution.jsx
+   One page per desk. Hero, the site's metrics band, four workflow rows that
+   alternate copy and a drawn product panel on the enterprise blue, then the
+   closing CTA. The drawn panels size everything in em off a stage whose
+   font-size tracks the column width, so a phone gets the same picture smaller
+   rather than a re-flowed one (see .sol-stage).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sol-page { background: var(--bg); }
+
+.sol-eyebrow {
+  margin: 0 0 14px;
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--accent);
+}
+
+/* ── hero ── a full-bleed photo of a carved stone capital, darkened to a near-black ground,
+   with the copy centred on it the way the home hero centres its cell. No Excel
+   grid behind it: the solutions heroes stay plain. The header runs edge to
+   edge above the page rails (z-index 5) so the two hairlines stop at its foot;
+   the copy sits in a .wrap so it lines up with the sections below. */
+.sol-hero {
+  position: relative; z-index: 6; overflow: hidden; isolation: isolate;
+  /* fills the first screen under the sticky navbar on every device, as the
+     home photo hero does, so the fold lands on the hero's own edge
+     (feedback: it ended abruptly partway down the screen) */
+  min-height: calc(100vh - var(--navbar-height));
+  min-height: calc(100svh - var(--navbar-height));
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: clamp(64px, 9vh, 112px); padding-bottom: clamp(64px, 9vh, 112px);
+  background: #0B1120;
+}
+/* the photo: cover, centred on the capital, its warm stone pulled toward the
+   page's ink, then a dark wash that leaves the carving readable behind the copy */
+.sol-hero-bg { position: absolute; inset: 0; z-index: -1 }
+.sol-hero-bg img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block;
+  filter: saturate(.55) contrast(1.06);
+}
+.sol-hero-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(8, 13, 28, .62) 0%, rgba(8, 13, 28, .48) 50%, rgba(8, 13, 28, .74) 100%),
+    radial-gradient(60% 55% at 50% 50%, rgba(8, 13, 28, .3), rgba(8, 13, 28, 0) 100%);
+}
+.sol-hero-copy {
+  position: relative; width: 100%;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
+}
+/* the eyebrow on the dark ground: the accent lifted so it holds its chroma */
+/* the eyebrow as a highlight (feedback): a frosted-glass pill in the home
+   hero's Backed-by treatment, white capitals with an accent dot, so the
+   page's name reads as a badge on the photo rather than a line lost in it.
+   Brighter than the home one (feedback again): more white in the glass, a
+   stronger edge, a faint halo and a slightly larger setting */
+.sol-hero .sol-eyebrow {
+  display: inline-flex; align-items: center; gap: .75em; margin: 0 0 22px; padding: 10px 19px 10px 15px;
+  border-radius: 999px; color: #fff; font-size: calc(var(--fs-mono) * 1.1); font-weight: 500;
+  background: linear-gradient(170deg, rgba(255, 255, 255, .4) 0%, rgba(255, 255, 255, .2) 46%, rgba(255, 255, 255, .3) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  backdrop-filter: blur(18px) saturate(170%) brightness(114%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(114%);
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, .55), 0 0 0 6px rgba(255, 255, 255, .09), inset 0 1px 0 rgba(255, 255, 255, .75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  user-select: none; -webkit-user-select: none;
+}
+.sol-hero .sol-eyebrow::before {
+  content: ''; width: .62em; height: .62em; border-radius: 50%; background: #D6E0FF;
+  box-shadow: 0 0 0 .34em rgba(214, 224, 255, .34), 0 0 .9em rgba(214, 224, 255, .8);
+}
+.sol-hero-title {
+  margin: 0 0 22px; max-width: 18ch;
+  font-family: var(--font-body); font-weight: 500; line-height: 1.12;
+  font-size: clamp(36px, 3.8vw, 60px); letter-spacing: var(--ls-display); color: #fff;
+  text-wrap: balance;
+}
+.sol-hero-lede {
+  margin: 0 auto 30px; max-width: 54ch;
+  font-size: clamp(16px, 1.2vw, 19px); line-height: 1.5; color: rgba(255, 255, 255, .78);
+  text-wrap: pretty;
+}
+.sol-hero-ctas { --hero-scale: 1; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px }
+.sol-hero-ctas .hero-s2-cta { margin: 0 }
+/* the hover arrow's slot comes out of the right padding, as on the home hero;
+   --hero-scale is the home hero's and must be set here or the arrow's calc()
+   sizes fail and the svg falls back to its 300x150 default */
+.sol-hero-ctas .hero-s2-cta--ghost { padding-right: 20px }
+/* the blue primary keeps its glow; the white secondary reads as a solid card
+   on the dark ground, no hairline needed */
+.sol-hero-ctas .hero-s2-cta.hero-s2-cta--ghost { border-color: #fff }
+
+/* ── workflow rows ── inside the home page's section frame (.x4e-frame), the
+   frame the Security section wears: a hairline on the page's grey ground, not
+   the Excel section's white, so the stages stand off the ground. Under the
+   head band every row is split down the middle like the Excel pane: copy on
+   one half, the stage filling the other edge to edge, with no mat around it
+   and no hairline between rows. The one vertical hairline at the centre runs
+   on through every row, so the stages' edges line up into the frame's own
+   lines and the rows alternate into a checkerboard. */
+.sol-works-wrap { padding-top: clamp(72px, 9vh, 104px); padding-bottom: clamp(72px, 9vh, 104px) }
+.x4e-frame.sol-works { background: transparent }
+/* the How it works frame wears the same: the Security section's hairline on
+   the grey ground with no fill inside it (feedback: this section like the
+   home page's Security section, no background). The tabs and the foot strip
+   drop the grey and white fills they carried against the white frame; the
+   open tab is told by its accent underline and ink title alone. */
+.sol-how .x4e-frame { background: transparent }
+/* the head bands on these pages carry the title alone, no lede or badge beside
+   it, and on the homepage's measures that one line sat in a shallow strip that
+   read as cramped against the rows under it. Taller on both sides, so the
+   title has air above and below before the first row starts. */
+.sol-how .x4e-head, .sol-works .x4e-head {
+  padding: clamp(60px, 8vh, 84px) var(--x4e-pad-x) clamp(54px, 7vh, 76px);
+}
+.sol-works .x4e-head { border-bottom: 1px solid var(--hair) }
+@media (max-width: 900px) {
+  .sol-how .x4e-head, .sol-works .x4e-head { padding: 48px var(--x4e-pad-x) 48px }
+}
+.sol-work {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0;
+  align-items: stretch;
+}
+/* the centre line, straddling the halves so it meets the next row's exactly */
+.sol-work::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+  transform: translateX(-50%); background: var(--hair); z-index: 1; pointer-events: none;
+}
+.sol-work--flip .sol-work-copy { order: 2 }
+.sol-work--flip .sol-work-visual { order: 1 }
+.sol-work-copy {
+  align-self: center; min-width: 0;
+  padding: clamp(48px, 6vh, 80px) var(--x4e-pad-x);
+}
+/* the use case's name as the title (feedback: the name bold and title-like),
+   then one paragraph: the outcome as its first sentence, running straight
+   into the body in the same voice (feedback: the explainer line and the
+   paragraph clubbed together, no accent on the lead). The title is at the
+   home page's size for a title within a section (`.x4e-item-title`,
+   `.secx-point-title`), not a section head's. The row number that sat on
+   the eyebrow line is gone */
+.sol-work-copy h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(17px, 1.6vw, 20px); line-height: 1.25; color: var(--ink);
+}
+.sol-work-copy p:not(.sol-eyebrow) { margin: 0; font-size: 15px; line-height: 1.6; color: var(--secondary); max-width: 48ch }
+/* the line under the four rows, centred on the frame's own band */
+.sol-works-more {
+  margin: 0; padding: clamp(40px, 5vh, 56px) var(--x4e-pad-x);
+  border-top: 1px solid var(--hair); text-align: center;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(20px, 1.9vw, 26px); line-height: 1.3; color: var(--ink);
+}
+.sol-works-more span { color: var(--accent) }
+/* a use case with several screens: the scenes stack on the stage's blue, and
+   each one fades in over the last */
+.sol-scenes { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; background: #1B34A6 }
+.sol-scene { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; animation: solSceneIn .7s ease both }
+@keyframes solSceneIn { from { opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .sol-scene { animation: none } }
+.sol-reveal { opacity: 0 }
+.sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
+@media (prefers-reduced-motion: reduce) {
+  .sol-reveal, .sol-hero-copy { opacity: 1; animation: none }
+}
+
+/* the stage fills its half of the row; its height, from the 16:11 ratio, is
+   the row's height, and the copy centres beside it. Under taller copy the
+   stage stretches down instead, its width pinned to the column, so the ratio
+   never pushes it across the centre line */
+.sol-work-visual { container-type: inline-size; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) }
+/* the Excel section's ground: dark in the top left corner and lifting to the
+   bottom right */
+.sol-stage {
+  --stage-pad: 2.4em;
+  font-size: clamp(6px, 1.75cqw, 11.5px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.6em;
+  width: 100%; min-height: 100%; padding: var(--stage-pad); aspect-ratio: 16 / 11;
+  background-color: #1B34A6;
+  background-image:
+    url('/assets/img/grain.svg'),
+    radial-gradient(125% 95% at 4% 2%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(206deg, #1B34A6 0%, #2F55D6 32%, #79A8F2 66%, #DCE9FF 100%);
+  background-size: 320px 320px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: overlay, normal, normal;
+  color: var(--ink); font-family: var(--font-body);
+}
+.sol-panel {
+  display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
+  background: #fff; border-radius: .9em; padding: 1.6em 1.7em;
+  box-shadow: 0 1.2em 3em rgba(6, 16, 50, .28), 0 0 0 1px rgba(255,255,255,.18);
+}
+.sol-panel h4 { margin: 0; font-size: 1.25em; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2 }
+.sol-panel-sub { margin: .3em 0 0; font-size: 1em; color: var(--muted); line-height: 1.3 }
+.sol-panel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em }
+.sol-pill {
+  display: inline-block; padding: .35em .8em; border-radius: 99em; white-space: nowrap;
+  font-family: var(--font-mono); font-size: .85em; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+}
+
+/* spreadsheet */
+.sol-sheet { padding: 0 }
+.sol-sheet-title { padding: 1em 1.4em; font-size: 1em; font-weight: 500; border-bottom: 1px solid var(--hair) }
+.sol-sheet-fx {
+  display: grid; grid-template-columns: auto auto 1fr; gap: 1em; padding: .55em 1.4em; border-bottom: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .85em; color: var(--muted); white-space: nowrap; overflow: hidden;
+}
+.sol-sheet-fx span:first-child { color: var(--ink) }
+.sol-sheet table { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
+.sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
+.sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
+.sol-sheet-ok { color: #12A150 }
+/* no tab row at a sheet's foot (feedback: "remove this bar from all
+   screens"); the source a sheet is reading from sits in its title's tag */
+
+/* ── hedge funds page extras ── the strategies pills in the hero and the
+   parts the hedge fund visuals add to the shared stage */
+
+/* the strategies line: a mono lead in the accent, then the names as soft
+   accent pills */
+.sol-chips { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 12px }
+.sol-chips-lead {
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: #9DB2FF;
+}
+.sol-chips ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px }
+.sol-chips li {
+  padding: 7px 14px; border-radius: 99px;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16);
+  font-size: 14px; line-height: 1.3; font-weight: 450; color: rgba(255, 255, 255, .92);
+}
+
+/* panel parts: source chips, a release document, a points list, evidence
+   rows with a verdict tag, an audit grid and its findings */
+.sol-src {
+  display: inline-block; flex: none; padding: .2em .55em; border-radius: .35em;
+  background: var(--accent-soft); color: var(--accent);
+  font-family: var(--font-mono); font-size: .78em; letter-spacing: .02em; white-space: nowrap;
+}
+.sol-doc { padding: 0 }
+.sol-doc-figs { margin: 0; padding: 1.4em 1.6em; display: flex; flex-direction: column; gap: 1.1em; flex: 1 }
+.sol-doc-figs div { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; padding-bottom: .9em; border-bottom: 1px solid #EEF0F3 }
+.sol-doc-figs dt { font-size: 1.05em; color: var(--secondary) }
+.sol-doc-figs dd { margin: 0; font-size: 1.5em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
+.sol-doc-foot { margin: auto 0 0; padding: .9em 1.6em; border-top: 1px solid var(--hair); font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
+.sol-points { list-style: none; margin: 0; padding: 1.2em 1.6em; display: flex; flex-direction: column; gap: .8em; flex: 1 }
+.sol-points li { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; font-size: 1.02em; line-height: 1.4 }
+.sol-cite .sol-points { padding: 1.2em 0 }
+.sol-sheet-miss { color: #C2410C }
+.sol-sheet-pick td { background: var(--accent-soft); color: var(--accent) }
+.sol-evidence { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .7em; flex: 1 }
+.sol-evidence li {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .9em;
+  padding: .8em 1em; border-radius: .6em; background: var(--bg); font-size: 1.02em; line-height: 1.35;
+}
+.sol-tag { padding: .2em .55em; border-radius: .35em; font-family: var(--font-mono); font-size: .78em; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap }
+.sol-tag--supported { background: #E6F7EC; color: #0E7A3A }
+.sol-tag--risk { background: #FFE2A8; color: #7A4B00 }
+.sol-sheet .sol-grid td { font-family: var(--font-mono); text-align: right }
+.sol-sheet .sol-grid th { text-align: center }
+.sol-sheet .sol-grid .sol-grid-n { color: var(--muted); text-align: center; background: #FAFAFA }
+.sol-sheet .sol-grid .sol-grid-bad { color: #B42318; background: #FEF3F2; box-shadow: inset 0 0 0 1px #FDA29B }
+.sol-findings { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .6em; flex: 1 }
+.sol-findings li { display: flex; gap: .9em; align-items: baseline; padding: .8em 1em; border-radius: .5em; background: #FFF7E6; color: #7A4B00; font-size: 1.02em; line-height: 1.35 }
+.sol-findings b { font-family: var(--font-mono); font-weight: 500; font-size: .9em; flex: none }
+.sol-audit-ok { margin-top: auto; padding-top: 1.1em; border-top: 1px solid var(--hair) }
+
+/* ── focus stage ── one dominant working screen in the left band and one
+   supporting card in the right band, bottom aligned so the two read as
+   layered. Three of them move on the home page's source-tracing pattern:
+   the source lights, the cell fills, the result prints; the loop rests on
+   the finished state so a still frame reads the same */
+.sol-stage--focus {
+  --stage-pad: 1.9em; --aside-w: 29%; --k-acc: var(--accent); --k-acc-soft: #DCE3FA;
+  display: block; position: relative; font-size: clamp(7px, 2.25cqw, 13px);
+}
+.sol-stage--focus .sol-main {
+  position: absolute; left: var(--stage-pad); top: var(--stage-pad); bottom: var(--stage-pad);
+  right: calc(var(--stage-pad) + var(--aside-w) + 1.3em);
+}
+.sol-stage--focus .sol-main:only-child { right: var(--stage-pad) }
+.sol-stage--focus .sol-aside {
+  position: absolute; right: var(--stage-pad); bottom: var(--stage-pad); width: var(--aside-w);
+  max-height: calc(100% - var(--stage-pad) * 2 - 3em);
+  padding: 1.1em 1.2em; font-size: .95em;
+  box-shadow: 0 1.6em 3.4em rgba(6, 16, 50, .36), 0 0 0 1px rgba(255, 255, 255, .22);
+}
+.sol-sheet-title { display: flex; justify-content: space-between; align-items: center; gap: 1em; white-space: nowrap; overflow: hidden }
+.sol-sheet-tag { flex: none; font-style: normal; font-family: var(--font-mono); font-weight: 400; font-size: .78em; color: var(--accent); background: var(--accent-soft); padding: .25em .6em; border-radius: .35em }
+.sol-sheet-tag--warn { color: #7A4B00; background: #FFF1C2 }
+.sol-aside-head {
+  display: flex; justify-content: space-between; align-items: center; gap: .8em;
+  padding-bottom: .7em; margin-bottom: .7em; border-bottom: 1px solid var(--hair);
+  font-family: var(--font-mono); font-size: .82em; color: var(--muted); white-space: nowrap; overflow: hidden;
+}
+.sol-aside-head b { color: var(--ink); font-weight: 500 }
+.sol-aside-head .sol-src { font-size: .95em }
+.sol-aside-note { margin: .9em 0 0; padding-top: .8em; border-top: 1px solid var(--hair); display: flex; gap: .5em; align-items: flex-start; font-size: .95em; line-height: 1.35; color: var(--secondary) }
+.sol-aside svg { width: 1.1em; height: 1.1em; flex: none; color: #12A150 }
+.sol-aside ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45em }
+
+/* release excerpt and call transcript: the lines Fia is reading from */
+.sol-excerpt li {
+  padding: .45em .6em; border-left: 2px solid transparent; border-radius: 0 .35em .35em 0;
+  font-size: 1em; line-height: 1.35; color: var(--secondary); transition: background .35s, color .35s, border-color .35s;
+}
+.sol-excerpt li.is-lit { background: var(--k-acc-soft); border-left-color: var(--k-acc); color: var(--ink) }
+.sol-excerpt li.is-done { color: var(--ink) }
+
+/* earnings: the reported column fills cell by cell, the variance prints after */
+.sol-upd th:not(:first-child), .sol-upd td:not(:first-child) { text-align: right }
+.sol-upd th.is-col { color: var(--accent) }
+.sol-upd td { transition: background .35s, box-shadow .35s }
+.sol-upd tr.is-lit td { background: #EEF1FB }
+.sol-upd-cell span { opacity: 0; transition: opacity .35s }
+.sol-upd-cell.is-filled { background: var(--k-acc-soft); box-shadow: inset 0 0 0 1px var(--k-acc); color: var(--ink); font-weight: 500 }
+.sol-upd-cell.is-filled span { opacity: 1 }
+.sol-upd-var { opacity: 0; transition: opacity .35s; font-weight: 500 }
+.sol-upd-var.is-on { opacity: 1 }
+/* the fund's own margin rows recalculate from the filled cells, so they print
+   without the fill highlight: the layout is theirs, the agent only fed it */
+.sol-upd tr.is-derived td { color: var(--muted) }
+.sol-upd tr.is-derived .sol-upd-cell.is-filled { background: none; box-shadow: none; color: var(--secondary); font-weight: 400 }
+.sol-sheet--earn th:first-child, .sol-sheet--earn td:first-child { padding-left: 1.4em }
+.sol-sheet--earn th:last-child, .sol-sheet--earn td:last-child { padding-right: 1.4em }
+.sol-sheet--earn table { font-size: .95em }
+/* the sheet alone takes the stage, dropped a little so the status pill from
+   the home Excel section's Fully auditable scene can sit across its top edge:
+   a spinner while the cells fill, a check once they have. (.sol-pill is the
+   uppercase mono chip, hence the different name) */
+.sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
+/* screening without a prompt (the sell side's sector view): the sheet sits
+   under the pill. With a prompt the stage is a chat pane, below */
+.sol-stage--focus .sol-sheet--screen.sol-main { top: calc(var(--stage-pad) + 1.2em) }
+/* the run: FinSynth's calls in the pane, each appearing as it starts,
+   spinner to check with the universe it leaves. While it runs the trail
+   beside the pane is not there yet; it fades in when the run is through */
+.sol-stage--run .sol-aside { opacity: 0 }
+.sol-run-who { margin-top: .1em }
+.sol-run ol { list-style: none; margin: 0; padding: 0; min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .6em }
+.sol-run li {
+  display: flex; align-items: center; gap: .7em; min-width: 0; white-space: nowrap;
+  opacity: 0; transform: translateY(.3em); transition: opacity .35s, transform .4s cubic-bezier(.32, .72, 0, 1);
+}
+.sol-run li.is-live, .sol-run li.is-done { opacity: 1; transform: none }
+.sol-run-ico { position: relative; flex: none; width: 1.25em; height: 1.25em }
+.sol-run-spin { position: absolute; inset: 0; border-radius: 50%; border: max(1.5px, .14em) solid rgba(20, 36, 46, .14); border-top-color: rgba(20, 36, 46, .78); animation: xvkRotate .9s linear infinite; transition: opacity .3s }
+.sol-run-ico svg { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--positive); opacity: 0; transform: scale(.5); transition: opacity .3s, transform .4s cubic-bezier(.32, .72, 0, 1) }
+.sol-run li.is-done .sol-run-spin { opacity: 0 }
+.sol-run li.is-done .sol-run-ico svg { opacity: 1; transform: none }
+.sol-run code { flex: none; font-family: var(--font-mono); font-size: .86em; color: var(--ink); background: var(--accent-soft); padding: .18em .5em; border-radius: .35em }
+.sol-run-arg { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--secondary) }
+.sol-run li em { margin-left: auto; flex: none; font-style: normal; font-family: var(--font-mono); font-size: .85em; color: var(--muted); opacity: 0; transition: opacity .3s }
+.sol-run li.is-done em { opacity: 1 }
+/* the trail beside the shortlist: the same calls, named, with what each
+   left, set small enough that the longest name fits the card's width */
+.sol-stack.sol-run-sum li { font-size: .76em; gap: .5em }
+.sol-stack.sol-run-sum li span { font-family: var(--font-mono) }
+.sol-run-sum li svg { color: var(--positive) }
+/* screening as a chat: the pane the thesis stage draws, the ask at its top,
+   FinSynth's line with the spinner or check in it, then its calls while it
+   runs and the shortlist once it is through as its answer, the ask box at
+   the foot. The trail beside it is not there while the run is on */
+.sol-pane--screen .sol-pane-body { gap: .8em }
+.sol-pane-say--status { display: flex; align-items: flex-start; gap: .6em }
+.sol-pane-say--status .sol-status-ico { width: 1.3em; height: 1.3em; margin-top: .05em }
+.sol-pane-say--status.is-done .sol-status-spin { opacity: 0 }
+.sol-pane-say--status.is-done .sol-status-check { opacity: 1; transform: none }
+.sol-pane-out { flex: none; border: 1px solid var(--hair); border-radius: .6em; overflow: hidden; animation: solDcfIn .45s ease both }
+.sol-pane-out th, .sol-pane-out td { padding: .3em .8em }
+.sol-pane-out tr:last-child td { border-bottom: 0 }
+.sol-pane-calls { flex: none; padding: .1em 0 }
+.sol-pane-calls ol { gap: .55em }
+.sol-stage--chat .sol-aside { transition: opacity .5s }
+.sol-screen th:first-child, .sol-screen td:first-child { width: 100% }
+.sol-screen th, .sol-screen td { white-space: nowrap }
+.sol-screen tbody tr { opacity: 0; transition: opacity .35s }
+.sol-screen tbody tr.is-on { opacity: 1 }
+.sol-screen tr.is-on td:first-child { color: var(--ink); font-weight: 500 }
+.sol-stack li.is-on { color: var(--ink) }
+.sol-stack li:not(.is-on) svg { opacity: .25 }
+.sol-sheet--earn th:first-child, .sol-sheet--earn td:first-child { width: 100% }
+.sol-status {
+  position: absolute; z-index: 4; left: 50%; top: calc(var(--stage-pad) - .2em); transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: .6em; height: 2.6em; padding: 0 1.1em 0 .65em; border-radius: 999px;
+  background: rgba(255, 255, 255, .96); color: var(--ink); font-size: .95em; font-weight: 500; white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 0 0 1px rgba(255, 255, 255, .35), 0 .45em 1.3em rgba(6, 12, 40, .32);
+}
+.sol-status-ico { position: relative; flex: none; width: 1.4em; height: 1.4em }
+.sol-status-spin, .sol-status-check { position: absolute; inset: 0; border-radius: 50%; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-status-spin { border: max(1.5px, .16em) solid rgba(20, 36, 46, .14); border-top-color: rgba(20, 36, 46, .78); animation: xvkRotate .9s linear infinite }
+.sol-status-check { display: grid; place-items: center; background: var(--positive); color: #fff; opacity: 0; transform: scale(.5) }
+.sol-status-check svg { width: 64%; height: 64% }
+.sol-status.is-done .sol-status-spin { opacity: 0 }
+.sol-status.is-done .sol-status-check { opacity: 1; transform: none }
+.sol-status-lbls { display: grid }
+.sol-status-lbls span { grid-area: 1 / 1; transition: opacity .35s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-status-lbls span:last-child { opacity: 0; transform: translateY(.5em) }
+.sol-status.is-done .sol-status-lbls span:first-child { opacity: 0; transform: translateY(-.5em) }
+.sol-status.is-done .sol-status-lbls span:last-child { opacity: 1; transform: none }
+
+/* research brief */
+.sol-brief { padding: 0 }
+.sol-brief-body { padding: 1em 1.4em; display: flex; flex-direction: column; gap: .9em; overflow: hidden }
+.sol-brief h5 { margin: 0 0 .3em; font-family: var(--font-mono); font-weight: 400; font-size: .75em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+.sol-brief p { margin: 0; font-size: 1em; line-height: 1.4; color: var(--ink) }
+.sol-brief p .sol-src { margin-left: .4em; vertical-align: middle }
+.sol-brief-kpis { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8em }
+.sol-brief-kpis dt { font-size: .8em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.sol-brief-kpis dd { margin: .15em 0 0; font-size: 1.35em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
+/* investment memo: the brief's panel under the stage pill, its sections
+   written in turn */
+.sol-stage--focus .sol-memo.sol-main { top: calc(var(--stage-pad) + 1.2em) }
+.sol-memo section { opacity: 0; transform: translateY(.3em); transition: opacity .4s, transform .45s cubic-bezier(.32, .72, 0, 1) }
+.sol-memo section.is-on { opacity: 1; transform: none }
+.sol-stack li { display: flex; align-items: center; gap: .55em; font-size: .92em; white-space: nowrap; overflow: hidden }
+.sol-stack li span { overflow: hidden; text-overflow: ellipsis }
+.sol-stack li em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
+
+/* model build: the model window beside the FinSynth pane, as the add-in sits
+   in Excel. The window is the earnings sheet's design (plain hairline table,
+   accent column headers, the status pill across its top edge); the forecast
+   columns stay empty, they are the fund's to fill */
+.sol-stage--build {
+  --k-acc: var(--accent); --k-acc-soft: #DCE3FA;
+  font-size: clamp(7px, 2.1cqw, 12.5px);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.2em;
+  padding-top: calc(var(--stage-pad) + 1.2em);
+}
+.sol-win-wrap { position: relative; display: grid; min-width: 0; min-height: 0 }
+.sol-stage--build .sol-status { top: -1.3em }
+.sol-win .sol-dcf { font-size: 1em }
+/* the DCF output: a two-column bridge, the value per share bold, the upside an
+   accent chip; it fades in when the window opens the DCF tab */
+.sol-dcf-out { animation: solDcfIn .4s ease both }
+.sol-dcf-out th:first-child, .sol-dcf-out td:first-child { width: 100% }
+.sol-dcf-out tr.is-total td { font-size: 1.08em }
+.sol-dcf-out tr.is-up td { color: var(--secondary) }
+.sol-dcf-up { display: inline-block; padding: .15em .55em; border-radius: .35em; background: var(--accent-soft); color: var(--accent); font-weight: 500 }
+@keyframes solDcfIn { from { opacity: 0; transform: translateY(.4em) } }
+.sol-dcf th, .sol-dcf td { padding: .5em .6em; white-space: nowrap }
+.sol-dcf th:first-child, .sol-dcf td:first-child { width: 100% }
+.sol-dcf th.is-col, .sol-dcf td.is-fc { background: #F7F9FF }
+.sol-dcf th:not(.is-col) + th.is-col, .sol-dcf td:not(.is-fc) + td.is-fc { border-left: 1px solid var(--hair) }
+.sol-dcf tr.is-total td { font-weight: 500 }
+.sol-dcf .sol-upd-cell.is-lit { background: #EEF1FB }
+/* the pane: the ask as the home workspace shows it at the top (no tab row,
+   feedback), the steps the agent reports, a composer at the foot */
+.sol-pane { padding: 0; font-size: .88em }
+.sol-pane-ask { display: grid; grid-template-columns: auto 1fr; column-gap: .7em; align-items: start; padding: 1em 1.2em; border-bottom: 1px solid var(--hair) }
+.sol-pane-dot { width: .7em; height: .7em; margin-top: .35em; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .3em var(--accent-soft) }
+.sol-pane-ask p { margin: 0; font-size: 1em; line-height: 1.4; color: var(--ink); font-weight: 500 }
+.sol-pane-body { flex: 1; min-height: 0; overflow: hidden; padding: .9em 1.2em; display: flex; flex-direction: column; gap: .7em }
+.sol-pane-body p { margin: 0; font-size: 1em; line-height: 1.4 }
+.sol-pane-say { color: var(--secondary) }
+.sol-pane-steps { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hair); border-radius: .6em; overflow: hidden; flex: none }
+.sol-pane-steps li {
+  display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: .5em .8em; font-size: .95em; color: var(--muted);
+  white-space: nowrap; transition: color .35s;
+}
+.sol-pane-steps li > span { min-width: 0; overflow: hidden; text-overflow: ellipsis }
+.sol-pane-steps li em { flex: none }
+.sol-pane-steps li + li { border-top: 1px solid var(--hair) }
+.sol-pane-steps li.is-on { color: var(--ink) }
+.sol-pane-steps li em { font-style: normal; font-family: var(--font-mono); font-size: .85em; color: var(--muted); padding: .15em .5em; border-radius: .3em; background: #F2F3F5; transition: color .35s, background .35s }
+.sol-pane-steps li.is-on em { color: #12A150; background: #E9F8EF }
+.sol-pane-say { animation: solDcfIn .45s ease both }
+.sol-pane-in {
+  margin: auto 1.1em 1.1em; padding: .45em .45em .45em .9em; border: 1px solid var(--hair); border-radius: .6em;
+  display: flex; align-items: center; justify-content: space-between; gap: .8em; font-size: .95em; color: var(--muted); white-space: nowrap;
+}
+.sol-pane-in span { overflow: hidden; text-overflow: ellipsis }
+.sol-pane-in b { flex: none; padding: .4em .8em; border-radius: .4em; background: var(--accent); color: #fff; font-weight: 500; font-size: .9em }
+
+/* comps: the earnings sheet's design; the subject row is the fund's, the
+   peers fill under it, the median is the fund's formula */
+.sol-sheet--comps th:first-child, .sol-sheet--comps td:first-child { width: auto }
+.sol-sheet--comps th:not(:first-child), .sol-sheet--comps td:not(:first-child) { width: 21% }
+.sol-upd tr.is-self td { color: var(--accent); font-weight: 500 }
+
+/* thesis: the pane as the stage's main screen, the tested points as the
+   agent's reply under its line. Each point is cited, so the scene is the
+   evidence stage's citation flow (HowStages): the pointer moves to a point's
+   source chip, clicks it, the wire draws to the excerpt card beside it and
+   the line the point came from lights there */
+.sol-pane--thesis .sol-pane-body { gap: .8em }
+.sol-pane .sol-evidence { margin: 0; gap: .5em; flex: none }
+.sol-pane .sol-evidence li { padding: .65em .9em; font-size: 1em }
+.sol-evidence--counter { background: #FFF7E6; color: var(--ink); font-weight: 500; box-shadow: inset 3px 0 0 #E7A200; grid-template-columns: auto 1fr }
+.sol-evidence--counter .sol-src { grid-column: 2; justify-self: start }
+.sol-evidence .sol-src { transition: box-shadow .3s, background .3s, color .3s }
+.sol-evidence li.is-sel .sol-src, .sol-screen tr.is-sel .sol-src { background: var(--k-acc-soft); color: var(--ink); box-shadow: 0 0 0 2px var(--k-acc); animation: hwClick .7s ease .4s }
+.sol-excerpt--quote li.is-lit { font-style: italic }
+.sol-excerpt mark { background: transparent; color: inherit; padding: .05em .15em; margin: 0 -.15em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background .35s, color .35s }
+.sol-excerpt mark.is-on { background: var(--k-acc-soft); color: var(--ink); font-weight: 500 }
+.sol-excerpt p { margin: 0; font-size: 1em; line-height: 1.5; color: var(--secondary) }
+.sol-excerpt--cite { font-size: 1em }
+.sol-excerpt--cite .sol-aside-head { white-space: nowrap }
+.sol-excerpt--cite .sol-aside-head span:last-child { overflow: hidden; text-overflow: ellipsis }
+/* the wire and the pointer, over the two panels, placed from the live layout */
+.sol-wire { position: absolute; left: 0; top: 0; z-index: 5; pointer-events: none; overflow: visible }
+.sol-wire path { fill: none; stroke: var(--k-acc); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: hwWire .6s cubic-bezier(.32, .72, 0, 1) .3s forwards }
+.sol-wire circle { fill: var(--k-acc); opacity: 0; animation: hwDot .3s ease .8s forwards }
+.sol-stage .hw-cursor { z-index: 6 }
+
+/* audit: the selected finding and its cell */
+.sol-sheet .sol-grid td span { display: inline-block; padding: .1em .4em; margin: -.1em -.4em; border-radius: .25em; transition: box-shadow .3s, background .3s }
+.sol-sheet .sol-grid td.is-sel span { background: var(--k-acc-soft); box-shadow: 0 0 0 2px var(--k-acc); color: var(--ink); animation: hwClick .7s ease .4s }
+.sol-aside.sol-findings ul { gap: .45em }
+.sol-aside.sol-findings li { padding: .6em .8em; background: var(--bg); color: var(--secondary); font-size: .98em; transition: background .3s, color .3s, box-shadow .3s }
+.sol-aside.sol-findings li.is-sel { background: var(--k-acc-soft); color: var(--ink); box-shadow: inset 0 0 0 1px var(--k-acc) }
+.sol-aside.sol-findings b { color: var(--ink) }
+
+/* how it works: a few cells carry a small product detail in one treatment,
+   a hairline strip in the page's grey */
+@media (prefers-reduced-motion: reduce) {
+  .sol-upd td, .sol-upd-cell span, .sol-upd-var, .sol-excerpt li, .sol-sheet .sol-grid td span, .sol-aside.sol-findings li { transition: none }
+}
+
+/* ── responsive ── one column below 900px; the visual keeps its aspect and
+   proportions and simply shrinks with the column */
+@media (max-width: 900px) {
+  .sol-hero { padding-top: 56px; padding-bottom: 56px }
+  .sol-work { grid-template-columns: 1fr }
+  .sol-work::before { display: none }
+  .sol-work + .sol-work { border-top: 1px solid var(--hair) }
+  .sol-work--flip .sol-work-copy { order: 1 }
+  .sol-work--flip .sol-work-visual { order: 2 }
+  .sol-work-copy { padding: 36px var(--x4e-pad-x) 32px }
+}
+@media (max-width: 560px) {
+  .sol-hero-title { font-size: clamp(30px, 8.5vw, 38px) }
+  .sol-hero-lede { font-size: 16px }
+  .sol-hero-ctas { width: 100% }
+  .sol-hero-ctas .hero-s2-cta { width: 100%; justify-content: center }
+  .sol-stage { font-size: clamp(5px, 1.85cqw, 8px); --stage-pad: 1.6em; aspect-ratio: 16 / 12 }
+  .sol-stage--focus { font-size: clamp(6px, 2.3cqw, 9px); --stage-pad: 1.4em; aspect-ratio: 16 / 11 }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOW IT WORKS, THREE STAGES (src/components/HowStages.jsx)
+   The solution pages' How it works: the three stages as columns, each with
+   its pillars as cards.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.hw-head { align-items: flex-end }
+.hw-intro { margin: 0; max-width: 34ch; font-size: 16px; line-height: 1.55; color: var(--secondary) }
+.hw-num {
+  display: block; margin-bottom: 14px;
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--accent);
+}
+.hw-cursor {
+  position: absolute; left: 0; top: 0; z-index: 4; width: 1.6em; height: 1.6em; pointer-events: none;
+  filter: drop-shadow(0 .15em .3em rgba(0, 0, 0, .3));
+  transition: transform .55s cubic-bezier(.32, .72, 0, 1);
+}
+@keyframes hwWire { to { stroke-dashoffset: 0 } }
+@keyframes hwDot { to { opacity: 1 } }
+@keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em color-mix(in srgb, var(--k-acc) 50%, transparent) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em color-mix(in srgb, var(--k-acc) 0%, transparent) } }
+.hw-pico { grid-row: 1 / 3; width: 34px; height: 34px; padding: 8px; border-radius: 8px; background: var(--accent); color: #fff }
+
+/* grid · the pillars as cards in three stage columns, all on the page
+   at once with nothing to open. No scene: the use case rows above carry the
+   product pictures, and this section is the inventory (feedback: the scene
+   over the grid was dropped) */
+/* the columns share one set of rows (subgrid), so every card is the height
+   of the tallest; Review's two cards keep that height and leave the third
+   row empty rather than stretching to fill it (feedback) */
+.hw-grid-cols {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto repeat(3, 1fr); border-top: 1px solid var(--hair);
+}
+.hw-grid-col { display: grid; grid-row: 1 / -1; grid-template-rows: subgrid; min-width: 0 }
+.hw-grid-col + .hw-grid-col { border-left: 1px solid var(--hair) }
+.hw-grid-head { display: flex; align-items: baseline; gap: 12px; padding: 26px 30px 20px }
+.hw-grid-head .hw-num { margin: 0 }
+.hw-grid-head h3 {
+  margin: 0; font-family: var(--font-display); font-weight: 450;
+  font-size: 17px; line-height: 1.25; letter-spacing: var(--ls-display); color: var(--ink);
+}
+.hw-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-row: 2 / -1; grid-template-rows: subgrid; align-content: start }
+.hw-cards > li { border-top: 1px solid var(--hair) }
+/* a short column closes its last card with a rule, above the empty row */
+.hw-cards > li:nth-child(2):last-child { border-bottom: 1px solid var(--hair) }
+/* the frame's right and bottom edges are drawn piece by piece so the empty
+   cell under Review stays open, with no frame line on its right or foot
+   (feedback) */
+@media (min-width: 901px) {
+  .hw--grid .x4e-frame { border-right: 0; border-bottom: 0 }
+  .hw--grid .x4e-head { border-right: 1px solid var(--hair) }
+  .hw--grid .hw-grid-col:not(:last-child) { border-bottom: 1px solid var(--hair) }
+  .hw--grid .hw-grid-col:last-child .hw-grid-head,
+  .hw--grid .hw-grid-col:last-child .hw-cards > li { border-right: 1px solid var(--hair) }
+}
+.hw-card {
+  width: 100%;
+  display: grid; grid-template-columns: 32px 1fr; column-gap: 16px; align-items: start; align-content: start;
+  padding: 28px 30px 30px;
+}
+.hw-card .hw-pico { grid-row: 1 / 3; width: 32px; height: 32px; padding: 8px }
+.hw-card h4 { margin: 3px 0 0; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.3; color: var(--ink) }
+.hw-card p { margin: 6px 0 0; font-size: 14px; line-height: 1.55; color: var(--body-gray) }
+@media (max-width: 900px) {
+  .hw-grid-cols { grid-template-columns: 1fr; grid-template-rows: none }
+  .hw-grid-col { display: block; grid-row: auto }
+  .hw-cards { display: block }
+  .hw-cards > li:nth-child(2):last-child { border-bottom: 0 }
+  .hw-grid-col + .hw-grid-col { border-left: 0; border-top: 1px solid var(--hair) }
+  .hw-grid-head { padding: 22px var(--x4e-pad-x) 16px }
+  .hw-card { padding: 20px var(--x4e-pad-x) 22px }
+}
+@media (prefers-reduced-motion: reduce) { .hw-cursor { transition: none } }
+
+/* narrow: every layout is the columns layout stacked, copy then scene */
+@media (max-width: 900px) {
+  .hw-head { flex-direction: column; align-items: flex-start }
 }

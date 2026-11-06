@@ -4,12 +4,16 @@ import { EMAILS } from '@/config/site'
 
 const FAQS = [
   {
+    q: 'What can FinSynth do?',
+    a: 'FinSynth can run any research work investment teams do every day, across public and private markets: screening for ideas, getting up to speed on new companies, building models and comps, working through datarooms, drafting investment memos and updating on earnings, plus hundreds of other workflows. Every output is traced back to its source.',
+  },
+  {
     q: 'How do I get access, and what does it cost?',
     a: 'Sign-up with your email and get started for free. Upgrade to pro for more capabilities and higher credits. Talk to us to get your team on FinSynth with enterprise capabilities.',
   },
   {
-    q: 'How does FinSynth handle ambiguity?',
-    a: "The agent asks clarification questions or flags decisions taken. A gap it can't source stays n/a rather than inventing a number.",
+    q: 'How do I know FinSynth’s outputs are accurate?',
+    a: 'Every number and claim links to the exact line in its source, whether that’s a filing, a release, a transcript or your own documents.',
   },
   {
     q: 'Will it stay consistent with our conventions?',
@@ -17,7 +21,7 @@ const FAQS = [
   },
   {
     q: 'What data does FinSynth cover?',
-    a: 'Filings, transcripts, reports, presentations and investor relations material for companies globally.',
+    a: 'FinSynth covers filings, transcripts, reports, presentations and investor relations material for companies globally out of the box. You can add your own documents, such as broker notes, transcripts and deal datarooms, and connect your data providers and tools through MCP.',
   },
   {
     q: 'How is FinSynth different from a general AI assistant?',
@@ -25,8 +29,14 @@ const FAQS = [
   },
 ]
 
-export default function Faq() {
-  const [open, setOpen] = useState(-1)
+const DEFAULT_TITLE = <>Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></>
+
+/* `items` and `title` let the solutions pages render this exact section with
+   their own questions instead of a lookalike of it */
+export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', openFirst = false }) {
+  // openFirst starts with the first answer showing, so the list reads as
+  // questions with answers rather than a closed grey list
+  const [open, setOpen] = useState(openFirst ? 0 : -1)
   const ref = useRef(null)
   const zoomRef = useSectionZoom()
   const listRef = useRef(null)
@@ -110,11 +120,11 @@ export default function Faq() {
   }, [])
 
   return (
-    <section className="faq" id="faq" ref={ref}>
+    <section className="faq" id={id} ref={ref}>
       <div className="wrap faq-grid" ref={zoomRef}>
         <div className="faq-intro">
           <p className="faq-eyebrow">Frequently Asked Questions</p>
-          <h2 className="faq-title">Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></h2>
+          <h2 className="faq-title">{title}</h2>
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
             <div className={`faq-contact-chip${copied ? ' is-copied' : ''}`}>
@@ -162,7 +172,7 @@ export default function Faq() {
             aria-hidden="true"
             style={{ '--rail-top': `${rail.top}px`, '--rail-h': `${rail.height}px` }}
           />
-          {FAQS.map((item, i) => {
+          {items.map((item, i) => {
             const isOpen = open === i
             return (
               <div key={item.q} className={`faq-item${isOpen ? ' open' : ''}`}>
