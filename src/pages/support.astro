@@ -1,8 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import Support from '@/views/Support'
 ---
 
-<BaseLayout>
-  <Support client:load />
+<BaseLayout title="FinSynth AI - Support">
+  <div class="mainContainer">
+    <Navbar client:load />
+    <Support />
+    <Footer client:visible />
+  </div>
 </BaseLayout>

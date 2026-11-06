@@ -1,8 +1,18 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import AppliedBanner from '@/components/AppliedBanner'
 import Careers from '@/views/Careers'
 ---
 
-<BaseLayout>
-  <Careers client:load />
+<BaseLayout title="FinSynth AI - Careers">
+  <div class="mainContainer">
+    <Navbar client:load />
+    <main class="careers-container">
+      <AppliedBanner client:load />
+      <Careers />
+    </main>
+    <Footer client:visible />
+  </div>
 </BaseLayout>
