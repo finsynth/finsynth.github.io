@@ -17,9 +17,6 @@ function Careers() {
               <h2 className="role-title">{role.title}</h2>
               <p className="role-meta">{role.meta}</p>
             </div>
-            {/* Tally hosts the application form (fields + resume upload);
-                opening it in a new tab keeps the postings on screen while
-                the candidate applies. */}
             <a
               className="role-apply"
               href={applyHref(role)}
