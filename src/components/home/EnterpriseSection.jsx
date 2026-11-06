@@ -1,4 +1,4 @@
-import EnterpriseBanner from './EnterpriseBanner'
+import EnterpriseBanner from '@/components/home/EnterpriseBanner'
 
 
 export default function EnterpriseSection() {

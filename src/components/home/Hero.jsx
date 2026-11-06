@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { initGrid } from '../utils/gridCanvas'
-import { BOOK_URL, APP_HREF } from './AskParts'
-import MosaicCanvas from './MosaicCanvas'
-import TileMosaicCanvas from './TileMosaicCanvas'
-import DotBridgeCanvas from './DotBridgeCanvas'
-import BayBridgePixelCanvas from './BayBridgePixelCanvas'
-import { MatrixDecode } from '@/components/remocn/matrix-decode'
-import { SEGMENTS } from '../data/segments'
+import { initGrid } from '@/utils/gridCanvas'
+import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
+import MosaicCanvas from '@/components/visuals/MosaicCanvas'
+import TileMosaicCanvas from '@/components/visuals/TileMosaicCanvas'
+import DotBridgeCanvas from '@/components/visuals/DotBridgeCanvas'
+import BayBridgePixelCanvas from '@/components/visuals/BayBridgePixelCanvas'
+import { MatrixDecode } from '@/components/visuals/matrix-decode'
+import { SEGMENTS } from '@/data/segments'
 
 
 const TYPE_MS = 28      // per character

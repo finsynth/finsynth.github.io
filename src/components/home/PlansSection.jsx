@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { ClerkProvider, PricingTable, useUser, useOrganizationList } from '@clerk/react'
-import useZoom from '../hooks/useZoom'
+import useZoom from '@/hooks/useZoom'
 import { LINKS } from '@/config/site'
 import { ENV } from '@/config/env'
 import { CLERK_APPEARANCE } from '@/config/clerk'

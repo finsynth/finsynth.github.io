@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import useReveal from '../hooks/useReveal'
-import useMediaQuery from '../hooks/useMediaQuery'
-import WorkflowMarquee from './WorkflowMarquee'
-import CertSeals from './CertSeals'
+import useReveal from '@/hooks/useReveal'
+import useMediaQuery from '@/hooks/useMediaQuery'
+import WorkflowMarquee from '@/components/home/WorkflowMarquee'
+import CertSeals from '@/components/home/CertSeals'
 
 /**
  * "FinSynth for Excel" — the Security section's bordered frame and headline.

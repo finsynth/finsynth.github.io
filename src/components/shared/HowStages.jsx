@@ -1,4 +1,4 @@
-import useReveal from '../hooks/useReveal'
+import useReveal from '@/hooks/useReveal'
 
 /* ── How it works on the solution pages ── the three stages of one research
  * workflow as columns, each holding the pillars (how.steps in

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import useZoom from '../hooks/useZoom'
+import useZoom from '@/hooks/useZoom'
 import { EMAILS } from '@/config/site'
 
 const FAQS = [

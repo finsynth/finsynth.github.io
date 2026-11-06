@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import GridReveal from './GridReveal';
+import GridReveal from '@/components/visuals/GridReveal';
 import { LINKS } from '@/config/site';
-import { SOLUTIONS } from './Navbar';
+import { SOLUTIONS } from '@/components/layout/Navbar';
 
 /**
  * The prompt the "Ask your AI" menu hands off to an assistant.

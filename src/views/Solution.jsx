@@ -1,13 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
-import SectionRule from '../components/SectionRule'
-import Faq from '../components/Faq'
-import Testimonial from '../components/Testimonial'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import SectionRule from '@/components/layout/SectionRule'
+import Faq from '@/components/shared/Faq'
+import Testimonial from '@/components/shared/Testimonial'
 import useReveal from '../hooks/useReveal'
-import { BOOK_URL, APP_HREF } from '../components/AskParts'
+import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
 import { SOLUTIONS } from '../data/solutions'
-import HowStages, { Cursor } from '../components/HowStages'
+import HowStages, { Cursor } from '@/components/shared/HowStages'
 
 /* ── drawn product panels ──────────────────────────────────────────────────
  * Every visual is drawn, not a screenshot, so the numbers in it are

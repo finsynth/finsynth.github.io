@@ -1,5 +1,5 @@
-import useReveal from '../hooks/useReveal'
-import useCardStack from '../hooks/useCardStack'
+import useReveal from '@/hooks/useReveal'
+import useCardStack from '@/hooks/useCardStack'
 
 const QUOTES = [
   {

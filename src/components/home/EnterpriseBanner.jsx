@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react'
-import { BOOK_URL, APP_HREF } from './AskParts'
-import EnterpriseDiagram from './EnterpriseDiagram'
+import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
+import EnterpriseDiagram from '@/components/home/EnterpriseDiagram'
 
 
 const FEATURES = [

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import useMediaQuery from '../hooks/useMediaQuery';
+import useMediaQuery from '@/hooks/useMediaQuery';
 import { Landmark, Building2, ChartCandlestick, Briefcase, House } from 'lucide-react';
-import { ROLES, roleHref, roleLabel } from '../data/roles';
-import { SEGMENTS } from '../data/segments';
-import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '../data/solutions';
-import { APP_HREF } from './AskParts';
+import { ROLES, roleHref, roleLabel } from '@/data/roles';
+import { SEGMENTS } from '@/data/segments';
+import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '@/data/solutions';
+import { APP_HREF } from '@/components/layout/AskParts';
 import { LINKS } from '@/config/site';
 
 
