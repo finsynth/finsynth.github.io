@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import useSectionZoom from '../hooks/useSectionZoom'
+import useZoom from '../hooks/useZoom'
 import { EMAILS } from '@/config/site'
 
 const FAQS = [
@@ -38,7 +38,7 @@ export default function Faq({ items = FAQS, title = DEFAULT_TITLE, id = 'faq', o
   // questions with answers rather than a closed grey list
   const [open, setOpen] = useState(openFirst ? 0 : -1)
   const ref = useRef(null)
-  const zoomRef = useSectionZoom()
+  const zoomRef = useZoom()
   const listRef = useRef(null)
   const btnRefs = useRef([])
   const innerRefs = useRef([])

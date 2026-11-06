@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import useSectionZoom from '../hooks/useSectionZoom'
+import useZoom from '../hooks/useZoom'
 import CertSeals from './CertSeals'
 
 const CheckIcon = (
@@ -39,7 +39,7 @@ const POINTS = [
 
 export default function Security() {
   const ref = useRef(null)
-  const zoomRef = useSectionZoom()
+  const zoomRef = useZoom()
 
   useEffect(() => {
     const el = ref.current

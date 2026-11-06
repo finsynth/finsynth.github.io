@@ -23,5 +23,9 @@ type Props = ComponentProps<typeof Seo>
   </head>
   <body>
     <slot />
+    <script>
+      import { bindScrollEffects } from '@/lib/scroll-effects'
+      bindScrollEffects()
+    </script>
   </body>
 </html>

@@ -1,30 +1,16 @@
 import { useEffect, useRef } from 'react'
+import { reveal } from '@/lib/scroll-effects'
 
 /**
  * Scroll-reveal: adds the `is-in` class to the returned ref once the element
- * scrolls into view, then disconnects. Mirrors the inline observer used by
- * HowItWorks/Footer/FAQ so every section reveals with the same staging.
- * Fires once — reveals are entrances, not repeatable transitions.
+ * scrolls into view, then disconnects. Fires once — reveals are entrances,
+ * not repeatable transitions. Static sections use `data-reveal` instead.
  */
 export default function useReveal({ threshold = 0.15 } = {}) {
   const ref = useRef(null)
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            el.classList.add('is-in')
-            io.disconnect()
-          }
-        })
-      },
-      { threshold }
-    )
-    io.observe(el)
-    return () => io.disconnect()
+    if (ref.current) return reveal(ref.current, threshold)
   }, [threshold])
 
   return ref

@@ -1,9 +1,9 @@
-import useSectionZoom from '../hooks/useSectionZoom'
+import useZoom from '../hooks/useZoom'
 import EnterpriseBanner from './EnterpriseBanner'
 
 
 export default function EnterpriseSection() {
-  const zoomRef = useSectionZoom()
+  const zoomRef = useZoom()
 
   return (
     <section className="plans" id="enterprise-plan">

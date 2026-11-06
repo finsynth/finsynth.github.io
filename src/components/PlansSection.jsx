@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { ClerkProvider, PricingTable, useUser, useOrganizationList } from '@clerk/react'
-import useSectionZoom from '../hooks/useSectionZoom'
+import useZoom from '../hooks/useZoom'
 import { LINKS } from '@/config/site'
 import { ENV } from '@/config/env'
 import { CLERK_APPEARANCE } from '@/config/clerk'
@@ -61,7 +61,7 @@ function CreateOrgButton() {
 }
 
 export default function PlansSection() {
-  const zoomRef = useSectionZoom()
+  const zoomRef = useZoom()
 
   return (
     <section className="plans" id="pricing">
