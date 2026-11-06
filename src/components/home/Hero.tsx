@@ -16,8 +16,8 @@ const SELECT_MS = 380   // selection highlight before delete
 function RotatingSegment() {
   const [text, setText] = useState(SEGMENTS[0])
   const [phase, setPhase] = useState('idle') // idle | typing | hold | selected
-  const rootRef = useRef(null)
-  const decodeRef = useRef(null)
+  const rootRef = useRef<HTMLSpanElement>(null)
+  const decodeRef = useRef<{ play: () => void }>(null)
   const [hl, setHl] = useState(false) // user's text selection covers the word
   const [hovered, setHovered] = useState(false) // pointer over the word — cycle held
   // which SEGMENT is on screen. A ref, not state: the cycle stops and restarts
@@ -46,8 +46,8 @@ function RotatingSegment() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let alive = true
-    const timers = []
-    const t = (fn, ms) => { if (alive) timers.push(setTimeout(fn, ms)) }
+    const timers: ReturnType<typeof setTimeout>[] = []
+    const t = (fn: () => void, ms: number) => { if (alive) timers.push(setTimeout(fn, ms)) }
 
     const typeNext = () => {
       wordRef.current = (wordRef.current + 1) % SEGMENTS.length
@@ -144,7 +144,7 @@ const SIDE_TILES = {
 function HeroSideTiles() {
   return (
     <>
-      {['left', 'right'].map((side) => (
+      {(['left', 'right'] as const).map((side) => (
         <div className={`hero-side hero-side--${side}`} key={side} aria-hidden="true">
           {SIDE_TILES[side].map((t, i) => (
             <span

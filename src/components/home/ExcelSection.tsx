@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import useReveal from '@/hooks/useReveal'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import WorkflowMarquee from '@/components/home/WorkflowMarquee'
@@ -32,7 +32,7 @@ import CertSeals from '@/components/home/CertSeals'
  * Drop a real SVG into public/assets/img/logos/integrations/<slug>.svg and give
  * the entry `logo: '<slug>'` to promote it over the fallback badge.
  */
-const GLYPHS = {
+const GLYPHS: Record<string, ReactNode> = {
   // filings — the classic filing-office portico
   sec: <><path d="M2 7.5 11 3l9 4.5" /><path d="M4.5 7.5v8M9 7.5v8M13 7.5v8M17.5 7.5v8" /><path d="M2.5 18.5h17" /></>,
   // earnings calls — a handset
@@ -55,12 +55,22 @@ const GLYPHS = {
 }
 
 // brand shapes simple enough to draw rather than fake with letters
-const MARKS = {
+const MARKS: Record<string, ReactNode> = {
   onedrive: <path d="M7.3 19.4h11.1a3.55 3.55 0 0 0 .5-7.07 5.2 5.2 0 0 0-8.72-3.3 4.1 4.1 0 0 0-6.08 3.6c0 .2.01.4.04.6A3.5 3.5 0 0 0 7.3 19.4Z" />,
   snowflake: <><path d="M12 2.4v19.2M3.7 7.2l16.6 9.6M20.3 7.2 3.7 16.8" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" /></>,
 }
 
-function Badge({ item }) {
+interface PillItem {
+  label: string
+  sub?: string
+  logo?: string
+  glyph?: string
+  mark?: string
+  mono?: string
+  tint?: string
+}
+
+function Badge({ item }: { item: PillItem }) {
   if (item.logo) {
     return (
       <span className="xvi-badge xvi-badge--mark">
@@ -92,7 +102,7 @@ function Badge({ item }) {
 }
 
 // `offset` keeps the stagger running across both rows instead of restarting
-function PillRow({ items, offset = 0, className = '' }) {
+function PillRow({ items, offset = 0, className = '' }: { items: PillItem[]; offset?: number; className?: string }) {
   return (
     <ul className={`xvi-grid${className ? ` ${className}` : ''}`}>
       {items.map((it, i) => (
@@ -169,13 +179,13 @@ const ROWS = [
 
 // file kinds as tiny tinted tiles — a page, a handset, a grid — drawn rather
 // than borrowed from the vendors
-const KIND_MARK = {
+const KIND_MARK: Record<string, ReactNode> = {
   filing: <path d="M4 1.5h4.5L12 5v7.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1Z" />,
   call: <path d="M3.9 2.3 5.5 1.9l1.3 2.7-1.3 1a6.8 6.8 0 0 0 3 3l1-1.3 2.7 1.3-.4 1.6a1.3 1.3 0 0 1-1.4 1C6.8 10.8 3.5 7.5 3 3.7a1.3 1.3 0 0 1 .9-1.4Z" />,
   xlsx: <><rect x="2.5" y="2.5" width="9" height="9" rx="1" /><path d="M2.5 7h9M7 2.5v9" /></>,
 }
 
-function KindMark({ kind }) {
+function KindMark({ kind }: { kind: string }) {
   return (
     <i className={`xvk-kind xvk-kind--${kind}`}>
       <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
@@ -187,7 +197,7 @@ function KindMark({ kind }) {
 
 // the file's tab: kind mark, title, and a close glyph so it reads as an open
 // window rather than a label
-function CardTab({ c }) {
+function CardTab({ c }: { c: { kind: string; title: string } }) {
   return (
     <div className="xvk-head">
       <div className="xvk-tab">
@@ -212,7 +222,7 @@ const CITED_KINDS = [
 ]
 
 // which source lands in a given cell, if any — so the grid can mark it
-const hitAt = (row, col) => SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
+const hitAt = (row: number, col: string) => SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
 
 function VisualCascade() {
   return (
@@ -496,7 +506,7 @@ const SCROLL_IDLE_MS = 1200
  * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
  * the wait, so pressing a row always buys a full turn on the claim it selected.
  */
-function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
+function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>, { scrub = true } = {}) {
   const count = dwell.length
   const [step, setStep] = useState(0)
   const [held, setHeld] = useState(false)
@@ -514,7 +524,7 @@ function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let raf = 0
-    let idle = 0
+    let idle: ReturnType<typeof setTimeout> | undefined
 
     const read = () => {
       raf = 0
@@ -592,7 +602,7 @@ function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
 
   return {
     step,
-    goTo: i => { setStep(i); setNudge(n => n + 1) },
+    goTo: (i: number) => { setStep(i); setNudge(n => n + 1) },
     hold: () => setHeld(true),
     release: () => setHeld(false),
   }
@@ -607,10 +617,14 @@ function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
 export default function ExcelSection({
   id = 'excel',
   title = <>FinSynth for <span className="ttl-hl">Excel</span></>,
-  badge = undefined,
+  badge,
+}: {
+  id?: string
+  title?: ReactNode
+  badge?: ReactNode
 }) {
-  const frameRef = useReveal({ threshold: 0.08 })
-  const paneRef = useRef(null)
+  const frameRef = useReveal<HTMLDivElement>({ threshold: 0.08 })
+  const paneRef = useRef<HTMLDivElement>(null)
   // Narrow screens read the pane as an accordion instead of two columns: the
   // active claim's visual is mounted directly under its own row, so the picture
   // is always beside the words it belongs to rather than below all four of them.

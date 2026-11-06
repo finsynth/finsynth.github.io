@@ -55,6 +55,11 @@ const seed = (i, j) => {
   return s - Math.floor(s)
 }
 
+/**
+ * @param {{ stageClassName?: string, ariaLabel?: string, tile?: number, focusX?: number,
+ *   focusY?: number, duration?: number, delay?: number, paused?: boolean,
+ *   onRevealDone?: () => void }} props
+ */
 const PixelBayBridge = ({
   stageClassName = 'hero-s2-mosaic',
   ariaLabel = '',

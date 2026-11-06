@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import useMediaQuery from '@/hooks/useMediaQuery';
-import { Landmark, Building2, ChartCandlestick, Briefcase, House } from 'lucide-react';
+import { Landmark, Building2, ChartCandlestick, Briefcase, House, type LucideIcon } from 'lucide-react';
 import { ROLES, roleHref, roleLabel } from '@/data/roles';
 import { SEGMENTS } from '@/data/segments';
 import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '@/data/solutions';
@@ -8,7 +8,16 @@ import { APP_HREF } from '@/components/layout/AskParts';
 import { LINKS } from '@/config/site';
 
 
-const PRODUCTS = [
+interface NavItem {
+  key: string;
+  label: string;
+  href?: string;
+  soon?: boolean;
+  icon?: LucideIcon;
+  desc?: string;
+}
+
+const PRODUCTS: NavItem[] = [
   { key: 'excel', label: 'FinSynth for Excel', href: '/#excel' },
   { key: 'fia', label: 'Fia', href: '/#fia-agent' },
   // listed ahead of launch so the menu shows the roadmap; no page to send to yet
@@ -20,7 +29,7 @@ const PRODUCTS = [
 // Each desk links to its page in data/solutions.js; a desk whose page is
 // keyed under another slug says so (`slug`), and one with no page lands on
 // the why-FinSynth section until it exists.
-const SOLUTION_BLURBS = {
+const SOLUTION_BLURBS: Record<string, { icon: LucideIcon; desc: string; slug?: string }> = {
   'Hedge Funds':    { icon: Landmark,         desc: 'Alpha generation and signal research' },
   'Asset Managers': { icon: Building2,        desc: 'IC memos and portfolio monitoring' },
   // the page covers buyout, growth equity and private credit, so it is
@@ -30,7 +39,7 @@ const SOLUTION_BLURBS = {
   'Sell Side':      { icon: Briefcase,        desc: 'Initiations, earnings notes and sector reports' },
 };
 // exported for the footer's Solutions column, so the two lists are one list
-export const SOLUTIONS = SEGMENTS
+export const SOLUTIONS: NavItem[] = SEGMENTS
   .filter((name) => name in SOLUTION_BLURBS)
   .map((name) => {
     const { slug: pageSlug, ...blurb } = SOLUTION_BLURBS[name];
@@ -40,7 +49,7 @@ export const SOLUTIONS = SEGMENTS
 
 // The footer's Careers column, again up here. Same ROLES, so the two can't
 // disagree about what's open; each links to its posting on /careers.
-const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleHref(r) }));
+const CAREERS: NavItem[] = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleHref(r) }));
 
 /**
  * One nav dropdown. `id` is what the bar's single open-menu state holds, so
@@ -55,13 +64,22 @@ const CAREERS = ROLES.map((r) => ({ key: r.key, label: roleLabel(r), href: roleH
  * own boolean (`flatOpen`/`onToggle`) instead of the bar's single open-menu
  * id: in the sheet both groups can sit expanded at once.
  */
-function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, onNavigate, grid }) {
+type NavDropProps = {
+  id: string;
+  label: string;
+  items: NavItem[];
+} & (
+  | { flat: true; flatOpen: boolean; onToggle: () => void; onNavigate: () => void; open?: never; setOpen?: never; grid?: never }
+  | { flat?: false; open: string | null; setOpen: Dispatch<SetStateAction<string | null>>; grid?: boolean; flatOpen?: never; onToggle?: never; onNavigate?: never }
+);
+
+function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, onNavigate, grid }: NavDropProps) {
   const isOpen = flat ? flatOpen : open === id;
 
   // One entry. A plain item is a single line; one carrying `icon`/`desc`
   // (the Solutions menu) is an icon beside a title with a one-line blurb under
   // it. `soon` entries are listed but go nowhere.
-  const renderItem = (it, onClick) => {
+  const renderItem = (it: NavItem, onClick?: () => void) => {
     if (it.soon) {
       return (
         <span key={it.key} className="nav-drop-item is-soon" aria-disabled="true">
@@ -141,14 +159,14 @@ function NavDrop({ id, label, items, open, setOpen, flat, flatOpen, onToggle, on
 export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   // which desktop menu is open, by id — 'product' | 'solutions' | 'careers' | null
-  const [openMenu, setOpenMenu] = useState(null);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   // the sheet's disclosure rows are independent of each other, so a set rather
   // than a single id — both groups can sit expanded at once. They start (and
   // reopen) expanded: the links are what the sheet is opened for, so they
   // shouldn't hide behind a second tap. A tap on the title still folds one away.
   const allFlats = () => new Set(['product', 'solutions', 'careers']);
   const [openFlats, setOpenFlats] = useState(allFlats);
-  const toggleFlat = (id) =>
+  const toggleFlat = (id: string) =>
     setOpenFlats((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
@@ -161,10 +179,10 @@ export default function Navbar() {
   const lastY = useRef(0);
   // the whole link row, so an outside click is measured against both menus at
   // once rather than each drop watching for itself
-  const linksRef = useRef(null);
-  const sheetRef = useRef(null);
-  const burgerRef = useRef(null);
-  const navRef = useRef(null);
+  const linksRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true);
   // Whether the dark footer is the thing currently passing under the bar. The
@@ -201,11 +219,11 @@ export default function Navbar() {
 
     const onScroll = () => window.requestAnimationFrame(update);
 
-    let observer;
-    const targets = [...heroes, footer].filter(Boolean);
+    let observer: IntersectionObserver | undefined;
+    const targets = [...heroes, footer].filter((t): t is Element => !!t);
     if (targets.length) {
       const seen = new Set();
-      observer = new IntersectionObserver(
+      const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) seen.add(e.target);
@@ -216,7 +234,8 @@ export default function Navbar() {
         },
         { threshold: 0 }
       );
-      targets.forEach((t) => observer.observe(t));
+      targets.forEach((t) => io.observe(t));
+      observer = io;
     }
 
     lastY.current = window.scrollY;
@@ -251,12 +270,12 @@ export default function Navbar() {
   // is the one people reach for first.
   useEffect(() => {
     if (!sheetOpen) return;
-    const onDown = (e) => {
-      if (!sheetRef.current?.contains(e.target) && !burgerRef.current?.contains(e.target)) {
+    const onDown = (e: PointerEvent) => {
+      if (!sheetRef.current?.contains(e.target as Node) && !burgerRef.current?.contains(e.target as Node)) {
         setSheetOpen(false);
       }
     };
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSheetOpen(false);
         burgerRef.current?.focus();
@@ -277,10 +296,10 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!openMenu) return;
-    const onDown = (e) => {
-      if (!linksRef.current?.contains(e.target)) setOpenMenu(null);
+    const onDown = (e: PointerEvent) => {
+      if (!linksRef.current?.contains(e.target as Node)) setOpenMenu(null);
     };
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpenMenu(null);
     };
     document.addEventListener('pointerdown', onDown);

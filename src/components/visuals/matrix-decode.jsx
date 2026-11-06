@@ -42,7 +42,15 @@ const glyphStyle = (c) => ({
  * `text` may change mid-decode (e.g. a typewriter feeding it); each frame
  * reads the latest value, so the scramble tracks the live word.
  */
-export const MatrixDecode = forwardRef(function MatrixDecode(
+export const MatrixDecode = forwardRef(
+  /**
+   * @param {{ text?: string, charset?: string, as?: import('react').ElementType, className?: string,
+   *   style?: import('react').CSSProperties, fontSize?: string | number, color?: string,
+   *   fontWeight?: string | number, revealDuration?: number, speed?: number,
+   *   trigger?: 'mount' | 'hover' | 'manual', [key: string]: unknown }} props
+   * @param {import('react').ForwardedRef<{ play: () => void }>} ref
+   */
+  function MatrixDecode(
   {
     text = '',
     charset = DEFAULT_CHARSET,
