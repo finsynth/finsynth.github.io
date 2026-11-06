@@ -609,7 +609,7 @@ function useAutoStep(dwell, paneRef, { scrub = true } = {}) {
 export default function ExcelSection({
   id = 'excel',
   title = <>FinSynth for <span className="ttl-hl">Excel</span></>,
-  badge,
+  badge = undefined,
 }) {
   const frameRef = useReveal({ threshold: 0.08 })
   const paneRef = useRef(null)

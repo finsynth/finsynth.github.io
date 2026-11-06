@@ -165,7 +165,7 @@ function HeroSideTiles() {
   )
 }
 
-function Hero({ variant = 'grid', bgImage, bgGlass = false, bare = false }) {
+function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = false }) {
   // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
   // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
   // All share the same content layout (the "mosaic hero").
