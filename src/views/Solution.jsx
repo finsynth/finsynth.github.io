@@ -1,13 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
-import { useUser } from '@clerk/react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SectionRule from '../components/SectionRule'
 import Faq from '../components/Faq'
 import Testimonial from '../components/Testimonial'
 import useReveal from '../hooks/useReveal'
-import { BOOK_URL, SIGNIN_HREF, APP_HREF } from '../components/AskParts'
+import { BOOK_URL, APP_HREF } from '../components/AskParts'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages, { Cursor } from '../components/HowStages'
 
@@ -833,20 +831,11 @@ function Workflow({ w, flip }) {
   )
 }
 
-export default function Solution() {
-  const { slug } = useParams()
+export default function Solution({ slug }) {
   const sol = SOLUTIONS[slug]
-  const { isSignedIn: signedIn } = useUser()
   const worksRef = useReveal({ threshold: 0.05 })
-  useEffect(() => {
-    if (!sol) return
-    document.title = `FinSynth AI for ${sol.name}`
-    return () => {
-      document.title = 'FinSynth AI - Auditable spreadsheet agent'
-    }
-  }, [sol])
 
-  if (!sol) return <Navigate to="/" replace />
+  if (!sol) return null
 
   return (
     <div className="mainContainer">
@@ -871,8 +860,8 @@ export default function Solution() {
               <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">Talk to Us</a>
               {/* the home hero's second button, word for word: the self-serve
                   path names the price, and the arrow only shows on hover */}
-              <a className="hero-s2-cta hero-s2-cta--ghost" href={signedIn ? APP_HREF : SIGNIN_HREF} target="_blank" rel="noopener noreferrer">
-                {signedIn ? 'Go to app' : 'Try for free'}
+              <a className="hero-s2-cta hero-s2-cta--ghost" href={APP_HREF} target="_blank" rel="noopener noreferrer">
+                Try for free
                 <svg className="hero-s2-cta-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                   <path d="M2.5 8h10M9 4.5 12.5 8 9 11.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

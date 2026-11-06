@@ -1,0 +1,16 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Solution from '@/views/Solution'
+import { SOLUTIONS } from '@/data/solutions'
+
+export function getStaticPaths() {
+  return Object.entries(SOLUTIONS).map(([slug, sol]) => ({ params: { slug }, props: { sol } }))
+}
+
+const { slug } = Astro.params
+const { sol } = Astro.props
+---
+
+<BaseLayout title={`FinSynth AI for ${sol.name}`} description={sol.lede}>
+  <Solution slug={slug} client:load />
+</BaseLayout>
