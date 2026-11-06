@@ -1,5 +1,3 @@
-import { useEffect, useRef } from 'react'
-import useZoom from '../hooks/useZoom'
 import CertSeals from './CertSeals'
 
 const CheckIcon = (
@@ -38,32 +36,10 @@ const POINTS = [
 ]
 
 export default function Security() {
-  const ref = useRef(null)
-  const zoomRef = useZoom()
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.classList.add('is-in')
-      return
-    }
-    const io = new IntersectionObserver(
-      es => es.forEach(e => {
-        if (!e.isIntersecting) return
-        el.classList.add('is-in')
-        io.unobserve(el)
-      }),
-      { threshold: 0.2 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
   return (
     <section className="secx" id="security">
-      <div className="wrap" ref={zoomRef}>
-        <div className="secx-frame" ref={ref}>
+      <div className="wrap" data-zoom>
+        <div className="secx-frame" data-reveal="0.2">
 
           <div className="secx-head secx-reveal">
             <div className="secx-head-copy">
