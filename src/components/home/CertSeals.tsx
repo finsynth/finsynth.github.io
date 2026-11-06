@@ -29,7 +29,7 @@ export const SEALS = [
 export default function CertSeals({ compact = false }) {
   return (
     <ul className={`xvs-certs${compact ? ' xvs-certs--compact' : ''}`}>
-      {SEALS.map(s => (
+      {SEALS.map((s) => (
         <li key={s.key} className={`xvs-seal${s.pending ? ' xvs-seal--pending' : ''}`}>
           <span className="xvs-seal-top">{s.top}</span>
           <span className="xvs-seal-rule" />

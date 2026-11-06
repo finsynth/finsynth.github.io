@@ -1,4 +1,3 @@
-
 /**
  * The verifiable stats, as a metrics band hung off the bottom of the Excel
  * section: same .wrap, so the band's edges land exactly on the frame's, and it

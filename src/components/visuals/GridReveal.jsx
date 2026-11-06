@@ -58,10 +58,18 @@ const LINES = [
   'M242.771 268.174C527.952 277.045 822.735 277.041 1107.91 268.165',
   'M121.165 159.011C483.816 201.817 866.877 201.806 1229.52 158.976',
   'M1 27C437.914 134.333 912.086 134.333 1349 27',
-  'M1229 0L1229 268', 'M1107 0L1107 362', 'M985 0C985 148.337 985 296.673 985 445',
-  'M861 0C861 175.333 861 350.667 861 526', 'M737 0L737 610', 'M613 0L613 610',
-  'M489 0L489 526', 'M365 0C365 148.337 365 296.673 365 445', 'M243 0L243 362',
-  'M121 0L121 268', 'M1.25 0V159', 'M1349.25 0V159',
+  'M1229 0L1229 268',
+  'M1107 0L1107 362',
+  'M985 0C985 148.337 985 296.673 985 445',
+  'M861 0C861 175.333 861 350.667 861 526',
+  'M737 0L737 610',
+  'M613 0L613 610',
+  'M489 0L489 526',
+  'M365 0C365 148.337 365 296.673 365 445',
+  'M243 0L243 362',
+  'M121 0L121 268',
+  'M1.25 0V159',
+  'M1349.25 0V159',
 ]
 
 const VB_W = 1350
@@ -72,9 +80,9 @@ const VB_H = 610
  *   asBackground?: boolean, pointerTargetRef?: import('react').RefObject<HTMLElement> | null }} props
  */
 function GridReveal({
-  reach = 520,   // spotlight radius (viewBox units) where fill reaches zero
-  core = 140,    // inner radius held at full fill
-  idle = true,   // ambient drift when the pointer is away
+  reach = 520, // spotlight radius (viewBox units) where fill reaches zero
+  core = 140, // inner radius held at full fill
+  idle = true, // ambient drift when the pointer is away
   idleLevel = 0.45, // max fill during idle drift
   asBackground = false, // render as an absolutely-positioned backdrop layer (e.g. footer bg)
   pointerTargetRef = null, // element whose pointer moves drive the spotlight (defaults to the svg host)
@@ -102,7 +110,7 @@ function GridReveal({
       // one settled frame: soft fill fanning down from the top of the dome
       cells.forEach((el, i) => {
         el.style.transition = 'none'
-        el.style.opacity = (0.5 - centers[i].y / VB_H * 0.4).toFixed(3)
+        el.style.opacity = (0.5 - (centers[i].y / VB_H) * 0.4).toFixed(3)
       })
       return
     }
@@ -124,7 +132,9 @@ function GridReveal({
       const p = pointerRef.current
       let px, py, intensity
       if (p.active && p.x != null) {
-        px = p.x; py = p.y; intensity = 1
+        px = p.x
+        py = p.y
+        intensity = 1
       } else if (idle) {
         // slow Lissajous sweep across the grid so it breathes when untouched
         t += 0.0055
@@ -153,7 +163,9 @@ function GridReveal({
       const v = toViewBox(e.clientX, e.clientY)
       pointerRef.current = { x: v.x, y: v.y, active: true }
     }
-    const onLeave = () => { pointerRef.current.active = false }
+    const onLeave = () => {
+      pointerRef.current.active = false
+    }
     const onVisibility = () => {
       cancelAnimationFrame(rafRef.current)
       if (!document.hidden) rafRef.current = requestAnimationFrame(render)
@@ -183,7 +195,14 @@ function GridReveal({
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="gr-fill" x1="675" y1="0" x2="675" y2="527" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="gr-fill"
+          x1="675"
+          y1="0"
+          x2="675"
+          y2="527"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0" stopColor="#6B84E8" />
           <stop offset="1" stopColor="#2438A8" />
         </linearGradient>
@@ -195,7 +214,14 @@ function GridReveal({
       </g>
       <g className="gridreveal__cells">
         {CELLS.map((d, i) => (
-          <path key={i} ref={(el) => { cellRefs.current[i] = el }} d={d} fill="url(#gr-fill)" />
+          <path
+            key={i}
+            ref={(el) => {
+              cellRefs.current[i] = el
+            }}
+            d={d}
+            fill="url(#gr-fill)"
+          />
         ))}
       </g>
     </svg>

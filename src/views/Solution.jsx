@@ -16,7 +16,18 @@ import HowStages, { Cursor } from '@/components/shared/HowStages'
  */
 
 function Tick() {
-  return <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 8.5 3 3 6-6.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        d="m3.5 8.5 3 3 6-6.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
 }
 
 /* where a figure or claim came from */
@@ -44,12 +55,18 @@ function useTicks(total, ms, ref, paused = false) {
       return
     }
     let id
-    const io = new IntersectionObserver(([e]) => {
-      clearInterval(id)
-      if (e.isIntersecting) id = setInterval(() => setT((v) => (v + 1) % total), ms)
-    }, { threshold: 0.35 })
+    const io = new IntersectionObserver(
+      ([e]) => {
+        clearInterval(id)
+        if (e.isIntersecting) id = setInterval(() => setT((v) => (v + 1) % total), ms)
+      },
+      { threshold: 0.35 },
+    )
     io.observe(el)
-    return () => { io.disconnect(); clearInterval(id) }
+    return () => {
+      io.disconnect()
+      clearInterval(id)
+    }
   }, [total, ms, ref, paused])
   return t
 }
@@ -64,13 +81,35 @@ const SCREEN_ROWS = [
   ['Skechers', '+50bp', 'Raised', 'Q3 FY26 release'],
   ['Columbia', '+30bp', 'Reiterated', 'Q3 FY26 call'],
 ]
-const SCREEN_CRITERIA = ['Gross margin inflected', 'Guidance raised or held', 'Pricing holding on the call']
+const SCREEN_CRITERIA = [
+  'Gross margin inflected',
+  'Guidance raised or held',
+  'Pricing holding on the call',
+]
 /* the line each of the first three names' data point came from, for the
    sourced-shortlist scene; the Crocs line is the one the thesis stage cites */
 const SCREEN_CITES = [
-  { doc: 'Q3 FY26 release', where: 'p. 2', before: 'Adjusted gross margin was 59.6%, ', mark: 'up 120 basis points', after: ' on the prior year, driven by channel mix and lower freight.' },
-  { doc: 'Q2 FY26 call', where: 'p. 4', before: 'Given the first half, ', mark: 'we are raising our full-year outlook', after: ', with gross margin now expected to be up around 110 basis points.' },
-  { doc: 'H1 FY26 release', where: 'p. 3', before: 'Gross profit margin ', mark: 'improved by 90 basis points', after: ' to 60.9%, on a higher DTC share and lower freight costs.' },
+  {
+    doc: 'Q3 FY26 release',
+    where: 'p. 2',
+    before: 'Adjusted gross margin was 59.6%, ',
+    mark: 'up 120 basis points',
+    after: ' on the prior year, driven by channel mix and lower freight.',
+  },
+  {
+    doc: 'Q2 FY26 call',
+    where: 'p. 4',
+    before: 'Given the first half, ',
+    mark: 'we are raising our full-year outlook',
+    after: ', with gross margin now expected to be up around 110 basis points.',
+  },
+  {
+    doc: 'H1 FY26 release',
+    where: 'p. 3',
+    before: 'Gross profit margin ',
+    mark: 'improved by 90 basis points',
+    after: ' to 60.9%, on a higher DTC share and lower freight costs.',
+  },
 ]
 
 /* the citation flow's geometry, shared by the scenes that click a source
@@ -86,16 +125,23 @@ function useWire(ref, t, chipSel) {
       const chip = wrap.querySelector(chipSel)
       const card = wrap.querySelector('.sol-excerpt--cite')
       const mark = wrap.querySelector('.sol-excerpt--cite mark.is-on')
-      if (!chip || !card || !mark) { setGeo(null); return }
+      if (!chip || !card || !mark) {
+        setGeo(null)
+        return
+      }
       const w = wrap.getBoundingClientRect()
       const a = chip.getBoundingClientRect()
       const d = card.getBoundingClientRect()
       const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
       setGeo({
-        w: w.width, h: w.height,
-        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
-        x2: d.left - w.left, y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
-        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
+        w: w.width,
+        h: w.height,
+        x1: a.right - w.left,
+        y1: a.top + a.height / 2 - w.top,
+        x2: d.left - w.left,
+        y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
+        cx: a.left + a.width * 0.62 - w.left,
+        cy: a.top + a.height * 0.45 - w.top,
       })
     }
     measure()
@@ -110,11 +156,21 @@ function useWire(ref, t, chipSel) {
    the tick so the wire redraws for each new source */
 function Wire({ geo, tick }) {
   if (!geo) return null
-  const dx = (geo.x2 - geo.x1) * .5
+  const dx = (geo.x2 - geo.x1) * 0.5
   return (
     <>
-      <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${tick}`}>
-        <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+      <svg
+        className="sol-wire"
+        width={geo.w}
+        height={geo.h}
+        viewBox={`0 0 ${geo.w} ${geo.h}`}
+        aria-hidden="true"
+        key={`w${tick}`}
+      >
+        <path
+          d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`}
+          pathLength="1"
+        />
         <circle cx={geo.x2} cy={geo.y2} r="3" />
       </svg>
       <Cursor x={geo.cx} y={geo.cy} />
@@ -134,7 +190,8 @@ function Wire({ geo, tick }) {
    opens that document and the data point's line lights in it. Without a
    `prompt` there is no run: the criteria tick beside the sheet as the rows
    print, as the sell side's sector view uses it */
-const SCREEN_PROMPT = 'Screen US consumer for footwear names where gross margin inflected this quarter, guidance was raised or held, and management said pricing is holding on the last call'
+const SCREEN_PROMPT =
+  'Screen US consumer for footwear names where gross margin inflected this quarter, guidance was raised or held, and management said pricing is holding on the last call'
 /* the calls the prompt turns into, in order, and the universe each leaves */
 const SCREEN_CALLS = [
   { fn: 'screen_universe', arg: 'US consumer, footwear', n: '1,840' },
@@ -146,19 +203,33 @@ const SCREEN_CALLS = [
 /* what FinSynth says over the shortlist once the run is through */
 const SCREEN_SAY = '6 names match on all three, each sourced to its filing'
 function ScreenVisual({
-  cite = false, title = 'US consumer · screen', tag = '1,840 names', criteria = SCREEN_CRITERIA,
-  head = 'Shortlist', status = ['Screening 1,840 names', '6 names match'], prompt = SCREEN_PROMPT, say = SCREEN_SAY,
+  cite = false,
+  title = 'US consumer · screen',
+  tag = '1,840 names',
+  criteria = SCREEN_CRITERIA,
+  head = 'Shortlist',
+  status = ['Screening 1,840 names', '6 names match'],
+  prompt = SCREEN_PROMPT,
+  say = SCREEN_SAY,
 }) {
   const ref = useRef(null)
   const HOLD = 8
   const run = Boolean(prompt) && !cite
   /* run: the prompt alone, two ticks a call, the sheet, a row a tick, a hold */
   const outAt = 1 + SCREEN_CALLS.length * 2
-  const total = cite ? SCREEN_CITES.length : run ? outAt + 1 + SCREEN_ROWS.length + 2 : SCREEN_ROWS.length + criteria.length + HOLD
+  const total = cite
+    ? SCREEN_CITES.length
+    : run
+      ? outAt + 1 + SCREEN_ROWS.length + 2
+      : SCREEN_ROWS.length + criteria.length + HOLD
   const t = useTicks(total, cite ? 2400 : run ? 520 : 620, ref)
   const out = cite || !run || t >= outAt
   const crit = cite ? criteria.length : Math.min(t, criteria.length)
-  const rows = cite ? SCREEN_ROWS.length : run ? Math.max(0, t - outAt) : Math.max(0, t - criteria.length)
+  const rows = cite
+    ? SCREEN_ROWS.length
+    : run
+      ? Math.max(0, t - outAt)
+      : Math.max(0, t - criteria.length)
   const done = rows >= SCREEN_ROWS.length
   const sel = cite ? t : -1
   const c = cite ? SCREEN_CITES[t] : null
@@ -170,14 +241,23 @@ function ScreenVisual({
   const chat = Boolean(prompt)
   const shortlist = (
     <table className="sol-upd sol-screen">
-      <thead><tr><th>Name</th><th>GM, y/y</th><th>Guidance</th><th>Source</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>GM, y/y</th>
+          <th>Guidance</th>
+          <th>Source</th>
+        </tr>
+      </thead>
       <tbody>
         {SCREEN_ROWS.map(([name, gm, guide, src], i) => (
           <tr key={name} className={`${i < rows ? 'is-on' : ''}${i === sel ? ' is-sel' : ''}`}>
             <td>{name}</td>
             <td>{gm}</td>
             <td>{guide}</td>
-            <td><Src>{src}</Src></td>
+            <td>
+              <Src>{src}</Src>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -187,12 +267,25 @@ function ScreenVisual({
     <span className="sol-status-ico">
       <span className="sol-status-spin" />
       <span className="sol-status-check">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+        <svg
+          viewBox="0 0 12 12"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+        </svg>
       </span>
     </span>
   )
   return (
-    <div className={`sol-stage sol-stage--focus${chat ? ' sol-stage--chat' : ''}${out ? '' : ' sol-stage--run'}`} ref={ref} aria-hidden="true">
+    <div
+      className={`sol-stage sol-stage--focus${chat ? ' sol-stage--chat' : ''}${out ? '' : ' sol-stage--run'}`}
+      ref={ref}
+      aria-hidden="true"
+    >
       {chat ? (
         <div className="sol-panel sol-pane sol-main sol-pane--screen">
           <div className="sol-pane-ask">
@@ -200,7 +293,10 @@ function ScreenVisual({
             <p>{prompt}</p>
           </div>
           <div className="sol-pane-body">
-            <p className={`sol-pane-say sol-pane-say--status${done ? ' is-done' : ''}`} key={done ? 'done' : 'live'}>
+            <p
+              className={`sol-pane-say sol-pane-say--status${done ? ' is-done' : ''}`}
+              key={done ? 'done' : 'live'}
+            >
               {statusIco}
               <span>{done ? say : status[0]}</span>
             </p>
@@ -210,8 +306,14 @@ function ScreenVisual({
               <div className="sol-run sol-pane-calls">
                 <ol>
                   {SCREEN_CALLS.map((call, i) => (
-                    <li key={call.fn} className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}>
-                      <span className="sol-run-ico"><span className="sol-run-spin" /><Tick /></span>
+                    <li
+                      key={call.fn}
+                      className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}
+                    >
+                      <span className="sol-run-ico">
+                        <span className="sol-run-spin" />
+                        <Tick />
+                      </span>
                       <code>{call.fn}</code>
                       <span className="sol-run-arg">{call.arg}</span>
                       <em>{call.n} names</em>
@@ -221,34 +323,62 @@ function ScreenVisual({
               </div>
             )}
           </div>
-          <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
+          <div className="sol-pane-in">
+            <span>Ask FinSynth</span>
+            <b>Send ↵</b>
+          </div>
         </div>
       ) : (
         <div className="sol-panel sol-sheet sol-sheet--screen sol-main">
-          <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
+          <div className="sol-sheet-title">
+            {title}
+            <em className="sol-sheet-tag">{tag}</em>
+          </div>
           {shortlist}
         </div>
       )}
       {c ? (
         <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
-          <div className="sol-aside-head"><Src>{c.doc}</Src><span>{c.where}</span></div>
-          <p>{c.before}<mark className="is-on">{c.mark}</mark>{c.after}</p>
+          <div className="sol-aside-head">
+            <Src>{c.doc}</Src>
+            <span>{c.where}</span>
+          </div>
+          <p>
+            {c.before}
+            <mark className="is-on">{c.mark}</mark>
+            {c.after}
+          </p>
         </div>
       ) : run ? (
         <div className="sol-panel sol-aside sol-stack sol-run-sum">
-          <div className="sol-aside-head"><span>Tool calls</span><b>{SCREEN_CALLS.length}</b></div>
+          <div className="sol-aside-head">
+            <span>Tool calls</span>
+            <b>{SCREEN_CALLS.length}</b>
+          </div>
           <ul>
             {SCREEN_CALLS.map((call) => (
-              <li key={call.fn} className="is-on"><Tick /><span>{call.fn}</span><em>{call.n}</em></li>
+              <li key={call.fn} className="is-on">
+                <Tick />
+                <span>{call.fn}</span>
+                <em>{call.n}</em>
+              </li>
             ))}
           </ul>
         </div>
       ) : (
         <div className="sol-panel sol-aside sol-stack">
-          <div className="sol-aside-head"><span>{head}</span><b>{Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}</b></div>
+          <div className="sol-aside-head">
+            <span>{head}</span>
+            <b>
+              {Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}
+            </b>
+          </div>
           <ul>
             {criteria.map((cr, i) => (
-              <li key={cr} className={i < crit ? 'is-on' : ''}><Tick /><span>{cr}</span></li>
+              <li key={cr} className={i < crit ? 'is-on' : ''}>
+                <Tick />
+                <span>{cr}</span>
+              </li>
             ))}
           </ul>
         </div>
@@ -257,7 +387,10 @@ function ScreenVisual({
       {!chat && (
         <div className={`sol-status${done ? ' is-done' : ''}`}>
           {statusIco}
-          <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
+          <span className="sol-status-lbls">
+            <span>{status[0]}</span>
+            <span>{status[1]}</span>
+          </span>
         </div>
       )}
     </div>
@@ -292,9 +425,17 @@ function EarningsVisual() {
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--earn sol-main">
-        <div className="sol-sheet-title">Crocs · model<em className="sol-sheet-tag">Your layout</em></div>
+        <div className="sol-sheet-title">
+          Crocs · model<em className="sol-sheet-tag">Your layout</em>
+        </div>
         <table className="sol-upd">
-          <thead><tr><th>USD m</th><th>Q3 FY25A</th><th className="is-col">Q3 FY26A</th></tr></thead>
+          <thead>
+            <tr>
+              <th>USD m</th>
+              <th>Q3 FY25A</th>
+              <th className="is-col">Q3 FY26A</th>
+            </tr>
+          </thead>
           <tbody>
             {EARN_ROWS.map((r) => {
               if (r.fx) {
@@ -302,7 +443,9 @@ function EarningsVisual() {
                   <tr key={r.label} className="is-derived">
                     <td>{r.label}</td>
                     <td>{r.prior}</td>
-                    <td className={`sol-upd-cell${filled(r.after) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
+                    <td className={`sol-upd-cell${filled(r.after) ? ' is-filled' : ''}`}>
+                      <span>{r.now}</span>
+                    </td>
                   </tr>
                 )
               }
@@ -312,7 +455,9 @@ function EarningsVisual() {
                 <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
                   <td>{r.label}</td>
                   <td>{r.prior}</td>
-                  <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}><span>{r.now}</span></td>
+                  <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}>
+                    <span>{r.now}</span>
+                  </td>
                 </tr>
               )
             })}
@@ -323,23 +468,54 @@ function EarningsVisual() {
         <span className="sol-status-ico">
           <span className="sol-status-spin" />
           <span className="sol-status-check">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+            </svg>
           </span>
         </span>
-        <span className="sol-status-lbls"><span>Updating from the release</span><span>Model updated</span></span>
+        <span className="sol-status-lbls">
+          <span>Updating from the release</span>
+          <span>Model updated</span>
+        </span>
       </div>
     </div>
   )
 }
 
 const OVERVIEW_SOURCES = [
-  ['FY25 10-K', 'Filing'], ['Q3 release', 'Filing'], ['Q3 call', 'Transcript'],
-  ['Broker notes', 'Dataroom'], ['Expert call', 'Dataroom'],
+  ['FY25 10-K', 'Filing'],
+  ['Q3 release', 'Filing'],
+  ['Q3 call', 'Transcript'],
+  ['Broker notes', 'Dataroom'],
+  ['Expert call', 'Dataroom'],
 ]
 const OVERVIEW_SECTIONS = [
-  { h: 'Business', p: 'Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites', src: 'FY25 10-K, p. 41' },
-  { h: 'Key metrics', kpis: [['Revenue FY25', '$4.2bn'], ['Margin', '25.1%'], ['DTC growth', '+11%'], ['Leverage', '1.4x']] },
-  { h: 'Management is saying', p: 'Targets 200bp of margin expansion by FY28 as its own channels pass half of the mix', src: 'Q3 FY26 call' },
+  {
+    h: 'Business',
+    p: 'Casual footwear in two brands, Crocs (79% of revenue) and HEYDUDE (21%), sold wholesale and through its own stores and sites',
+    src: 'FY25 10-K, p. 41',
+  },
+  {
+    h: 'Key metrics',
+    kpis: [
+      ['Revenue FY25', '$4.2bn'],
+      ['Margin', '25.1%'],
+      ['DTC growth', '+11%'],
+      ['Leverage', '1.4x'],
+    ],
+  },
+  {
+    h: 'Management is saying',
+    p: 'Targets 200bp of margin expansion by FY28 as its own channels pass half of the mix',
+    src: 'Q3 FY26 call',
+  },
 ]
 
 /* one section of a drafted brief: a heading over a cited sentence, or over
@@ -350,10 +526,17 @@ function BriefSection({ s, className = '' }) {
       <h5>{s.h}</h5>
       {s.kpis ? (
         <dl className="sol-brief-kpis">
-          {s.kpis.map(([dt, dd]) => <div key={dt}><dt>{dt}</dt><dd>{dd}</dd></div>)}
+          {s.kpis.map(([dt, dd]) => (
+            <div key={dt}>
+              <dt>{dt}</dt>
+              <dd>{dd}</dd>
+            </div>
+          ))}
         </dl>
       ) : (
-        <p>{s.p} <Src>{s.src}</Src></p>
+        <p>
+          {s.p} <Src>{s.src}</Src>
+        </p>
       )}
     </section>
   )
@@ -364,10 +547,17 @@ function BriefSection({ s, className = '' }) {
 function SourceStack({ head, sources, on = false }) {
   return (
     <div className="sol-panel sol-aside sol-stack">
-      <div className="sol-aside-head"><span>{head[0]}</span><b>{head[1]}</b></div>
+      <div className="sol-aside-head">
+        <span>{head[0]}</span>
+        <b>{head[1]}</b>
+      </div>
       <ul>
         {sources.map(([name, kind]) => (
-          <li key={name} className={on ? 'is-on' : ''}><Tick /><span>{name}</span><em>{kind}</em></li>
+          <li key={name} className={on ? 'is-on' : ''}>
+            <Tick />
+            <span>{name}</span>
+            <em>{kind}</em>
+          </li>
         ))}
       </ul>
     </div>
@@ -378,15 +568,23 @@ function SourceStack({ head, sources, on = false }) {
    what the brief is of and what was read, so the same stage draws a company
    overview, an initiation's groundwork or a first read of a deal */
 function OverviewVisual({
-  title = 'Crocs · overview', tag = 'Drafted by Fia', sections = OVERVIEW_SECTIONS,
-  head = ['Sources read', '14 / 14'], sources = OVERVIEW_SOURCES,
+  title = 'Crocs · overview',
+  tag = 'Drafted by Fia',
+  sections = OVERVIEW_SECTIONS,
+  head = ['Sources read', '14 / 14'],
+  sources = OVERVIEW_SOURCES,
 }) {
   return (
     <div className="sol-stage sol-stage--focus" aria-hidden="true">
       <div className="sol-panel sol-main sol-brief">
-        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
+        <div className="sol-sheet-title">
+          {title}
+          <em className="sol-sheet-tag">{tag}</em>
+        </div>
         <div className="sol-brief-body">
-          {sections.map((s) => <BriefSection key={s.h} s={s} />)}
+          {sections.map((s) => (
+            <BriefSection key={s.h} s={s} />
+          ))}
         </div>
       </div>
       <SourceStack head={head} sources={sources} />
@@ -401,10 +599,26 @@ function OverviewVisual({
    name, sections and sources, so the stage also draws an earnings note or
    an IC memo from a dataroom */
 const MEMO_SECTIONS = [
-  { h: 'Thesis', p: 'Own channels pass half of the mix by FY27 and gross margin crosses 41%, two points ahead of the Street', src: 'Q3 FY26 call' },
-  { h: 'Valuation', p: 'DCF value of $144.80 a share against $118.70 today, 22% upside; trades below the peer set on NTM EV/EBITDA', src: 'Fund_model_v12.xlsx' },
-  { h: 'Risks', p: 'Promotional intensity rising in core categories; HEYDUDE wholesale still shrinking', src: 'Q3 FY26 10-Q, p. 18' },
-  { h: 'Recommendation', p: 'Buy, 2% position, $140 target; revisit after the Q4 print', src: 'Your notes' },
+  {
+    h: 'Thesis',
+    p: 'Own channels pass half of the mix by FY27 and gross margin crosses 41%, two points ahead of the Street',
+    src: 'Q3 FY26 call',
+  },
+  {
+    h: 'Valuation',
+    p: 'DCF value of $144.80 a share against $118.70 today, 22% upside; trades below the peer set on NTM EV/EBITDA',
+    src: 'Fund_model_v12.xlsx',
+  },
+  {
+    h: 'Risks',
+    p: 'Promotional intensity rising in core categories; HEYDUDE wholesale still shrinking',
+    src: 'Q3 FY26 10-Q, p. 18',
+  },
+  {
+    h: 'Recommendation',
+    p: 'Buy, 2% position, $140 target; revisit after the Q4 print',
+    src: 'Your notes',
+  },
 ]
 const MEMO_SOURCES = [
   ['Fund model', 'Model'],
@@ -414,8 +628,11 @@ const MEMO_SOURCES = [
   ['Broker notes', 'Dataroom'],
 ]
 function MemoVisual({
-  title = 'Crocs · investment memo', tag = 'Your template', sections = MEMO_SECTIONS,
-  sources = MEMO_SOURCES, head = ['Drafted from', `${sources.length} sources`],
+  title = 'Crocs · investment memo',
+  tag = 'Your template',
+  sections = MEMO_SECTIONS,
+  sources = MEMO_SOURCES,
+  head = ['Drafted from', `${sources.length} sources`],
   status = ['Drafting the memo', 'Memo ready for review'],
 }) {
   const ref = useRef(null)
@@ -426,9 +643,14 @@ function MemoVisual({
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-main sol-brief sol-memo">
-        <div className="sol-sheet-title">{title}<em className="sol-sheet-tag">{tag}</em></div>
+        <div className="sol-sheet-title">
+          {title}
+          <em className="sol-sheet-tag">{tag}</em>
+        </div>
         <div className="sol-brief-body">
-          {sections.map((s, i) => <BriefSection key={s.h} s={s} className={i < on ? 'is-on' : ''} />)}
+          {sections.map((s, i) => (
+            <BriefSection key={s.h} s={s} className={i < on ? 'is-on' : ''} />
+          ))}
         </div>
       </div>
       <SourceStack head={head} sources={sources} on />
@@ -436,10 +658,22 @@ function MemoVisual({
         <span className="sol-status-ico">
           <span className="sol-status-spin" />
           <span className="sol-status-check">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+            </svg>
           </span>
         </span>
-        <span className="sol-status-lbls"><span>{status[0]}</span><span>{status[1]}</span></span>
+        <span className="sol-status-lbls">
+          <span>{status[0]}</span>
+          <span>{status[1]}</span>
+        </span>
       </div>
     </div>
   )
@@ -490,28 +724,61 @@ function ModelBuildVisual() {
     <div className="sol-stage sol-stage--build" ref={ref} aria-hidden="true">
       <div className="sol-win-wrap">
         <div className="sol-panel sol-sheet sol-sheet--earn sol-win">
-          <div className="sol-sheet-title">Crocs · {dcf ? 'DCF' : 'model'}<em className="sol-sheet-tag">{dcf ? 'WACC 8.6% · g 2.5%' : BUILD_PAGES[srcCol]}</em></div>
+          <div className="sol-sheet-title">
+            Crocs · {dcf ? 'DCF' : 'model'}
+            <em className="sol-sheet-tag">{dcf ? 'WACC 8.6% · g 2.5%' : BUILD_PAGES[srcCol]}</em>
+          </div>
           {dcf ? (
             <table className="sol-upd sol-dcf sol-dcf-out">
-              <thead><tr><th>USD m</th><th className="is-col">Base</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>USD m</th>
+                  <th className="is-col">Base</th>
+                </tr>
+              </thead>
               <tbody>
                 {DCF_OUT.map((r, i) => (
                   <tr key={r[0]} className={i === DCF_OUT.length - 1 ? 'is-total' : ''}>
-                    <td>{r[0]}</td><td className="sol-upd-cell is-filled"><span>{r[1]}</span></td>
+                    <td>{r[0]}</td>
+                    <td className="sol-upd-cell is-filled">
+                      <span>{r[1]}</span>
+                    </td>
                   </tr>
                 ))}
-                <tr className="is-up"><td>Upside to {DCF_PRICE}</td><td><span className="sol-dcf-up">{DCF_UPSIDE}</span></td></tr>
+                <tr className="is-up">
+                  <td>Upside to {DCF_PRICE}</td>
+                  <td>
+                    <span className="sol-dcf-up">{DCF_UPSIDE}</span>
+                  </td>
+                </tr>
               </tbody>
             </table>
           ) : (
             <table className="sol-upd sol-dcf">
-              <thead><tr><th>USD m</th>{BUILD_YEARS.map((y) => <th key={y}>{y}</th>)}<th className="is-col">FY26E</th><th className="is-col">FY27E</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>USD m</th>
+                  {BUILD_YEARS.map((y) => (
+                    <th key={y}>{y}</th>
+                  ))}
+                  <th className="is-col">FY26E</th>
+                  <th className="is-col">FY27E</th>
+                </tr>
+              </thead>
               <tbody>
                 {BUILD_ROWS.map((r, i) => (
                   <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
                     <td>{r[0]}</td>
-                    {r.slice(1).map((v, c) => (<td key={c} className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}><span>{v}</span></td>))}
-                    <td className="is-fc" /><td className="is-fc" />
+                    {r.slice(1).map((v, c) => (
+                      <td
+                        key={c}
+                        className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}
+                      >
+                        <span>{v}</span>
+                      </td>
+                    ))}
+                    <td className="is-fc" />
+                    <td className="is-fc" />
                   </tr>
                 ))}
               </tbody>
@@ -522,10 +789,22 @@ function ModelBuildVisual() {
           <span className="sol-status-ico">
             <span className="sol-status-spin" />
             <span className="sol-status-check">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+              <svg
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+              </svg>
             </span>
           </span>
-          <span className="sol-status-lbls"><span>Spreading the historicals</span><span>Model and DCF built</span></span>
+          <span className="sol-status-lbls">
+            <span>Spreading the historicals</span>
+            <span>Model and DCF built</span>
+          </span>
         </div>
       </div>
       <div className="sol-panel sol-pane">
@@ -535,14 +814,32 @@ function ModelBuildVisual() {
         </div>
         <div className="sol-pane-body">
           {/* the agent's running line, which its result replaces once the build is done */}
-          <p className="sol-pane-say" key={done ? 'done' : 'run'}>{done ? 'History ties out across the three years. The forecast columns are yours' : 'Spreading the historicals into your template, each figure linked to its filing page'}</p>
+          <p className="sol-pane-say" key={done ? 'done' : 'run'}>
+            {done
+              ? 'History ties out across the three years. The forecast columns are yours'
+              : 'Spreading the historicals into your template, each figure linked to its filing page'}
+          </p>
           <ul className="sol-pane-steps">
-            <li className={years ? 'is-on' : ''}><span>Historicals spread</span><em>{years} / {BUILD_YEARS.length} yrs</em></li>
-            <li className={recast ? 'is-on' : ''}><span>Segment recast</span><em>{recast ? 'Applied' : 'Pending'}</em></li>
-            <li className={done ? 'is-on' : ''}><span>DCF</span><em>{done ? 'Built' : 'Pending'}</em></li>
+            <li className={years ? 'is-on' : ''}>
+              <span>Historicals spread</span>
+              <em>
+                {years} / {BUILD_YEARS.length} yrs
+              </em>
+            </li>
+            <li className={recast ? 'is-on' : ''}>
+              <span>Segment recast</span>
+              <em>{recast ? 'Applied' : 'Pending'}</em>
+            </li>
+            <li className={done ? 'is-on' : ''}>
+              <span>DCF</span>
+              <em>{done ? 'Built' : 'Pending'}</em>
+            </li>
           </ul>
         </div>
-        <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
+        <div className="sol-pane-in">
+          <span>Ask FinSynth</span>
+          <b>Send ↵</b>
+        </div>
       </div>
     </div>
   )
@@ -574,14 +871,28 @@ function CompsVisual() {
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-sheet--earn sol-sheet--comps sol-main">
-        <div className="sol-sheet-title">Crocs · comps<em className="sol-sheet-tag">Calendarised to December</em></div>
+        <div className="sol-sheet-title">
+          Crocs · comps<em className="sol-sheet-tag">Calendarised to December</em>
+        </div>
         <table className="sol-upd">
-          <thead><tr><th>NTM</th><th className="is-col">EV/EBITDA</th><th className="is-col">P/E</th><th className="is-col">EV/Sales</th></tr></thead>
+          <thead>
+            <tr>
+              <th>NTM</th>
+              <th className="is-col">EV/EBITDA</th>
+              <th className="is-col">P/E</th>
+              <th className="is-col">EV/Sales</th>
+            </tr>
+          </thead>
           <tbody>
             {COMPS.map((r) => {
               if (r.self) {
                 return (
-                  <tr key={r.name} className="is-self"><td>{r.name}</td><td>{r.ev}</td><td>{r.pe}</td><td>{r.evs}</td></tr>
+                  <tr key={r.name} className="is-self">
+                    <td>{r.name}</td>
+                    <td>{r.ev}</td>
+                    <td>{r.pe}</td>
+                    <td>{r.evs}</td>
+                  </tr>
                 )
               }
               const on = r.fx ? done : filled((k += 1))
@@ -590,9 +901,15 @@ function CompsVisual() {
               return (
                 <tr key={r.name} className={r.fx ? 'is-derived' : cur === i && !on ? 'is-lit' : ''}>
                   <td>{r.name}</td>
-                  <td className={cell}><span>{r.ev}</span></td>
-                  <td className={cell}><span>{r.pe}</span></td>
-                  <td className={cell}><span>{r.evs}</span></td>
+                  <td className={cell}>
+                    <span>{r.ev}</span>
+                  </td>
+                  <td className={cell}>
+                    <span>{r.pe}</span>
+                  </td>
+                  <td className={cell}>
+                    <span>{r.evs}</span>
+                  </td>
                 </tr>
               )
             })}
@@ -603,10 +920,22 @@ function CompsVisual() {
         <span className="sol-status-ico">
           <span className="sol-status-spin" />
           <span className="sol-status-check">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2 5 8.6l4.5-5.2" /></svg>
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+            </svg>
           </span>
         </span>
-        <span className="sol-status-lbls"><span>Building comps in your template</span><span>Comps built</span></span>
+        <span className="sol-status-lbls">
+          <span>Building comps in your template</span>
+          <span>Comps built</span>
+        </span>
       </div>
     </div>
   )
@@ -622,19 +951,35 @@ function CompsVisual() {
    composition scales with the stage */
 const THESIS_POINTS = [
   {
-    tag: 'Supported', text: 'DTC mix up 4pts in two years', src: 'FY25 10-K',
-    doc: 'FY25 10-K', where: 'p. 38',
-    before: 'Direct-to-consumer revenues were 51% of total revenues, ', mark: 'up from 47% two years earlier', after: ', as the brand added stores and grew its digital channels.',
+    tag: 'Supported',
+    text: 'DTC mix up 4pts in two years',
+    src: 'FY25 10-K',
+    doc: 'FY25 10-K',
+    where: 'p. 38',
+    before: 'Direct-to-consumer revenues were 51% of total revenues, ',
+    mark: 'up from 47% two years earlier',
+    after: ', as the brand added stores and grew its digital channels.',
   },
   {
-    tag: 'Supported', text: 'Gross margin up 120bp year on year', src: 'Q3 release',
-    doc: 'Q3 FY26 release', where: 'p. 2',
-    before: 'Adjusted gross margin was 59.6%, ', mark: 'up 120 basis points', after: ' on the prior year, driven by channel mix and lower freight.',
+    tag: 'Supported',
+    text: 'Gross margin up 120bp year on year',
+    src: 'Q3 release',
+    doc: 'Q3 FY26 release',
+    where: 'p. 2',
+    before: 'Adjusted gross margin was 59.6%, ',
+    mark: 'up 120 basis points',
+    after: ' on the prior year, driven by channel mix and lower freight.',
   },
   {
-    tag: 'Strongest counter', text: 'Rising promotions offset the mix gain', src: 'Q3 call, p. 7', counter: true,
-    doc: 'Q3 FY26 call', where: 'p. 7',
-    before: 'On pricing, ', mark: 'we expect promotional activity to remain elevated through the holiday period', after: ', which will weigh on the margin benefit from mix.',
+    tag: 'Strongest counter',
+    text: 'Rising promotions offset the mix gain',
+    src: 'Q3 call, p. 7',
+    counter: true,
+    doc: 'Q3 FY26 call',
+    where: 'p. 7',
+    before: 'On pricing, ',
+    mark: 'we expect promotional activity to remain elevated through the holiday period',
+    after: ', which will weigh on the margin benefit from mix.',
   },
 ]
 function ThesisVisual({
@@ -657,19 +1002,34 @@ function ThesisVisual({
           <p className="sol-pane-say">{say}</p>
           <ul className="sol-evidence">
             {points.map((p, i) => (
-              <li key={p.src} className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}>
-                <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>{p.tag}</span>
+              <li
+                key={p.src}
+                className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}
+              >
+                <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>
+                  {p.tag}
+                </span>
                 <span>{p.text}</span>
                 <Src>{p.src}</Src>
               </li>
             ))}
           </ul>
         </div>
-        <div className="sol-pane-in"><span>Ask FinSynth</span><b>Send ↵</b></div>
+        <div className="sol-pane-in">
+          <span>Ask FinSynth</span>
+          <b>Send ↵</b>
+        </div>
       </div>
       <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
-        <div className="sol-aside-head"><Src>{pt.doc}</Src><span>{pt.where}</span></div>
-        <p>{pt.before}<mark className="is-on">{pt.mark}</mark>{pt.after}</p>
+        <div className="sol-aside-head">
+          <Src>{pt.doc}</Src>
+          <span>{pt.where}</span>
+        </div>
+        <p>
+          {pt.before}
+          <mark className="is-on">{pt.mark}</mark>
+          {pt.after}
+        </p>
       </div>
       <Wire geo={geo} tick={t} />
     </div>
@@ -713,10 +1073,14 @@ function AuditVisual() {
       const a = cell.getBoundingClientRect()
       const b = item.getBoundingClientRect()
       setGeo({
-        w: w.width, h: w.height,
-        x1: a.right - w.left, y1: a.top + a.height / 2 - w.top,
-        x2: b.left - w.left, y2: b.top + b.height / 2 - w.top,
-        cx: a.left + a.width * .62 - w.left, cy: a.top + a.height * .45 - w.top,
+        w: w.width,
+        h: w.height,
+        x1: a.right - w.left,
+        y1: a.top + a.height / 2 - w.top,
+        x2: b.left - w.left,
+        y2: b.top + b.height / 2 - w.top,
+        cx: a.left + a.width * 0.62 - w.left,
+        cy: a.top + a.height * 0.45 - w.top,
       })
     }
     measure()
@@ -724,14 +1088,27 @@ function AuditVisual() {
     ro.observe(wrap)
     return () => ro.disconnect()
   }, [sel])
-  const dx = geo ? (geo.x2 - geo.x1) * .5 : 0
+  const dx = geo ? (geo.x2 - geo.x1) * 0.5 : 0
   return (
     <div className="sol-stage sol-stage--focus" ref={ref} aria-hidden="true">
       <div className="sol-panel sol-sheet sol-main">
-        <div className="sol-sheet-title">inherited_model.xlsx · audit<em className="sol-sheet-tag sol-sheet-tag--warn">3 open</em></div>
-        <div className="sol-sheet-fx"><span>{f.cell}</span><span>fx</span><span>{f.fx}</span></div>
+        <div className="sol-sheet-title">
+          inherited_model.xlsx · audit<em className="sol-sheet-tag sol-sheet-tag--warn">3 open</em>
+        </div>
+        <div className="sol-sheet-fx">
+          <span>{f.cell}</span>
+          <span>fx</span>
+          <span>{f.fx}</span>
+        </div>
         <table className="sol-grid">
-          <thead><tr><th /><th>C</th><th>D</th><th>E</th></tr></thead>
+          <thead>
+            <tr>
+              <th />
+              <th>C</th>
+              <th>D</th>
+              <th>E</th>
+            </tr>
+          </thead>
           <tbody>
             {AUDIT_ROWS.map((r) => (
               <tr key={r[0]}>
@@ -739,7 +1116,14 @@ function AuditVisual() {
                 {r.slice(1).map((v, i) => {
                   const id = `${cols[i]}${r[0]}`
                   const bad = FINDINGS.some((x) => x.cell === id)
-                  return <td key={id} className={`${bad ? 'sol-grid-bad' : ''}${f.cell === id ? ' is-sel' : ''}`}><span>{v}</span></td>
+                  return (
+                    <td
+                      key={id}
+                      className={`${bad ? 'sol-grid-bad' : ''}${f.cell === id ? ' is-sel' : ''}`}
+                    >
+                      <span>{v}</span>
+                    </td>
+                  )
                 })}
               </tr>
             ))}
@@ -747,17 +1131,33 @@ function AuditVisual() {
         </table>
       </div>
       <div className="sol-panel sol-aside sol-findings">
-        <div className="sol-aside-head"><span>Audit findings</span><span>3</span></div>
+        <div className="sol-aside-head">
+          <span>Audit findings</span>
+          <span>3</span>
+        </div>
         <ul>
           {FINDINGS.map((x, i) => (
-            <li key={x.cell} className={i === sel ? 'is-sel' : ''}><b>{x.cell}</b><span>{x.text}</span></li>
+            <li key={x.cell} className={i === sel ? 'is-sel' : ''}>
+              <b>{x.cell}</b>
+              <span>{x.text}</span>
+            </li>
           ))}
         </ul>
       </div>
       {geo && (
         <>
-          <svg className="sol-wire" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`} aria-hidden="true" key={`w${sel}`}>
-            <path d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`} pathLength="1" />
+          <svg
+            className="sol-wire"
+            width={geo.w}
+            height={geo.h}
+            viewBox={`0 0 ${geo.w} ${geo.h}`}
+            aria-hidden="true"
+            key={`w${sel}`}
+          >
+            <path
+              d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`}
+              pathLength="1"
+            />
             <circle cx={geo.x2} cy={geo.y2} r="3" />
           </svg>
           <Cursor x={geo.cx} y={geo.cy} />
@@ -770,7 +1170,14 @@ function AuditVisual() {
 /* small drawn fragments for a few of the how-it-works cells, one treatment:
    a hairline strip in the page's grey with a single product detail in it */
 const VISUALS = {
-  screen: ScreenVisual, earnings: EarningsVisual, overview: OverviewVisual, modelbuild: ModelBuildVisual, comps: CompsVisual, thesis: ThesisVisual, audit: AuditVisual, memo: MemoVisual,
+  screen: ScreenVisual,
+  earnings: EarningsVisual,
+  overview: OverviewVisual,
+  modelbuild: ModelBuildVisual,
+  comps: CompsVisual,
+  thesis: ThesisVisual,
+  audit: AuditVisual,
+  memo: MemoVisual,
 }
 
 /* a use case's scenes play in turn: each screen runs its own loop about
@@ -782,7 +1189,11 @@ const SCENE_MS = 10400
 function highlight(title) {
   const at = title.lastIndexOf(' ')
   if (at < 0) return title
-  return <>{title.slice(0, at)} <span className="ttl-hl">{title.slice(at + 1)}</span></>
+  return (
+    <>
+      {title.slice(0, at)} <span className="ttl-hl">{title.slice(at + 1)}</span>
+    </>
+  )
 }
 
 /* the head band of a framed section, as the home page's Excel section wears it:
@@ -790,7 +1201,9 @@ function highlight(title) {
 function FrameHead({ title }) {
   return (
     <div className="x4e-head x4e-reveal">
-      <div className="x4e-head-copy"><h2>{highlight(title)}</h2></div>
+      <div className="x4e-head-copy">
+        <h2>{highlight(title)}</h2>
+      </div>
     </div>
   )
 }
@@ -814,7 +1227,9 @@ function Workflow({ w, flip }) {
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
         <div className="sol-scenes" ref={stageRef}>
-          <div className="sol-scene" key={t}><Visual {...scene.props} /></div>
+          <div className="sol-scene" key={t}>
+            <Visual {...scene.props} />
+          </div>
         </div>
       </div>
     </section>
@@ -847,13 +1262,32 @@ export default function Solution({ slug }) {
             <h1 className="sol-hero-title">{sol.title}</h1>
             <p className="sol-hero-lede">{sol.lede}</p>
             <div className="sol-hero-ctas">
-              <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">Talk to Us</a>
+              <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
+                Talk to Us
+              </a>
               {/* the home hero's second button, word for word: the self-serve
                   path names the price, and the arrow only shows on hover */}
-              <a className="hero-s2-cta hero-s2-cta--ghost" href={APP_HREF} target="_blank" rel="noopener noreferrer">
+              <a
+                className="hero-s2-cta hero-s2-cta--ghost"
+                href={APP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Try for free
-                <svg className="hero-s2-cta-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                  <path d="M2.5 8h10M9 4.5 12.5 8 9 11.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="hero-s2-cta-arrow"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M2.5 8h10M9 4.5 12.5 8 9 11.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </a>
             </div>
@@ -861,7 +1295,11 @@ export default function Solution({ slug }) {
             {sol.strategies && (
               <div className="sol-chips">
                 <span className="sol-chips-lead">{sol.strategiesLead}</span>
-                <ul>{sol.strategies.map((name) => <li key={name}>{name}</li>)}</ul>
+                <ul>
+                  {sol.strategies.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -875,24 +1313,31 @@ export default function Solution({ slug }) {
         <section className="wrap sol-works-wrap" id="use-cases">
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
-            {sol.workflows.map((w, i) => <Workflow key={w.key} w={w} flip={i % 2 === 1} />)}
+            {sol.workflows.map((w, i) => (
+              <Workflow key={w.key} w={w} flip={i % 2 === 1} />
+            ))}
             {/* the line under the rows: the four are the shape of the work,
                 not the whole of it */}
             {sol.useCasesMore && (
-              <p className="sol-works-more"><span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}</p>
+              <p className="sol-works-more">
+                <span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}
+              </p>
             )}
           </div>
         </section>
 
         {sol.how && <SectionRule />}
-        {sol.how && <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} id="how-it-works" />}
+        {sol.how && (
+          <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} id="how-it-works" />
+        )}
 
         {/* the page's quote, in the home page's Customers treatment */}
         {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
 
         {sol.faqs && <SectionRule />}
-        {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}
-
+        {sol.faqs && (
+          <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />
+        )}
       </main>
       <SectionRule />
       <Footer />

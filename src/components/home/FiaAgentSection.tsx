@@ -1,4 +1,3 @@
-
 /**
  * "Fia" — split out of ExcelSection into its own file so the Excel frame
  * stays untouched, but wearing the same framed layout: hairline frame with
@@ -54,15 +53,12 @@ export default function FiaAgentSection({ id = 'fia-agent' }) {
     <section className="x4e-sec" id={id}>
       <div className="wrap">
         <div className="x4e-frame" data-reveal="0.08">
-
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
               <h2>
                 Fia: The FinSynth <span className="ttl-hl">workspace</span>
               </h2>
-              <p className="fiag-sub">
-                Same FinSynth engine, in a full research workspace
-              </p>
+              <p className="fiag-sub">Same FinSynth engine, in a full research workspace</p>
             </div>
           </div>
 
@@ -88,7 +84,6 @@ export default function FiaAgentSection({ id = 'fia-agent' }) {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

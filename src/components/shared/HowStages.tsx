@@ -19,15 +19,38 @@ interface How {
  * src/data/solutions.js) that belong to it as cards. */
 
 export const HOW_STAGES = [
-  { n: '01', title: 'Bring your research context', body: 'Attach the filing or release, your own template, and anything in the Dataroom or a connected source. The agent works from your material, in your format' },
-  { n: '02', title: 'Run your workflow', body: 'One instruction, in Excel or on the web. Save the routine as a Skill and run it on every name in your book' },
-  { n: '03', title: 'Review the evidence', body: 'Every number links to the line it came from. Select a range and step through each source in one pass' },
+  {
+    n: '01',
+    title: 'Bring your research context',
+    body: 'Attach the filing or release, your own template, and anything in the Dataroom or a connected source. The agent works from your material, in your format',
+  },
+  {
+    n: '02',
+    title: 'Run your workflow',
+    body: 'One instruction, in Excel or on the web. Save the routine as a Skill and run it on every name in your book',
+  },
+  {
+    n: '03',
+    title: 'Review the evidence',
+    body: 'Every number links to the line it came from. Select a range and step through each source in one pass',
+  },
 ]
 
 export function Cursor({ x, y }: { x: number; y: number }) {
   return (
-    <svg className="hw-cursor" viewBox="0 0 16 16" aria-hidden="true" style={{ transform: `translate(${x}px, ${y}px)` }}>
-      <path d="M2.5 1.5v12.2l3.1-2.8 2.1 4.6 2.2-1-2.1-4.6h4.2z" fill="#fff" stroke="#1C1C1C" strokeWidth=".9" strokeLinejoin="round" />
+    <svg
+      className="hw-cursor"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      style={{ transform: `translate(${x}px, ${y}px)` }}
+    >
+      <path
+        d="M2.5 1.5v12.2l3.1-2.8 2.1 4.6 2.2-1-2.1-4.6h4.2z"
+        fill="#fff"
+        stroke="#1C1C1C"
+        strokeWidth=".9"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -40,17 +63,63 @@ const STAGE_STEPS = [
   ['cited', 'review'],
 ]
 function PillarIco({ kind }: { kind: string }) {
-  const d = ({
-    workflows: <><path d="M2 11.5 6.5 7l3 3L14 4.5" /><path d="M10.5 4.5H14V8" /></>,
-    surfaces: <><rect x="2" y="3" width="12" height="8" rx="1" /><path d="M6 13.5h4M8 11v2.5" /></>,
-    cited: <><path d="M6.5 9.5a3 3 0 0 0 4.2 0l1.8-1.8a3 3 0 0 0-4.2-4.2l-.8.8" /><path d="M9.5 6.5a3 3 0 0 0-4.2 0L3.5 8.3a3 3 0 0 0 4.2 4.2l.8-.8" /></>,
-    format: <><rect x="2.5" y="2.5" width="11" height="11" rx="1" /><path d="M2.5 6h11M6.5 6v7.5" /></>,
-    skills: <path d="M9 2 3.5 9h4L7 14l5.5-7h-4z" />,
-    dataroom: <path d="M2.5 4.5h4l1.5 1.5h5.5v7h-11z" />,
-    mcp: <><path d="M5.5 2.5v3M10.5 2.5v3" /><path d="M4 5.5h8v2.5a4 4 0 0 1-8 0z" /><path d="M8 12v2" /></>,
-    review: <><circle cx="8" cy="8" r="5.5" /><path d="m5.5 8 1.8 1.8L10.8 6" /></>,
-  } as Record<string, ReactNode>)[kind]
-  return <svg className="hw-pico" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round">{d}</svg>
+  const d = (
+    {
+      workflows: (
+        <>
+          <path d="M2 11.5 6.5 7l3 3L14 4.5" />
+          <path d="M10.5 4.5H14V8" />
+        </>
+      ),
+      surfaces: (
+        <>
+          <rect x="2" y="3" width="12" height="8" rx="1" />
+          <path d="M6 13.5h4M8 11v2.5" />
+        </>
+      ),
+      cited: (
+        <>
+          <path d="M6.5 9.5a3 3 0 0 0 4.2 0l1.8-1.8a3 3 0 0 0-4.2-4.2l-.8.8" />
+          <path d="M9.5 6.5a3 3 0 0 0-4.2 0L3.5 8.3a3 3 0 0 0 4.2 4.2l.8-.8" />
+        </>
+      ),
+      format: (
+        <>
+          <rect x="2.5" y="2.5" width="11" height="11" rx="1" />
+          <path d="M2.5 6h11M6.5 6v7.5" />
+        </>
+      ),
+      skills: <path d="M9 2 3.5 9h4L7 14l5.5-7h-4z" />,
+      dataroom: <path d="M2.5 4.5h4l1.5 1.5h5.5v7h-11z" />,
+      mcp: (
+        <>
+          <path d="M5.5 2.5v3M10.5 2.5v3" />
+          <path d="M4 5.5h8v2.5a4 4 0 0 1-8 0z" />
+          <path d="M8 12v2" />
+        </>
+      ),
+      review: (
+        <>
+          <circle cx="8" cy="8" r="5.5" />
+          <path d="m5.5 8 1.8 1.8L10.8 6" />
+        </>
+      ),
+    } as Record<string, ReactNode>
+  )[kind]
+  return (
+    <svg
+      className="hw-pico"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      {d}
+    </svg>
+  )
 }
 
 function Head({ how }: { how: How }) {
@@ -77,13 +146,16 @@ function Grid({ steps }: { steps: HowStep[] }) {
             <h3>{st.title}</h3>
           </div>
           <ul className="hw-cards">
-            {STAGE_STEPS[i].map((k) => steps.find((p) => p.key === k)).filter((p): p is HowStep => !!p).map((p) => (
-              <li className="hw-card" key={p.key}>
-                <PillarIco kind={p.key} />
-                <h4>{p.title}</h4>
-                <p>{p.body}</p>
-              </li>
-            ))}
+            {STAGE_STEPS[i]
+              .map((k) => steps.find((p) => p.key === k))
+              .filter((p): p is HowStep => !!p)
+              .map((p) => (
+                <li className="hw-card" key={p.key}>
+                  <PillarIco kind={p.key} />
+                  <h4>{p.title}</h4>
+                  <p>{p.body}</p>
+                </li>
+              ))}
           </ul>
         </div>
       ))}

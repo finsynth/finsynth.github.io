@@ -34,8 +34,11 @@ function Tick() {
     <svg className="what-tick" viewBox="0 0 14 14" aria-hidden="true">
       <path
         d="M3 7.4l2.7 2.7L11 4.1"
-        fill="none" stroke="currentColor" strokeWidth="1.8"
-        strokeLinecap="round" strokeLinejoin="round"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
@@ -88,11 +91,15 @@ export default function WorkflowMarquee() {
         {loop.map((w, i) => (
           <li
             key={i}
-            ref={(el) => { itemRefs.current[i] = el }}
+            ref={(el) => {
+              itemRefs.current[i] = el
+            }}
             className={`what-item${active[i] ? ' is-checked' : ''}`}
             aria-hidden={i >= WORKFLOWS.length}
           >
-            <span className="what-check"><Tick /></span>
+            <span className="what-check">
+              <Tick />
+            </span>
             <span className="what-label">{w}</span>
           </li>
         ))}

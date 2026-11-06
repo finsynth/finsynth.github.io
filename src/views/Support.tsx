@@ -9,7 +9,9 @@ function Support() {
         <div className="support-icon" aria-hidden="true">
           <Headphones size={26} strokeWidth={1.6} />
         </div>
-        <h1 className="support-heading" id="support-title">How can we help?</h1>
+        <h1 className="support-heading" id="support-title">
+          How can we help?
+        </h1>
         <p className="support-description">
           Have a question or running into an issue? Send us the details and our team will help.
         </p>

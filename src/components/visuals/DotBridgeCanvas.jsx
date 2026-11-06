@@ -14,9 +14,9 @@ const IMG_SRC = '/assets/img/bay-bridge.webp'
 function DotBridgeCanvas({
   stageClassName = 'dot-globe__stage',
   ariaLabel = '',
-  step = 10,          // px between dot centres (before density clamp)
-  intro = 1.7,        // intro assemble duration (s)
-  paused = false,     // freeze the field on its current frame
+  step = 10, // px between dot centres (before density clamp)
+  intro = 1.7, // intro assemble duration (s)
+  paused = false, // freeze the field on its current frame
 }) {
   const stageRef = useRef(null)
   const canvasRef = useRef(null)
@@ -33,7 +33,8 @@ function DotBridgeCanvas({
     const mouse = { x: -9999, y: -9999 }
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2)
-    let cw = 0, ch = 0
+    let cw = 0,
+      ch = 0
     let dots = []
     let raf = 0
     let t0 = null
@@ -42,8 +43,8 @@ function DotBridgeCanvas({
     let img = null
     let imgLoaded = false
     let base = null // low-res sampled photo, drawn under the dots so the
-                    // gaps between cells carry the scene's own colours
-                    // (sky blue, bridge brown, building tones) — never white
+    // gaps between cells carry the scene's own colours
+    // (sky blue, bridge brown, building tones) — never white
 
     const build = () => {
       if (!imgLoaded) return
@@ -60,7 +61,10 @@ function DotBridgeCanvas({
       const rows = Math.max(30, Math.floor(cols * (ch / cw)))
 
       // cover-crop the source to the stage's aspect, skyline anchored bottom
-      let sx = 0, sy = 0, sW = img.width, sH = img.height
+      let sx = 0,
+        sy = 0,
+        sW = img.width,
+        sH = img.height
       const targetA = cw / ch
       const srcA = img.width / img.height
       if (srcA > targetA) {
@@ -83,7 +87,8 @@ function DotBridgeCanvas({
       sc.fillRect(0, 0, cols, rows)
       base = s
 
-      const stepX = cw / cols, stepY = ch / rows
+      const stepX = cw / cols,
+        stepY = ch / rows
       dots = []
       // Paint each cell in its TRUE sampled colour (like the tile-mosaic hero),
       // lifted toward light so the field reads as a bright daylight mosaic —
@@ -104,8 +109,11 @@ function DotBridgeCanvas({
           const gg = Math.min(255, data[k + 1] + LIFT)
           const bb = Math.min(255, data[k + 2] + LIFT)
           dots.push({
-            x, y,
-            r: rr, g: gg, b: bb,
+            x,
+            y,
+            r: rr,
+            g: gg,
+            b: bb,
             lum,
             // rounded-rect cell dims — near-touching tiles so the photo's
             // colour reads solid (small dots on the light wash washed it out)
@@ -115,7 +123,7 @@ function DotBridgeCanvas({
             // left-to-right sweep + per-cell scatter (matches the mosaic hero)
             delay: (x / cw) * 0.9 + seed * 0.8,
             rnd: Math.random(), // fixed hover-fade threshold — same dots always vanish
-            a: 1,               // smoothed hover alpha
+            a: 1, // smoothed hover alpha
           })
         }
       }
@@ -135,7 +143,8 @@ function DotBridgeCanvas({
       // normal compositing on the light wash — true photo colours, no glow
 
       const R = step * 12 // hover influence radius
-      const mx = mouse.x, my = mouse.y
+      const mx = mouse.x,
+        my = mouse.y
 
       const revealDur = 0.55
 
@@ -177,7 +186,8 @@ function DotBridgeCanvas({
         if (!reduce) alpha *= 0.94 + 0.06 * Math.sin(elapsed * 1.9 + dt.seed * 47)
 
         if (alpha < 0.015) continue
-        const sw = dt.sw * scale, sh = dt.sh * scale
+        const sw = dt.sw * scale,
+          sh = dt.sh * scale
         ctx.fillStyle = `rgba(${dt.r},${dt.g},${dt.b},${alpha.toFixed(3)})`
         ctx.beginPath()
         ctx.roundRect(dt.x - sw / 2, dt.y - sh / 2, sw, sh, Math.min(sh * 0.4, 3))
@@ -215,13 +225,17 @@ function DotBridgeCanvas({
       mouse.x = ev.clientX - rect.left
       mouse.y = ev.clientY - rect.top
     }
-    const onLeave = () => { mouse.x = -9999; mouse.y = -9999 }
+    const onLeave = () => {
+      mouse.x = -9999
+      mouse.y = -9999
+    }
 
     img = new Image()
     img.onload = () => {
       imgLoaded = true
       build()
-      if (reduce || pausedRef.current) draw(intro + 6) // one settled static frame
+      if (reduce || pausedRef.current)
+        draw(intro + 6) // one settled static frame
       else start()
     }
     img.src = IMG_SRC

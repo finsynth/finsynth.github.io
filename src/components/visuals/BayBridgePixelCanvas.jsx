@@ -63,7 +63,7 @@ const seed = (i, j) => {
 const PixelBayBridge = ({
   stageClassName = 'hero-s2-mosaic',
   ariaLabel = '',
-  tile = 10,          // approximate pixel size of one chunky tile (css px)
+  tile = 10, // approximate pixel size of one chunky tile (css px)
   // Horizontal anchor of the crop (0 = left edge of the photo, 1 = right).
   focusX = 0.5,
   // Vertical anchor (0 = top of the photo, 1 = bottom). The hero is far wider
@@ -71,10 +71,10 @@ const PixelBayBridge = ({
   // street — colonnade, flags, the Wall St sign, people — and lets the sky and
   // upper towers, which pixelate into flat grey, fall away above the fade.
   focusY = 0.68,
-  duration = 480,     // full assemble time (ms) — last brick lands here
-  delay = 40,         // hold on white after scroll-in before bricks start (ms)
-  paused = false,     // freeze mid-reveal (ask popup open)
-  onRevealDone,       // fired once when the mosaic has fully settled
+  duration = 480, // full assemble time (ms) — last brick lands here
+  delay = 40, // hold on white after scroll-in before bricks start (ms)
+  paused = false, // freeze mid-reveal (ask popup open)
+  onRevealDone, // fired once when the mosaic has fully settled
 }) => {
   const stageRef = useRef(null)
   const canvasRef = useRef(null)
@@ -92,22 +92,34 @@ const PixelBayBridge = ({
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     // page background, normalised to r/g/b for the base + top readability fade
-    const bgVar = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#ffffff'
+    const bgVar =
+      getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#ffffff'
     ctx.fillStyle = bgVar
     const hex = ctx.fillStyle
-    const bgR = parseInt(hex.slice(1, 3), 16), bgG = parseInt(hex.slice(3, 5), 16), bgB = parseInt(hex.slice(5, 7), 16)
+    const bgR = parseInt(hex.slice(1, 3), 16),
+      bgG = parseInt(hex.slice(3, 5), 16),
+      bgB = parseInt(hex.slice(5, 7), 16)
 
     const img = new Image()
     let imgReady = false
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2)
-    let vw = 0, vh = 0
-    let cols = 0, rows = 0, cell = 0, ox = 0, oy = 0
-    let grays = null             // one 0–255 luminance per cell, from the photo
-    let thresh = null            // per-cell start point (0→1) on the timeline
-    let sharp = null             // full-res greyscale photo the mosaic resolves into
-    let raf = 0, t0 = null, running = false, pausedAt = null
-    let visible = false, done = false
+    let vw = 0,
+      vh = 0
+    let cols = 0,
+      rows = 0,
+      cell = 0,
+      ox = 0,
+      oy = 0
+    let grays = null // one 0–255 luminance per cell, from the photo
+    let thresh = null // per-cell start point (0→1) on the timeline
+    let sharp = null // full-res greyscale photo the mosaic resolves into
+    let raf = 0,
+      t0 = null,
+      running = false,
+      pausedAt = null
+    let visible = false,
+      done = false
 
     // luminance-only sampling: the mosaic and the photo it resolves into are both
     // black and white, so the crossfade reads as focus, never as a colour shift
@@ -127,27 +139,34 @@ const PixelBayBridge = ({
       cell = tile
       cols = Math.max(1, Math.round(vw / cell))
       rows = Math.max(1, Math.round(vh / cell))
-      cell = vw / cols            // exact fit across the width
+      cell = vw / cols // exact fit across the width
       ox = 0
-      oy = vh - rows * cell       // anchor the grid to the bottom
+      oy = vh - rows * cell // anchor the grid to the bottom
       if (oy > 0) oy = 0
 
-      if (!imgReady) { grays = null; sharp = null; return }
+      if (!imgReady) {
+        grays = null
+        sharp = null
+        return
+      }
 
       // Lay the source out on the coarse grid and read one tone per cell.
       // Laid out as object-fit: cover, so the mosaic reaches every edge of the
       // hero: the source is portrait and the hero is wide, so anything short of
       // cover leaves cells that sample as plain page paper down the sides.
-      const iw = img.naturalWidth, ih = img.naturalHeight
+      const iw = img.naturalWidth,
+        ih = img.naturalHeight
       const fx = Math.min(1, Math.max(0, focusX))
       const fy = Math.min(1, Math.max(0, focusY))
       const scale = Math.max(cols / iw, rows / ih)
-      const dw = iw * scale, dh = ih * scale
+      const dw = iw * scale,
+        dh = ih * scale
       const dx = (cols - dw) * fx
       const dy = (rows - dh) * fy
 
       const small = document.createElement('canvas')
-      small.width = cols; small.height = rows
+      small.width = cols
+      small.height = rows
       const sc = small.getContext('2d', { willReadFrequently: true })
       sc.imageSmoothingEnabled = true
       sc.fillStyle = `rgb(${bgR},${bgG},${bgB})`
@@ -157,7 +176,7 @@ const PixelBayBridge = ({
 
       grays = new Uint8Array(cols * rows)
       thresh = new Float32Array(cols * rows)
-      const span = 1 - REVEAL_WINDOW   // keep the last brick's window in range
+      const span = 1 - REVEAL_WINDOW // keep the last brick's window in range
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
           const k = j * cols + i
@@ -165,7 +184,7 @@ const PixelBayBridge = ({
           // build bottom-to-top: a tile's start point is driven mainly by its
           // row (bottom rows first, top rows last), with just a little jitter so
           // bricks within a band still land one-by-one rather than in a rigid line
-          const rowBias = 1 - j / (rows - 1 || 1)      // 0 at bottom row → 1 at top
+          const rowBias = 1 - j / (rows - 1 || 1) // 0 at bottom row → 1 at top
           thresh[k] = Math.min(span, Math.max(0, (0.85 * rowBias + 0.15 * seed(i, j)) * span))
         }
       }
@@ -220,13 +239,14 @@ const PixelBayBridge = ({
             const t = Math.min(1, Math.max(0, (pA - thresh[k]) / REVEAL_WINDOW))
             if (t <= 0) continue
 
-            const a = 1 - (1 - t) * (1 - t)              // ease-out alpha
+            const a = 1 - (1 - t) * (1 - t) // ease-out alpha
             const u = t - 1
-            const back = 1 + BACK_C3 * u * u * u + BACK_C1 * u * u   // pop w/ overshoot
-            const sc = 0.24 + 0.76 * back                // grow small → settle at 1
-            const drop = (1 - t) * cell * 0.9            // fall into place from above
+            const back = 1 + BACK_C3 * u * u * u + BACK_C1 * u * u // pop w/ overshoot
+            const sc = 0.24 + 0.76 * back // grow small → settle at 1
+            const drop = (1 - t) * cell * 0.9 // fall into place from above
 
-            const w = cell * sc + bleed, h = cell * sc + bleed
+            const w = cell * sc + bleed,
+              h = cell * sc + bleed
             const x = ox + i * cell + (cell - w) / 2
             const y = oy + j * cell + (cell - h) / 2 - drop
 
@@ -242,8 +262,8 @@ const PixelBayBridge = ({
       // the average tone of the patch it covers, so the fade reads as the image
       // pulling into focus rather than as one picture swapping for another.
       if (pR > 0 && sharp) {
-        const base = pR < 1 ? pR * pR * (3 - 2 * pR) : 1        // smoothstep
-        const u = pZ - Math.floor(pZ)                           // 0→1 within a step
+        const base = pR < 1 ? pR * pR * (3 - 2 * pR) : 1 // smoothstep
+        const u = pZ - Math.floor(pZ) // 0→1 within a step
         // scale about bottom-center: x stays centered, bottom edge stays pinned
         const plate = (z, a) => {
           if (a <= 0) return
@@ -251,7 +271,7 @@ const PixelBayBridge = ({
           ctx.setTransform(z, 0, 0, z, (cv.width * (1 - z)) / 2, cv.height * (1 - z))
           ctx.drawImage(sharp, 0, 0)
         }
-        plate(Math.pow(ZOOM_RATIO, u), base)                    // the copy being flown into
+        plate(Math.pow(ZOOM_RATIO, u), base) // the copy being flown into
         // the copy a step ahead, on its way out of frame. Held back on the first
         // pass so the mosaic hands over to an unscaled photo.
         if (pZ >= 1) plate(Math.pow(ZOOM_RATIO, u + 1), base * (1 - u))
@@ -286,8 +306,14 @@ const PixelBayBridge = ({
     }
 
     const redraw = () => {
-      if (reduce || done) { draw(1, 1, 0); return }
-      if (t0 == null) { draw(0, 0, 0); return }
+      if (reduce || done) {
+        draw(1, 1, 0)
+        return
+      }
+      if (t0 == null) {
+        draw(0, 0, 0)
+        return
+      }
       draw(...prog(performance.now()))
     }
 
@@ -297,7 +323,10 @@ const PixelBayBridge = ({
       if (t0 == null) t0 = now
       const [pA, pR, pZ] = prog(now)
       draw(pA, pR, pZ)
-      if (pR >= 1 && !revealed) { revealed = true; doneCbRef.current?.() }
+      if (pR >= 1 && !revealed) {
+        revealed = true
+        doneCbRef.current?.()
+      }
       // no terminal state: the zoom loop keeps breathing until the hero
       // scrolls out of view (the IntersectionObserver stops us) or unmount
       raf = requestAnimationFrame(frame)
@@ -319,20 +348,35 @@ const PixelBayBridge = ({
 
     build()
     draw(reduce ? 1 : 0, reduce ? 1 : 0, 0)
-    if (reduce) { done = true; doneCbRef.current?.() }
+    if (reduce) {
+      done = true
+      doneCbRef.current?.()
+    }
 
-    img.onload = () => { imgReady = true; build(); redraw() }
-    img.onerror = () => { imgReady = false }
+    img.onload = () => {
+      imgReady = true
+      build()
+      redraw()
+    }
+    img.onerror = () => {
+      imgReady = false
+    }
     img.src = SRC
 
-    const onResize = () => { build(); redraw() }
+    const onResize = () => {
+      build()
+      redraw()
+    }
     window.addEventListener('resize', onResize)
 
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-      if (visible) start()
-      else if (!done) stop()
-    }, { threshold: 0.12 })
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting
+        if (visible) start()
+        else if (!done) stop()
+      },
+      { threshold: 0.12 },
+    )
     io.observe(stage)
 
     return () => {

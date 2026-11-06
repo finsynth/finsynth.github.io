@@ -21,10 +21,9 @@ const INK = '#5778da'
 
 // Bayer 8×8 ordered-dither threshold matrix
 const BAYER = [
-  0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26,
-  12, 44, 4, 36, 14, 46, 6, 38, 60, 28, 52, 20, 62, 30, 54, 22,
-  3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25,
-  15, 47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
+  0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28,
+  52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7,
+  39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
 ]
 
 // Blank a soft-edged corridor down the centre so overlaid copy reads as open sky.
@@ -40,15 +39,15 @@ function corridorOn(clearBand, cx, w) {
 }
 
 function MosaicCanvas({
-  mode = 'halftone',    // 'halftone' (sparse single-ink) | 'mosaic' (dense replica)
-  cover = false,        // fill the stage's full height, cover-cropping the source
+  mode = 'halftone', // 'halftone' (sparse single-ink) | 'mosaic' (dense replica)
+  cover = false, // fill the stage's full height, cover-cropping the source
   tileSize = 9,
   shape = 'rounded',
-  bars = false,         // vertical-bar treatment: narrow full-height marks stack into continuous strips
+  bars = false, // vertical-bar treatment: narrow full-height marks stack into continuous strips
   hoverLens = true,
-  density = 1,          // >1 turns more dots on (denser skyline) — halftone only
-  dotScale = 1,         // >1 paints bigger dots (more solid read) — halftone only
-  clearBand = null,     // { halfWidthFrac, featherFrac } — blank vertical corridor down the centre
+  density = 1, // >1 turns more dots on (denser skyline) — halftone only
+  dotScale = 1, // >1 paints bigger dots (more solid read) — halftone only
+  clearBand = null, // { halfWidthFrac, featherFrac } — blank vertical corridor down the centre
   stageClassName = 'sf-mosaic__stage',
   ariaLabel = 'A San Francisco skyline rendered as an animated blue halftone.',
 }) {
@@ -64,8 +63,13 @@ function MosaicCanvas({
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const mouse = { x: -9999, y: -9999 }
     let cells = []
-    let cols = 0, rows = 0
-    let dpr = 1, w = 0, h = 0, tw = 0, th = 0
+    let cols = 0,
+      rows = 0
+    let dpr = 1,
+      w = 0,
+      h = 0,
+      tw = 0,
+      th = 0
     let startT = 0
     let raf = 0
     let img = null
@@ -76,7 +80,10 @@ function MosaicCanvas({
     const startLoop = () => {
       if (reduce || killed || !visible || !imgLoaded) return
       cancelAnimationFrame(raf)
-      const loop = (now) => { draw(now); if (visible && !killed) raf = requestAnimationFrame(loop) }
+      const loop = (now) => {
+        draw(now)
+        if (visible && !killed) raf = requestAnimationFrame(loop)
+      }
       raf = requestAnimationFrame(loop)
     }
     const stopLoop = () => cancelAnimationFrame(raf)
@@ -85,7 +92,7 @@ function MosaicCanvas({
     // bridge connectors span the width (mosaic mode only).
     const panorama = (im) => {
       const s1 = { sx: im.width * 0.03, sw: im.width * 0.24 }
-      const s2 = { sx: im.width * 0.10, sw: im.width * 0.26 }
+      const s2 = { sx: im.width * 0.1, sw: im.width * 0.26 }
       const totalW = Math.round(s1.sw + s2.sw + im.width)
       const pc = document.createElement('canvas')
       pc.width = totalW
@@ -111,7 +118,10 @@ function MosaicCanvas({
       // cover: canvas fills the stage's height and the source is cover-cropped
       // (like background-size: cover) — sides trimmed when the source is wider,
       // top trimmed (skyline anchored to the bottom) when it's taller.
-      let sx = 0, sy = 0, sW = src.width, sH = src.height
+      let sx = 0,
+        sy = 0,
+        sW = src.width,
+        sH = src.height
       if (cover) {
         h = Math.max(Math.round(stage.clientHeight), 240)
         const targetA = w / h
@@ -166,10 +176,10 @@ function MosaicCanvas({
 
           cells[r * cols + c] = {
             on,
-            d,                                             // darkness → dot size (mosaic)
+            d, // darkness → dot size (mosaic)
             delay: (c / cols) * 0.9 + Math.random() * 0.8, // left-to-right reveal
-            rnd: Math.random(),                            // hover fade threshold
-            a: 1,                                          // smoothed alpha
+            rnd: Math.random(), // hover fade threshold
+            a: 1, // smoothed alpha
           }
         }
       }
@@ -184,7 +194,8 @@ function MosaicCanvas({
     }
 
     const paintCell = (ctx, cx, cy, sw, sh, rad) => {
-      const x = cx - sw / 2, y = cy - sh / 2
+      const x = cx - sw / 2,
+        y = cy - sh / 2
       if (shape === 'circle') {
         ctx.beginPath()
         ctx.ellipse(cx, cy, sw / 2, sh / 2, 0, 0, 6.2832)
@@ -201,20 +212,16 @@ function MosaicCanvas({
     // dot dimensions for a cell of darkness d (before per-frame reveal scale)
     // bars: width tracks darkness (thin cables → wide towers), height slightly
     // overfills the row so vertically-adjacent on-cells merge into one strip.
-    const dotSize = (d) => (
+    const dotSize = (d) =>
       bars
         ? { sw: tw * (0.18 + 0.32 * d), sh: th * 1.06 }
         : isMosaic
           ? { sw: tw * (0.14 + 0.72 * d), sh: th * (0.14 + 0.68 * d) }
           : { sw: tw * 0.52 * dotScale, sh: th * 0.46 * dotScale }
-    )
 
     // corner radius for a painted mark — rounded bar ends vs. rounded dots
-    const cellRadius = (sw, sh) => (
-      bars
-        ? Math.min(sw * 0.5, 2.5)
-        : Math.min(sh * (isMosaic ? 0.4 : 0.28), isMosaic ? 4 : 5)
-    )
+    const cellRadius = (sw, sh) =>
+      bars ? Math.min(sw * 0.5, 2.5) : Math.min(sh * (isMosaic ? 0.4 : 0.28), isMosaic ? 4 : 5)
 
     // static, full-reveal render for reduced-motion visitors
     const drawStatic = () => {
@@ -226,7 +233,8 @@ function MosaicCanvas({
         for (let c = 0; c < cols; c++) {
           const cell = cells[r * cols + c]
           if (!cell.on) continue
-          const cx = c * tw + tw / 2, cy = r * th + th / 2
+          const cx = c * tw + tw / 2,
+            cy = r * th + th / 2
           const { sw, sh } = dotSize(cell.d)
           if (sw <= 0.2) continue
           ctx.globalAlpha = 1
@@ -243,7 +251,8 @@ function MosaicCanvas({
       ctx.clearRect(0, 0, w, h)
       const elapsed = (now - startT) / 1000
       const revealDur = 0.55
-      const mx = mouse.x, my = mouse.y
+      const mx = mouse.x,
+        my = mouse.y
       const R = t * 7
       ctx.fillStyle = INK
       for (let r = 0; r < rows; r++) {
@@ -255,7 +264,8 @@ function MosaicCanvas({
           if (p > 1) p = 1
           // ease-out-back for a small pop
           const e = p === 1 ? 1 : 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2)
-          const cx = c * tw + tw / 2, cy = r * th + th / 2
+          const cx = c * tw + tw / 2,
+            cy = r * th + th / 2
           const scale = e
           let alpha = Math.min(p * 1.6, 1)
           if (p === 1) {
@@ -265,7 +275,8 @@ function MosaicCanvas({
               // distance to the nearest point on the cell's horizontal bar
               const x0 = c * tw
               const nx = Math.max(x0, Math.min(mx, x0 + tw))
-              const dx = nx - mx, dy = cy - my
+              const dx = nx - mx,
+                dy = cy - my
               const d = Math.sqrt(dx * dx + dy * dy)
               if (d < R) {
                 const f = 1 - d / R
@@ -278,7 +289,8 @@ function MosaicCanvas({
             if (alpha < 0.02) continue
           }
           const base = dotSize(cell.d)
-          const sw = base.sw * scale, sh = base.sh * scale
+          const sw = base.sw * scale,
+            sh = base.sh * scale
           if (sw <= 0.2) continue
           ctx.globalAlpha = alpha
           paintCell(ctx, cx, cy, sw, sh, cellRadius(sw, sh))
@@ -292,11 +304,18 @@ function MosaicCanvas({
       mouse.x = ev.clientX - rect.left
       mouse.y = ev.clientY - rect.top
     }
-    const onLeave = () => { mouse.x = -9999; mouse.y = -9999 }
+    const onLeave = () => {
+      mouse.x = -9999
+      mouse.y = -9999
+    }
     const onResize = () => build()
 
     img = new Image()
-    img.onload = () => { if (killed) return; imgLoaded = true; build() }
+    img.onload = () => {
+      if (killed) return
+      imgLoaded = true
+      build()
+    }
     img.src = IMG_SRC
 
     cv.addEventListener('mousemove', onMove)
@@ -305,16 +324,17 @@ function MosaicCanvas({
 
     // Only paint while the canvas is on (or near) screen — a scrolled-past hero
     // must not keep the rAF loop running and contending with page scroll.
-    const io = 'IntersectionObserver' in window
-      ? new IntersectionObserver(
-          ([e]) => {
-            visible = e.isIntersecting
-            if (visible) startLoop()
-            else stopLoop()
-          },
-          { rootMargin: '160px' }
-        )
-      : null
+    const io =
+      'IntersectionObserver' in window
+        ? new IntersectionObserver(
+            ([e]) => {
+              visible = e.isIntersecting
+              if (visible) startLoop()
+              else stopLoop()
+            },
+            { rootMargin: '160px' },
+          )
+        : null
     io?.observe(stage)
 
     return () => {
@@ -330,12 +350,7 @@ function MosaicCanvas({
 
   return (
     <div className={stageClassName} ref={stageRef}>
-      <canvas
-        ref={canvasRef}
-        className="sf-mosaic__canvas"
-        role="img"
-        aria-label={ariaLabel}
-      />
+      <canvas ref={canvasRef} className="sf-mosaic__canvas" role="img" aria-label={ariaLabel} />
     </div>
   )
 }

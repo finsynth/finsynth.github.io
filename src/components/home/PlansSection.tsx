@@ -17,7 +17,9 @@ const SHOW_ORG_PLANS = false
  */
 class PlansBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false }
-  static getDerivedStateFromError() { return { failed: true } }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
   render() {
     if (this.state.failed) {
       return (
@@ -37,7 +39,6 @@ class PlansBoundary extends Component<{ children: ReactNode }, { failed: boolean
     return this.props.children
   }
 }
-
 
 function CreateOrgButton() {
   const { isLoaded: userLoaded, isSignedIn } = useUser()
@@ -67,7 +68,9 @@ export default function PlansSection() {
     <section className="plans" id="pricing">
       <div className="wrap plans-wrap" ref={zoomRef}>
         <p className="plans-eyebrow">Pricing</p>
-        <h2 className="plans-title">Get started on <span className="ttl-hl">FinSynth</span></h2>
+        <h2 className="plans-title">
+          Get started on <span className="ttl-hl">FinSynth</span>
+        </h2>
 
         <div className="plans-table">
           <ClerkProvider publishableKey={ENV.clerkPublishableKey} appearance={CLERK_APPEARANCE}>

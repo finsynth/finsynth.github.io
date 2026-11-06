@@ -3,8 +3,13 @@ import useZoom from '@/hooks/useZoom'
 import { EMAILS } from '@/config/site'
 import { FAQS } from '@/data/faq'
 
-
-const DEFAULT_TITLE = <>Curious about FinSynth?<br />We got you <span className="ttl-hl">covered</span></>
+const DEFAULT_TITLE = (
+  <>
+    Curious about FinSynth?
+    <br />
+    We got you <span className="ttl-hl">covered</span>
+  </>
+)
 
 /* `items` and `title` let the solutions pages render this exact section with
    their own questions instead of a lookalike of it */
@@ -51,7 +56,11 @@ export default function Faq({
       ta.style.left = '-9999px'
       document.body.appendChild(ta)
       ta.select()
-      try { document.execCommand('copy') } catch { /* no-op */ }
+      try {
+        document.execCommand('copy')
+      } catch {
+        /* no-op */
+      }
       document.body.removeChild(ta)
       done()
     }
@@ -65,7 +74,7 @@ export default function Faq({
 
   useLayoutEffect(() => {
     if (open < 0) {
-      setRail(r => ({ ...r, on: false }))
+      setRail((r) => ({ ...r, on: false }))
       return
     }
     const btn = btnRefs.current[open]
@@ -78,9 +87,7 @@ export default function Faq({
     // borders also lands the rail correctly while a sibling answer is still
     // mid-collapse (its animated height would otherwise skew a live measurement).
     const secondItem = btnRefs.current[1]?.parentElement
-    const borderTop = secondItem
-      ? parseFloat(getComputedStyle(secondItem).borderTopWidth) || 0
-      : 0
+    const borderTop = secondItem ? parseFloat(getComputedStyle(secondItem).borderTopWidth) || 0 : 0
     let top = 0
     for (let i = 0; i < open; i++) {
       top += btnRefs.current[i]?.offsetHeight || 0
@@ -103,7 +110,7 @@ export default function Faq({
           }
         })
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     )
     io.observe(el)
     return () => io.disconnect()
@@ -122,8 +129,22 @@ export default function Faq({
                   me nowhere"); Copy sits next to it as its own button */}
               {/* a mailto does nothing visible on a machine with no mail client,
                   so the click also copies the address and shows Copied */}
-              <a className="faq-contact-email" href={`mailto:${CONTACT_EMAIL}`} title="Email us" onClick={copyEmail}>
-                <svg className="faq-contact-mail" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <a
+                className="faq-contact-email"
+                href={`mailto:${CONTACT_EMAIL}`}
+                title="Email us"
+                onClick={copyEmail}
+              >
+                <svg
+                  className="faq-contact-mail"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                >
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <path d="m2 7 10 6 10-6" />
                 </svg>
@@ -133,18 +154,40 @@ export default function Faq({
                 type="button"
                 className="faq-contact-action"
                 onClick={copyEmail}
-                aria-label={copied ? 'Email address copied to clipboard' : `Copy email address ${CONTACT_EMAIL}`}
+                aria-label={
+                  copied
+                    ? 'Email address copied to clipboard'
+                    : `Copy email address ${CONTACT_EMAIL}`
+                }
               >
                 {copied ? (
                   <>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                     Copied
                   </>
                 ) : (
                   <>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <rect x="9" y="9" width="11" height="11" rx="2" />
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                     </svg>
@@ -169,7 +212,9 @@ export default function Faq({
                 <button
                   type="button"
                   className="faq-q"
-                  ref={(el) => { btnRefs.current[i] = el }}
+                  ref={(el) => {
+                    btnRefs.current[i] = el
+                  }}
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? -1 : i)}
                 >
@@ -177,7 +222,12 @@ export default function Faq({
                   <span className="faq-toggle" aria-hidden="true" />
                 </button>
                 <div className="faq-a" role="region" aria-hidden={!isOpen}>
-                  <div className="faq-a-inner" ref={(el) => { innerRefs.current[i] = el }}>
+                  <div
+                    className="faq-a-inner"
+                    ref={(el) => {
+                      innerRefs.current[i] = el
+                    }}
+                  >
                     <p>{item.a}</p>
                   </div>
                 </div>

@@ -8,10 +8,9 @@ import BayBridgePixelCanvas from '@/components/visuals/BayBridgePixelCanvas'
 import { MatrixDecode } from '@/components/visuals/matrix-decode'
 import { SEGMENTS } from '@/data/segments'
 
-
-const TYPE_MS = 28      // per character
-const HOLD_MS = 1500    // full word on screen
-const SELECT_MS = 380   // selection highlight before delete
+const TYPE_MS = 28 // per character
+const HOLD_MS = 1500 // full word on screen
+const SELECT_MS = 380 // selection highlight before delete
 
 function RotatingSegment() {
   const [text, setText] = useState(SEGMENTS[0])
@@ -47,7 +46,9 @@ function RotatingSegment() {
 
     let alive = true
     const timers: ReturnType<typeof setTimeout>[] = []
-    const t = (fn: () => void, ms: number) => { if (alive) timers.push(setTimeout(fn, ms)) }
+    const t = (fn: () => void, ms: number) => {
+      if (alive) timers.push(setTimeout(fn, ms))
+    }
 
     const typeNext = () => {
       wordRef.current = (wordRef.current + 1) % SEGMENTS.length
@@ -60,12 +61,21 @@ function RotatingSegment() {
 
     const select = () => {
       setPhase('selected')
-      t(() => { setText(''); typeNext() }, SELECT_MS)
+      t(() => {
+        setText('')
+        typeNext()
+      }, SELECT_MS)
     }
 
-    t(() => { setPhase('hold'); t(select, HOLD_MS) }, 400)
+    t(() => {
+      setPhase('hold')
+      t(select, HOLD_MS)
+    }, 400)
 
-    return () => { alive = false; timers.forEach(clearTimeout) }
+    return () => {
+      alive = false
+      timers.forEach(clearTimeout)
+    }
   }, [hovered])
 
   // Hovering holds the carousel on the word under the pointer. The word is
@@ -107,8 +117,10 @@ function RotatingSegment() {
         />
         <i className="hr-caret" />
         <span className="hr-frame">
-          <b className="hr-handle tl" /><b className="hr-handle tr" />
-          <b className="hr-handle bl" /><b className="hr-handle br" />
+          <b className="hr-handle tl" />
+          <b className="hr-handle tr" />
+          <b className="hr-handle bl" />
+          <b className="hr-handle br" />
         </span>
       </span>
     </>
@@ -188,42 +200,51 @@ function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = f
   // Git history has the markup if the gate is ever wanted back.
 
   return (
-    <section className={`hero-s2${mosaic && !dot && !photo ? ' hero-s2--mosaic' : ''}${dot ? ' hero-s2--globe' : ''}${photo ? ' hero-s2--photo' : ''}${bgGlass ? ' hero-s2--glass' : ''}${bare ? ' hero-s2--bare' : ''}`}>
+    <section
+      className={`hero-s2${mosaic && !dot && !photo ? ' hero-s2--mosaic' : ''}${dot ? ' hero-s2--globe' : ''}${photo ? ' hero-s2--photo' : ''}${bgGlass ? ' hero-s2--glass' : ''}${bare ? ' hero-s2--bare' : ''}`}
+    >
       {/* bare mode omits the background entirely — the copy is overlaid on top
           of an external backdrop (the pixel-bridge scroll scene) */}
-      {!bare && (bgImage ? (
-        <div
-          className="hero-s2-mosaic hero-s2-imgbg"
-          style={{ backgroundImage: `url(${bgImage})` }}
-          aria-hidden="true"
-        />
-      ) : photo ? (
-        <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
-      ) : dot ? (
-        <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" />
-      ) : variant === 'tiles' ? (
-        <TileMosaicCanvas stageClassName="hero-s2-mosaic" ariaLabel="" centerWash hoverReveal />
-      ) : mosaic ? (
-        <MosaicCanvas
-          mode="mosaic"
-          cover
-          bars
-          stageClassName="hero-s2-mosaic"
-          ariaLabel=""
-          tileSize={9}
-        />
-      ) : (
-        <canvas ref={canvasRef} className="hero-s2-canvas" data-grid-hero aria-hidden="true"></canvas>
-      ))}
+      {!bare &&
+        (bgImage ? (
+          <div
+            className="hero-s2-mosaic hero-s2-imgbg"
+            style={{ backgroundImage: `url(${bgImage})` }}
+            aria-hidden="true"
+          />
+        ) : photo ? (
+          <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
+        ) : dot ? (
+          <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" />
+        ) : variant === 'tiles' ? (
+          <TileMosaicCanvas stageClassName="hero-s2-mosaic" ariaLabel="" centerWash hoverReveal />
+        ) : mosaic ? (
+          <MosaicCanvas
+            mode="mosaic"
+            cover
+            bars
+            stageClassName="hero-s2-mosaic"
+            ariaLabel=""
+            tileSize={9}
+          />
+        ) : (
+          <canvas
+            ref={canvasRef}
+            className="hero-s2-canvas"
+            data-grid-hero
+            aria-hidden="true"
+          ></canvas>
+        ))}
       {/* the side collage only earns its place on the bare hero, where the
           flanks are otherwise empty — over the photo it's crops of the same
           picture laid on the picture */}
       {bare && <HeroSideTiles />}
       <span className="stat-pill" aria-hidden="true"></span>
       <div className="hero-s2-wrap">
-
         {/* ── ONE BIG CELL ── */}
-        <div className={`hero-cell${mosaic ? ' hero-cell--mosaic' : ''}${variant === 'tiles' ? ' hero-cell--tiles' : ''}`}>
+        <div
+          className={`hero-cell${mosaic ? ' hero-cell--mosaic' : ''}${variant === 'tiles' ? ' hero-cell--tiles' : ''}`}
+        >
           {/* Soft white radial wash behind the copy — lifts the text off the
               photo without hiding it. Sized to the copy block (pill → trust
               line) and clamped to the cell so it never spills past the hero. */}
@@ -235,11 +256,7 @@ function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = f
               still reads. */}
           <p className="hero-backers">
             <span className="hero-backers-label">Backed by</span>
-            <img
-              className="hero-backers-mark"
-              src="/assets/img/accel-logo-brand.svg"
-              alt="Accel"
-            />
+            <img className="hero-backers-mark" src="/assets/img/accel-logo-brand.svg" alt="Accel" />
           </p>
 
           {/* Heading — two rows, breaking on the comma:
@@ -258,13 +275,16 @@ function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = f
             {/* each row is its own block with the leading moved into a margin,
                 so text selection paints two separate white strips instead of
                 one merged slab (margins aren't covered by ::selection) */}
-            <span className="hero-title-row">Auditable AI <span className="hero-nounphrase">research infrastructure,</span></span>
-            <span className="hero-title-row"><span className="hero-nobreak">purpose-built</span> for <RotatingSegment /></span>
+            <span className="hero-title-row">
+              Auditable AI <span className="hero-nounphrase">research infrastructure,</span>
+            </span>
+            <span className="hero-title-row">
+              <span className="hero-nobreak">purpose-built</span> for <RotatingSegment />
+            </span>
           </h1>
 
           <p className="hero-s2-lede">
-            Eliminate verification tax, take your research from drafts to
-            decision-making
+            Eliminate verification tax, take your research from drafts to decision-making
           </p>
 
           {/* CTAs — the primary ask is the call; "Try for free" is the
@@ -274,12 +294,7 @@ function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = f
               old "Explore" button and its Try It modal are in git history if
               they're ever wanted back. */}
           <div className="hero-s2-ctas">
-            <a
-              className="hero-s2-cta"
-              href={BOOK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
               Talk to Us
             </a>
             <a
@@ -315,12 +330,8 @@ function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = f
               was the faintest thing on the hero. Reviewed against a two-tone
               version (claim in ink, lead-in grey), glass segment chips and a
               tracked-caps eyebrow; all rejected 2026-09-11, all in git. */}
-          <p className="hero-s2-trust hero-s2-trust--ink">
-            Trusted by investors from global funds
-          </p>
-
+          <p className="hero-s2-trust hero-s2-trust--ink">Trusted by investors from global funds</p>
         </div>
-
       </div>
     </section>
   )

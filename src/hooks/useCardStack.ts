@@ -98,7 +98,10 @@ export default function useCardStack(count: number) {
       if (phase === 'hold') {
         // hovering pauses at the resting card; a flight in progress is never
         // interrupted — it falls through to the flight branch and completes
-        if (hovered) { phaseStart = now; return }
+        if (hovered) {
+          phaseStart = now
+          return
+        }
         if (elapsed >= HOLD_MS) {
           phase = 'flight'
           dir = 1
@@ -137,8 +140,12 @@ export default function useCardStack(count: number) {
     })
     io.observe(section)
 
-    const onEnter = () => { hovered = true }
-    const onLeave = () => { hovered = false }
+    const onEnter = () => {
+      hovered = true
+    }
+    const onLeave = () => {
+      hovered = false
+    }
     stack.addEventListener('pointerenter', onEnter)
     stack.addEventListener('pointerleave', onLeave)
 

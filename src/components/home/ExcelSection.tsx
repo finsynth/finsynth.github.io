@@ -34,30 +34,91 @@ import CertSeals from '@/components/home/CertSeals'
  */
 const GLYPHS: Record<string, ReactNode> = {
   // filings — the classic filing-office portico
-  sec: <><path d="M2 7.5 11 3l9 4.5" /><path d="M4.5 7.5v8M9 7.5v8M13 7.5v8M17.5 7.5v8" /><path d="M2.5 18.5h17" /></>,
+  sec: (
+    <>
+      <path d="M2 7.5 11 3l9 4.5" />
+      <path d="M4.5 7.5v8M9 7.5v8M13 7.5v8M17.5 7.5v8" />
+      <path d="M2.5 18.5h17" />
+    </>
+  ),
   // earnings calls — a handset
-  call: <path d="M6.2 3.6 8.6 3l2 4.2-2 1.6a10.5 10.5 0 0 0 4.6 4.6l1.6-2 4.2 2-.6 2.4a2 2 0 0 1-2.2 1.5C10.4 16.6 5.4 11.6 4.7 5.8a2 2 0 0 1 1.5-2.2Z" />,
-  web: <><circle cx="11" cy="11" r="8.2" /><path d="M2.8 11h16.4" /><ellipse cx="11" cy="11" rx="3.6" ry="8.2" /></>,
+  call: (
+    <path d="M6.2 3.6 8.6 3l2 4.2-2 1.6a10.5 10.5 0 0 0 4.6 4.6l1.6-2 4.2 2-.6 2.4a2 2 0 0 1-2.2 1.5C10.4 16.6 5.4 11.6 4.7 5.8a2 2 0 0 1 1.5-2.2Z" />
+  ),
+  web: (
+    <>
+      <circle cx="11" cy="11" r="8.2" />
+      <path d="M2.8 11h16.4" />
+      <ellipse cx="11" cy="11" rx="3.6" ry="8.2" />
+    </>
+  ),
   // internal databases — the stacked cylinder
-  db: <><ellipse cx="11" cy="5.4" rx="7.4" ry="2.7" /><path d="M3.6 5.4v11.2c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7V5.4" /><path d="M3.6 11c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7" /></>,
+  db: (
+    <>
+      <ellipse cx="11" cy="5.4" rx="7.4" ry="2.7" />
+      <path d="M3.6 5.4v11.2c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7V5.4" />
+      <path d="M3.6 11c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7" />
+    </>
+  ),
   // emails — the envelope
-  mail: <><rect x="2.4" y="5" width="17.2" height="12" rx="2" /><path d="M3 6.6 11 12l8-5.4" /></>,
+  mail: (
+    <>
+      <rect x="2.4" y="5" width="17.2" height="12" rx="2" />
+      <path d="M3 6.6 11 12l8-5.4" />
+    </>
+  ),
   // decks — a slide on its stand
-  deck: <><rect x="2.4" y="3.6" width="17.2" height="11" rx="1.6" /><path d="M11 14.6v3.8M7.6 18.4h6.8" /></>,
+  deck: (
+    <>
+      <rect x="2.4" y="3.6" width="17.2" height="11" rx="1.6" />
+      <path d="M11 14.6v3.8M7.6 18.4h6.8" />
+    </>
+  ),
   // internal files — the folder
-  folder: <path d="M2.6 6.4A1.6 1.6 0 0 1 4.2 4.8h3.6L10 7.1h7.8a1.6 1.6 0 0 1 1.6 1.6v7.9a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6z" />,
+  folder: (
+    <path d="M2.6 6.4A1.6 1.6 0 0 1 4.2 4.8h3.6L10 7.1h7.8a1.6 1.6 0 0 1 1.6 1.6v7.9a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6z" />
+  ),
   // market data — a price line over its baseline
-  chart: <><path d="M2.6 18.4h16.8" /><path d="M3.6 14.6 8 9.4l3.4 3.2 3.2-5.6 3.8 4.4" /></>,
+  chart: (
+    <>
+      <path d="M2.6 18.4h16.8" />
+      <path d="M3.6 14.6 8 9.4l3.4 3.2 3.2-5.6 3.8 4.4" />
+    </>
+  ),
   // research notes — a page with ruled lines
-  note: <><path d="M5 2.8h8.4L18 7.4v11.8a1.6 1.6 0 0 1-1.6 1.6H5a1.6 1.6 0 0 1-1.6-1.6V4.4A1.6 1.6 0 0 1 5 2.8Z" /><path d="M13.4 2.8v4.6H18" /><path d="M6.8 11.4h7.8M6.8 15h7.8" /></>,
+  note: (
+    <>
+      <path d="M5 2.8h8.4L18 7.4v11.8a1.6 1.6 0 0 1-1.6 1.6H5a1.6 1.6 0 0 1-1.6-1.6V4.4A1.6 1.6 0 0 1 5 2.8Z" />
+      <path d="M13.4 2.8v4.6H18" />
+      <path d="M6.8 11.4h7.8M6.8 15h7.8" />
+    </>
+  ),
   // custom APIs — the plug
-  api: <><path d="M8 2.8v4.4M14 2.8v4.4" /><path d="M5.8 7.2h10.4v3.2a5.2 5.2 0 0 1-10.4 0z" /><path d="M11 15.6v1.8a2.8 2.8 0 0 1-2.8 2.8H6" /></>,
+  api: (
+    <>
+      <path d="M8 2.8v4.4M14 2.8v4.4" />
+      <path d="M5.8 7.2h10.4v3.2a5.2 5.2 0 0 1-10.4 0z" />
+      <path d="M11 15.6v1.8a2.8 2.8 0 0 1-2.8 2.8H6" />
+    </>
+  ),
 }
 
 // brand shapes simple enough to draw rather than fake with letters
 const MARKS: Record<string, ReactNode> = {
-  onedrive: <path d="M7.3 19.4h11.1a3.55 3.55 0 0 0 .5-7.07 5.2 5.2 0 0 0-8.72-3.3 4.1 4.1 0 0 0-6.08 3.6c0 .2.01.4.04.6A3.5 3.5 0 0 0 7.3 19.4Z" />,
-  snowflake: <><path d="M12 2.4v19.2M3.7 7.2l16.6 9.6M20.3 7.2 3.7 16.8" strokeWidth="2" strokeLinecap="round" fill="none" stroke="currentColor" /></>,
+  onedrive: (
+    <path d="M7.3 19.4h11.1a3.55 3.55 0 0 0 .5-7.07 5.2 5.2 0 0 0-8.72-3.3 4.1 4.1 0 0 0-6.08 3.6c0 .2.01.4.04.6A3.5 3.5 0 0 0 7.3 19.4Z" />
+  ),
+  snowflake: (
+    <>
+      <path
+        d="M12 2.4v19.2M3.7 7.2l16.6 9.6M20.3 7.2 3.7 16.8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+        stroke="currentColor"
+      />
+    </>
+  ),
 }
 
 interface PillItem {
@@ -81,7 +142,14 @@ function Badge({ item }: { item: PillItem }) {
   if (item.glyph) {
     return (
       <span className="xvi-badge xvi-badge--glyph">
-        <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          viewBox="0 0 22 22"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           {GLYPHS[item.glyph]}
         </svg>
       </span>
@@ -90,7 +158,9 @@ function Badge({ item }: { item: PillItem }) {
   if (item.mark) {
     return (
       <span className="xvi-badge xvi-badge--mark" style={{ color: item.tint }}>
-        <svg viewBox="0 0 24 24" fill="currentColor">{MARKS[item.mark]}</svg>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          {MARKS[item.mark]}
+        </svg>
       </span>
     )
   }
@@ -102,7 +172,15 @@ function Badge({ item }: { item: PillItem }) {
 }
 
 // `offset` keeps the stagger running across both rows instead of restarting
-function PillRow({ items, offset = 0, className = '' }: { items: PillItem[]; offset?: number; className?: string }) {
+function PillRow({
+  items,
+  offset = 0,
+  className = '',
+}: {
+  items: PillItem[]
+  offset?: number
+  className?: string
+}) {
   return (
     <ul className={`xvi-grid${className ? ` ${className}` : ''}`}>
       {items.map((it, i) => (
@@ -148,16 +226,34 @@ function VisualWorkflows() {
 // prints under the grid saying exactly where it came from.
 const SOURCES = [
   {
-    k: 'filing', kind: 'filing', title: 'Apple FY25 10-K', status: 'Tracing to the filing',
-    kicker: 'Net sales by category', value: '416,161', hit: [6, 'B'], prov: '10-K FY25 · p.31',
+    k: 'filing',
+    kind: 'filing',
+    title: 'Apple FY25 10-K',
+    status: 'Tracing to the filing',
+    kicker: 'Net sales by category',
+    value: '416,161',
+    hit: [6, 'B'],
+    prov: '10-K FY25 · p.31',
   },
   {
-    k: 'call', kind: 'call', title: 'Q3 FY26 earnings call', status: 'Tracing to the call',
-    kicker: 'CFO prepared remarks', value: '47.0–48.0%', hit: [9, 'C'], prov: 'Q3 FY26 call · 11:48',
+    k: 'call',
+    kind: 'call',
+    title: 'Q3 FY26 earnings call',
+    status: 'Tracing to the call',
+    kicker: 'CFO prepared remarks',
+    value: '47.0–48.0%',
+    hit: [9, 'C'],
+    prov: 'Q3 FY26 call · 11:48',
   },
   {
-    k: 'tracker', kind: 'xlsx', title: 'iPhone_ASP_tracker.xlsx', status: 'Tracing to your tracker',
-    kicker: 'Regional pricing', value: '872', hit: [2, 'C'], prov: 'iPhone_ASP_tracker.xlsx · Regional pricing · row 22',
+    k: 'tracker',
+    kind: 'xlsx',
+    title: 'iPhone_ASP_tracker.xlsx',
+    status: 'Tracing to your tracker',
+    kicker: 'Regional pricing',
+    value: '872',
+    hit: [2, 'C'],
+    prov: 'iPhone_ASP_tracker.xlsx · Regional pricing · row 22',
   },
 ]
 
@@ -181,14 +277,28 @@ const ROWS = [
 // than borrowed from the vendors
 const KIND_MARK: Record<string, ReactNode> = {
   filing: <path d="M4 1.5h4.5L12 5v7.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1Z" />,
-  call: <path d="M3.9 2.3 5.5 1.9l1.3 2.7-1.3 1a6.8 6.8 0 0 0 3 3l1-1.3 2.7 1.3-.4 1.6a1.3 1.3 0 0 1-1.4 1C6.8 10.8 3.5 7.5 3 3.7a1.3 1.3 0 0 1 .9-1.4Z" />,
-  xlsx: <><rect x="2.5" y="2.5" width="9" height="9" rx="1" /><path d="M2.5 7h9M7 2.5v9" /></>,
+  call: (
+    <path d="M3.9 2.3 5.5 1.9l1.3 2.7-1.3 1a6.8 6.8 0 0 0 3 3l1-1.3 2.7 1.3-.4 1.6a1.3 1.3 0 0 1-1.4 1C6.8 10.8 3.5 7.5 3 3.7a1.3 1.3 0 0 1 .9-1.4Z" />
+  ),
+  xlsx: (
+    <>
+      <rect x="2.5" y="2.5" width="9" height="9" rx="1" />
+      <path d="M2.5 7h9M7 2.5v9" />
+    </>
+  ),
 }
 
 function KindMark({ kind }: { kind: string }) {
   return (
     <i className={`xvk-kind xvk-kind--${kind}`}>
-      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 14 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         {KIND_MARK[kind]}
       </svg>
     </i>
@@ -222,7 +332,8 @@ const CITED_KINDS = [
 ]
 
 // which source lands in a given cell, if any — so the grid can mark it
-const hitAt = (row: number, col: string) => SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
+const hitAt = (row: number, col: string) =>
+  SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
 
 function VisualCascade() {
   return (
@@ -234,14 +345,23 @@ function VisualCascade() {
         <span className="xvk-ico">
           <span className="xvk-spin" />
           <span className="xvk-check">
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M2.5 6.2 5 8.6l4.5-5.2" />
             </svg>
           </span>
         </span>
         <span className="xvk-labels">
           {SOURCES.map((s, i) => (
-            <span className={`xvk-lbl xvk-lbl--${i}`} style={{ '--i': i }} key={s.k}>{s.status}</span>
+            <span className={`xvk-lbl xvk-lbl--${i}`} style={{ '--i': i }} key={s.k}>
+              {s.status}
+            </span>
           ))}
         </span>
       </div>
@@ -261,7 +381,10 @@ function VisualCascade() {
               <p className="xvk-kicker">{s.kicker}</p>
               <span className="xvk-line" />
               <span className="xvk-line xvk-line--short" />
-              <div className="xvk-ex"><span className="xvk-line" /><b>{s.value}</b></div>
+              <div className="xvk-ex">
+                <span className="xvk-line" />
+                <b>{s.value}</b>
+              </div>
               <span className="xvk-line xvk-line--short" />
             </div>
           </div>
@@ -274,21 +397,30 @@ function VisualCascade() {
         <CardTab c={BOOK} />
         <div className="xvk-body xvk-sheet">
           <div className="xvk-srow xvk-srow--cols">
-            <span className="xvk-rn" /><span>A</span><span>B</span><span>C</span>
+            <span className="xvk-rn" />
+            <span>A</span>
+            <span>B</span>
+            <span>C</span>
           </div>
           {ROWS.map(([label, b, c], r) => (
             <div className="xvk-srow" key={label}>
               <span className="xvk-rn">{r + 1}</span>
               <span className="xvk-sl">{label}</span>
-              {[['B', b], ['C', c]].map(([col, v]) => {
+              {[
+                ['B', b],
+                ['C', c],
+              ].map(([col, v]) => {
                 const h = hitAt(r + 1, col)
-                return h < 0
-                  ? <span className="xvk-num" key={col}>{v}</span>
-                  : (
-                    <span className={`xvk-num xvk-hit xvk-hit--${h}`} style={{ '--i': h }} key={col}>
-                      {SOURCES[h].value}<i className="xvk-ring" />
-                    </span>
-                  )
+                return h < 0 ? (
+                  <span className="xvk-num" key={col}>
+                    {v}
+                  </span>
+                ) : (
+                  <span className={`xvk-num xvk-hit xvk-hit--${h}`} style={{ '--i': h }} key={col}>
+                    {SOURCES[h].value}
+                    <i className="xvk-ring" />
+                  </span>
+                )
               })}
             </div>
           ))}
@@ -296,7 +428,9 @@ function VisualCascade() {
             <i />
             <span className="xvk-labels">
               {SOURCES.map((s, i) => (
-                <span className={`xvk-lbl xvk-foot xvk-foot--${i}`} key={s.k}>{s.prov}</span>
+                <span className={`xvk-lbl xvk-foot xvk-foot--${i}`} key={s.k}>
+                  {s.prov}
+                </span>
               ))}
             </span>
           </div>
@@ -377,7 +511,14 @@ function VisualIntegrated() {
         ))}
         <span className="xvi-pill xvi-pill--focal">
           <span className="xvi-badge xvi-badge--focal">
-            <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 22 22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               {GLYPHS.api}
             </svg>
           </span>
@@ -471,7 +612,7 @@ const PILLARS = [
 
 // module scope so the array identity is stable across renders and the clock's
 // effect doesn't tear itself down every pass
-const DWELL = PILLARS.map(p => p.ms)
+const DWELL = PILLARS.map((p) => p.ms)
 const STEP_MS = 4200
 // how long after the last scroll event the clock waits before taking back over
 const SCROLL_IDLE_MS = 1200
@@ -506,7 +647,11 @@ const SCROLL_IDLE_MS = 1200
  * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
  * the wait, so pressing a row always buys a full turn on the claim it selected.
  */
-function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>, { scrub = true } = {}) {
+function useAutoStep(
+  dwell: number[],
+  paneRef: RefObject<HTMLDivElement | null>,
+  { scrub = true } = {},
+) {
   const count = dwell.length
   const [step, setStep] = useState(0)
   const [held, setHeld] = useState(false)
@@ -559,7 +704,7 @@ function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>,
       idle = setTimeout(() => {
         scrolling.current = false
         // restart the clock's wait so the claim scrolled to gets a full turn
-        setNudge(n => n + 1)
+        setNudge((n) => n + 1)
       }, SCROLL_IDLE_MS)
       if (!raf) raf = requestAnimationFrame(read)
     }
@@ -594,7 +739,7 @@ function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>,
       // a scroll in flight owns the rail; the idle handler bumps `nudge` when it
       // stops, which restarts this wait, so the clock picks up where it left
       if (scrolling.current) return
-      setStep(s => (s + 1) % count)
+      setStep((s) => (s + 1) % count)
     }, dwell[step] ?? STEP_MS)
     return () => clearTimeout(timer)
     // `nudge` is here only to restart the wait after a row press or a scroll
@@ -602,7 +747,10 @@ function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>,
 
   return {
     step,
-    goTo: (i: number) => { setStep(i); setNudge(n => n + 1) },
+    goTo: (i: number) => {
+      setStep(i)
+      setNudge((n) => n + 1)
+    },
     hold: () => setHeld(true),
     release: () => setHeld(false),
   }
@@ -616,7 +764,11 @@ function useAutoStep(dwell: number[], paneRef: RefObject<HTMLDivElement | null>,
  */
 export default function ExcelSection({
   id = 'excel',
-  title = <>FinSynth for <span className="ttl-hl">Excel</span></>,
+  title = (
+    <>
+      FinSynth for <span className="ttl-hl">Excel</span>
+    </>
+  ),
   badge,
 }: {
   id?: string
@@ -636,7 +788,6 @@ export default function ExcelSection({
     <section className="x4e-sec" id={id}>
       <div className="wrap">
         <div className="x4e-frame" ref={frameRef}>
-
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
               <h2>

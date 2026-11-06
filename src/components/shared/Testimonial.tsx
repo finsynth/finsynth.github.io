@@ -10,14 +10,13 @@ const QUOTES = [
     role: 'Long-only fund',
   },
   {
-    quote:
-      '"This is the first tool I can trust with confidence for any research I do in Excel."',
+    quote: '"This is the first tool I can trust with confidence for any research I do in Excel."',
     name: 'L/S Analyst',
     role: 'Long-short equity fund',
   },
   {
     quote:
-      '"We\'re seeing the actual leverage of an AI tool, the outputs aren\'t just good-looking, they\'re easily verifiable."',
+      "\"We're seeing the actual leverage of an AI tool, the outputs aren't just good-looking, they're easily verifiable.\"",
     name: 'Long-only Portfolio Manager',
     role: 'Long-only fund',
   },
@@ -28,12 +27,21 @@ const Chevron = ({ back = false }: { back?: boolean }) => (
   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path
       d={back ? 'M10 3.5L5.5 8l4.5 4.5' : 'M6 3.5L10.5 8 6 12.5'}
-      stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
 
-const DEFAULT_TITLE = <>Hear what the analysts<br />have to <span className="ttl-hl">say</span></>
+const DEFAULT_TITLE = (
+  <>
+    Hear what the analysts
+    <br />
+    have to <span className="ttl-hl">say</span>
+  </>
+)
 
 // Other pages pass their own quotes (a solutions page carries the one quote
 // from its outline). With a single card there is no deck to page through, so
@@ -61,7 +69,6 @@ export default function Testimonial({
       {/* the stack cycles through the quotes on an automatic timer */}
       <div className="testi-pin" ref={revealRef}>
         <div className="wrap">
-
           {/* Head */}
           <div className="testi-head">
             <p className="hiw-eyebrow">Customers</p>
@@ -74,22 +81,30 @@ export default function Testimonial({
               live outside .testi-stack: the hook animates that element's direct
               children, so a control inside it would be dealt as a card. */}
           <div className={`testi-deck${deck ? '' : ' testi-deck--single'}`}>
-            {deck && <div className="testi-nav">
-              <button
-                type="button" className="testi-navbtn" onClick={prev}
-                aria-label="Previous testimonial" aria-controls="testi-stack"
-              >
-                <Chevron back />
-              </button>
-              <button
-                type="button" className="testi-navbtn" onClick={next}
-                aria-label="Next testimonial" aria-controls="testi-stack"
-              >
-                <Chevron />
-              </button>
-            </div>}
+            {deck && (
+              <div className="testi-nav">
+                <button
+                  type="button"
+                  className="testi-navbtn"
+                  onClick={prev}
+                  aria-label="Previous testimonial"
+                  aria-controls="testi-stack"
+                >
+                  <Chevron back />
+                </button>
+                <button
+                  type="button"
+                  className="testi-navbtn"
+                  onClick={next}
+                  aria-label="Next testimonial"
+                  aria-controls="testi-stack"
+                >
+                  <Chevron />
+                </button>
+              </div>
+            )}
             <div className="testi-stack" id="testi-stack" ref={stackRef}>
-              {quotes.map(t => (
+              {quotes.map((t) => (
                 <div className="testi-card" key={t.name}>
                   <blockquote className="testi-quote">{t.quote}</blockquote>
                   <div className="testi-author">
@@ -101,9 +116,8 @@ export default function Testimonial({
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </section>
-  );
+  )
 }

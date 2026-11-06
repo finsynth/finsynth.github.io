@@ -1,7 +1,15 @@
 import CertSeals from '@/components/home/CertSeals'
 
 const CheckIcon = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M5 12.5l4.5 4.5L19 6.5" />
   </svg>
 )
@@ -40,11 +48,12 @@ export default function Security() {
     <section className="secx" id="security">
       <div className="wrap" data-zoom>
         <div className="secx-frame" data-reveal="0.2">
-
           <div className="secx-head secx-reveal">
             <div className="secx-head-copy">
               <p className="secx-eyebrow">Security &amp; compliance</p>
-              <h2>Enterprise-<span className="ttl-hl">ready</span></h2>
+              <h2>
+                Enterprise-<span className="ttl-hl">ready</span>
+              </h2>
             </div>
             <CertSeals compact />
           </div>
@@ -56,7 +65,9 @@ export default function Security() {
                 className="secx-point secx-reveal"
                 style={{ '--d': `${0.08 + 0.07 * i}s` }}
               >
-                <span className="secx-point-ic" aria-hidden="true">{CheckIcon}</span>
+                <span className="secx-point-ic" aria-hidden="true">
+                  {CheckIcon}
+                </span>
                 <div className="secx-point-body">
                   <h3 className="secx-point-title">{pt.title}</h3>
                   <p>{pt.body}</p>

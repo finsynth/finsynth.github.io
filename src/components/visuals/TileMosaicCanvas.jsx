@@ -14,21 +14,21 @@ import { useEffect, useRef } from 'react'
 const IMG_SRC = '/assets/img/sf-mosaic.webp'
 
 // fully-applied "hover" state, baked in as the peak of the resting look
-const LIT_GROW = 0.42  // extra scale at full intensity
-const LIT_LIFT = 46    // rgb add per channel at full intensity
-const LIT_FLOOR = 0.5  // minimum intensity — the field never drops below this
-const REVEAL_DUR = 550   // per-tile pop duration (ms)
+const LIT_GROW = 0.42 // extra scale at full intensity
+const LIT_LIFT = 46 // rgb add per channel at full intensity
+const LIT_FLOOR = 0.5 // minimum intensity — the field never drops below this
+const REVEAL_DUR = 550 // per-tile pop duration (ms)
 const REVEAL_TOTAL = 2300 // sweep (900) + scatter (800) + pop (550)
 
 function TileMosaicCanvas({
   tileSize = 15,
   gap = 2,
-  reach = 420,          // retained for prop compatibility (no longer used)
-  centerWash = false,   // permanently lighten tiles behind the centre text area
-  clearBand = null,     // { halfWidthFrac, featherFrac } — blank vertical corridor down the centre
-  hoverReveal = false,  // grayscale at rest; cursor reveals true colour in a scattered blob
-  revealRadius = 250,   // hoverReveal: lens radius (px)
-  paused = false,       // freeze the shimmer on its current frame
+  reach = 420, // retained for prop compatibility (no longer used)
+  centerWash = false, // permanently lighten tiles behind the centre text area
+  clearBand = null, // { halfWidthFrac, featherFrac } — blank vertical corridor down the centre
+  hoverReveal = false, // grayscale at rest; cursor reveals true colour in a scattered blob
+  revealRadius = 250, // hoverReveal: lens radius (px)
+  paused = false, // freeze the shimmer on its current frame
   stageClassName = 'sf-mosaic__stage',
   ariaLabel = 'A San Francisco skyline rendered as a tile mosaic.',
 }) {
@@ -46,8 +46,11 @@ function TileMosaicCanvas({
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2)
-    let cw = 0, ch = 0
-    let cols = 0, rows = 0, tiles = []
+    let cw = 0,
+      ch = 0
+    let cols = 0,
+      rows = 0,
+      tiles = []
     let img = null
     let imgLoaded = false
     let raf = 0
@@ -67,12 +70,15 @@ function TileMosaicCanvas({
     // Paint every tile at a fixed intensity (1 = fully lit). Used for the
     // reduced-motion static frame and as the pre-image fallback.
     const paintStatic = () => {
-      const stepX = cw / cols, stepY = ch / rows
-      const tw = stepX - gap, th = stepY - gap
+      const stepX = cw / cols,
+        stepY = ch / rows
+      const tw = stepX - gap,
+        th = stepY - gap
       const rad = Math.min(3, tw * 0.22)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, cw, ch)
-      const w2 = tw * (1 + LIT_GROW), h2 = th * (1 + LIT_GROW)
+      const w2 = tw * (1 + LIT_GROW),
+        h2 = th * (1 + LIT_GROW)
       for (const t of tiles) {
         if (!t.on) continue
         const ox = t.x + gap / 2 - (w2 - tw) / 2
@@ -88,8 +94,10 @@ function TileMosaicCanvas({
     // the motion is continuous and interruption-free.
     const frame = (now) => {
       if (!running) return
-      const stepX = cw / cols, stepY = ch / rows
-      const tw = stepX - gap, th = stepY - gap
+      const stepX = cw / cols,
+        stepY = ch / rows
+      const tw = stepX - gap,
+        th = stepY - gap
       const rad = Math.min(3, tw * 0.22)
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -103,7 +111,8 @@ function TileMosaicCanvas({
 
         // intro: left-to-right staggered reveal — each tile pops in with a
         // slight ease-out-back overshoot while its alpha ramps up
-        let scaleE = 1, revealA = 1
+        let scaleE = 1,
+          revealA = 1
         if (intro) {
           const q = (el - t.delay) / REVEAL_DUR
           if (q <= 0) continue
@@ -115,7 +124,7 @@ function TileMosaicCanvas({
         }
 
         // slow cluster waves drifting through the field
-        const w1 = Math.sin(t.cx * 0.010 + now * 0.00040 + t.ph * 3.1)
+        const w1 = Math.sin(t.cx * 0.01 + now * 0.0004 + t.ph * 3.1)
         const w2 = Math.sin(t.cy * 0.012 - now * 0.00031 + t.ph * 1.7)
         let a = Math.max(0, w1 * w2)
         a = a * a * (3 - 2 * a) // smoothstep — soft cluster edges
@@ -125,18 +134,22 @@ function TileMosaicCanvas({
         const lit = LIT_FLOOR + (1 - LIT_FLOOR) * a
 
         const grow = (1 + LIT_GROW * lit) * scaleE
-        const w3 = tw * grow, h3 = th * grow
+        const w3 = tw * grow,
+          h3 = th * grow
         const ox = t.x + gap / 2 - (w3 - tw) / 2
         const oy = t.y + gap / 2 - (h3 - th) / 2
         let lift = LIT_LIFT * lit
-        let cr = t.r, cg = t.g, cb = t.b
+        let cr = t.r,
+          cg = t.g,
+          cb = t.b
         if (hoverReveal) {
           // scattered colour lens: odds of revealing rise toward the cursor,
           // but each tile rolls its own threshold — so the blob's edge is
           // noisy (some tiles inside stay gray, strays outside light up).
           // The blend amount is smoothed per tile: fast in, slow out, which
           // leaves a colour trail behind a moving cursor.
-          const dx = t.cx - mouse.x, dy = t.cy - mouse.y
+          const dx = t.cx - mouse.x,
+            dy = t.cy - mouse.y
           const d = Math.sqrt(dx * dx + dy * dy)
           let target = 0
           if (d < revealRadius) {
@@ -189,7 +202,10 @@ function TileMosaicCanvas({
       rows = Math.max(6, Math.floor(ch / tileSize))
 
       // cover-crop the source to the stage's aspect, skyline anchored bottom
-      let sx = 0, sy = 0, sW = img.width, sH = img.height
+      let sx = 0,
+        sy = 0,
+        sW = img.width,
+        sH = img.height
       const targetA = cw / ch
       const srcA = img.width / img.height
       if (srcA > targetA) {
@@ -208,13 +224,17 @@ function TileMosaicCanvas({
       sc.drawImage(img, sx, sy, sW, sH, 0, 0, cols, rows)
       const data = sc.getImageData(0, 0, cols, rows).data
 
-      const stepX = cw / cols, stepY = ch / rows
+      const stepX = cw / cols,
+        stepY = ch / rows
       tiles = new Array(cols * rows)
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
           const k = (j * cols + i) * 4
-          const x = i * stepX, y = j * stepY
-          let r = data[k], g = data[k + 1], b = data[k + 2]
+          const x = i * stepX,
+            y = j * stepY
+          let r = data[k],
+            g = data[k + 1],
+            b = data[k + 2]
           // keep the raw sampled colour before the centre wash mutes it — the
           // hover reveal shows THIS, saturation-boosted, so colour punches
           // through even inside the washed text corridor
@@ -249,7 +269,8 @@ function TileMosaicCanvas({
             else if (dist < outer && Math.random() > (dist - inner) / (outer - inner)) on = false
           }
 
-          const cx = x + stepX / 2, cy = y + stepY / 2
+          const cx = x + stepX / 2,
+            cy = y + stepY / 2
           // deterministic per-tile phase — keeps the twinkle stable across rebuilds
           const ph = (Math.sin(i * 127.1 + j * 311.7) * 43758.5453) % 1
 
@@ -258,13 +279,20 @@ function TileMosaicCanvas({
           const rnd = Math.abs((Math.sin(i * 269.5 + j * 183.3) * 24634.6345) % 1)
 
           tiles[j * cols + i] = {
-            x, y, cx, cy,
+            x,
+            y,
+            cx,
+            cy,
             // left-to-right sweep + per-tile scatter (matches the mosaic hero)
             delay: (i / cols) * 900 + Math.abs(ph) * 800,
             ph: Math.abs(ph),
-            r: r | 0, g: g | 0, b: b | 0,
+            r: r | 0,
+            g: g | 0,
+            b: b | 0,
             // vivid reveal colour (pre-wash, saturation-boosted)
-            vr: vr | 0, vg: vg | 0, vb: vb | 0,
+            vr: vr | 0,
+            vg: vg | 0,
+            vb: vb | 0,
             // rest-state gray (luminance of the washed tile colour)
             gy: (0.2126 * r + 0.7152 * g + 0.0722 * b) | 0,
             rnd,
@@ -293,7 +321,10 @@ function TileMosaicCanvas({
       mouse.x = ev.clientX - rect.left
       mouse.y = ev.clientY - rect.top
     }
-    const onOut = () => { mouse.x = -1e5; mouse.y = -1e5 }
+    const onOut = () => {
+      mouse.x = -1e5
+      mouse.y = -1e5
+    }
     if (hoverReveal && !reduce) {
       window.addEventListener('pointermove', onMove, { passive: true })
       window.addEventListener('pointerleave', onOut)
@@ -302,8 +333,11 @@ function TileMosaicCanvas({
 
     // run the loop only while the canvas is actually on screen
     const io = new IntersectionObserver(
-      ([entry]) => { visible = entry.isIntersecting; visible ? start() : stop() },
-      { threshold: 0.05 }
+      ([entry]) => {
+        visible = entry.isIntersecting
+        visible ? start() : stop()
+      },
+      { threshold: 0.05 },
     )
 
     img = new Image()
