@@ -1,8 +1,44 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Home from '@/views/Home'
+import Navbar from '@/components/Navbar'
+import Hero from '@/components/Hero'
+import SectionRule from '@/components/SectionRule'
+import ExcelSection from '@/components/ExcelSection'
+import WhyAnalysts from '@/components/WhyAnalysts'
+import FiaAgentSection from '@/components/FiaAgentSection'
+import Testimonial from '@/components/Testimonial'
+import Security from '@/components/Security'
+import PlansSection from '@/components/PlansSection'
+import EnterpriseSection from '@/components/EnterpriseSection'
+import Faq from '@/components/Faq'
+import Footer from '@/components/Footer'
+import ScrollNextButton from '@/components/ScrollNextButton'
 ---
 
 <BaseLayout>
-  <Home client:load />
+  <div class="mainContainer">
+    <div class="page-rails" aria-hidden="true">
+      <span class="rail rail-left"></span>
+      <span class="rail rail-right"></span>
+    </div>
+    <Navbar client:load />
+    <Hero variant="photo" client:load />
+    <SectionRule />
+    <ExcelSection client:visible />
+    <WhyAnalysts />
+    <SectionRule />
+    <FiaAgentSection />
+    <Testimonial client:visible />
+    <SectionRule />
+    <Security />
+    <SectionRule />
+    <PlansSection client:visible={{ rootMargin: '100% 0px' }} />
+    <SectionRule />
+    <EnterpriseSection />
+    <SectionRule />
+    <Faq client:visible />
+    <SectionRule />
+    <Footer client:visible />
+    <ScrollNextButton client:idle />
+  </div>
 </BaseLayout>
