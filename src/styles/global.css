@@ -34,9 +34,9 @@
      4. proof     → Geist, verifiable stats ONLY (never decorative)
      Hierarchy comes from the headline→body size jump + weight + color,
      not from a cascading h1/h2/h3/h4 scale. */
-  --font-display: 'Geist', -apple-system, system-ui, sans-serif;
-  --font-body:    'Geist', -apple-system, system-ui, sans-serif;
-  --font-mono:    'Geist Mono', ui-monospace, monospace;
+  --font-display: var(--font-geist);
+  --font-body:    var(--font-geist);
+  --font-mono:    var(--font-geist-mono);
 
   /* legacy aliases resolve to the new system: every var(--serif) use was a
      heading/lede/footer that now becomes Geist body; every var(--mono) use
@@ -113,7 +113,7 @@ html {
 }
 
 body {
-  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: 'cv03','cv04','cv09','cv11','tnum';
   font-optical-sizing: auto;
   font-weight: 400;

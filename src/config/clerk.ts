@@ -2,7 +2,7 @@ export const CLERK_APPEARANCE = {
   variables: {
     colorPrimary: '#3550C8',
     colorForeground: '#14242E',
-    fontFamily: "'Geist', -apple-system, system-ui, sans-serif",
+    fontFamily: 'var(--font-geist)',
     borderRadius: '12px',
   },
   elements: {
