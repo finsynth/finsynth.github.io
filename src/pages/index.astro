@@ -13,9 +13,13 @@ import EnterpriseSection from '@/components/home/EnterpriseSection'
 import Faq from '@/components/shared/Faq'
 import Footer from '@/components/layout/Footer'
 import ScrollNextButton from '@/components/layout/ScrollNextButton'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import { FAQS } from '@/data/faq'
+import { faqPage, website } from '@/lib/schema'
 ---
 
 <BaseLayout>
+  <JsonLd slot="head" data={[website(), faqPage(FAQS)]} />
   <div class="mainContainer">
     <div class="page-rails" aria-hidden="true">
       <span class="rail rail-left"></span>

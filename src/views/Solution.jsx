@@ -795,16 +795,6 @@ function FrameHead({ title }) {
   )
 }
 
-/* FAQPage structured data beside the home page's FAQ section, so the
-   questions are quotable by search and agents */
-function faqSchema(items) {
-  return JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: items.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-  })
-}
-
 /* a use case row: its name as the title, then one paragraph of the scenes'
    copy (the outcome no longer leads it; it stays in the data unused). The
    stage runs through
@@ -902,7 +892,6 @@ export default function Solution({ slug }) {
 
         {sol.faqs && <SectionRule />}
         {sol.faqs && <Faq id="faq" items={sol.faqs} title={highlight(sol.faqHead.title)} openFirst />}
-        {sol.faqs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqSchema(sol.faqs) }} />}
 
       </main>
       <SectionRule />

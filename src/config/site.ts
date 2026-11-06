@@ -5,6 +5,7 @@ export const SITE = {
   description:
     'FinSynth is building auditable AI research infrastructure for investment research teams. Its AI agent helps teams execute complex research workflows while tracing every output back to its source, making AI-generated research verifiable and decision-ready. FinSynth is backed by Accel and industry veterans.',
   ogImage: '/assets/img/og-card.png',
+  logo: '/assets/img/full-logo.svg',
 } as const
 
 export const LINKS = {

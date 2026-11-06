@@ -1,6 +1,8 @@
 ---
 import type { ComponentProps } from 'astro/types'
 import Seo from '@/components/seo/Seo.astro'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import { organization } from '@/lib/schema'
 import '@/styles/global.css'
 
 type Props = ComponentProps<typeof Seo>
@@ -19,6 +21,7 @@ type Props = ComponentProps<typeof Seo>
       rel="stylesheet"
     />
     <Seo {...Astro.props} />
+    <JsonLd data={organization()} />
     <slot name="head" />
   </head>
   <body>

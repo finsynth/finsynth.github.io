@@ -3,6 +3,7 @@ import useMediaQuery from '@/hooks/useMediaQuery';
 import { Landmark, Building2, ChartCandlestick, Briefcase, House, type LucideIcon } from 'lucide-react';
 import { ROLES, roleHref, roleLabel } from '@/data/roles';
 import { SEGMENTS } from '@/data/segments';
+import { PRODUCTS as PRODUCT_LIST } from '@/data/products';
 import { SOLUTIONS as SOLUTION_PAGES, solutionHref } from '@/data/solutions';
 import { APP_HREF } from '@/components/layout/AskParts';
 import { LINKS } from '@/config/site';
@@ -17,12 +18,7 @@ interface NavItem {
   desc?: string;
 }
 
-const PRODUCTS: NavItem[] = [
-  { key: 'excel', label: 'FinSynth for Excel', href: '/#excel' },
-  { key: 'fia', label: 'Fia', href: '/#fia-agent' },
-  // listed ahead of launch so the menu shows the roadmap; no page to send to yet
-  { key: 'mcp', label: 'FinSynth MCP (coming soon)', soon: true },
-];
+const PRODUCTS: NavItem[] = PRODUCT_LIST;
 
 // Who FinSynth is for, by desk. The names are the hero headline's own
 // rotating segments (data/segments.js) so the menu and the h1 can't disagree.

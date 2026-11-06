@@ -33,6 +33,7 @@ export interface Role {
   title: string
   place: string
   meta: string
+  posted: string
   about: string
   sections: { heading: string; items: RoleItem[] }[]
 }
@@ -43,6 +44,7 @@ export const ROLES: Role[] = [
     title: 'Founding GTM Lead',
     place: 'NYC',
     meta: 'New York · In person · Full time',
+    posted: '2026-08-14',
     about:
       'We are hiring our first dedicated Founding GTM Lead to work closely ' +
       'with leadership to build our B2B GTM motion. Your job is to be the ' +
@@ -78,6 +80,7 @@ export const ROLES: Role[] = [
     title: 'Founding Engineer',
     place: 'NYC',
     meta: 'New York · In person · Full time',
+    posted: '2026-08-14',
     about:
       "We're hiring a Senior Founding Engineer who will partner directly with " +
       'our CTO to help lead product, engineering, and design. This is not a ' +
