@@ -2079,20 +2079,6 @@ button.play { border: none; padding: 0; appearance: none }
   overflow: hidden;
 }
 
-/* Animated Excel-grid background (restored) */
-.hero-s2-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: cell;
-  touch-action: pan-y;
-  opacity: 0.85;
-  z-index: 0;
-}
-
-/* Mosaic (dithered halftone) background variant — replaces the Excel grid */
 .hero-s2-mosaic {
   position: absolute;
   inset: 0;
@@ -2106,17 +2092,6 @@ button.play { border: none; padding: 0; appearance: none }
   pointer-events: none;
   opacity: 0.9;
 }
-/* Cover the whole section — no white band above the skyline. The canvas is
-   generated at its native width×aspect, then scaled to fill; the denser
-   structure stays anchored to the bottom, sparse sky drifts up behind the copy. */
-.hero-s2-mosaic .sf-mosaic__canvas {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center bottom;
-  cursor: crosshair;
-  pointer-events: auto;
-}
 
 .hero-s2::after {
   content: '';
@@ -2127,95 +2102,6 @@ button.play { border: none; padding: 0; appearance: none }
   pointer-events: none;
   z-index: 1;
 }
-
-/* Pixel-art skyline image backdrop (duplicated tiles hero). Cover the stage,
-   anchored to the bottom so the skyline sits along the base and the sky fills
-   up behind the copy. A soft top scrim keeps the dark heading readable over
-   the bright sky. */
-.hero-s2-imgbg {
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  opacity: 1;
-}
-.hero-s2-imgbg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.34) 34%,
-    rgba(255, 255, 255, 0) 62%);
-  pointer-events: none;
-}
-
-/* Duplicated hero riding the how-it-works glass wash (testi-glass-bg.png)
-   instead of the bridge photo. The png is authored to stretch edge-to-edge
-   (same treatment as .hiw-pin::before) and already dissolves to white at its
-   top and bottom, so the imgbg's white readability scrim is dropped. */
-.hero-s2--glass .hero-s2-imgbg {
-  background-size: 100% 100%;
-  background-position: top center;
-}
-.hero-s2--glass .hero-s2-imgbg::after { content: none; }
-
-/* ── side replicas ── small square echoes of the hero photo flanking the
-   copy (Exa-style): two loose columns a side, the outermost flush with the
-   section edge and cut by it. Purely decorative. */
-.hero-side {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 280px;
-  overflow: hidden; /* cuts the edge-flush tiles instead of widening the page */
-  pointer-events: none;
-  z-index: 1;
-}
-.hero-side--left { left: 0; }
-.hero-side--right { right: 0; }
-
-.hero-tile {
-  position: absolute;
-  border-radius: 5px;
-  /* same plate the hero mosaic resolves into, so the tiles read as chips off
-     the hero photo rather than a second, warmer picture of the same street */
-  background-image: url('/assets/img/wall-street-bw.webp');
-  background-size: 340% auto;
-  background-repeat: no-repeat;
-  animation: heroTileIn .9s cubic-bezier(.32, .72, 0, 1) both;
-}
-.hero-tile:nth-child(2n) { animation-delay: .12s; }
-.hero-tile:nth-child(3n) { animation-delay: .22s; }
-
-@keyframes heroTileIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-tile { animation: none; }
-}
-/* under 1280px the gap beside the 720px cell can't hold the columns */
-@media (max-width: 1280px) {
-  .hero-side { display: none; }
-}
-
-/* ── Pixel-bridge scroll reveal hero ───────────────────────────────────── */
-/* A tall pinned track: the first ~2 screens scrub the bridge assemble, the
-   next ~2 dolly-zoom into the pixels while the copy fades out. */
-
-/* bare hero: content only, no backdrop art. It still paints the page colour
-   and sits above .page-rails (z-index 5) so the two vertical hairlines don't
-   run through the section — with nothing behind them here they read as stray
-   dividers rather than page structure. */
-.hero-s2--bare {
-  background: var(--bg);
-  overflow: visible;
-  position: relative;
-  z-index: 6;
-}
-.hero-s2--bare::after { display: none; }
-/* inside the pixel-bridge scroll scene the bare hero is an overlay on the
-   canvas — it must stay see-through there, rails or no rails */
 
 /* ── Outline hero variant — pixel-art bridge that assembles bottom-up ───── */
 /* the canvas paints its own sunset backdrop + top readability fade, so the
@@ -2238,63 +2124,6 @@ button.play { border: none; padding: 0; appearance: none }
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-/* ── Dot-matrix globe hero (Antimetal-style) ───────────────────────────── */
-.hero-s2--globe {
-  /* bright daylight wash: warm sunset cream at the base → soft peach → airy
-     sky-blue at the top, so the photo dots read as a luminous mosaic rather
-     than glowing embers on a dark ground */
-  background:
-    radial-gradient(135% 120% at 50% 125%,
-      #fff6ea 0%, #ffe9cf 13%, #ffd8ac 25%, #f0dccd 42%,
-      #dde8f1 62%, #d1e3ef 82%, #cfe3ef 100%);
-}
-.hero-s2--globe.hero-s2::after { display: none; } /* the wash already fades up */
-
-.hero-s2-globe { opacity: 1; }
-.hero-s2-globe .dot-globe__canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  cursor: crosshair;
-  pointer-events: auto;
-}
-
-/* dark ink copy on frosted glass strips — each text row carries its own
-   glass pill, so the photo mosaic stays visible between them */
-.hero-s2--globe .hero-cell--mosaic {
-  margin: 48px auto 140px;
-  padding: 8px 24px 56px;
-}
-.hero-s2--globe .hero-s2-title {
-  background: rgba(255, 255, 255, 0.55);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
-  backdrop-filter: blur(22px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 18px 48px -24px rgba(14, 26, 46, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-.hero-s2--globe .hero-s2-title {
-  color: var(--ink);
-  font-weight: 700;
-  border-radius: 28px;
-  padding: 14px 40px 20px;
-}
-.hero-s2--globe .hero-s2-title .hero-s2-accent {
-  color: var(--accent);
-  font-weight: 700;
-}
-/* primary CTA goes black on the glass panel */
-.hero-s2--globe .hero-s2-cta {
-  background: linear-gradient(180deg, #1b2130, #0b0f1a);
-  border-color: #05070d;
-  box-shadow: 0 14px 30px -14px rgba(9, 14, 28, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
-}
-.hero-s2--globe .hero-s2-cta:hover {
-  background: linear-gradient(180deg, #232a3c, #10151f);
 }
 
 .hero-s2-wrap {
@@ -2419,17 +2248,6 @@ button.play { border: none; padding: 0; appearance: none }
   padding: 8px 24px 96px;
   isolation: isolate;
 }
-/* Tiles hero: no glass wash and no fill layers — the content sits directly
-   on the tile mosaic. Legibility comes from the canvas's baked-in centre
-   wash plus a heavier type weight. */
-.hero-cell--tiles::before { content: none; }
-.hero-cell--tiles .hero-s2-title {
-  font-weight: 700;
-}
-.hero-cell--tiles .hero-s2-title .hero-s2-accent {
-  font-weight: 700;
-}
-
 /* once the pixel mosaic has settled, the trust line reads over it in solid ink */
 
 /* ── Heading ── */
@@ -3448,24 +3266,6 @@ button.play { border: none; padding: 0; appearance: none }
   }
   /* the deck is a plain column here — there is no stack to step through */
   .testi-nav { display: none }
-}
-
-/* ── SF Mosaic band (ported from Claude Design "SF Mosaic Hero") ── */
-.sf-mosaic__stage {
-  max-width: 1160px;
-  margin: clamp(28px, 4vh, 48px) auto 0;
-  width: 100%;
-  padding: 0 32px;
-  box-sizing: border-box;
-}
-.sf-mosaic__canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  cursor: crosshair;
-}
-@media (max-width: 720px) {
-  .sf-mosaic__stage { padding: 0 20px; }
 }
 
 /* ════════════════════════════════════════════════
