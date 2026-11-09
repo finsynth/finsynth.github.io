@@ -1,0 +1,6 @@
+dist
+.astro
+node_modules
+package-lock.json
+_agent_session_decision_logs
+*.css

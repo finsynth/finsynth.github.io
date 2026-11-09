@@ -1,0 +1,31 @@
+---
+import type { ComponentProps } from 'astro/types'
+import { Font } from 'astro:assets'
+import Seo from '@/components/seo/Seo.astro'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import { organization } from '@/lib/schema'
+import '@/styles/global.css'
+
+type Props = ComponentProps<typeof Seo>
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/assets/img/icon-64.png" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" preload />
+    <Seo {...Astro.props} />
+    <JsonLd data={organization()} />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+    <script>
+      import { bindScrollEffects } from '@/lib/scroll-effects'
+      bindScrollEffects()
+    </script>
+  </body>
+</html>

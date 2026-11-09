@@ -24,37 +24,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Type check
+        run: npm run check
+
       - name: Build
         run: npm run build
-
-      # SPA fallback: /support (and any client route) must survive refresh / deep-link.
-      # GitHub Pages serves 404.html for unknown paths; a copy of index.html lets
-      # the client router take over instead of showing GitHub's 404.
-      - name: SPA fallback (404.html)
-        run: cp dist/index.html dist/404.html
-
-      # Explicit /support page: GitHub Pages serves support.html for /support
-      # with a 200 status, so curl/HEAD/crawlers don't hit the 404 fallback.
-      - name: Static /support page (support.html)
-        run: cp dist/index.html dist/support.html
-
-      # Same for /careers — the postings should return 200 for crawlers and
-      # job-board scrapers, not lean on the 404 fallback.
-      - name: Static /careers page (careers.html)
-        run: cp dist/index.html dist/careers.html
-
-      - name: Static /solutions/* pages
-        run: |
-          mkdir -p dist/solutions
-          for slug in hedge-funds asset-managers sell-side family-offices private-markets; do
-            cp dist/index.html "dist/solutions/$slug.html"
-          done
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

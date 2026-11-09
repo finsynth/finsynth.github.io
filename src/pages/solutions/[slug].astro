@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import Solution from '@/views/Solution'
+import { SOLUTIONS } from '@/data/solutions'
+import { faqPage } from '@/lib/schema'
+
+export function getStaticPaths() {
+  return Object.entries(SOLUTIONS).map(([slug, sol]) => ({ params: { slug }, props: { sol } }))
+}
+
+const { slug } = Astro.params
+const { sol } = Astro.props
+---
+
+<BaseLayout title={`FinSynth for ${sol.name}`} description={sol.lede}>
+  {sol.faqs && <JsonLd slot="head" data={faqPage(sol.faqs)} />}
+  <Solution slug={slug} client:load />
+</BaseLayout>

@@ -1,0 +1,869 @@
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import useReveal from '@/hooks/useReveal'
+import useMediaQuery from '@/hooks/useMediaQuery'
+import WorkflowMarquee from '@/components/home/WorkflowMarquee'
+import CertSeals from '@/components/home/CertSeals'
+
+/**
+ * "FinSynth for Excel" — the Security section's bordered frame and headline.
+ * All four claims sit in a rail on the left, always visible; only the visual
+ * on the right swaps — scrubbed as the section scrolls past, and on a clock
+ * while it sits still — and each rail row jumps the stage to it. See
+ * useAutoStep for how the two hand off.
+ *
+ * The pane used to pin inside a scroll budget several screens deep, so the
+ * section cost four screenfuls of scrolling to get past. It's an ordinary
+ * block now that scrolls with the rest of the page; the scrubbing rides that
+ * ordinary travel rather than buying screenfuls of its own.
+ *
+ * The visuals are drawn, not photographed — each depicts the claim beside it.
+ * When product shots exist, swap a Visual for <img src="…" alt="" /> inside
+ * .x4e-visual and the cell takes care of the rest.
+ */
+
+/* ── shared source badges ─────────────────────────────────────────────────
+ * Each pill carries one of three badge kinds:
+ *   · glyph — a drawn outline mark for the categorical sources (filings,
+ *     transcripts, the web) that have no logo of their own
+ *   · mark  — a white disc holding a brand's shape, where the shape is simple
+ *     enough to draw honestly (OneDrive, Snowflake, …)
+ *   · mono  — a brand-tinted disc with the brand's letters, the fallback for
+ *     everything whose logo is a wordmark
+ * Drop a real SVG into public/assets/img/logos/integrations/<slug>.svg and give
+ * the entry `logo: '<slug>'` to promote it over the fallback badge.
+ */
+const GLYPHS: Record<string, ReactNode> = {
+  // filings — the classic filing-office portico
+  sec: (
+    <>
+      <path d="M2 7.5 11 3l9 4.5" />
+      <path d="M4.5 7.5v8M9 7.5v8M13 7.5v8M17.5 7.5v8" />
+      <path d="M2.5 18.5h17" />
+    </>
+  ),
+  // earnings calls — a handset
+  call: (
+    <path d="M6.2 3.6 8.6 3l2 4.2-2 1.6a10.5 10.5 0 0 0 4.6 4.6l1.6-2 4.2 2-.6 2.4a2 2 0 0 1-2.2 1.5C10.4 16.6 5.4 11.6 4.7 5.8a2 2 0 0 1 1.5-2.2Z" />
+  ),
+  web: (
+    <>
+      <circle cx="11" cy="11" r="8.2" />
+      <path d="M2.8 11h16.4" />
+      <ellipse cx="11" cy="11" rx="3.6" ry="8.2" />
+    </>
+  ),
+  // internal databases — the stacked cylinder
+  db: (
+    <>
+      <ellipse cx="11" cy="5.4" rx="7.4" ry="2.7" />
+      <path d="M3.6 5.4v11.2c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7V5.4" />
+      <path d="M3.6 11c0 1.5 3.31 2.7 7.4 2.7s7.4-1.2 7.4-2.7" />
+    </>
+  ),
+  // emails — the envelope
+  mail: (
+    <>
+      <rect x="2.4" y="5" width="17.2" height="12" rx="2" />
+      <path d="M3 6.6 11 12l8-5.4" />
+    </>
+  ),
+  // decks — a slide on its stand
+  deck: (
+    <>
+      <rect x="2.4" y="3.6" width="17.2" height="11" rx="1.6" />
+      <path d="M11 14.6v3.8M7.6 18.4h6.8" />
+    </>
+  ),
+  // internal files — the folder
+  folder: (
+    <path d="M2.6 6.4A1.6 1.6 0 0 1 4.2 4.8h3.6L10 7.1h7.8a1.6 1.6 0 0 1 1.6 1.6v7.9a1.6 1.6 0 0 1-1.6 1.6H4.2a1.6 1.6 0 0 1-1.6-1.6z" />
+  ),
+  // market data — a price line over its baseline
+  chart: (
+    <>
+      <path d="M2.6 18.4h16.8" />
+      <path d="M3.6 14.6 8 9.4l3.4 3.2 3.2-5.6 3.8 4.4" />
+    </>
+  ),
+  // research notes — a page with ruled lines
+  note: (
+    <>
+      <path d="M5 2.8h8.4L18 7.4v11.8a1.6 1.6 0 0 1-1.6 1.6H5a1.6 1.6 0 0 1-1.6-1.6V4.4A1.6 1.6 0 0 1 5 2.8Z" />
+      <path d="M13.4 2.8v4.6H18" />
+      <path d="M6.8 11.4h7.8M6.8 15h7.8" />
+    </>
+  ),
+  // custom APIs — the plug
+  api: (
+    <>
+      <path d="M8 2.8v4.4M14 2.8v4.4" />
+      <path d="M5.8 7.2h10.4v3.2a5.2 5.2 0 0 1-10.4 0z" />
+      <path d="M11 15.6v1.8a2.8 2.8 0 0 1-2.8 2.8H6" />
+    </>
+  ),
+}
+
+// brand shapes simple enough to draw rather than fake with letters
+const MARKS: Record<string, ReactNode> = {
+  onedrive: (
+    <path d="M7.3 19.4h11.1a3.55 3.55 0 0 0 .5-7.07 5.2 5.2 0 0 0-8.72-3.3 4.1 4.1 0 0 0-6.08 3.6c0 .2.01.4.04.6A3.5 3.5 0 0 0 7.3 19.4Z" />
+  ),
+  snowflake: (
+    <>
+      <path
+        d="M12 2.4v19.2M3.7 7.2l16.6 9.6M20.3 7.2 3.7 16.8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+        stroke="currentColor"
+      />
+    </>
+  ),
+}
+
+interface PillItem {
+  label: string
+  sub?: string
+  logo?: string
+  glyph?: string
+  mark?: string
+  mono?: string
+  tint?: string
+}
+
+function Badge({ item }: { item: PillItem }) {
+  if (item.logo) {
+    return (
+      <span className="xvi-badge xvi-badge--mark">
+        <img src={`/assets/img/logos/integrations/${item.logo}.svg`} alt="" />
+      </span>
+    )
+  }
+  if (item.glyph) {
+    return (
+      <span className="xvi-badge xvi-badge--glyph">
+        <svg
+          viewBox="0 0 22 22"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {GLYPHS[item.glyph]}
+        </svg>
+      </span>
+    )
+  }
+  if (item.mark) {
+    return (
+      <span className="xvi-badge xvi-badge--mark" style={{ color: item.tint }}>
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          {MARKS[item.mark]}
+        </svg>
+      </span>
+    )
+  }
+  return (
+    <span className="xvi-badge xvi-badge--mono" style={{ background: item.tint }}>
+      {item.mono}
+    </span>
+  )
+}
+
+// `offset` keeps the stagger running across both rows instead of restarting
+function PillRow({
+  items,
+  offset = 0,
+  className = '',
+}: {
+  items: PillItem[]
+  offset?: number
+  className?: string
+}) {
+  return (
+    <ul className={`xvi-grid${className ? ` ${className}` : ''}`}>
+      {items.map((it, i) => (
+        <li className="xvi-pill" key={it.label} style={{ '--i': i + offset }}>
+          <Badge item={it} />
+          <span className="xvi-label">
+            {it.label}
+            {it.sub && <em className="xvi-sub">{it.sub}</em>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// 01 · Complex workflows — the self-completing workflow checklist, the same
+// marquee that anchors "One agent, every workflow", scaled to the cell.
+function VisualWorkflows() {
+  return (
+    <div className="xv-marquee">
+      <WorkflowMarquee />
+    </div>
+  )
+}
+
+/* 02 · Fully auditable — the work shown as a cascade of the files it passes
+ * through, with a status pill above naming the step. Three beats, one file
+ * each: the source is read (a filing), its figures land in the model (a
+ * workbook), and the output is built with its citations attached (a slide).
+ * Each new file slides in front and the one before it falls back a step,
+ * softened, so the reader always sees where the number is now and where it
+ * just came from. That is the claim in one picture: a figure you can walk
+ * back through the files to its source.
+ *
+ * Drawn in HTML rather than SVG so the type stays type: the cards carry real
+ * titles, headings and cells, and everything is sized in cqw off the scene's
+ * own width so the composition scales as one piece. Timing lives in the
+ * .xvk-* keyframes in styles/global.css — a 9s loop, three 3s beats, matching the
+ * `ms` the claim holds the stage for. */
+// the three sources the trace runs through, in the order they are read. Each
+// one supports a single cell in the analyst's own workbook: `hit` is that
+// cell (row, column), `value` is what lands in it, `prov` is the line that
+// prints under the grid saying exactly where it came from.
+const SOURCES = [
+  {
+    k: 'filing',
+    kind: 'filing',
+    title: 'Apple FY25 10-K',
+    status: 'Tracing to the filing',
+    kicker: 'Net sales by category',
+    value: '416,161',
+    hit: [6, 'B'],
+    prov: '10-K FY25 · p.31',
+  },
+  {
+    k: 'call',
+    kind: 'call',
+    title: 'Q3 FY26 earnings call',
+    status: 'Tracing to the call',
+    kicker: 'CFO prepared remarks',
+    value: '47.0–48.0%',
+    hit: [9, 'C'],
+    prov: 'Q3 FY26 call · 11:48',
+  },
+  {
+    k: 'tracker',
+    kind: 'xlsx',
+    title: 'iPhone_ASP_tracker.xlsx',
+    status: 'Tracing to your tracker',
+    kicker: 'Regional pricing',
+    value: '872',
+    hit: [2, 'C'],
+    prov: 'iPhone_ASP_tracker.xlsx · Regional pricing · row 22',
+  },
+]
+
+// the workbook the sources land in. Nine rows so it reads as a real model
+// rather than a three-line prop; the three traced cells start empty and fill
+// on their beat, everything else is already there.
+const BOOK = { kind: 'xlsx', title: 'AAPL_model_v18.xlsx' }
+const ROWS = [
+  ['iPhone units (m)', '232', '238'],
+  ['iPhone ASP ($)', '847', ''],
+  ['iPhone revenue', '196,504', '207,536'],
+  ['Services revenue', '108,242', '119,066'],
+  ['Other products', '111,415', '114,000'],
+  ['Total net sales', '', '440,602'],
+  ['Cost of sales', '220,565', '231,757'],
+  ['Gross margin %', '47.0%', '47.4%'],
+  ['GM guide, next Q', '', ''],
+]
+
+// file kinds as tiny tinted tiles — a page, a handset, a grid — drawn rather
+// than borrowed from the vendors
+const KIND_MARK: Record<string, ReactNode> = {
+  filing: <path d="M4 1.5h4.5L12 5v7.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1Z" />,
+  call: (
+    <path d="M3.9 2.3 5.5 1.9l1.3 2.7-1.3 1a6.8 6.8 0 0 0 3 3l1-1.3 2.7 1.3-.4 1.6a1.3 1.3 0 0 1-1.4 1C6.8 10.8 3.5 7.5 3 3.7a1.3 1.3 0 0 1 .9-1.4Z" />
+  ),
+  xlsx: (
+    <>
+      <rect x="2.5" y="2.5" width="9" height="9" rx="1" />
+      <path d="M2.5 7h9M7 2.5v9" />
+    </>
+  ),
+}
+
+function KindMark({ kind }: { kind: string }) {
+  return (
+    <i className={`xvk-kind xvk-kind--${kind}`}>
+      <svg
+        viewBox="0 0 14 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {KIND_MARK[kind]}
+      </svg>
+    </i>
+  )
+}
+
+// the file's tab: kind mark, title, and a close glyph so it reads as an open
+// window rather than a label
+function CardTab({ c }: { c: { kind: string; title: string } }) {
+  return (
+    <div className="xvk-head">
+      <div className="xvk-tab">
+        <KindMark kind={c.kind} />
+        <span className="xvk-title">{c.title}</span>
+        <span className="xvk-x" />
+      </div>
+    </div>
+  )
+}
+
+// the rest of the shelf, as pills under the cascade, so "anything" reads as a
+// real list rather than a promise
+const CITED_KINDS = [
+  { label: 'Public filings', glyph: 'sec' },
+  { label: 'Transcripts', glyph: 'call' },
+  { label: 'Investor materials', glyph: 'deck' },
+  { label: 'Internal files', glyph: 'folder' },
+  { label: 'Market data', glyph: 'chart' },
+  { label: 'Research notes', glyph: 'note' },
+  { label: 'Web', glyph: 'web' },
+]
+
+// which source lands in a given cell, if any — so the grid can mark it
+const hitAt = (row: number, col: string) =>
+  SOURCES.findIndex((s) => s.hit[0] === row && s.hit[1] === col)
+
+function VisualCascade() {
+  return (
+    <div className="xvk xvk--ink" aria-hidden="true">
+      {/* the step, named. One pill; the three labels sit on top of one another
+          and cross-fade, and the mark beside them turns from a spinner into a
+          check as each number lands */}
+      <div className="xvk-status">
+        <span className="xvk-ico">
+          <span className="xvk-spin" />
+          <span className="xvk-check">
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2.5 6.2 5 8.6l4.5-5.2" />
+            </svg>
+          </span>
+        </span>
+        <span className="xvk-labels">
+          {SOURCES.map((s, i) => (
+            <span className={`xvk-lbl xvk-lbl--${i}`} style={{ '--i': i }} key={s.k}>
+              {s.status}
+            </span>
+          ))}
+        </span>
+      </div>
+
+      {/* the sources, stacked like open windows: each one rises in a step
+          down and right of the last, its page resolves as it is read, and the
+          passage that carries the number lights up. The ones behind keep their
+          tabs showing and go quiet. */}
+      {SOURCES.map((s, i) => (
+        <article className={`xvk-card xvk-src xvk-src--${i}`} style={{ '--i': i }} key={s.k}>
+          <CardTab c={s} />
+          <div className="xvk-body xvk-doc">
+            {/* the page content fades as the card falls back; the wrapper
+                takes that fade so the body (and the stroke it carries in the
+                ink tone) stays put, or the card behind loses its edges */}
+            <div className="xvk-page">
+              <p className="xvk-kicker">{s.kicker}</p>
+              <span className="xvk-line" />
+              <span className="xvk-line xvk-line--short" />
+              <div className="xvk-ex">
+                <span className="xvk-line" />
+                <b>{s.value}</b>
+              </div>
+              <span className="xvk-line xvk-line--short" />
+            </div>
+          </div>
+        </article>
+      ))}
+
+      {/* the workbook. Stays put; the traced cells fill on their beat and the
+          provenance line under the grid names the source each time */}
+      <article className="xvk-card xvk-book">
+        <CardTab c={BOOK} />
+        <div className="xvk-body xvk-sheet">
+          <div className="xvk-srow xvk-srow--cols">
+            <span className="xvk-rn" />
+            <span>A</span>
+            <span>B</span>
+            <span>C</span>
+          </div>
+          {ROWS.map(([label, b, c], r) => (
+            <div className="xvk-srow" key={label}>
+              <span className="xvk-rn">{r + 1}</span>
+              <span className="xvk-sl">{label}</span>
+              {[
+                ['B', b],
+                ['C', c],
+              ].map(([col, v]) => {
+                const h = hitAt(r + 1, col)
+                return h < 0 ? (
+                  <span className="xvk-num" key={col}>
+                    {v}
+                  </span>
+                ) : (
+                  <span className={`xvk-num xvk-hit xvk-hit--${h}`} style={{ '--i': h }} key={col}>
+                    {SOURCES[h].value}
+                    <i className="xvk-ring" />
+                  </span>
+                )
+              })}
+            </div>
+          ))}
+          <div className="xvk-prov">
+            <i />
+            <span className="xvk-labels">
+              {SOURCES.map((s, i) => (
+                <span className={`xvk-lbl xvk-foot xvk-foot--${i}`} key={s.k}>
+                  {s.prov}
+                </span>
+              ))}
+            </span>
+          </div>
+        </div>
+      </article>
+    </div>
+  )
+}
+
+function VisualAudit() {
+  return (
+    <div className="xvc">
+      <VisualCascade />
+      <PillRow items={CITED_KINDS} className="xvi-grid--tight" />
+    </div>
+  )
+}
+
+/* 03 · Integrated — the shelf as a field rather than a list. Everything
+ * FinSynth already reads is scattered across the ground at low contrast, and
+ * the single thing left for the reader to do sits in the middle at full
+ * strength. Two rows under a "Custom APIs" rule ran here before; the rule made
+ * the named systems read as the boundary of what's supported, which is the
+ * opposite of the claim. Held in the centre instead, "Add your custom MCP" is
+ * the offer and the shelf behind it is the evidence.
+ *
+ * `y` is a percentage of the field and `r` a few degrees of tilt, hand-set
+ * rather than generated. `s` says which edge the pill hangs off and `x` is
+ * where that edge sits: labels are set in pixels while the field scales with
+ * the stage, so anchoring the outer edge is the only way a long label like
+ * "Earnings Transcripts" can never run off the card. It also keeps the two
+ * flanks from ever reaching each other, which leaves the middle band clear
+ * for the focal pill and means collisions can only happen down one flank.
+ * The two flanks sit half a step out of phase so the field scatters rather
+ * than pairing off into rows.
+ */
+const SHELF = [
+  { label: 'Global Filings', glyph: 'sec', s: 'l', x: 4, y: 13, r: -2.5 },
+  { label: 'Emails', glyph: 'mail', s: 'l', x: 16, y: 26, r: -1.5 },
+  { label: 'OneDrive', mark: 'onedrive', tint: '#0364B8', s: 'l', x: 3, y: 40, r: 2.2 },
+  { label: 'Web', glyph: 'web', s: 'l', x: 5, y: 54, r: 1.6 },
+  { label: 'Internal Databases', glyph: 'db', s: 'l', x: 2, y: 68, r: -2 },
+  { label: 'FactSet', mono: 'F', tint: '#2C7BE5', s: 'l', x: 18, y: 82, r: -3 },
+  { label: 'Databricks', mono: 'D', tint: '#FF3621', s: 'l', x: 7, y: 95, r: -2.2 },
+  { label: 'Earnings Transcripts', glyph: 'call', s: 'r', x: 97, y: 6, r: 1.8 },
+  { label: 'SharePoint', mono: 'S', tint: '#038387', s: 'r', x: 99, y: 20, r: 3 },
+  { label: 'Decks & PDFs', glyph: 'deck', s: 'r', x: 91, y: 34, r: -2.8 },
+  { label: 'LSEG', mono: 'L', tint: '#0C1E5B', s: 'r', x: 98, y: 49, r: 2.4 },
+  { label: 'Bloomberg', mono: 'B', tint: '#1A1A1A', s: 'r', x: 96, y: 63, r: 2.6 },
+  { label: 'Capital IQ', mono: 'S&P', tint: '#D6002A', s: 'r', x: 89, y: 78, r: 1.4 },
+  { label: 'Snowflake', mark: 'snowflake', tint: '#29B5E8', s: 'r', x: 99, y: 92, r: -1.8 },
+]
+
+function VisualIntegrated() {
+  return (
+    <div className="xvi">
+      <div className="xvi-field">
+        {/* each pill gets a slot of its own: the slot carries the placement and
+            the slow drift, the pill inside carries the entry. Two animations on
+            one element would mean two transforms, and the second simply wins */}
+        {SHELF.map((it, i) => (
+          <span
+            className="xvi-slot"
+            key={it.label}
+            style={{
+              '--i': i,
+              '--x': `${it.x}%`,
+              '--y': `${it.y}%`,
+              '--r': `${it.r}deg`,
+              '--ax': it.s === 'l' ? '0%' : '-100%',
+            }}
+          >
+            <span className="xvi-pill xvi-pill--ghost">
+              <Badge item={it} />
+              <span className="xvi-label">{it.label}</span>
+            </span>
+          </span>
+        ))}
+        <span className="xvi-pill xvi-pill--focal">
+          <span className="xvi-badge xvi-badge--focal">
+            <svg
+              viewBox="0 0 22 22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {GLYPHS.api}
+            </svg>
+          </span>
+          <span className="xvi-label">Add your custom MCP</span>
+          {/* a pointer arriving on the pill and clicking it. The rest of the
+              field is inventory; this is the one thing left for the reader to
+              do, and a cursor landing on it says that faster than any styling
+              of the pill itself can */}
+          <span className="xvi-cursor" aria-hidden="true">
+            <span className="xvi-click" />
+            <svg viewBox="0 0 20 22">
+              <path d="M2 1 L2 17.6 L6.2 13.7 L8.8 19.6 L11.7 18.3 L9.1 12.6 L15 12.3 Z" />
+            </svg>
+          </span>
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/* 04 · Enterprise ready — the certification seals, and nothing else.
+ *
+ * Two rounds of artwork ran here before: a ticked dial drawn in SVG, then a
+ * supplied shield render (enterprise-shield-keyed.png, still on disk). Both
+ * were pictures standing in for the claim; the seals are the claim's actual
+ * evidence, so they hold the stage on their own now and get the whole cell to
+ * be read in.
+ *
+ * The same seals also caption the Security section further down: this stage is
+ * where the claim gets made in passing, that section is where it gets spelled
+ * out, and the evidence belongs with both. They render from one component
+ * (CertSeals) so the two can never disagree about what we hold. */
+function VisualEnterprise() {
+  return (
+    <div className="xvs">
+      {/* was SVG text inside the dial, then the shield's caption; with the art
+          gone it labels the seal row */}
+      <p className="xvs-eyebrow">FinSynth Security</p>
+      <CertSeals />
+    </div>
+  )
+}
+
+/* `ms` is how long the claim holds the stage, and it is set from its visual's
+   own animation rather than shared: a single interval short enough for the
+   still visuals cut the animated ones off part-way through, and one long enough
+   for the animated ones parked the still ones on screen with nothing happening.
+   The audit cascade is the constraint — it loops three beats over 9s (one per
+   source; see the .xvk-* keyframes in styles/global.css), and at the 4.2s every claim
+   used to get, the last two beats never played at all. */
+const PILLARS = [
+  {
+    key: 'workflows',
+    title: 'Complex workflows',
+    body: 'One agent, every workflow',
+    Visual: VisualWorkflows,
+    // the marquee has no beginning or end — this is just reading time
+    ms: 5000,
+  },
+  {
+    key: 'audit',
+    title: 'Fully auditable',
+    body: 'Public sources or your own internal files, every number traced to where it came from',
+    Visual: VisualAudit,
+    // all three beats of the 9s trace, so the tracker gets its turn in the workbook;
+    // the swap comes as the loop fades rather than cutting into the next
+    // cycle's first beat
+    ms: 9000,
+  },
+  {
+    key: 'integrated',
+    title: 'Integrated',
+    // the visual shows the field of sources; the copy says what it covers out
+    // of the box and that anything missing can still be wired in
+    body: 'Out-of-box global coverage, custom integrations supported',
+    Visual: VisualIntegrated,
+    // the pills stagger in over ~0.8s, and the field is a list to be read
+    ms: 5400,
+  },
+  {
+    key: 'enterprise',
+    title: 'Enterprise ready',
+    // names the posture; the Security section further down the page spells out
+    // the specific claims (SOC 2, zero-trust, no training on your data)
+    body: 'Security and compliance built in from day one',
+    Visual: VisualEnterprise,
+    // a still image — no animation to wait on
+    ms: 4200,
+  },
+]
+
+// module scope so the array identity is stable across renders and the clock's
+// effect doesn't tear itself down every pass
+const DWELL = PILLARS.map((p) => p.ms)
+const STEP_MS = 4200
+// how long after the last scroll event the clock waits before taking back over
+const SCROLL_IDLE_MS = 1200
+
+/**
+ * Which pillar the pane is showing — driven from two places at once.
+ *
+ * **Scroll.** While the reader is scrolling, the claim tracks the pane's travel
+ * through the viewport: a band centred on the pane's most-visible moment is
+ * split into `count` slices and the slice under the reader is the claim on
+ * stage. So scrolling the section past does walk the rail, rather than leaving
+ * it wherever the clock happened to stop. See `read` for why the band is
+ * centred rather than spread over the pane's whole pass across the screen.
+ *
+ * `scrub: false` switches this half off, and the stacked layout needs it: there
+ * the active claim carries the visual inside its own row, so every step change
+ * moves ~120px of height from one row to another. Scrubbing that off scroll
+ * position means the scroll is resizing the thing it is measuring — measured at
+ * 390x844 the page below the pane jumped ±124px on the way past and the band
+ * shifted enough under its own output that claim 3 was skipped outright (1 → 4).
+ * Taps and the clock drive the stack instead, and nothing moves under the thumb.
+ *
+ * **The clock.** Standing still, the claims keep advancing on their own, so a
+ * reader parked on the section still sees all four. Each claim holds for its own
+ * `dwell` — one timer per step rather than one interval for the set, so a claim
+ * whose visual animates gets long enough to finish it and a still one doesn't
+ * sit there. The clock only runs while the pane is on screen and stands down
+ * while a scroll is in flight (plus SCROLL_IDLE_MS after it, so the last
+ * scrubbed claim gets a full turn before the clock moves on).
+ *
+ * `hold` stops the clock on hover or keyboard focus so a claim being read
+ * doesn't slide out from under the reader. `goTo` jumps to a step and restarts
+ * the wait, so pressing a row always buys a full turn on the claim it selected.
+ */
+function useAutoStep(
+  dwell: number[],
+  paneRef: RefObject<HTMLDivElement | null>,
+  { scrub = true } = {},
+) {
+  const count = dwell.length
+  const [step, setStep] = useState(0)
+  const [held, setHeld] = useState(false)
+  const [nudge, setNudge] = useState(0)
+  const [onScreen, setOnScreen] = useState(false)
+  // read by the clock, written by the scroll listener — a ref rather than state
+  // so a scroll doesn't tear down and rebuild the interval on every frame
+  const scrolling = useRef(false)
+
+  // scroll scrub
+  useEffect(() => {
+    if (!scrub) return
+    const pane = paneRef.current
+    if (!pane) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let raf = 0
+    let idle: ReturnType<typeof setTimeout> | undefined
+
+    const read = () => {
+      raf = 0
+      const r = pane.getBoundingClientRect()
+      const vh = window.innerHeight
+      if (r.bottom <= 0 || r.top >= vh) return
+      // The band the four claims are spread over is centred on the pane's
+      // most-visible moment, not on its whole pass across the screen.
+      //
+      // Spread over the whole pass — `(vh - r.top) / (vh + r.height)`, which
+      // this was — the first and last claims are only ever lit while the pane
+      // is half off screen: measured at 1908x1026 the pane is 681 tall, so
+      // through the entire window where it is 100% visible p only ran .40 to
+      // .60 and just claims 2 and 3 came up. Two of the four were never on
+      // stage while the reader could see the stage.
+      //
+      // `centre` is the top offset at which the pane sits centred in the
+      // viewport; travel spans 55% of the viewport around it, widened to the
+      // pane's own slack when that is larger so a pane much shorter than the
+      // screen still uses its full still-visible run. For a pane taller than
+      // the viewport (the stacked layout) the slack is negative and the 55%
+      // floor carries it.
+      const centre = (vh - r.height) / 2
+      const travel = Math.max(vh * 0.55, Math.abs(vh - r.height))
+      const p = (centre + travel / 2 - r.top) / travel
+      setStep(Math.min(count - 1, Math.max(0, Math.floor(p * count))))
+    }
+
+    const onScroll = () => {
+      scrolling.current = true
+      clearTimeout(idle)
+      idle = setTimeout(() => {
+        scrolling.current = false
+        // restart the clock's wait so the claim scrolled to gets a full turn
+        setNudge((n) => n + 1)
+      }, SCROLL_IDLE_MS)
+      if (!raf) raf = requestAnimationFrame(read)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    read()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      clearTimeout(idle)
+      if (raf) cancelAnimationFrame(raf)
+      // a scroll may have been in flight when the scrub was switched off, and
+      // nothing would clear the flag afterwards — the clock would never run
+      scrolling.current = false
+    }
+  }, [paneRef, count, scrub])
+
+  // is the pane on screen? the clock only runs while it is
+  useEffect(() => {
+    const pane = paneRef.current
+    if (!pane) return
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { threshold: 0.35 })
+    io.observe(pane)
+    return () => io.disconnect()
+  }, [paneRef])
+
+  // the clock — a fresh timer per step, so each claim holds for its own dwell
+  useEffect(() => {
+    if (!onScreen || held) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const timer = setTimeout(() => {
+      // a scroll in flight owns the rail; the idle handler bumps `nudge` when it
+      // stops, which restarts this wait, so the clock picks up where it left
+      if (scrolling.current) return
+      setStep((s) => (s + 1) % count)
+    }, dwell[step] ?? STEP_MS)
+    return () => clearTimeout(timer)
+    // `nudge` is here only to restart the wait after a row press or a scroll
+  }, [dwell, count, step, onScreen, held, nudge])
+
+  return {
+    step,
+    goTo: (i: number) => {
+      setStep(i)
+      setNudge((n) => n + 1)
+    },
+    hold: () => setHeld(true),
+    release: () => setHeld(false),
+  }
+}
+
+/**
+ * The section is rendered twice on the page: once as "FinSynth for Excel",
+ * and once after the footer as the "FIA Agent" coming-soon teaser — same
+ * frame, same rail and stage, different headline. `id` keeps the two anchors
+ * distinct; `badge` hangs a pill (e.g. "Coming soon") off the headline.
+ */
+export default function ExcelSection({
+  id = 'excel',
+  title = (
+    <>
+      FinSynth for <span className="ttl-hl">Excel</span>
+    </>
+  ),
+  badge,
+}: {
+  id?: string
+  title?: ReactNode
+  badge?: ReactNode
+}) {
+  const frameRef = useReveal<HTMLDivElement>({ threshold: 0.08 })
+  const paneRef = useRef<HTMLDivElement>(null)
+  // Narrow screens read the pane as an accordion instead of two columns: the
+  // active claim's visual is mounted directly under its own row, so the picture
+  // is always beside the words it belongs to rather than below all four of them.
+  const stacked = useMediaQuery('(max-width: 900px)')
+  // and the stack takes no scroll scrub — see useAutoStep
+  const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef, { scrub: !stacked })
+
+  return (
+    <section className="x4e-sec" id={id}>
+      <div className="wrap">
+        <div className="x4e-frame" ref={frameRef}>
+          <div className="x4e-head x4e-reveal">
+            <div className="x4e-head-copy">
+              <h2>
+                {title}
+                {badge && <span className="x4e-badge">{badge}</span>}
+              </h2>
+            </div>
+          </div>
+
+          {/* no x4e-reveal here: that rule animates transform and filter, and
+              either one would fight the visuals' crossfade */}
+          <div
+            className="x4e-pane"
+            ref={paneRef}
+            onMouseEnter={hold}
+            onMouseLeave={release}
+            onFocusCapture={hold}
+            onBlurCapture={release}
+          >
+            {/* all four claims stay on screen the whole time — nothing swaps
+                out from under the reader. The rail doubles as the navigation:
+                the highlighted row is the one whose visual the stage shows,
+                and pressing a row jumps the stage to it. */}
+            <ol className="x4e-rail">
+              {PILLARS.map((p, i) => {
+                const { Visual } = p
+                return (
+                  <li key={p.key}>
+                    <button
+                      type="button"
+                      className={`x4e-item${!stacked && i === step ? ' is-active' : ''}`}
+                      aria-current={!stacked && i === step}
+                      onClick={() => goTo(i)}
+                    >
+                      <span className="x4e-item-body">
+                        <span className="x4e-item-title">{p.title}</span>
+                        <span className="x4e-item-p">{p.body}</span>
+                      </span>
+                    </button>
+                    {/* stacked: every claim keeps its visual open under its
+                        own row, so a phone reader scrolls the whole feature
+                        set instead of tapping through an accordion. Each one
+                        carries is-active so its loop runs; the rail highlight
+                        (and the auto-step behind it) only means something
+                        while the rows share one stage, so it stays desktop. */}
+                    {stacked && (
+                      <div className="x4e-stage x4e-stage--inline">
+                        <div className="x4e-visual is-active">
+                          <Visual />
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
+            </ol>
+            {/* only the visuals crossfade; every step's copy stays put */}
+            {!stacked && (
+              <div className="x4e-stage">
+                {PILLARS.map((p, i) => {
+                  const { Visual } = p
+                  return (
+                    <div
+                      key={p.key}
+                      className={`x4e-visual${i === step ? ' is-active' : ''}`}
+                      aria-hidden={i !== step}
+                    >
+                      <Visual />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

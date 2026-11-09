@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/layout/Navbar'
+import Hero from '@/components/home/Hero'
+import SectionRule from '@/components/layout/SectionRule'
+import ExcelSection from '@/components/home/ExcelSection'
+import WhyAnalysts from '@/components/home/WhyAnalysts'
+import FiaAgentSection from '@/components/home/FiaAgentSection'
+import Testimonial from '@/components/shared/Testimonial'
+import Security from '@/components/home/Security'
+import PlansSection from '@/components/home/PlansSection'
+import EnterpriseSection from '@/components/home/EnterpriseSection'
+import Faq from '@/components/shared/Faq'
+import Footer from '@/components/layout/Footer'
+import ScrollNextButton from '@/components/layout/ScrollNextButton'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import { FAQS } from '@/data/faq'
+import { faqPage, website } from '@/lib/schema'
+---
+
+<BaseLayout>
+  <JsonLd slot="head" data={[website(), faqPage(FAQS)]} />
+  <div class="mainContainer">
+    <div class="page-rails" aria-hidden="true">
+      <span class="rail rail-left"></span>
+      <span class="rail rail-right"></span>
+    </div>
+    <Navbar client:load />
+    <Hero variant="photo" client:load />
+    <SectionRule />
+    <ExcelSection client:visible />
+    <WhyAnalysts />
+    <SectionRule />
+    <FiaAgentSection />
+    <Testimonial client:visible />
+    <SectionRule />
+    <Security />
+    <SectionRule />
+    <PlansSection client:visible={{ rootMargin: '100% 0px' }} />
+    <SectionRule />
+    <EnterpriseSection />
+    <SectionRule />
+    <Faq client:visible />
+    <SectionRule />
+    <Footer client:visible />
+    <ScrollNextButton client:idle />
+  </div>
+</BaseLayout>

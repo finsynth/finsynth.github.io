@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import Support from '@/views/Support'
+---
+
+<BaseLayout
+  title="Support | FinSynth"
+  description="Have a question or running into an issue? Raise a ticket and the FinSynth team will help."
+>
+  <div class="mainContainer">
+    <Navbar client:load />
+    <Support />
+    <Footer client:visible />
+  </div>
+</BaseLayout>

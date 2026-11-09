@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import AppliedBanner from '@/components/careers/AppliedBanner'
+import JsonLd from '@/components/seo/JsonLd.astro'
+import Careers from '@/views/Careers'
+import { ROLES, roleLabel } from '@/data/roles'
+import { jobPosting } from '@/lib/schema'
+
+const description = `Join FinSynth in New York. Open roles: ${ROLES.map(roleLabel).join(', ')}.`
+---
+
+<BaseLayout title="Careers | FinSynth" description={description}>
+  <JsonLd slot="head" data={ROLES.map(jobPosting)} />
+  <div class="mainContainer">
+    <Navbar client:load />
+    <main class="careers-container">
+      <AppliedBanner client:load />
+      <Careers />
+    </main>
+    <Footer client:visible />
+  </div>
+</BaseLayout>
