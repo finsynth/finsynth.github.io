@@ -1,9 +1,11 @@
 ---
+import { getImage } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import JsonLd from '@/components/seo/JsonLd.astro'
 import Solution from '@/views/Solution'
 import { SOLUTIONS } from '@/data/solutions'
 import { faqPage } from '@/lib/schema'
+import stoneCapital from '@/assets/img/stone-capital.jpg'
 
 export function getStaticPaths() {
   return Object.entries(SOLUTIONS).map(([slug, sol]) => ({ params: { slug }, props: { sol } }))
@@ -11,9 +13,10 @@ export function getStaticPaths() {
 
 const { slug } = Astro.params
 const { sol } = Astro.props
+const heroImg = await getImage({ src: stoneCapital, format: 'webp', quality: 75 })
 ---
 
 <BaseLayout title={`FinSynth for ${sol.name}`} description={sol.lede}>
   {sol.faqs && <JsonLd slot="head" data={faqPage(sol.faqs)} />}
-  <Solution slug={slug} client:load />
+  <Solution slug={slug} heroSrc={heroImg.src} client:load />
 </BaseLayout>
