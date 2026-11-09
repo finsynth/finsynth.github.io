@@ -1,4 +1,5 @@
 ---
+import { getImage } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Navbar from '@/components/layout/Navbar'
 import Hero from '@/components/home/Hero'
@@ -16,6 +17,9 @@ import ScrollNextButton from '@/components/layout/ScrollNextButton'
 import JsonLd from '@/components/seo/JsonLd.astro'
 import { FAQS } from '@/data/faq'
 import { faqPage, website } from '@/lib/schema'
+import fiaWorkspace from '@/assets/img/fia-workspace.webp'
+
+const fiaShot = await getImage({ src: fiaWorkspace, format: 'webp', quality: 80, widths: [640, 960, 1280, 1800, 2000] })
 ---
 
 <BaseLayout>
@@ -26,12 +30,12 @@ import { faqPage, website } from '@/lib/schema'
       <span class="rail rail-right"></span>
     </div>
     <Navbar client:load />
-    <Hero variant="photo" client:load />
+    <Hero client:load />
     <SectionRule />
     <ExcelSection client:visible />
     <WhyAnalysts />
     <SectionRule />
-    <FiaAgentSection />
+    <FiaAgentSection shot={{ src: fiaShot.src, srcSet: fiaShot.srcSet.attribute }} />
     <Testimonial client:visible />
     <SectionRule />
     <Security />

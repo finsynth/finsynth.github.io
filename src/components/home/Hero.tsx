@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { initGrid } from '@/utils/gridCanvas'
 import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
-import MosaicCanvas from '@/components/visuals/MosaicCanvas'
-import TileMosaicCanvas from '@/components/visuals/TileMosaicCanvas'
-import DotBridgeCanvas from '@/components/visuals/DotBridgeCanvas'
 import BayBridgePixelCanvas from '@/components/visuals/BayBridgePixelCanvas'
 import { MatrixDecode } from '@/components/visuals/matrix-decode'
 import { SEGMENTS } from '@/data/segments'
@@ -127,128 +123,18 @@ function RotatingSegment() {
   )
 }
 
-// Exa-style side replicas: small square tiles flanking the copy at the section
-// edges — zoomed crops of the hero's own Wall Street photo. Two loose columns a
-// side, the outermost flush with (and cut by) the edge. Decorative only; CSS
-// drops them under 1280px where they'd crowd the cell.
-const SIDE_TILES = {
-  left: [
-    { top: '29%', x: -20, s: 64, bg: '72% 26%' },
-    { top: '46%', x: -20, s: 64, bg: '18% 52%' },
-    { top: '63%', x: -20, s: 64, bg: '38% 68%' },
-    { top: '21%', x: 66, s: 54, bg: '58% 10%' },
-    { top: '39%', x: 74, s: 58, bg: '22% 42%' },
-    { top: '57%', x: 66, s: 54, bg: '86% 58%' },
-    { top: '31%', x: 140, s: 46, bg: '66% 30%' },
-    { top: '49%', x: 143, s: 46, bg: '48% 84%' },
-  ],
-  right: [
-    { top: '32%', x: -20, s: 64, bg: '30% 30%' },
-    { top: '49%', x: -20, s: 64, bg: '64% 74%' },
-    { top: '66%', x: -20, s: 64, bg: '42% 22%' },
-    { top: '24%', x: 66, s: 54, bg: '14% 20%' },
-    { top: '42%', x: 74, s: 58, bg: '70% 62%' },
-    { top: '60%', x: 66, s: 54, bg: '75% 46%' },
-    { top: '35%', x: 140, s: 46, bg: '52% 12%' },
-  ],
-}
-
-function HeroSideTiles() {
+function Hero() {
   return (
-    <>
-      {(['left', 'right'] as const).map((side) => (
-        <div className={`hero-side hero-side--${side}`} key={side} aria-hidden="true">
-          {SIDE_TILES[side].map((t, i) => (
-            <span
-              key={i}
-              className="hero-tile"
-              style={{
-                top: t.top,
-                [side]: `${t.x}px`,
-                width: `${t.s}px`,
-                height: `${t.s}px`,
-                backgroundPosition: t.bg,
-              }}
-            />
-          ))}
-        </div>
-      ))}
-    </>
-  )
-}
-
-function Hero({ variant = 'grid', bgImage = undefined, bgGlass = false, bare = false }) {
-  // 'mosaic' — dithered halftone bg; 'tiles' — full-colour tile-ripple bg;
-  // 'globe' — Antimetal-style dot-matrix SF bridge on a blue wash.
-  // All share the same content layout (the "mosaic hero").
-  const globe = variant === 'globe'
-  // both 'globe' and 'mosaic' render the DotBridge tile-mosaic on the bright wash
-  const dot = variant === 'globe' || variant === 'mosaic'
-  // 'photo' — the Bay Bridge sunset photo pixelated in full colour (no separate
-  // backdrop layer; the pixel photo is the whole scene)
-  const photo = variant === 'photo'
-  const mosaic = variant === 'mosaic' || variant === 'tiles' || globe || photo
-  const canvasRef = useRef(null)
-  useEffect(() => {
-    if (mosaic) return
-    return initGrid(canvasRef.current)
-  }, [mosaic])
-
-  // A "Best viewed on desktop" popup and a standing advisory banner used to open
-  // this section on phones. Both are gone: the page is laid out for phones now,
-  // and an apology in front of a working page only teaches the visitor to leave.
-  // Git history has the markup if the gate is ever wanted back.
-
-  return (
-    <section
-      className={`hero-s2${mosaic && !dot && !photo ? ' hero-s2--mosaic' : ''}${dot ? ' hero-s2--globe' : ''}${photo ? ' hero-s2--photo' : ''}${bgGlass ? ' hero-s2--glass' : ''}${bare ? ' hero-s2--bare' : ''}`}
-    >
-      {/* bare mode omits the background entirely — the copy is overlaid on top
-          of an external backdrop (the pixel-bridge scroll scene) */}
-      {!bare &&
-        (bgImage ? (
-          <div
-            className="hero-s2-mosaic hero-s2-imgbg"
-            style={{ backgroundImage: `url(${bgImage})` }}
-            aria-hidden="true"
-          />
-        ) : photo ? (
-          <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
-        ) : dot ? (
-          <DotBridgeCanvas stageClassName="hero-s2-mosaic hero-s2-globe" ariaLabel="" />
-        ) : variant === 'tiles' ? (
-          <TileMosaicCanvas stageClassName="hero-s2-mosaic" ariaLabel="" centerWash hoverReveal />
-        ) : mosaic ? (
-          <MosaicCanvas
-            mode="mosaic"
-            cover
-            bars
-            stageClassName="hero-s2-mosaic"
-            ariaLabel=""
-            tileSize={9}
-          />
-        ) : (
-          <canvas
-            ref={canvasRef}
-            className="hero-s2-canvas"
-            data-grid-hero
-            aria-hidden="true"
-          ></canvas>
-        ))}
-      {/* the side collage only earns its place on the bare hero, where the
-          flanks are otherwise empty — over the photo it's crops of the same
-          picture laid on the picture */}
-      {bare && <HeroSideTiles />}
+    <section className="hero-s2 hero-s2--photo">
+      <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
       <span className="stat-pill" aria-hidden="true"></span>
       <div className="hero-s2-wrap">
         {/* ── ONE BIG CELL ── */}
-        <div
-          className={`hero-cell${mosaic ? ' hero-cell--mosaic' : ''}${variant === 'tiles' ? ' hero-cell--tiles' : ''}`}
-        >
+        <div className="hero-cell hero-cell--mosaic">
           {/* Soft white radial wash behind the copy — lifts the text off the
               photo without hiding it. Sized to the copy block (pill → trust
               line) and clamped to the cell so it never spills past the hero. */}
-          {photo && !bare && <div className="hero-glow" aria-hidden="true" />}
+          <div className="hero-glow" aria-hidden="true" />
 
           {/* Backers — a glass pill leading the copy stack: "Backed by
               [Accel]", the mark standing in for its own name. The alt text

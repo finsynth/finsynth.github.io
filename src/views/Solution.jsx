@@ -1236,7 +1236,7 @@ function Workflow({ w, flip }) {
   )
 }
 
-export default function Solution({ slug }) {
+export default function Solution({ slug, heroSrc }) {
   const sol = SOLUTIONS[slug]
   const worksRef = useReveal({ threshold: 0.05 })
 
@@ -1255,7 +1255,7 @@ export default function Solution({ slug }) {
             the solutions heroes stay plain */}
         <header className="sol-hero sol-hero--photo">
           <div className="sol-hero-bg" aria-hidden="true">
-            <img src="/assets/img/stone-capital.jpg" alt="" loading="eager" fetchpriority="high" />
+            <img src={heroSrc} alt="" loading="eager" fetchpriority="high" />
           </div>
           <div className="sol-hero-copy wrap">
             <p className="sol-eyebrow">{sol.name}</p>
