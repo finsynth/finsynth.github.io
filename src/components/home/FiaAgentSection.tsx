@@ -8,7 +8,7 @@
  *
  * The window is a plain frame around a real screenshot of the Fia workspace —
  * the browser dressing (chrome strip, toolbar) was cut on request. To refresh
- * the product view, drop a new capture at /assets/img/fia-workspace.webp —
+ * the product view, drop a new capture at src/assets/img/fia-workspace.webp —
  * nothing here needs to change.
  */
 
@@ -30,14 +30,18 @@ const CLAIMS = [
   },
 ]
 
-function ChatWindow() {
+type Shot = { src: string; srcSet: string }
+
+function ChatWindow({ shot }: { shot: Shot }) {
   return (
     <div className="fiag-window">
       <div className="fiag-page">
         {/* the page itself is the product shot */}
         <img
           className="fiag-shot"
-          src="/assets/img/fia-workspace.webp"
+          src={shot.src}
+          srcSet={shot.srcSet}
+          sizes="(max-width: 900px) 71vw, min(45vw, 900px)"
           alt="The FinSynth workspace: a thread history rail beside a new thread, ready for a question"
           loading="lazy"
           width="2000"
@@ -48,7 +52,7 @@ function ChatWindow() {
   )
 }
 
-export default function FiaAgentSection({ id = 'fia-agent' }) {
+export default function FiaAgentSection({ id = 'fia-agent', shot }: { id?: string; shot: Shot }) {
   return (
     <section className="x4e-sec" id={id}>
       <div className="wrap">
@@ -80,7 +84,7 @@ export default function FiaAgentSection({ id = 'fia-agent' }) {
 
             <div className="x4e-stage fiag-stage">
               <div className="x4e-visual is-active">
-                <ChatWindow />
+                <ChatWindow shot={shot} />
               </div>
             </div>
           </div>
