@@ -3,20 +3,20 @@ import { LINKS } from '@/config/site'
 
 function Support() {
   return (
-    <main className="support-container" aria-labelledby="support-title">
-      <div className="support-bg" aria-hidden="true" />
-      <div className="support-content">
-        <div className="support-icon" aria-hidden="true">
+    <main className="panel-page" aria-labelledby="support-title">
+      <div className="panel-bg" aria-hidden="true" />
+      <div className="panel-content">
+        <div className="panel-icon" aria-hidden="true">
           <Headphones size={26} strokeWidth={1.6} />
         </div>
-        <h1 className="support-heading" id="support-title">
+        <h1 className="panel-heading" id="support-title">
           How can we help?
         </h1>
-        <p className="support-description">
+        <p className="panel-lede">
           Have a question or running into an issue? Send us the details and our team will help.
         </p>
         <a
-          className="hero-s2-cta support-cta"
+          className="hero-s2-cta panel-cta"
           href={LINKS.supportForm}
           target="_blank"
           rel="noopener noreferrer"

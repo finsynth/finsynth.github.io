@@ -1,10 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
+import NotFound from '@/views/NotFound'
 ---
 
 <BaseLayout title="Page not found | FinSynth" noindex>
-  <main>
-    <h1>Page not found</h1>
-    <a href="/">Back to home</a>
-  </main>
+  <div class="mainContainer">
+    <Navbar client:load />
+    <NotFound />
+    <Footer client:visible />
+  </div>
 </BaseLayout>
