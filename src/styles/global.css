@@ -5204,7 +5204,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   .fiag-stage .x4e-visual > * { width: 86%; max-width: none; }
 }
 
-.support-container {
+.panel-page {
   position: relative; z-index: 6; isolation: isolate;
   width: 100%;
   /* the navbar is sticky and in flow, so the screen is what's left under it */
@@ -5215,7 +5215,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   place-items: center;
   background: var(--bg);
 }
-.support-bg {
+.panel-bg {
   position: absolute; z-index: -1;
   top: 20px; bottom: 20px; left: 20px; right: 20px;
   border-radius: 14px;
@@ -5227,10 +5227,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   pointer-events: none;
   overflow: hidden;
 }
-.support-content {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
+.panel-content {
   position: relative;
   width: 100%;
   max-width: 420px;
@@ -5240,7 +5237,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   text-align: center;
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
-.support-icon {
+.panel-icon {
   display: grid;
   place-items: center;
   width: 56px;
@@ -5252,7 +5249,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   color: var(--secondary);
   box-shadow: 0 1px 2px rgba(20, 36, 46, .04);
 }
-.support-heading {
+.panel-heading {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(28px, 3vw, 34px);
@@ -5261,7 +5258,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   letter-spacing: -.035em;
   color: var(--ink);
 }
-.support-description {
+.panel-lede {
   margin: 14px 0 0;
   max-width: 390px;
   font-size: 16px;
@@ -5269,52 +5266,22 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   color: var(--secondary);
   text-wrap: pretty;
 }
-.support-content .support-cta {
+.panel-content .panel-cta {
   margin: 28px 0 0;
   min-height: 46px;
   padding: 12px 22px;
   gap: 10px;
   font-size: 15px;
 }
-.support-cta:focus-visible {
+.panel-cta:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
 }
+.panel-content--wide { max-width: 560px }
+.panel-content--wide .panel-lede { max-width: none }
 @media (max-width: 560px) {
-  .support-container { padding-inline: 20px; padding-block: 40px 56px; }
-  .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
-}
-.support-heading {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3vw, 34px);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -.035em;
-  color: var(--ink);
-}
-.support-description {
-  margin: 14px 0 0;
-  max-width: 390px;
-  font-size: 16px;
-  line-height: 1.65;
-  color: var(--secondary);
-  text-wrap: pretty;
-}
-.support-content .support-cta {
-  margin: 28px 0 0;
-  min-height: 46px;
-  padding: 12px 22px;
-  gap: 10px;
-  font-size: 15px;
-}
-.support-cta:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 5px;
-}
-@media (max-width: 560px) {
-  .support-container { padding-inline: 20px; padding-block: 40px 56px; }
-  .support-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
+  .panel-page { padding-inline: 20px; padding-block: 40px 56px; }
+  .panel-bg { top: 12px; left: 12px; right: 12px; bottom: 12px; }
 }
 
 /* ── /careers — the postings page. One reading column, a card per role.
