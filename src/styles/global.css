@@ -1787,13 +1787,44 @@ button.play { border: none; padding: 0; appearance: none }
 /* a payer type with nothing published shouldn't leave an empty labeled box —
    hide the group when its table mounts empty (or not at all). Scoped to the
    duo so it can only ever reach the two Clerk-backed groups. */
-.plans-duo .plans-group:not(:has(.cl-pricingTable)),
-.plans-duo .plans-group:has(.cl-pricingTable:empty) { display: none }
+.plans-duo .plans-group:not(:has(.cl-pricingTable, .plans-skeleton)),
+.plans-duo .plans-group:has(.cl-pricingTable:empty):not(:has(.plans-skeleton)) { display: none }
 /* hold the table's loaded height while Clerk fetches it, so nothing below jumps;
    floor of the live table's height (re-measure if the plan count changes) */
 #pricing .plans-table { min-height: 493px }
+.plans-skeleton {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 380px);
+  justify-content: center; gap: 16px;
+}
+.plans-skel-card {
+  height: 455px; display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 24px; background: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, .08), 0 15px 35px -5px rgba(0, 0, 0, .2);
+}
+.plans-skel-head {
+  height: 138px; box-sizing: border-box; padding: 22px 16px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  background: #F7F7F7; border-bottom: 1px solid rgba(0, 0, 0, .07);
+}
+.plans-skel-price { margin: 8px 0 4px }
+.plans-skel-feats { padding: 20px 16px; display: flex; flex-direction: column; gap: 17px }
+.plans-skel-row { display: flex; align-items: center; gap: 12px }
+.plans-skel-foot { margin-top: auto; padding: 16px; border-top: 1px solid rgba(0, 0, 0, .07) }
+.plans-skel-bar {
+  display: block; flex: none; width: var(--w, 100%); height: var(--h, 10px);
+  border-radius: 6px; background: rgba(20, 36, 46, .08);
+  animation: plansPulse 1.6s ease-in-out infinite;
+}
+.plans-skel-foot .plans-skel-bar { border-radius: 8px }
+@keyframes plansPulse { 50% { opacity: .5 } }
+.plans-table:has(.plans-error) .plans-duo { display: none }
+@media (prefers-reduced-motion: reduce) {
+  .plans-skel-bar { animation: none }
+}
 @media (max-width: 900px) {
-  #pricing .plans-table { min-height: 832px }
+  #pricing .plans-table { min-height: 850px }
+  .plans-skeleton { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr }
+  .plans-skel-card:first-child { height: 341px }
   .plans-duo { flex-direction: column; align-items: stretch }
   .plans-group { width: auto }
   .plans-duo .cl-pricingTable {
