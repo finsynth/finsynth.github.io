@@ -13,15 +13,12 @@
   --negative:     #E02D3C;
   --hair:         #E5E5E5;
   --hair-strong:  #DBDBDB;
-  --blue:         #3550C8;
-  --blue-light:   #6B84E8;
 
   /* section design tokens — legacy green names now resolve to FinSynth blue */
   --green-deep: #16244E;
   --green-btn:  #2438A8;
   --green-icon: #3550C8;
   --green-bar:  #3550C8;
-  --green-num:  #6B84E8;
   --paper:      #F4F2EC;
   --body-gray:  #3D4A52;
   --body-2:     #5C6970;
@@ -51,7 +48,6 @@
 
   --ls-display: -0.04em;
   --ls-mono:    0.06em;
-  --lh-body:    1.7;
 
   /* Proportional gutter: content spans 79vw (≈200px gutter each side at 1908px)
      so the outer gap stays generous on narrower screens instead of collapsing,
@@ -672,143 +668,6 @@ img, video, svg, picture {
   .nav-demo:hover, .nav-demo:active { transform: none; }
 }
 
-/* ── Formula Bar ── */
-
-.formula-bar-namebox {
-  width: 60px;
-  min-width: 60px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-right: 1px solid var(--hair);
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-  flex-shrink: 0;
-}
-
-.formula-bar-formula {
-  padding: 0 12px;
-  flex: 1;
-  color: var(--accent);
-  font-size: 12px;
-  font-family: var(--mono);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: flex;
-  align-items: center;
-}
-
-/* ── Buttons ── */
-
-/* ── Hero ── */
-.hero {
-  width: 100%;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
-  min-height: 580px;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 220px;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.hero canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: cell;
-  touch-action: pan-y;
-  opacity: 0.9;
-}
-
-.stat-pill {
-  position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%) translateY(8px);
-  background: var(--ink);
-  color: #fff;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  display: flex;
-  gap: 14px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .18s ease, transform .18s ease;
-  box-shadow: 0 6px 20px -6px rgba(16,24,40,.2);
-  border: 1px solid rgba(255,255,255,.08);
-  z-index: 3;
-}
-
-.stat-pill.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.stat-pill b { font-weight: 500; color: var(--blue-light); margin-right: 5px; }
-
-/* ════════ PLUG-IN BANNER ════════ */
-.plug { background: #fff; padding: 120px 0 110px; border-bottom: 1px solid var(--hair) }
-
-/* ════════ SECURITY ════════ */
-.crop { position: absolute; width: 44px; height: 44px; border: 0 solid var(--ink) }
-.crop.tl { left: 0; top: 0; border-left-width: 2.5px; border-top-width: 2.5px }
-.crop.br { right: 0; bottom: 0; border-right-width: 2.5px; border-bottom-width: 2.5px }
-.seal { width: 88px; height: 88px }
-
-/* ════════ PILLAR HEADER BAND + NAV (Hex-style, light) ════════ */
-/* Spreadsheet tab strip: full-width row of hairline-separated cells, active = bold ink */
-
-/* ════════ PILLAR SECTIONS ════════ */
-/* pane framed as one big spreadsheet cell, matching the page edge motif */
-@keyframes pillar-fade { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
-.points { margin-top: 54px }
-.point { display: flex; gap: 22px; padding: 34px 0; border-top: 1px solid var(--hair) }
-.point:last-child { border-bottom: 1px solid var(--hair) }
-.point .n { font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--green-num); font-weight: 500; padding-top: 5px }
-.point h3 { font-family: var(--font-body); font-size: var(--fs-body); font-weight: 500; letter-spacing: 0; color: var(--ink) }
-.point p { font-family: var(--font-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--body-gray); margin-top: 6px; letter-spacing: 0 }
-/* pillar pane: points read as rows of a contained card, echoing the workbook visual */
-
-/* Accuracy workbook — features as sheet tabs */
-
-/* Benchmark card */
-.bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100% }
-.bar .name { font-family: var(--font-body); font-size: var(--fs-body); line-height: 1.35; color: var(--body-gray); text-align: center; margin-top: 14px; letter-spacing: 0 }
-
-/* ── Video demo card (rendered in .pos-block "Why FinSynth") ── */
-.play {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-  width: 84px; height: 58px; border-radius: 14px; background: rgba(20,20,20,.85);
-  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s;
-}
-.play:hover { background: #f00 }
-.play i { width: 0; height: 0; border-left: 22px solid #fff; border-top: 13px solid transparent; border-bottom: 13px solid transparent; margin-left: 5px }
-button.play { border: none; padding: 0; appearance: none }
-
-/* ════════ HOW IT WORKS ════════ */
-/* The panel used to be pinned inside a 260vh scroll track, which is how the
-   beats were stepped. The beats run on their own clock now (see BEATS in
-   HowItWorks.jsx), so the section is simply as tall as its content. */
-
-/* Backdrop = the testimonial glass-column wash (Figma export, rasterized):
-   royal-blue glow behind frosted vertical panels dissolving unevenly to white,
-   floating on a white ground — same treatment as .testi-pin::before. */
-/* title sits on the blue glass field — invert to white, and lift the
-   highlight span to white too (as .testi-head does) */
-/* entrance: the title lands first, the panel follows (see .is-in below) */
 .hiw-eyebrow {
   font-family: var(--font-mono);
   font-size: var(--fs-mono); font-weight: 400; letter-spacing: var(--ls-mono);
@@ -824,86 +683,6 @@ button.play { border: none; padding: 0; appearance: none }
 .plans-eyebrow,
 .faq-eyebrow,
 .hw-head .sol-eyebrow { display: none !important; } /* the solutions pages' How it works head follows the same rule */
-
-@keyframes hiwBeat { to { opacity: 1; transform: none; filter: none; } }
-/* hiwPulse went with the live tool-call row's blinking dot — nothing pulses here now */
-
-/* One bordered panel holding the chat pane. Narrower since the beat rail beside
-   it went — the chat is the whole panel now. */
-
-/* ════════ Right pane — chat (fixed height so beats don't shift it) ════════ */
-/* Fixed height so the beats never resize the panel under the reader, but taken
-   from the viewport: the finished thread runs ~820px of content, so a short box
-   scrolls most of the cited answer out of sight. */
-/* The approval overlay that used to sit over the composer (.hiwc-permit, with
-   its deny/approve pair and the hiwcPermitIn keyframes) is gone with the beat
-   that drove it — the approval claim is made in <Differentiator /> instead. */
-
-/* header bar — window dots · agent · live label */
-
-/* conversation */
-/* The thread sits on its floor, not its ceiling: the pane is tall enough now that
-   top-anchored early beats left a void between the task card and the composer.
-   Growing upward from the composer is what a chat client does. An auto margin
-   rather than justify-content: flex-end — the margin collapses once the thread
-   overflows, so the top of a long answer stays scrollable. */
-@keyframes hiwcIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-/* the spinner on "Sending…" in the ask form */
-@keyframes hiwcSpin { to { transform: rotate(360deg); } }
-
-/* The reel's tool-call card is gone, and with it .hiwc-tasks / .hiwc-task and
-   its --live / --wrote states — so is the written answer that used to stream in
-   under it (.hiwc-answer / .hiwc-p / .hiwc-table / .hiwc-bullets / .hiwc-cx and
-   the reaction row). Nothing else on the page used any of them. */
-
-/* .hiwc-delivered and .hiw-approve went with the approval overlay too: the
-   confirmation line and its primary button had no other user on the page. */
-
-/* input bar */
-/* Composer card (Instacart-style): attachment chips · multi-line prompt ·
-   toolbar row (+ / context chips / round submit) */
-/* Beat 1: the brief is typed live into the prompt area */
-@keyframes hiwcCaret { 50% { opacity: 0; } }
-/* the composer is a real form now — reset the button/textarea defaults it
-   inherits so it still reads as the mock it replaced */
-
-/* the live field, with the walkthrough's self-typing brief laid over it */
-
-/* example chips above the composer — seed the field, or take the workbook */
-
-/* ── ask mode: the honest reply to a live question ── */
-
-/* Mail-to fallback: shown when the ask could not be delivered automatically,
-   so the visitor can still send it themselves in one tap. */
-
-/* "try it on one of these" — compare against whatever they already run */
-
-/* the workbooks themselves */
-/* the sheet that answers what they actually asked, called out from the rest */
-
-/* ════════ An answered example, in the chat ════════ */
-/* "FinSynth is working" — held for a beat before a known answer lands */
-
-/* the workbook: file bar, as-of note, then the cited table */
-
-/* a sourced figure — an Excel hyperlink that really does open its source */
-/* the figure whose document is currently open */
-
-/* ════════ Source document, over the chat ════════ */
-@keyframes hiwcDocFade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes hiwcDocIn {
-  from { opacity: 0; transform: translateY(12px) scale(.97); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* the excerpt itself, set like the page it came off */
-/* the cited figure, marked the way the webapp highlights the passage */
-
-/* ════════ CLI ════════ */
-.term { background: #0D1410; border: 1px solid rgba(127,231,178,.25); border-radius: 8px; overflow: hidden }
-.cursor { display: inline-block; width: 7px; height: 13px; background: #7FE7B2; vertical-align: -2px; animation: blink-cur 1.1s steps(1) infinite }
-@keyframes blink-cur { 50% { opacity: 0 } }
 
 /* ════════ FOOTER (new style) ════════ */
 .footer-new {
@@ -1196,29 +975,6 @@ button.play { border: none; padding: 0; appearance: none }
   .foot-wordmark > span { opacity: 1; transform: translateY(.14em); transition: none }
 }
 
-/* ════════ SETUP (3-STEP) ════════ */
-/* Scroll-driven horizontal timeline — line draws left→right, steps ignite (vertical again ≤900px) */
-
-/* Animated step visuals */
-@keyframes sv-fade { 0%, 55% { opacity: 0 } 68%, 94% { opacity: 1 } 100% { opacity: 0 } }
-@keyframes sv-load { 0% { transform: scaleX(0) } 60%, 94% { transform: scaleX(1) } 100% { transform: scaleX(0) } }
-@keyframes sv-pop { 0%, 28% { transform: scale(0); opacity: 0 } 44%, 100% { transform: scale(1); opacity: 1 } }
-@keyframes sv-type { 0% { width: 0 } 60%, 100% { width: 23ch } }
-@keyframes sv-blink { 50% { opacity: 0 } }
-
-/* ════════ PILLAR VISUALS ════════ */
-
-/* Audit visual */
-
-/* Data coverage visual */
-
-/* Speed visual */
-
-/* ════════ AUDITABILITY ════════ */
-/* typography hierarchy: point titles step up from body copy */
-
-/* Scroll-driven stage — sticky panel that swaps scenes per active point */
-
 /* ════════ SECURITY (enterprise bento) ════════ */
 .secx { background: var(--bg); padding: 120px 0 130px }
 .secx-frame { position: relative; border: 1px solid var(--hair) }
@@ -1471,60 +1227,6 @@ button.play { border: none; padding: 0; appearance: none }
 @media (prefers-reduced-motion: reduce) {
   .cta-cta { transition: none }
 }
-
-/* ════════ POSITIONING BLOCK ════════ */
-
-/* Citation visual — cursor clicks the source icon, dialog opens */
-@keyframes posv-ic-press {
-  0%, 30%, 44%, 100% { transform: none; box-shadow: none }
-  34%, 40% { transform: scale(.88); box-shadow: 0 0 0 4px rgba(53,80,200,.18) }
-}
-@keyframes posv-cur-move {
-  0% { transform: translate(30px, 48px); opacity: 0 }
-  8% { opacity: 1 }
-  28%, 60% { transform: translate(0, 0); opacity: 1 }
-  74% { transform: translate(12px, 26px); opacity: 0 }
-  100% { transform: translate(30px, 48px); opacity: 0 }
-}
-@keyframes posv-pop {
-  0%, 40% { opacity: 0; transform: scale(.92) translateY(-6px) }
-  46%, 90% { opacity: 1; transform: none }
-  97%, 100% { opacity: 0; transform: scale(.95) translateY(-4px) }
-}
-
-/* Coverage visual */
-
-/* Excel visual */
-@keyframes posv-press {
-  0%, 55%, 100% { transform: none; box-shadow: none }
-  62%, 70% { transform: scale(.96); box-shadow: 0 0 0 3px rgba(53,80,200,.15) }
-}
-@keyframes posv-ripple {
-  0%, 60% { box-shadow: 0 0 0 0 rgba(53,80,200,.35); opacity: 1 }
-  90%, 100% { box-shadow: 0 0 0 16px rgba(53,80,200,0); opacity: 0 }
-}
-@keyframes posv-cursor {
-  0% { transform: translate(26px, 22px) }
-  45%, 75% { transform: translate(0, 0) }
-  100% { transform: translate(26px, 22px) }
-}
-
-/* ════════ USE CASES ════════ */
-
-/* Shared visual chrome — mini app-window frame */
-@keyframes ucv-pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
-
-/* Comps table */
-@keyframes ucv-flash { 0%,100% { background: var(--accent-soft) } 50% { background: var(--accent-soft2) } }
-
-/* Populate cells */
-@keyframes ucv-fillin { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
-
-/* DCF */
-
-/* Briefing */
-
-/* Quarter update */
 
 /* ════════ FAQ ════════ */
 .faq { background: var(--bg); padding: 120px 0 }
@@ -2013,13 +1715,6 @@ button.play { border: none; padding: 0; appearance: none }
   /* contact chip is desktop-only; mobile gets the footer's contact paths */
   .faq-contact { display: none }
   .plans { padding: 80px 0 }
-}
-
-/* Shared modal entrance, used by the "Try It" dialog. It lived with the old
-   mobile "best on desktop" gate; that gate is gone, the keyframes stay. */
-@keyframes heroModalIn {
-  from { opacity: 0; transform: translateY(14px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ════════ MOBILE — phones & small tablets ════════ */
@@ -2978,117 +2673,11 @@ button.play { border: none; padding: 0; appearance: none }
   .hero-s2-wrap { padding: 0 1.25rem; }
 }
 
-/* ════════════════════════════════════════════════
-   TRUSTED BY — full-bleed dark strip
-   ════════════════════════════════════════════════ */
-
-@keyframes trusted-strip-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-/* ═══ Take Control (Speakeasy-style dark CTA) ═══ */
-
-/* rainbow ring: gradient layer under a black pill via padding trick */
-
-/* ════════════════════════════════════════════════
-   BEFORE / AFTER SPLIT (bsp) — after auditability
-   ════════════════════════════════════════════════ */
-
-/* Pinned scroll-driven stepper (Parker-style "how it works").
-   The tall track gives scroll room; the pin sticks and the active tab
-   advances as you scroll through it. --bsp-steps segments the scroll. */
-
-/* The pinned content is scaled per-scroll (dolly zoom) from JS. Origin centre
-   so it grows/shrinks toward the middle of the viewport; will-change keeps the
-   transform on the compositor. */
-
 /* Section-title accent: a blue emphasis word mixed into each otherwise-ink
    heading, so every section title reads as a black + blue blend (design
    feedback). On the dark testimonial panel the accent lightens for contrast. */
 .ttl-hl { color: var(--accent); }
 .testi-head .ttl-hl { color: #fff; }
-
-/* ── Panel ── */
-
-/* Tab strip — Parker-style docking steps. Tabs are collapsed to zero width
-   until the scroll reaches their step, then each slides open and docks to the
-   right of the ones before it, accumulating left→right on a dashed rail. */
-/* Every step is docked in and clickable — a persistent tab rail so a reader
-   can jump straight to any use case without scrolling the whole section. */
-/* Steps not yet reached read as a light "wireframe" preview — dashed, muted,
-   but fully clickable so they act as a jump-to nav. */
-/* The newest-arrived step is emphasised; earlier ones sit back in a tint. */
-
-/* Cross-fading stage: sheets stacked, active one relative (sizes the box),
-   the rest absolute + faded so there is no height jump between steps. */
-
-/* Overlapping action: when a step becomes active its label + rows rise in a
-   short cascade rather than snapping as one flat block. */
-@keyframes whywb-rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-/* Cards rise + fade as the sheet becomes active. */
-@keyframes ba-node-in { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
-
-/* Typed outro — echoes Parker's closing typewriter line. Space is reserved
-   at every step (min-height) so reaching the last step doesn't shift the pin. */
-@keyframes whywb-blink { 0%, 50% { opacity: 1 } 50.01%, 100% { opacity: 0 } }
-
-/* Option B: per-tab node diagrams. Old way = tasks scattered to separate
-   tools; FinSynth way = the same work orbiting one hub. Two panels split by
-   a single hairline, echoing the reference before/after treatment. */
-
-/* ── Tab tones — each tab carries its own accent + soft gradient ── */
-
-/* per-tone "after" kick + dot pick up the tab accent */
-
-/* panel grounds — "before" stays a cool neutral, "after" glows in the tab tone */
-
-/* ── Before: fragmented manual flow ── */
-
-/* ── Before · manual-pull vignette (tab 1): browser → sheet, by hand ── */
-/* the blank workbook: a bare 3×3 cell grid */
-/* dashed flight path spanning the gap between the two windows */
-/* the value, dragged across on loop */
-@keyframes baPull {
-  0%, 6%   { left: 12%; top: 58%; opacity: 0; transform: scale(.85); }
-  12%      { opacity: 1; transform: scale(1); }
-  32%      { top: 16%; }
-  52%      { left: 66%; top: 34%; opacity: 1; transform: scale(1); }
-  58%, 100%{ left: 68%; top: 42%; opacity: 0; transform: scale(.7); }
-}
-@keyframes baCellFill {
-  0%, 54%  { opacity: 0; }
-  60%, 88% { opacity: 1; }
-  97%, 100%{ opacity: 0; }
-}
-@keyframes baLinkPulse {
-  0%, 4%, 16%, 100% { background: transparent; }
-  8% { background: rgba(53,80,200,.14); }
-}
-
-/* ── After: shared shell ── */
-
-/* after · grid (model build) */
-
-/* after · tiles (coverage) */
-
-/* after · highlight (cited answer) */
-
-/* after · diff (live update) */
-@keyframes ba-live {
-  0% { box-shadow: 0 0 0 0 var(--ba-soft); }
-  70% { box-shadow: 0 0 0 8px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-
-@media (max-width: 760px) {
-  /* No pinning on narrow screens — the section flows normally and tabs
-     are click-only (the scroll listener bails on this breakpoint). */
-  /* No scroll-docking on mobile: all tabs are visible, tappable, and wrap. */
-}
 
 /* ════════ SPREADSHEET-HANDLE SEPARATORS + SIDE RAILS ════════
    Selection-handle motif: hairline rules between sections with small
@@ -3270,23 +2859,6 @@ button.play { border: none; padding: 0; appearance: none }
   to   { opacity: 1; transform: none }
 }
 
-/* Positioning block — head, three cards, then the video */
-
-/* Auditability — copy column staggers, stage panel arrives alongside */
-
-/* Before / After — head, then the panel. The heading itself scales up from
-   smaller to full size as the section slides in (feedback: "text size to inc
-   on section slide in"). */
-/* Content holds hidden until the title has landed, so the heading reads first
-   and the panel rises in after it (feedback: "on scroll the titles need to
-   appear first not the content"). Both the tab rail AND the comparison sheet are
-   gated — the rail is ungated content that would otherwise peek into view during
-   the scroll approach, before is-in fires, while the title is still hidden. */
-@keyframes bspHeadZoom {
-  from { opacity: 0; transform: scale(.78); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
 /* Testimonials — head, then the stack rises as one (the cards themselves
    carry inline scroll-driven transforms, so only the container may animate) */
 .testi-head, .testi-deck { opacity: 0 }
@@ -3394,10 +2966,6 @@ button.play { border: none; padding: 0; appearance: none }
   opacity: 1;
   transform: none;
 }
-
-/* Entrance: eyebrow + heading rise + fade when the section arrives. The center
-   list runs its own marquee, so it is left out of the entrance. */
-@keyframes whatRise { to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   .what-list { animation: none; transform: none; }
@@ -5714,13 +5282,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   box-shadow: 0 1.2em 3em rgba(6, 16, 50, .28), 0 0 0 1px rgba(255,255,255,.18);
 }
 .sol-panel h4 { margin: 0; font-size: 1.25em; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2 }
-.sol-panel-sub { margin: .3em 0 0; font-size: 1em; color: var(--muted); line-height: 1.3 }
-.sol-panel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em }
-.sol-pill {
-  display: inline-block; padding: .35em .8em; border-radius: 99em; white-space: nowrap;
-  font-family: var(--font-mono); font-size: .85em; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--accent); background: var(--accent-soft);
-}
 
 /* spreadsheet */
 .sol-sheet { padding: 0 }
@@ -5733,7 +5294,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-sheet table { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
 .sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
 .sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
-.sol-sheet-ok { color: #12A150 }
 /* no tab row at a sheet's foot (feedback: "remove this bar from all
    screens"); the source a sheet is reading from sits in its title's tag */
 
@@ -5761,17 +5321,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   background: var(--accent-soft); color: var(--accent);
   font-family: var(--font-mono); font-size: .78em; letter-spacing: .02em; white-space: nowrap;
 }
-.sol-doc { padding: 0 }
-.sol-doc-figs { margin: 0; padding: 1.4em 1.6em; display: flex; flex-direction: column; gap: 1.1em; flex: 1 }
-.sol-doc-figs div { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; padding-bottom: .9em; border-bottom: 1px solid #EEF0F3 }
-.sol-doc-figs dt { font-size: 1.05em; color: var(--secondary) }
-.sol-doc-figs dd { margin: 0; font-size: 1.5em; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums }
-.sol-doc-foot { margin: auto 0 0; padding: .9em 1.6em; border-top: 1px solid var(--hair); font-family: var(--font-mono); font-size: .8em; color: var(--muted) }
-.sol-points { list-style: none; margin: 0; padding: 1.2em 1.6em; display: flex; flex-direction: column; gap: .8em; flex: 1 }
-.sol-points li { display: flex; justify-content: space-between; align-items: flex-start; gap: 1em; font-size: 1.02em; line-height: 1.4 }
-.sol-cite .sol-points { padding: 1.2em 0 }
-.sol-sheet-miss { color: #C2410C }
-.sol-sheet-pick td { background: var(--accent-soft); color: var(--accent) }
 .sol-evidence { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .7em; flex: 1 }
 .sol-evidence li {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .9em;
@@ -5787,7 +5336,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-findings { list-style: none; margin: 1.4em 0 0; padding: 0; display: flex; flex-direction: column; gap: .6em; flex: 1 }
 .sol-findings li { display: flex; gap: .9em; align-items: baseline; padding: .8em 1em; border-radius: .5em; background: #FFF7E6; color: #7A4B00; font-size: 1.02em; line-height: 1.35 }
 .sol-findings b { font-family: var(--font-mono); font-weight: 500; font-size: .9em; flex: none }
-.sol-audit-ok { margin-top: auto; padding-top: 1.1em; border-top: 1px solid var(--hair) }
 
 /* ── focus stage ── one dominant working screen in the left band and one
    supporting card in the right band, bottom aligned so the two read as
@@ -5819,7 +5367,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 }
 .sol-aside-head b { color: var(--ink); font-weight: 500 }
 .sol-aside-head .sol-src { font-size: .95em }
-.sol-aside-note { margin: .9em 0 0; padding-top: .8em; border-top: 1px solid var(--hair); display: flex; gap: .5em; align-items: flex-start; font-size: .95em; line-height: 1.35; color: var(--secondary) }
 .sol-aside svg { width: 1.1em; height: 1.1em; flex: none; color: #12A150 }
 .sol-aside ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45em }
 
@@ -5839,8 +5386,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-upd-cell span { opacity: 0; transition: opacity .35s }
 .sol-upd-cell.is-filled { background: var(--k-acc-soft); box-shadow: inset 0 0 0 1px var(--k-acc); color: var(--ink); font-weight: 500 }
 .sol-upd-cell.is-filled span { opacity: 1 }
-.sol-upd-var { opacity: 0; transition: opacity .35s; font-weight: 500 }
-.sol-upd-var.is-on { opacity: 1 }
 /* the fund's own margin rows recalculate from the filled cells, so they print
    without the fill highlight: the layout is theirs, the agent only fed it */
 .sol-upd tr.is-derived td { color: var(--muted) }
@@ -5850,8 +5395,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-sheet--earn table { font-size: .95em }
 /* the sheet alone takes the stage, dropped a little so the status pill from
    the home Excel section's Fully auditable scene can sit across its top edge:
-   a spinner while the cells fill, a check once they have. (.sol-pill is the
-   uppercase mono chip, hence the different name) */
+   a spinner while the cells fill, a check once they have. */
 .sol-stage--focus .sol-sheet--earn.sol-main { right: var(--stage-pad); top: calc(var(--stage-pad) + 1.2em) }
 /* screening without a prompt (the sell side's sector view): the sheet sits
    under the pill. With a prompt the stage is a chat pane, below */
@@ -5860,7 +5404,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
    spinner to check with the universe it leaves. While it runs the trail
    beside the pane is not there yet; it fades in when the run is through */
 .sol-stage--run .sol-aside { opacity: 0 }
-.sol-run-who { margin-top: .1em }
 .sol-run ol { list-style: none; margin: 0; padding: 0; min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .6em }
 .sol-run li {
   display: flex; align-items: center; gap: .7em; min-width: 0; white-space: nowrap;
@@ -6014,7 +5557,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-evidence--counter .sol-src { grid-column: 2; justify-self: start }
 .sol-evidence .sol-src { transition: box-shadow .3s, background .3s, color .3s }
 .sol-evidence li.is-sel .sol-src, .sol-screen tr.is-sel .sol-src { background: var(--k-acc-soft); color: var(--ink); box-shadow: 0 0 0 2px var(--k-acc); animation: hwClick .7s ease .4s }
-.sol-excerpt--quote li.is-lit { font-style: italic }
 .sol-excerpt mark { background: transparent; color: inherit; padding: .05em .15em; margin: 0 -.15em; border-radius: .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: background .35s, color .35s }
 .sol-excerpt mark.is-on { background: var(--k-acc-soft); color: var(--ink); font-weight: 500 }
 .sol-excerpt p { margin: 0; font-size: 1em; line-height: 1.5; color: var(--secondary) }
@@ -6038,7 +5580,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 /* how it works: a few cells carry a small product detail in one treatment,
    a hairline strip in the page's grey */
 @media (prefers-reduced-motion: reduce) {
-  .sol-upd td, .sol-upd-cell span, .sol-upd-var, .sol-excerpt li, .sol-sheet .sol-grid td span, .sol-aside.sol-findings li { transition: none }
+  .sol-upd td, .sol-upd-cell span, .sol-excerpt li, .sol-sheet .sol-grid td span, .sol-aside.sol-findings li { transition: none }
 }
 
 /* ── responsive ── one column below 900px; the visual keeps its aspect and
