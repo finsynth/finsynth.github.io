@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-// Floating bottom-right pill. On the way down it jumps to the bottom of the
-// page; once you're there it flips into a back-to-top control. It never hides,
-// so there's always a one-tap way to the other end of the page.
-//
-// The control is outline-only (no fill), so it samples whatever is painted
-// directly behind it and flips to a white outline over dark areas and a dark
-// outline over light ones, staying legible as sections scroll past.
+// Never hides: jumps to the bottom, then flips to back-to-top. Outline-only, so it samples the background
+// behind it and switches between a white and a dark outline.
 function ScrollNextButton() {
   const [atBottom, setAtBottom] = useState(false)
   const [onDark, setOnDark] = useState(false)

@@ -14,12 +14,6 @@ const CheckIcon = (
   </svg>
 )
 
-// The certification seals sit beside this heading and again on the add-in
-// section's "Enterprise ready" stage — both from CertSeals, so the two rows
-// can't drift apart. Compact here, because they share the band with a heading
-// rather than filling a stage cell.
-
-// Four points, two columns — the controls the customer holds.
 const POINTS = [
   {
     key: 'gate',

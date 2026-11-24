@@ -10,16 +10,9 @@ import {
 
 const DEFAULT_CHARSET = '!@#$%^&*()_+-=<>?/\\|'
 
-// While a decode runs the real word stays in layout as an invisible ghost
-// and each churning symbol is painted at the measured centre of its
-// character. Symbols vary in width, so rendering them inline would change the
-// word's width every frame and, in a centred layout, shake the words beside
-// it. Per-character boxes aren't enough either: they lose the kerning pairs
-// and the word still runs a few px wider than at rest.
-// Each symbol's box is the measured box of its character (the font's
-// ascent+descent), with line-height equal to that height, so the symbol sits
-// on the same baseline as the letters; a plain absolute span would get its own
-// line box and float the symbol a few px above the word.
+// The real word stays in layout as an invisible ghost and each churning symbol is painted at its
+// character's measured box: inline symbols vary in width and would shake a centred line, and
+// per-character boxes lose kerning. line-height = box height keeps the symbol on the letters' baseline.
 const GHOST = { visibility: 'hidden' }
 const glyphStyle = (c) => ({
   position: 'absolute',

@@ -3,20 +3,6 @@ import GridReveal from '@/components/visuals/GridReveal'
 import { LINKS } from '@/config/site'
 import { SOLUTIONS } from '@/components/layout/Navbar'
 
-/**
- * The prompt the "Ask your AI" menu hands off to an assistant.
- *
- * The question is the visitor's: what we are, and how we compare to the two
- * things they are already weighing us against — a general assistant and a
- * specialised research tool. That comparison is the FAQ's answer too ("How is
- * FinSynth different from a general AI assistant?"), so keep the two in step.
- *
- * The question is the whole prompt: it is what a visitor would actually type,
- * and it is short enough to read in the Copy item before sending it. It used to
- * carry a tail telling the model to treat finsynth.ai as the source of truth and
- * cite its pages — that is in git history, and worth reaching for again if
- * answers start coming back positioned off third-party write-ups.
- */
 const ASK_PROMPT =
   'What is FinSynth (finsynth.ai), and how does it compare to general AI assistants and specialized financial research tools?'
 const q = encodeURIComponent(ASK_PROMPT)
@@ -51,7 +37,6 @@ export default function Footer() {
     return () => io.disconnect()
   }, [])
 
-  // Ask-AI dropdown — close on outside click / Escape
   useEffect(() => {
     if (!askOpen) return
     const onDown = (e: MouseEvent) => {
@@ -83,14 +68,12 @@ export default function Footer() {
       <GridReveal asBackground pointerTargetRef={ref} idle idleLevel={0.28} reach={340} core={90} />
       <div className="wrap">
         <div className="foot-cols">
-          {/* LEFT — brand + headline + CTA, aligned as one lockup */}
           <div className="foot-lockup foot-reveal">
             <div className="foot-brand">
               <img src="/assets/img/full-logo-white.svg" alt="FinSynth Logo" />
             </div>
             <div className="foot-cta-copy">
-              {/* one line wherever the footer stacks (feedback); the break only
-                  holds beside the nav, where one line would reach it */}
+              {/* the break only holds beside the nav; stacked, the headline is one line */}
               <h3>
                 See it in <br />
                 your own workflows
@@ -184,31 +167,19 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* RIGHT — nav columns above, Ask-AI below */}
           <div className="foot-right">
-            {/* The reveal is on the grid, not on the four columns: staggering
-                them meant each column rose from its own offset on its own
-                delay, so mid-animation the headings sat at four different
-                heights. They travel as one block now. */}
+            {/* reveal the grid as one block: per-column staggers left the headings at different heights mid-animation */}
             <div className="foot-grid-new foot-reveal">
-              {/* Grouped the way a company site is read (Product / Company /
-                  Legal / Social), not by link type. Careers lives under Company and
-                  points at /careers, which lists the postings; the navbar's
-                  Careers menu still shows them one by one from
-                  src/data/roles.js. Socials are plain links, not icons. */}
               <div>
                 <h4>Product</h4>
                 <a href="/#excel">FinSynth for Excel</a>
                 <a href="/#fia-agent">Fia</a>
-                {/* straight after Fia (feedback), and not a link until it ships
-                    (same treatment as the navbar) */}
+                {/* not a link until it ships (same as the navbar) */}
                 <span className="foot-soon">
                   FinSynth MCP
                   <br className="foot-soon-br" /> (coming soon)
                 </span>
               </div>
-              {/* feedback: the desks the navbar's Solutions menu lists, from
-                  the same data so the two can't disagree */}
               <div>
                 <h4>Solutions</h4>
                 {SOLUTIONS.map((s) => (
@@ -222,7 +193,6 @@ export default function Footer() {
                 <a href="/#pricing">Pricing</a>
                 <a href="/careers">Careers</a>
                 <a href="/support">Support</a>
-                {/* the company's posture (SOC 2, GDPR, ISO), not a product feature */}
                 <a href="/#security">Security</a>
                 <a href={LINKS.bookCall} target="_blank" rel="noopener noreferrer">
                   Contact
@@ -238,8 +208,6 @@ export default function Footer() {
                 </a>
                 <a href="/#security">Compliance</a>
               </div>
-              {/* feedback: the socials get their own section rather than
-                  riding under Company */}
               <div>
                 <h4>Social</h4>
                 <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer">

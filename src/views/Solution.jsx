@@ -9,11 +9,7 @@ import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages, { Cursor } from '@/components/shared/HowStages'
 
-/* ── drawn product panels ──────────────────────────────────────────────────
- * Every visual is drawn, not a screenshot, so the numbers in it are
- * illustrative and sized in em off the stage, which is what lets the whole
- * picture scale down on a phone instead of re-flowing.
- */
+/* Visuals are sized in em off the stage so they scale down on a phone instead of re-flowing. */
 
 function Tick() {
   return (
@@ -30,18 +26,9 @@ function Tick() {
   )
 }
 
-/* where a figure or claim came from */
 function Src({ children }) {
   return <span className="sol-src">{children}</span>
 }
-
-/* ── hedge fund visuals ────────────────────────────────────────────────────
- * One dominant working screen and one smaller supporting card that overlaps
- * its corner: the source it came from, the finding it points at, or the
- * result it produced. Three of them move, on the home page's source-tracing
- * pattern: a tick clock steps through the rows, and the completed state is
- * what the loop rests on, so a still frame still reads.
- */
 
 /* a tick clock that starts once the stage is in view; reduced motion holds
    the last tick (the finished state) */
@@ -71,8 +58,6 @@ function useTicks(total, ms, ref, paused = false) {
   return t
 }
 
-/* the screen's shortlist: the names that passed on the numbers and on what
-   management said, each data point with the document it came from */
 const SCREEN_ROWS = [
   ['Crocs', '+120bp', 'Raised', 'Q3 FY26 release'],
   ['Deckers', '+110bp', 'Raised', 'Q2 FY26 call'],
@@ -86,8 +71,7 @@ const SCREEN_CRITERIA = [
   'Guidance raised or held',
   'Pricing holding on the call',
 ]
-/* the line each of the first three names' data point came from, for the
-   sourced-shortlist scene; the Crocs line is the one the thesis stage cites */
+/* The Crocs line is the one the thesis stage cites; change both together. */
 const SCREEN_CITES = [
   {
     doc: 'Q3 FY26 release',
@@ -112,10 +96,7 @@ const SCREEN_CITES = [
   },
 ]
 
-/* the citation flow's geometry, shared by the scenes that click a source
-   chip: on each tick, the selected chip, the excerpt card and the line lit
-   in it are measured in the stage's own coordinates, so the wire and the
-   pointer can be placed over the panels and scale with the stage */
+/* Measured in the stage's own coordinates so the wire and pointer scale with the stage. */
 function useWire(ref, t, chipSel) {
   const [geo, setGeo] = useState(null)
   useLayoutEffect(() => {
@@ -152,8 +133,7 @@ function useWire(ref, t, chipSel) {
   return geo
 }
 
-/* the wire from the chip to the card, and the pointer on the chip; keyed on
-   the tick so the wire redraws for each new source */
+/* keyed on the tick so the wire redraws for each new source */
 function Wire({ geo, tick }) {
   if (!geo) return null
   const dx = (geo.x2 - geo.x1) * 0.5
@@ -178,21 +158,9 @@ function Wire({ geo, tick }) {
   )
 }
 
-/* screening and idea generation: the ask sits at the top as the user typed
-   it, as niche as a real one (feedback: a very specific prompt, and the
-   product still finds the names). Under it FinSynth works: one specific tool
-   call after another appears in the run panel, each with the universe it
-   narrows to, spinner to check. When the run is through the shortlist takes
-   the panel's place, prints a name at a time, the calls stay listed beside it
-   as the trail, and the pill over the sheet turns its spinner into a check.
-   With `cite` the list is already full and the scene walks its sources
-   instead: the pointer clicks a name's source chip, the card beside the sheet
-   opens that document and the data point's line lights in it. Without a
-   `prompt` there is no run: the criteria tick beside the sheet as the rows
-   print, as the sell side's sector view uses it */
+/* cite: the list starts full and the scene walks its sources. No prompt: no run; the criteria tick beside the sheet (the sell side's sector view). */
 const SCREEN_PROMPT =
   'Screen US consumer for footwear names where gross margin inflected this quarter, guidance was raised or held, and management said pricing is holding on the last call'
-/* the calls the prompt turns into, in order, and the universe each leaves */
 const SCREEN_CALLS = [
   { fn: 'screen_universe', arg: 'US consumer, footwear', n: '1,840' },
   { fn: 'pull_financials', arg: 'gross margin inflected, 8 quarters', n: '212' },
@@ -200,7 +168,6 @@ const SCREEN_CALLS = [
   { fn: 'search_transcripts', arg: '"pricing" on the last call', n: '23' },
   { fn: 'rank_matches', arg: 'all three criteria, by margin move', n: '6' },
 ]
-/* what FinSynth says over the shortlist once the run is through */
 const SCREEN_SAY = '6 names match on all three, each sourced to its filing'
 function ScreenVisual({
   cite = false,
@@ -234,10 +201,6 @@ function ScreenVisual({
   const sel = cite ? t : -1
   const c = cite ? SCREEN_CITES[t] : null
   const geo = useWire(ref, sel, '.sol-screen tr.is-sel .sol-src')
-  /* with a prompt the stage is one chat: the ask at the top of the pane,
-     FinSynth's reply under it (its calls while it runs, then the shortlist
-     as its answer), the ask box at the foot, as the thesis stage draws it.
-     Without one (the sell side's sector view) the sheet sits under the pill */
   const chat = Boolean(prompt)
   const shortlist = (
     <table className="sol-upd sol-screen">
@@ -397,9 +360,7 @@ function ScreenVisual({
   )
 }
 
-/* the model's own rows: four reported lines the release fills, and two margin
-   rows that are the fund's formulas, which recalculate when their inputs land.
-   `line` is the sentence in the release each reported figure is taken from */
+/* line = the release sentence each reported figure comes from; the two margin rows are the fund's formulas and recalculate. */
 const EARN_ROWS = [
   { label: 'Revenue', prior: '1,184.2', now: '1,284.6' },
   { label: 'Gross profit', prior: '470.1', now: '512.5' },
@@ -410,10 +371,7 @@ const EARN_ROWS = [
 ]
 const EARN_INPUTS = EARN_ROWS.filter((r) => !r.fx)
 
-/* one motion: the reported column fills cell by cell in the fund's own
-   layout, their margin rows recalculate, and the pill over the sheet turns
-   its spinner into a check and reads Model updated. Two ticks a row (the row
-   lights, the cell fills), then a hold on the finished update */
+/* Two ticks a row (the row lights, the cell fills), then a hold. */
 function EarningsVisual() {
   const ref = useRef(null)
   const HOLD = 8
@@ -518,8 +476,6 @@ const OVERVIEW_SECTIONS = [
   },
 ]
 
-/* one section of a drafted brief: a heading over a cited sentence, or over
-   a row of key figures */
 function BriefSection({ s, className = '' }) {
   return (
     <section className={className}>
@@ -542,8 +498,6 @@ function BriefSection({ s, className = '' }) {
   )
 }
 
-/* the stack of sources beside a drafted panel: what was read, or what the
-   draft was built from */
 function SourceStack({ head, sources, on = false }) {
   return (
     <div className="sol-panel sol-aside sol-stack">
@@ -564,9 +518,6 @@ function SourceStack({ head, sources, on = false }) {
   )
 }
 
-/* a research brief, with the stack of sources that fed it. The scene passes
-   what the brief is of and what was read, so the same stage draws a company
-   overview, an initiation's groundwork or a first read of a deal */
 function OverviewVisual({
   title = 'Crocs · overview',
   tag = 'Drafted by Fia',
@@ -592,12 +543,7 @@ function OverviewVisual({
   )
 }
 
-/* the memo FinSynth drafts in the committee's format: four sections, each
-   claim carrying its source chip, written in turn under the same pill the
-   other stages wear. The aside lists what the draft was built from. One tick
-   a section, then a hold on the finished draft. The scene passes the memo's
-   name, sections and sources, so the stage also draws an earnings note or
-   an IC memo from a dataroom */
+/* One tick a section, then a hold on the finished draft. */
 const MEMO_SECTIONS = [
   {
     h: 'Thesis',
@@ -679,8 +625,7 @@ function MemoVisual({
   )
 }
 
-/* the model's historical columns, spread from the three 10-Ks. The forecast
-   columns stay empty: the claim is that the analyst starts there */
+/* Forecast columns stay empty on purpose: the analyst starts there. */
 const BUILD_YEARS = ['FY23A', 'FY24A', 'FY25A']
 const BUILD_ROWS = [
   ['Revenue', '3,962', '4,102', '4,236'],
@@ -690,8 +635,6 @@ const BUILD_ROWS = [
   ['Free cash flow', '782', '904', '948'],
 ]
 const BUILD_PAGES = ['FY23 10-K · p. 41', 'FY24 10-K · p. 43', 'FY25 10-K · p. 44']
-/* the DCF tab's output, what the build is for: the bridge from enterprise
-   value to a value per share, and that value against the price */
 const DCF_OUT = [
   ['Enterprise value', '9,420'],
   ['Net debt', '(1,310)'],
@@ -702,12 +645,7 @@ const DCF_OUT = [
 const DCF_PRICE = '$118.70'
 const DCF_UPSIDE = '+22%'
 
-/* the model window beside the FinSynth pane, the way the add-in sits in Excel.
-   Year by year the historical column fills in the fund's template from that
-   year's 10-K, the pane counts the years and the recast, then the DCF tab
-   lights and the pill over the sheet turns its spinner into a check. Two
-   ticks a year (the column lights, then fills), one for the recast, one for
-   the DCF, then a hold on the finished build */
+/* Two ticks a year (column lights, then fills), one for the recast, one for the DCF, then a hold. */
 function ModelBuildVisual() {
   const ref = useRef(null)
   const HOLD = 8
@@ -813,7 +751,6 @@ function ModelBuildVisual() {
           <p>Build the model and DCF in our template from the last three 10-Ks</p>
         </div>
         <div className="sol-pane-body">
-          {/* the agent's running line, which its result replaces once the build is done */}
           <p className="sol-pane-say" key={done ? 'done' : 'run'}>
             {done
               ? 'History ties out across the three years. The forecast columns are yours'
@@ -845,8 +782,6 @@ function ModelBuildVisual() {
   )
 }
 
-/* the fund's own comps sheet: the subject on top, four peers the agent fills,
-   and a median row that is the fund's formula, recalculating once they land */
 const COMPS = [
   { name: 'Crocs', ev: '8.9x', pe: '15.2x', evs: '2.1x', self: true },
   { name: 'Deckers', ev: '14.8x', pe: '22.6x', evs: '3.4x' },
@@ -857,9 +792,6 @@ const COMPS = [
 ]
 const COMPS_PEERS = COMPS.filter((p) => !p.self && !p.fx)
 
-/* one motion, the earnings row's: the peers' multiples fill row by row in the
-   fund's own template, calendarised as they land, the median recalculates,
-   and the pill over the sheet turns its spinner into a check */
 function CompsVisual() {
   const ref = useRef(null)
   const HOLD = 8
@@ -941,14 +873,6 @@ function CompsVisual() {
   )
 }
 
-/* the thesis as a chat: the ask in the FinSynth pane, the agent's reply the
-   tested points, each with its tag and its source, and the strongest case
-   against it last. Each point is cited, so the scene runs the evidence
-   stage's citation flow (HowStages): on its clock the pointer moves to the
-   next point's source chip and clicks it, the excerpt card beside the pane
-   opens that source, the wire draws from the chip to the card and the line
-   the point came from lights there. Measured from the live layout, so the
-   composition scales with the stage */
 const THESIS_POINTS = [
   {
     tag: 'Supported',
@@ -1049,18 +973,12 @@ const FINDINGS = [
   { cell: 'C16', fx: '=C15/C12', text: 'Formula differs from the rest of the row' },
 ]
 
-/* the selected finding walks the list; its cell lights and the formula bar
-   shows what is actually in it */
 function AuditVisual() {
   const ref = useRef(null)
   const t = useTicks(FINDINGS.length * 5, 600, ref)
   const sel = Math.floor(t / 5)
   const f = FINDINGS[sel]
   const cols = ['C', 'D', 'E']
-  /* feedback: the pointer and the wire here too. On each finding the pointer
-     moves to its cell and clicks it, and the wire draws from the cell to the
-     finding in the list beside it, measured from the live layout as the
-     thesis stage does */
   const [geo, setGeo] = useState(null)
   useLayoutEffect(() => {
     const wrap = ref.current
@@ -1167,8 +1085,6 @@ function AuditVisual() {
   )
 }
 
-/* small drawn fragments for a few of the how-it-works cells, one treatment:
-   a hairline strip in the page's grey with a single product detail in it */
 const VISUALS = {
   screen: ScreenVisual,
   earnings: EarningsVisual,
@@ -1180,12 +1096,9 @@ const VISUALS = {
   memo: MemoVisual,
 }
 
-/* a use case's scenes play in turn: each screen runs its own loop about
-   once, then the next fades in over the same ground. The ground under them
-   is the stage's blue, so the swap reads as a dissolve */
+/* each scene's loop runs about once before the next fades in */
 const SCENE_MS = 10400
 
-/* the home page's section titles carry one accent word, the last one */
 function highlight(title) {
   const at = title.lastIndexOf(' ')
   if (at < 0) return title
@@ -1196,8 +1109,6 @@ function highlight(title) {
   )
 }
 
-/* the head band of a framed section, as the home page's Excel section wears it:
-   no kicker label, the title alone on the frame's inset */
 function FrameHead({ title }) {
   return (
     <div className="x4e-head x4e-reveal">
@@ -1208,11 +1119,6 @@ function FrameHead({ title }) {
   )
 }
 
-/* a use case row: its name as the title, then one paragraph of the scenes'
-   copy (the outcome no longer leads it; it stays in the data unused). The
-   stage runs through
-   the use case's scenes on its own clock; the copy no longer lights sentence
-   by sentence and the row number is gone from the eyebrow line */
 function Workflow({ w, flip }) {
   const ref = useReveal({ threshold: 0.12 })
   const stageRef = useRef(null)
@@ -1250,9 +1156,6 @@ export default function Solution({ slug, heroSrc }) {
       </div>
       <Navbar />
       <main className="sol-page">
-        {/* the hero as a full-bleed photo of a stone capital, darkened, with
-            the copy centred on it like the home hero's cell. No Excel grid behind it:
-            the solutions heroes stay plain */}
         <header className="sol-hero sol-hero--photo">
           <div className="sol-hero-bg" aria-hidden="true">
             <img src={heroSrc} alt="" loading="eager" fetchpriority="high" />
@@ -1265,8 +1168,6 @@ export default function Solution({ slug, heroSrc }) {
               <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
                 Talk to Us
               </a>
-              {/* the home hero's second button, word for word: the self-serve
-                  path names the price, and the arrow only shows on hover */}
               <a
                 className="hero-s2-cta hero-s2-cta--ghost"
                 href={APP_HREF}
@@ -1291,7 +1192,6 @@ export default function Solution({ slug, heroSrc }) {
                 </svg>
               </a>
             </div>
-            {/* the strategies the page serves, as pills under the buttons */}
             {sol.strategies && (
               <div className="sol-chips">
                 <span className="sol-chips-lead">{sol.strategiesLead}</span>
@@ -1307,17 +1207,12 @@ export default function Solution({ slug, heroSrc }) {
         {/* no rule under the hero: the dark block's own edge is the rule, and
             the rule's guide nodes would straddle the photo */}
 
-        {/* the use cases in one hairline frame on the page's grey ground, head
-            band on top, then the rows split down the middle like the home
-            page's Excel pane: copy on one side, the stage filling the other */}
         <section className="wrap sol-works-wrap" id="use-cases">
           <div className="x4e-frame sol-works" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => (
               <Workflow key={w.key} w={w} flip={i % 2 === 1} />
             ))}
-            {/* the line under the rows: the four are the shape of the work,
-                not the whole of it */}
             {sol.useCasesMore && (
               <p className="sol-works-more">
                 <span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}
@@ -1331,7 +1226,6 @@ export default function Solution({ slug, heroSrc }) {
           <HowStages how={{ ...sol.how, titleNode: highlight(sol.how.title) }} id="how-it-works" />
         )}
 
-        {/* the page's quote, in the home page's Customers treatment */}
         {sol.quote && <Testimonial quotes={[{ quote: sol.quote.text, name: sol.quote.who }]} />}
 
         {sol.faqs && <SectionRule />}

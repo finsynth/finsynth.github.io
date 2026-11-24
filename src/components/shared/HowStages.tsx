@@ -14,10 +14,6 @@ interface How {
   steps?: HowStep[]
 }
 
-/* ── How it works on the solution pages ── the three stages of one research
- * workflow as columns, each holding the pillars (how.steps in
- * src/data/solutions.js) that belong to it as cards. */
-
 export const HOW_STAGES = [
   {
     n: '01',
@@ -55,8 +51,6 @@ export function Cursor({ x, y }: { x: number; y: number }) {
   )
 }
 
-/* the pillars, grouped under the stage each belongs to: what you can bring,
-   what you can run, how you check it */
 const STAGE_STEPS = [
   ['format', 'dataroom', 'mcp'],
   ['workflows', 'surfaces', 'skills'],
@@ -134,8 +128,6 @@ function Head({ how }: { how: How }) {
   )
 }
 
-/* every pillar as a card under its stage, the whole inventory on the page at
-   once with nothing to open */
 function Grid({ steps }: { steps: HowStep[] }) {
   return (
     <div className="hw-grid-cols">

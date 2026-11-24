@@ -1,21 +1,8 @@
 import { useEffect, useRef } from 'react'
 
-// Black-and-white pixelation of the Wall Street photo — the canyon looking
-// down the street, the NYSE colonnade and its flags on the right — over a
-// plain white background. Before the reveal the hero is simply white paper.
-//
-// On scroll into view the mosaic assembles piece-by-piece: individual tiles drop
-// and pop into their slots on scattered, staggered beats — like Lego bricks
-// snapping into place — until the full image has settled edge-to-edge (tiles
-// flush, no gaps). Then it resolves: the blocky mosaic dissolves into the sharp
-// greyscale photo, so the pixels are only ever the way in — what's left on
-// screen is the real photograph. Reduced motion → the resolved photo, once.
-//
-// The photo is fully sharp ~0.74s in (delay + duration + HOLD_MS + RESOLVE_MS),
-// then an endless push-in keeps it breathing while the hero is on screen.
-// The bricks are the slow part by design, but the payoff is the sharp photo,
-// so the assemble stays short.
-// already greyscale at source, so the luminance sampling below is a no-op on it
+// Greyscale photo mosaic: tiles assemble bottom-up, then resolve into the sharp photo
+// (~0.74s: delay + duration + HOLD_MS + RESOLVE_MS) and push in until off screen.
+// Reduced motion shows the resolved photo once. The source is already greyscale.
 const SRC = '/assets/img/wall-street-bw.webp'
 
 // fraction of the assemble timeline a single tile takes to drop + settle
@@ -23,27 +10,11 @@ const REVEAL_WINDOW = 0.16
 // after the last brick lands: beat of stillness, then the de-pixelate crossfade
 const HOLD_MS = 70
 const RESOLVE_MS = 150
-// Once the photo is sharp: an endless push-in that never pulls back. Two copies
-// of the plate run one ZOOM_RATIO step apart and both scale up together; the
-// nearer one fades out as it overruns the frame while the farther one takes
-// over, so after ZOOM_MS the pair is arranged exactly as it was a step earlier
-// and the loop closes on itself. Every feature on screen is always travelling
-// away from the anchor and never back toward it, which is the whole point — the
-// old triangle-wave zoom reversed every second and read as zooming in and out.
-//
-// The fade has to be linear. The blend's centre in log-scale is
-// (1-a)·u + a·(u+1) with a = 1-u, which is constant only while `a` falls at a
-// constant rate; ease it and the hand-off smuggles a stretch of reverse drift
-// back in. Cost of the trick is a permanent soft double image, and how far apart
-// the two copies sit is exactly ZOOM_RATIO. Drift speed is ZOOM_RATIO per
-// ZOOM_MS, though, so a small step on a short cycle buys the same motion for a
-// fraction of the ghost: at 4% the copies are close enough to pass for a faint
-// radial blur on a photo already sitting behind a scrim. A 1.22 step was tried
-// first and the hand-off was plainly a cross-dissolve.
-//
-// The first cycle runs single-layer, so the mosaic resolves into the photo at
-// its own 1:1 scale before the second copy joins. Anchored to the bottom edge so
-// the street level stays put and the zoom reads as leaning into the scene.
+// Endless push-in: two copies one ZOOM_RATIO step apart scale up together and
+// cross-fade, so the loop closes on itself without ever zooming back out.
+// The fade must stay linear: easing it reintroduces reverse drift at the
+// hand-off. Keep the step small: the copies sit ZOOM_RATIO apart as a soft
+// double image, and a 1.22 step read as a plain cross-dissolve.
 const ZOOM_MS = 2600
 const ZOOM_RATIO = 1.04
 // ease-out-back overshoot so each brick snaps in with a tiny bounce
@@ -65,10 +36,7 @@ const WallStreetPixelCanvas = ({
   tile = 10, // approximate pixel size of one chunky tile (css px)
   // Horizontal anchor of the crop (0 = left edge of the photo, 1 = right).
   focusX = 0.5,
-  // Vertical anchor (0 = top of the photo, 1 = bottom). The hero is far wider
-  // than the photo, so cover crops vertically: this pushes the crop down to the
-  // street — colonnade, flags, the Wall St sign, people — and lets the sky and
-  // upper towers, which pixelate into flat grey, fall away above the fade.
+  // Vertical anchor (0 = top, 1 = bottom). 0.68 keeps the street and drops the sky, which pixelates to flat grey.
   focusY = 0.68,
   duration = 480, // full assemble time (ms) — last brick lands here
   delay = 40, // hold on white after scroll-in before bricks start (ms)
@@ -90,7 +58,6 @@ const WallStreetPixelCanvas = ({
     const ctx = cv.getContext('2d')
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // page background, normalised to r/g/b for the base + top readability fade
     const bgVar =
       getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#ffffff'
     ctx.fillStyle = bgVar
@@ -124,8 +91,6 @@ const WallStreetPixelCanvas = ({
     // black and white, so the crossfade reads as focus, never as a colour shift
     const lum = (r, g, b) => (0.2126 * r + 0.7152 * g + 0.0722 * b) | 0
 
-    // downsample the cover-cropped photo to the coarse grid and cache each
-    // cell's tone, and bake the full-res greyscale plate for the resolve
     const build = () => {
       vw = Math.max(stage.clientWidth, 320)
       vh = Math.max(stage.clientHeight, 240)
@@ -138,9 +103,9 @@ const WallStreetPixelCanvas = ({
       cell = tile
       cols = Math.max(1, Math.round(vw / cell))
       rows = Math.max(1, Math.round(vh / cell))
-      cell = vw / cols // exact fit across the width
+      cell = vw / cols
       ox = 0
-      oy = vh - rows * cell // anchor the grid to the bottom
+      oy = vh - rows * cell
       if (oy > 0) oy = 0
 
       if (!imgReady) {
@@ -149,10 +114,7 @@ const WallStreetPixelCanvas = ({
         return
       }
 
-      // Lay the source out on the coarse grid and read one tone per cell.
-      // Laid out as object-fit: cover, so the mosaic reaches every edge of the
-      // hero: the source is portrait and the hero is wide, so anything short of
-      // cover leaves cells that sample as plain page paper down the sides.
+      // object-fit: cover — the source is portrait and the hero wide, so anything less leaves page-paper cells down the sides.
       const iw = img.naturalWidth,
         ih = img.naturalHeight
       const fx = Math.min(1, Math.max(0, focusX))
@@ -188,9 +150,7 @@ const WallStreetPixelCanvas = ({
         }
       }
 
-      // The plate the mosaic resolves into: the same cover crop, at full canvas
-      // resolution, drained of colour. Baked once per layout so the crossfade
-      // itself stays a cheap blit.
+      // Baked once per layout so the crossfade stays a cheap blit.
       sharp = document.createElement('canvas')
       sharp.width = cv.width
       sharp.height = cv.height
@@ -217,7 +177,6 @@ const WallStreetPixelCanvas = ({
     // pA: mosaic assembly 0→1. pR: de-pixelate crossfade 0→1 (mosaic → photo).
     // pZ: post-resolve push-in, counted in ZOOM_RATIO steps and never reset.
     const draw = (pA, pR, pZ = 0) => {
-      // white paper base
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, cv.width, cv.height)
       ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`
@@ -225,11 +184,8 @@ const WallStreetPixelCanvas = ({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       if (!grays) return
 
-      // assemble the mosaic brick-by-brick: each tile fades, drops in from just
-      // above, and pops into its slot with a small overshoot on its own beat.
-      // Settled tiles sit flush (a hair of bleed kills seams) so the finished
-      // image fills the hero edge-to-edge. Skipped entirely once the photo has
-      // fully taken over — the blocks are underneath it and no longer visible.
+      // bleed overlaps settled tiles by a hair so no seams show; skipped once
+      // the sharp photo fully covers the mosaic
       const bleed = 0.75
       if (pR < 1) {
         for (let j = 0; j < rows; j++) {
@@ -257,9 +213,6 @@ const WallStreetPixelCanvas = ({
         }
       }
 
-      // …then the blocks give way to the real photograph. Every tile is already
-      // the average tone of the patch it covers, so the fade reads as the image
-      // pulling into focus rather than as one picture swapping for another.
       if (pR > 0 && sharp) {
         const base = pR < 1 ? pR * pR * (3 - 2 * pR) : 1 // smoothstep
         const u = pZ - Math.floor(pZ) // 0→1 within a step
@@ -278,10 +231,7 @@ const WallStreetPixelCanvas = ({
       }
       ctx.globalAlpha = 1
 
-      // Top scrim → just enough paper over the sky for the heading to read.
-      // Deliberately shallow and never fully opaque: a taller or solid scrim
-      // whitens the upper half and the photo stops reading as the hero's
-      // background at all — it looks like a band pinned to the bottom.
+      // Shallow and never opaque on purpose: a taller or solid scrim whitens the upper half and the photo stops reading as the hero background.
       const fadeH = vh * 0.34
       const grad = ctx.createLinearGradient(0, 0, 0, fadeH)
       grad.addColorStop(0, `rgba(${bgR},${bgG},${bgB},0.62)`)

@@ -1,13 +1,7 @@
 import { useEffect, useRef } from 'react'
 
-/* Grid Reveal — hover-fill perspective grid: 52 warped quadrilaterals fanning
-   up into a dome. The fill follows the cursor as a soft spotlight — cells
-   near the pointer fade in (blue gradient) and trail off as it moves away.
-   A slow ambient drift keeps the grid alive when untouched; reduced-motion
-   visitors get one static frame. Fill opacity is driven per-cell in a rAF
-   loop; the CSS opacity transition adds the trailing softness. */
+/* Fill opacity is set per cell in a rAF loop; the CSS opacity transition adds the trailing softness. Reduced motion gets one static frame. */
 
-// warped-quadrilateral cells — fill in on proximity
 const CELLS = [
   'M1107 75C1147.88 68.8135 1188.57 61.9551 1229 54V159.273C1188.57 164.046 1147.88 167.788 1107 171.5V75Z',
   'M1107 75C1066.51 81.1811 1025.82 86.4778 985 90.8903V181C1025.82 178.353 1066.51 175.174 1107 171.466V75Z',
@@ -47,7 +41,6 @@ const CELLS = [
   'M121 54V0H1V27.614C40.7109 37.2884 80.7296 46.0837 121 54Z',
 ]
 
-// faint always-on wireframe — the arced latitude lines + straight longitude lines
 const LINES = [
   'M612.8 527.266C654.194 526.382 695.617 526.378 737.012 527.254',
   'M489 446C612.747 441.341 737.251 441.333 861 445.979',
@@ -181,7 +174,6 @@ function GridReveal({
     }
   }, [reach, core, idle, idleLevel, pointerTargetRef])
 
-  // shared inner grid — used both by the standalone section and the footer backdrop
   const svg = (
     <svg
       ref={svgRef}
@@ -224,7 +216,6 @@ function GridReveal({
     </svg>
   )
 
-  // backdrop mode: no <section> chrome — an absolute layer that fills its host
   if (asBackground) {
     return (
       <div className="gridreveal--bg" aria-hidden="true">

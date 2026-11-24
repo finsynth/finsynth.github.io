@@ -1,131 +1,30 @@
-/**
- * The per-desk solution pages (/solutions/<slug>). One entry per segment the
- * navbar's Solutions menu links to; a slug with no entry here falls back to
- * the home page. Copy only: the drawn product panels each `visual` names
- * live in pages/Solution.jsx. Five desks: hedge funds, asset managers, sell
- * side, family offices and private markets.
- */
+/** One entry per desk (/solutions/<slug>); a slug with no entry falls back to the home page. The `visual` names map to drawn panels in src/views/Solution.jsx. */
 
-// the eight pillars run in the same order on every page; only the wording
-// changes by audience, so each page lists [title, body] pairs and this maps
-// them onto the keys, visuals and timings HowStages expects
+// Pillars run in the same order on every page; each page lists [title, body] and this maps them onto HowStages' keys.
 type Pillar = [title: string, body: string]
 
-const PILLAR_SHAPE: [key: string, visual: string, ms: number][] = [
-  ['workflows', 'workflows', 4800],
-  ['surfaces', 'surfaces', 4200],
-  ['cited', 'cited', 4200],
-  ['format', 'format', 4200],
-  ['skills', 'skills', 4200],
-  ['dataroom', 'dataroom', 4200],
-  ['mcp', 'sources', 5000],
-  ['review', 'trace', 9000],
+const PILLAR_KEYS = [
+  'workflows',
+  'surfaces',
+  'cited',
+  'format',
+  'skills',
+  'dataroom',
+  'mcp',
+  'review',
 ]
 const howSteps = (pillars: Pillar[]) =>
   pillars.map(([title, body], i) => {
-    const [key, visual, ms] = PILLAR_SHAPE[i]
-    return { key, visual, ms, title, body }
+    return { key: PILLAR_KEYS[i], title, body }
   })
 
-// the worked example the three-stage layouts run (Crocs Q3 FY26 actuals into
-// a model): shared by every page, each renaming the file and the folder the
-// desk would actually keep. The sheet and the cited release lines stay as
-// they are, since the numbers are Crocs' either way
-const CROCS_EXAMPLE = {
-  sources: [
-    { icon: 'doc', name: 'Q3 FY26 release', kind: 'Filing', meta: '24 pages' },
-    { icon: 'sheet', name: 'Fund_model_v12.xlsx', kind: 'Your template', meta: 'Crocs' },
-    { icon: 'plug', name: 'Consensus estimates', kind: 'Snowflake via MCP', meta: '14 brokers' },
-    { icon: 'folder', name: 'Broker notes', kind: 'Dataroom', meta: '3 files' },
-  ],
-  surfaces: ['Excel add-in', 'Web app'],
-  file: 'Fund_model_v12.xlsx',
-  instruction: 'Update the Crocs model for Q3 actuals and flag anything off consensus',
-  skill: 'Earnings update',
-  sheet: {
-    cols: ['USD m', 'Q3 FY25A', 'Q3 FY26A', 'Cons.', 'vs cons.'],
-    rows: [
-      ['Revenue', '1,184.2', '1,284.6', '1,258.0', '+2.1%'],
-      ['Gross profit', '470.1', '512.5', '504.0', '+1.7%'],
-      ['Adj. EBITDA', '196.4', '208.3', '210.0', '-0.8%'],
-      ['Diluted EPS', '0.84', '0.91', '0.88', '+3.4%'],
-    ],
-  },
-  done: '4 of 4 cells updated, 12 citations',
-  cite: {
-    source: 'Q3 FY26 release',
-    where: 'p. 4',
-    from: 8,
-    reviewed: 3,
-    total: 12,
-    lines: [
-      {
-        row: 0,
-        cell: 'C8',
-        before: 'Third quarter ',
-        mark: 'net revenue of $1,284.6m',
-        after: ', up 8.5% on the prior year. ',
-      },
-      {
-        row: 1,
-        cell: 'C9',
-        before: '',
-        mark: 'Gross profit of $512.5m',
-        after: ' represented a gross margin of 39.9%, against 39.7% a year earlier. ',
-      },
-      {
-        row: 2,
-        cell: 'C10',
-        before: '',
-        mark: 'Adjusted EBITDA was $208.3m',
-        after: ', compared with $196.4m in the prior year quarter. ',
-      },
-      {
-        row: 3,
-        cell: 'C11',
-        before: '',
-        mark: 'Diluted earnings per share of $0.91',
-        after: ', up from $0.84',
-      },
-    ],
-  },
-}
-// the example with the desk's own file name and folder swapped in
-interface ExampleOverrides {
-  file: string
-  kind?: string
-  folder?: string
-  instruction?: string
-  skill?: string
-}
-const exampleFor = ({
-  file,
-  kind = 'Your template',
-  folder = 'Broker notes',
-  instruction,
-  skill,
-}: ExampleOverrides) => ({
-  ...CROCS_EXAMPLE,
-  file,
-  instruction: instruction || CROCS_EXAMPLE.instruction,
-  skill: skill || CROCS_EXAMPLE.skill,
-  sources: CROCS_EXAMPLE.sources.map((s) =>
-    s.icon === 'sheet'
-      ? { ...s, name: file, kind }
-      : s.icon === 'folder'
-        ? { ...s, name: folder }
-        : s,
-  ),
-})
-const howFor = (example: ReturnType<typeof exampleFor>, pillars: Pillar[]) => ({
+const howFor = (pillars: Pillar[]) => ({
   title: 'Fast to draft. Faster to trust',
   eyebrow: 'How your team works with FinSynth',
-  example,
   steps: howSteps(pillars),
 })
 
-/* the private deal the family offices and private markets desks work through
-   on their drawn screens, under the codename a live deal would carry */
+/* shared by the family offices and private markets pages */
 const TIDE_BUSINESS = {
   h: 'Business',
   p: 'Regional specialty retailer, 64 stores across the Southwest and 31% of sales online; founder-led, raising growth capital',
@@ -152,8 +51,6 @@ const TIDE_ROOM = [
   ['Loan agreement', 'PDF'],
   ['Lease schedule', 'Excel'],
 ]
-/* the dataroom read as a thesis test: two findings that hold and the risk to
-   raise, each with the line in the room it came from */
 const TIDE_POINTS = [
   {
     tag: 'Supported',
@@ -189,9 +86,7 @@ const TIDE_POINTS = [
 ]
 
 export const SOLUTIONS = {
-  // Copy taken from the approved page outline canvas (Oct 2026). The hero lede
-  // is the sentence agents are meant to quote, so it stays word-for-word the
-  // same wherever hedge funds are described.
+  // Approved copy. The hero lede is the sentence AI assistants are meant to quote: keep it word-for-word wherever hedge funds are described.
   'hedge-funds': {
     name: 'Hedge Funds',
     title: 'Take your research from draft to decision',
@@ -199,13 +94,7 @@ export const SOLUTIONS = {
     strategiesLead: 'Built to work across strategies',
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
     useCasesHead: { eyebrow: 'Use cases', title: 'Where FinSynth fits into hedge fund research' },
-    // the four stages of an idea's life, from the approved copy: each row is
-    // the use case's number, its name as the row's title, the outcome it
-    // delivers as the line under it, then its paragraph. The paragraph is
-    // split into scenes: each one names the screen that shows that part,
-    // and the stage plays the screens in turn while the copy lights the
-    // part being shown. The key is the row's anchor so the block can later
-    // lift into its own page
+    // Each row's paragraph is split into scenes; each scene names the screen that shows it. The key is the row's anchor.
     workflows: [
       {
         key: 'idea-generation',
@@ -282,82 +171,54 @@ export const SOLUTIONS = {
         ],
       },
     ],
-    // the line under the four rows
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    // The same rail + stage the home page's Excel section uses: five claims on
-    // the left, one visual on stage per claim. `ms` is how long each holds on
-    // the auto-step; the citation trace is a 9s loop and gets the longest turn.
     how: {
       title: 'Fast to draft. Faster to trust',
-      // the three-stage layouts (?how=columns|workspace|evidence) run one
-      // example through every stage: the documents brought in at stage one are
-      // the inputs at stage two, and the cell written there is the one verified
-      // at stage three. Only this example changes by audience; the stage labels
-      // and explanations live in src/components/HowStages.jsx
       eyebrow: 'How your team works with FinSynth',
-      example: CROCS_EXAMPLE,
-      // the pillars as approved in the page outline, word for word (Enterprise ready dropped)
+      // approved copy, word for word
       steps: [
         {
           key: 'workflows',
-          visual: 'workflows',
-          ms: 4800,
           title: 'Runs your research workflows',
           body: 'Screening and idea generation, getting up to speed, models and diligence, and monitoring and updates, all from one agent',
         },
         {
           key: 'surfaces',
-          visual: 'surfaces',
-          ms: 4200,
           title: 'Works in Excel and on the web',
           body: 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
         },
         {
           key: 'cited',
-          visual: 'cited',
-          ms: 4200,
           title: 'Every output cited',
           body: 'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
         },
         {
           key: 'format',
-          visual: 'format',
-          ms: 4200,
           title: 'Your house format',
           body: 'Models, comps and memos built in your templates, the way your fund already works',
         },
         {
           key: 'skills',
-          visual: 'skills',
-          ms: 4200,
           title: 'Skills for repeat workflows',
           body: 'Teach FinSynth your earnings update or comps routine once, then run it on every name in your book',
         },
         {
           key: 'dataroom',
-          visual: 'dataroom',
-          ms: 4200,
           title: 'Dataroom',
           body: 'Keep broker notes, expert call transcripts and internal research in folders, and attach them to any session',
         },
         {
           key: 'mcp',
-          visual: 'sources',
-          ms: 5000,
           title: 'MCP connectors',
           body: 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
         },
         {
           key: 'review',
-          visual: 'trace',
-          ms: 9000,
           title: 'Review citations',
           body: 'Select a range of cells and step through the source of every number in one pass',
         },
       ],
     },
-    // the page’s own quote, shown in the home page’s Customers treatment under
-    // its default title, "Hear what the analysts have to say" (feedback)
     quote: {
       text: '“We’re seeing the actual leverage of an AI tool, the outputs aren’t just good-looking, they’re easily verifiable.”',
       who: 'L/S Portfolio Manager',
@@ -402,10 +263,7 @@ export const SOLUTIONS = {
       },
     ],
   },
-  // The four other desks, copy from the same approved outline canvas. The
-  // shape is hedge funds': five use cases here instead of four, the nine
-  // pillars through howFor, and the Crocs worked example renamed to the
-  // desk's own file.
+  // Other desks follow the hedge funds shape; copy from the same approved outline.
   'asset-managers': {
     name: 'Asset Managers',
     title: 'Take your research from draft to decision',
@@ -501,7 +359,7 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(exampleFor({ file: 'Fund_model_v12.xlsx' }), [
+    how: howFor([
       [
         'Runs your research workflows',
         'Screening and idea generation, getting up to speed, models and valuation, investment memos and holding reviews, all from one agent',
@@ -746,49 +604,40 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(
-      exampleFor({
-        file: 'CROX_coverage_model.xlsx',
-        kind: 'House template',
-        folder: 'Past notes',
-        instruction:
-          'Update the Crocs coverage model for Q3 actuals and flag anything off consensus',
-      }),
+    how: howFor([
       [
-        [
-          'Runs your research workflows',
-          'Initiations, models and valuation, earnings notes, thematic reports and client requests, all from one agent',
-        ],
-        [
-          'Works in Excel and on the web',
-          'Use it as an Excel add-in inside your coverage models, or in the web app for research and notes',
-        ],
-        [
-          'Every output cited',
-          'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
-        ],
-        [
-          'Your house format',
-          'Models, comps and notes built in your house templates, the way your desk already works',
-        ],
-        [
-          'Skills for repeat workflows',
-          'Teach FinSynth your earnings note or comps routine once, then run it on every name you cover',
-        ],
-        [
-          'Dataroom',
-          'Keep company presentations, management meeting notes, industry reports and your past notes in folders, and attach them to any session',
-        ],
-        [
-          'MCP connectors',
-          'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
-        ],
-        [
-          'Review citations',
-          'Before a note goes out, select any range and step through the source of every number in one pass',
-        ],
+        'Runs your research workflows',
+        'Initiations, models and valuation, earnings notes, thematic reports and client requests, all from one agent',
       ],
-    ),
+      [
+        'Works in Excel and on the web',
+        'Use it as an Excel add-in inside your coverage models, or in the web app for research and notes',
+      ],
+      [
+        'Every output cited',
+        'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
+      ],
+      [
+        'Your house format',
+        'Models, comps and notes built in your house templates, the way your desk already works',
+      ],
+      [
+        'Skills for repeat workflows',
+        'Teach FinSynth your earnings note or comps routine once, then run it on every name you cover',
+      ],
+      [
+        'Dataroom',
+        'Keep company presentations, management meeting notes, industry reports and your past notes in folders, and attach them to any session',
+      ],
+      [
+        'MCP connectors',
+        'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
+      ],
+      [
+        'Review citations',
+        'Before a note goes out, select any range and step through the source of every number in one pass',
+      ],
+    ]),
     quote: {
       text: '“Results season used to mean late nights rebuilding the model and checking every number twice. Now the note is drafted, sourced and ready for review before the morning meeting.”',
       who: 'Equity Research Analyst',
@@ -962,7 +811,7 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(exampleFor({ file: 'Portfolio_model_v4.xlsx' }), [
+    how: howFor([
       [
         'Runs your research workflows',
         'Company research, diligence on public and private deals, valuation, investment memos and monitoring, all from one agent',
@@ -1169,48 +1018,40 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(
-      exampleFor({
-        file: 'Comps_set_v3.xlsx',
-        folder: 'Deal dataroom',
-        instruction: 'Update the Crocs comp for Q3 actuals and flag anything off consensus',
-        skill: 'Comp update',
-      }),
+    how: howFor([
       [
-        [
-          'Runs your research workflows',
-          'Deal screening, due diligence, spreading and valuation, credit and IC memos and portfolio monitoring, all from one agent',
-        ],
-        [
-          'Works in Excel and on the web',
-          'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
-        ],
-        [
-          'Every output cited',
-          'Each number and claim links to the exact page in the CIM, dataroom document, credit agreement or filing',
-        ],
-        [
-          'Your house format',
-          'Models, spreads and memos built in your templates, the way your team already works',
-        ],
-        [
-          'Skills for repeat workflows',
-          'Teach FinSynth your spreading or memo routine once, then run it on every deal',
-        ],
-        [
-          'Dataroom',
-          'Keep CIMs, deal datarooms, management accounts and credit documents in folders, and attach them to any session',
-        ],
-        [
-          'MCP connectors',
-          'Connect FinSynth to your data providers and tools, like Snowflake and Microsoft 365',
-        ],
-        [
-          'Review citations',
-          'Before a memo goes to IC, select any range and step through the source of every number in one pass',
-        ],
+        'Runs your research workflows',
+        'Deal screening, due diligence, spreading and valuation, credit and IC memos and portfolio monitoring, all from one agent',
       ],
-    ),
+      [
+        'Works in Excel and on the web',
+        'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
+      ],
+      [
+        'Every output cited',
+        'Each number and claim links to the exact page in the CIM, dataroom document, credit agreement or filing',
+      ],
+      [
+        'Your house format',
+        'Models, spreads and memos built in your templates, the way your team already works',
+      ],
+      [
+        'Skills for repeat workflows',
+        'Teach FinSynth your spreading or memo routine once, then run it on every deal',
+      ],
+      [
+        'Dataroom',
+        'Keep CIMs, deal datarooms, management accounts and credit documents in folders, and attach them to any session',
+      ],
+      [
+        'MCP connectors',
+        'Connect FinSynth to your data providers and tools, like Snowflake and Microsoft 365',
+      ],
+      [
+        'Review citations',
+        'Before a memo goes to IC, select any range and step through the source of every number in one pass',
+      ],
+    ]),
     quote: {
       text: '“Our associates basically stopped doing tie-outs. Click a number in the IC memo and it opens the right page of the CIM.”',
       who: 'Private Equity Fund',

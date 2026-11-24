@@ -22,7 +22,6 @@ const QUOTES = [
   },
 ]
 
-// ← / → chevrons for the deck controls
 const Chevron = ({ back = false }: { back?: boolean }) => (
   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path
@@ -43,9 +42,7 @@ const DEFAULT_TITLE = (
   </>
 )
 
-// Other pages pass their own quotes (a solutions page carries the one quote
-// from its outline). With a single card there is no deck to page through, so
-// the arrows go and the stack holds still.
+// with a single quote there is no deck: no arrows, and the stack holds still
 interface Quote {
   quote: string
   name: string
@@ -66,20 +63,14 @@ export default function Testimonial({
   const deck = quotes.length > 1
   return (
     <section className="testi-sec" id={id} ref={sectionRef}>
-      {/* the stack cycles through the quotes on an automatic timer */}
       <div className="testi-pin" ref={revealRef}>
         <div className="wrap">
-          {/* Head */}
           <div className="testi-head">
             <p className="hiw-eyebrow">Customers</p>
             <h2>{title}</h2>
           </div>
 
-          {/* Card stack — front card flies up and tucks behind automatically.
-              The arrows sit on the deck's corner for anyone who wants to go at
-              their own pace, or back to a quote that has already passed. They
-              live outside .testi-stack: the hook animates that element's direct
-              children, so a control inside it would be dealt as a card. */}
+          {/* the arrows live outside .testi-stack: the hook animates its direct children, so a control inside would be dealt as a card */}
           <div className={`testi-deck${deck ? '' : ' testi-deck--single'}`}>
             {deck && (
               <div className="testi-nav">

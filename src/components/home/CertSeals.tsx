@@ -1,20 +1,7 @@
 /**
- * The certification seals, rendered in two places: the "Enterprise ready" stage
- * of the add-in section, where they are the evidence for that claim, and the
- * Security section's head band, where they caption the section they belong to.
- *
- * One component rather than two copies of the markup, because the list is a
- * factual claim about what we hold — a duplicated array would drift the moment
- * a certification lands, and one of the two would start saying something untrue.
- *
- * `pending` marks one not yet awarded: it reads back from the certified seals
- * and carries an "In progress" pill on its lower edge, so the row never implies
- * a certification we don't hold.
- *
- * `sub` qualifies the name where the name alone would be imprecise — SOC 2 is
- * two different audits and we hold the Type II. It sits on its own small line
- * rather than in `name`, because the name is a display glyph sized to fill a
- * square plate and "SOC 2 Type II" would wrap inside it.
+ * One list for both places it renders: it is a factual claim, and a second copy would drift.
+ * `pending` = not yet awarded (dimmed, "In progress" pill). `sub` sits on its own line because
+ * `name` is a display glyph sized to its plate and "SOC 2 Type II" would wrap.
  */
 export const SEALS = [
   { key: 'soc2', top: 'AICPA', name: 'SOC 2', sub: 'Type II' },

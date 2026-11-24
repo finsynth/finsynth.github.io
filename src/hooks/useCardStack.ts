@@ -1,29 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react'
 
 /**
- * iOS-style cyclic card stack on an automatic timer.
- *
- * Attach `stackRef` to the container whose direct children are the cards
- * (`sectionRef` to the section — used only to pause the loop offscreen).
- * The deck cycles on its own: after HOLD_MS the front card lifts up out of the
- * stack on a sine arc, flips to the back z-index at the apex, and settles into
- * the last slot while the deeper cards each slide one slot forward. Cards at
- * rest are translated down PEEK px and scaled down SCALE_STEP per unit of
- * depth, so they peek out below the front.
- *
- * Hovering the deck pauses it so the front card can be read, but only at rest:
- * a card already in flight always completes its arc and lands before the deck
- * holds, so a hover never freezes a card mid-air. Moving the pointer away
- * resumes the cycle.
- *
- * `next`/`prev` drive the same step by hand, for arrow controls. Going back is
- * the forward flight of the card behind the deck played in reverse, so there is
- * one motion in this file and both directions land in exactly the resting
- * arrangement the timer would produce. A click during a flight is ignored rather
- * than queued: the card in the air always finishes its own arc.
- *
- * No-op when the user prefers reduced motion (CSS shows a plain column), where
- * `next`/`prev` do nothing and the arrows are hidden.
+ * Cyclic card stack on a timer. Attach `stackRef` to the element whose direct children are the cards;
+ * `sectionRef` only pauses the loop offscreen.
+ * Hover pauses at rest only: a card in flight always lands first.
+ * `next`/`prev` run the same flight (prev in reverse); clicks during a flight are ignored, not queued.
+ * No-op under reduced motion (CSS shows a plain column; next/prev do nothing).
  */
 const PEEK = 24 // px each deeper card peeks out below the one in front
 const SCALE_STEP = 0.05 // scale lost per unit of depth
@@ -63,12 +45,7 @@ export default function useCardStack(count: number) {
         const raw = (i - base + count * 2) % count // 0 = front slot
         let y: number, s: number, z: number, o: number
         if (raw === 0 && t > 0) {
-          // in flight: up and over the top, then down behind the deck. The card
-          // thins out to a ghost across the arc — at the apex it overlaps the
-          // card that has just slid into the front slot almost exactly, and two
-          // opaque quotes on screen at once read as a duplicated section rather
-          // than as one card moving. Opacity is back at 1 by the landing, where
-          // it is the deepest card and only peeking out below the deck anyway.
+          // The card fades across the arc: at the apex it overlaps the new front card, and two opaque quotes read as a duplicated section.
           const landDepth = count - 1
           y = landDepth * PEEK * t - lift * Math.sin(Math.PI * t)
           s = 1 - landDepth * SCALE_STEP * t
