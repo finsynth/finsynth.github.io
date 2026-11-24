@@ -18,96 +18,9 @@ const howSteps = (pillars: Pillar[]) =>
     return { key: PILLAR_KEYS[i], title, body }
   })
 
-// Shared by every page; each desk renames only the file and folder. The sheet and release lines stay Crocs' numbers.
-const CROCS_EXAMPLE = {
-  sources: [
-    { icon: 'doc', name: 'Q3 FY26 release', kind: 'Filing', meta: '24 pages' },
-    { icon: 'sheet', name: 'Fund_model_v12.xlsx', kind: 'Your template', meta: 'Crocs' },
-    { icon: 'plug', name: 'Consensus estimates', kind: 'Snowflake via MCP', meta: '14 brokers' },
-    { icon: 'folder', name: 'Broker notes', kind: 'Dataroom', meta: '3 files' },
-  ],
-  surfaces: ['Excel add-in', 'Web app'],
-  file: 'Fund_model_v12.xlsx',
-  instruction: 'Update the Crocs model for Q3 actuals and flag anything off consensus',
-  skill: 'Earnings update',
-  sheet: {
-    cols: ['USD m', 'Q3 FY25A', 'Q3 FY26A', 'Cons.', 'vs cons.'],
-    rows: [
-      ['Revenue', '1,184.2', '1,284.6', '1,258.0', '+2.1%'],
-      ['Gross profit', '470.1', '512.5', '504.0', '+1.7%'],
-      ['Adj. EBITDA', '196.4', '208.3', '210.0', '-0.8%'],
-      ['Diluted EPS', '0.84', '0.91', '0.88', '+3.4%'],
-    ],
-  },
-  done: '4 of 4 cells updated, 12 citations',
-  cite: {
-    source: 'Q3 FY26 release',
-    where: 'p. 4',
-    from: 8,
-    reviewed: 3,
-    total: 12,
-    lines: [
-      {
-        row: 0,
-        cell: 'C8',
-        before: 'Third quarter ',
-        mark: 'net revenue of $1,284.6m',
-        after: ', up 8.5% on the prior year. ',
-      },
-      {
-        row: 1,
-        cell: 'C9',
-        before: '',
-        mark: 'Gross profit of $512.5m',
-        after: ' represented a gross margin of 39.9%, against 39.7% a year earlier. ',
-      },
-      {
-        row: 2,
-        cell: 'C10',
-        before: '',
-        mark: 'Adjusted EBITDA was $208.3m',
-        after: ', compared with $196.4m in the prior year quarter. ',
-      },
-      {
-        row: 3,
-        cell: 'C11',
-        before: '',
-        mark: 'Diluted earnings per share of $0.91',
-        after: ', up from $0.84',
-      },
-    ],
-  },
-}
-interface ExampleOverrides {
-  file: string
-  kind?: string
-  folder?: string
-  instruction?: string
-  skill?: string
-}
-const exampleFor = ({
-  file,
-  kind = 'Your template',
-  folder = 'Broker notes',
-  instruction,
-  skill,
-}: ExampleOverrides) => ({
-  ...CROCS_EXAMPLE,
-  file,
-  instruction: instruction || CROCS_EXAMPLE.instruction,
-  skill: skill || CROCS_EXAMPLE.skill,
-  sources: CROCS_EXAMPLE.sources.map((s) =>
-    s.icon === 'sheet'
-      ? { ...s, name: file, kind }
-      : s.icon === 'folder'
-        ? { ...s, name: folder }
-        : s,
-  ),
-})
-const howFor = (example: ReturnType<typeof exampleFor>, pillars: Pillar[]) => ({
+const howFor = (pillars: Pillar[]) => ({
   title: 'Fast to draft. Faster to trust',
   eyebrow: 'How your team works with FinSynth',
-  example,
   steps: howSteps(pillars),
 })
 
@@ -261,9 +174,7 @@ export const SOLUTIONS = {
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
     how: {
       title: 'Fast to draft. Faster to trust',
-      // One example runs through every stage; only the example changes by audience. Stage labels live in src/components/shared/HowStages.tsx.
       eyebrow: 'How your team works with FinSynth',
-      example: CROCS_EXAMPLE,
       // approved copy, word for word
       steps: [
         {
@@ -448,7 +359,7 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(exampleFor({ file: 'Fund_model_v12.xlsx' }), [
+    how: howFor([
       [
         'Runs your research workflows',
         'Screening and idea generation, getting up to speed, models and valuation, investment memos and holding reviews, all from one agent',
@@ -693,49 +604,40 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(
-      exampleFor({
-        file: 'CROX_coverage_model.xlsx',
-        kind: 'House template',
-        folder: 'Past notes',
-        instruction:
-          'Update the Crocs coverage model for Q3 actuals and flag anything off consensus',
-      }),
+    how: howFor([
       [
-        [
-          'Runs your research workflows',
-          'Initiations, models and valuation, earnings notes, thematic reports and client requests, all from one agent',
-        ],
-        [
-          'Works in Excel and on the web',
-          'Use it as an Excel add-in inside your coverage models, or in the web app for research and notes',
-        ],
-        [
-          'Every output cited',
-          'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
-        ],
-        [
-          'Your house format',
-          'Models, comps and notes built in your house templates, the way your desk already works',
-        ],
-        [
-          'Skills for repeat workflows',
-          'Teach FinSynth your earnings note or comps routine once, then run it on every name you cover',
-        ],
-        [
-          'Dataroom',
-          'Keep company presentations, management meeting notes, industry reports and your past notes in folders, and attach them to any session',
-        ],
-        [
-          'MCP connectors',
-          'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
-        ],
-        [
-          'Review citations',
-          'Before a note goes out, select any range and step through the source of every number in one pass',
-        ],
+        'Runs your research workflows',
+        'Initiations, models and valuation, earnings notes, thematic reports and client requests, all from one agent',
       ],
-    ),
+      [
+        'Works in Excel and on the web',
+        'Use it as an Excel add-in inside your coverage models, or in the web app for research and notes',
+      ],
+      [
+        'Every output cited',
+        'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
+      ],
+      [
+        'Your house format',
+        'Models, comps and notes built in your house templates, the way your desk already works',
+      ],
+      [
+        'Skills for repeat workflows',
+        'Teach FinSynth your earnings note or comps routine once, then run it on every name you cover',
+      ],
+      [
+        'Dataroom',
+        'Keep company presentations, management meeting notes, industry reports and your past notes in folders, and attach them to any session',
+      ],
+      [
+        'MCP connectors',
+        'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
+      ],
+      [
+        'Review citations',
+        'Before a note goes out, select any range and step through the source of every number in one pass',
+      ],
+    ]),
     quote: {
       text: '“Results season used to mean late nights rebuilding the model and checking every number twice. Now the note is drafted, sourced and ready for review before the morning meeting.”',
       who: 'Equity Research Analyst',
@@ -909,7 +811,7 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(exampleFor({ file: 'Portfolio_model_v4.xlsx' }), [
+    how: howFor([
       [
         'Runs your research workflows',
         'Company research, diligence on public and private deals, valuation, investment memos and monitoring, all from one agent',
@@ -1116,48 +1018,40 @@ export const SOLUTIONS = {
       },
     ],
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    how: howFor(
-      exampleFor({
-        file: 'Comps_set_v3.xlsx',
-        folder: 'Deal dataroom',
-        instruction: 'Update the Crocs comp for Q3 actuals and flag anything off consensus',
-        skill: 'Comp update',
-      }),
+    how: howFor([
       [
-        [
-          'Runs your research workflows',
-          'Deal screening, due diligence, spreading and valuation, credit and IC memos and portfolio monitoring, all from one agent',
-        ],
-        [
-          'Works in Excel and on the web',
-          'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
-        ],
-        [
-          'Every output cited',
-          'Each number and claim links to the exact page in the CIM, dataroom document, credit agreement or filing',
-        ],
-        [
-          'Your house format',
-          'Models, spreads and memos built in your templates, the way your team already works',
-        ],
-        [
-          'Skills for repeat workflows',
-          'Teach FinSynth your spreading or memo routine once, then run it on every deal',
-        ],
-        [
-          'Dataroom',
-          'Keep CIMs, deal datarooms, management accounts and credit documents in folders, and attach them to any session',
-        ],
-        [
-          'MCP connectors',
-          'Connect FinSynth to your data providers and tools, like Snowflake and Microsoft 365',
-        ],
-        [
-          'Review citations',
-          'Before a memo goes to IC, select any range and step through the source of every number in one pass',
-        ],
+        'Runs your research workflows',
+        'Deal screening, due diligence, spreading and valuation, credit and IC memos and portfolio monitoring, all from one agent',
       ],
-    ),
+      [
+        'Works in Excel and on the web',
+        'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
+      ],
+      [
+        'Every output cited',
+        'Each number and claim links to the exact page in the CIM, dataroom document, credit agreement or filing',
+      ],
+      [
+        'Your house format',
+        'Models, spreads and memos built in your templates, the way your team already works',
+      ],
+      [
+        'Skills for repeat workflows',
+        'Teach FinSynth your spreading or memo routine once, then run it on every deal',
+      ],
+      [
+        'Dataroom',
+        'Keep CIMs, deal datarooms, management accounts and credit documents in folders, and attach them to any session',
+      ],
+      [
+        'MCP connectors',
+        'Connect FinSynth to your data providers and tools, like Snowflake and Microsoft 365',
+      ],
+      [
+        'Review citations',
+        'Before a memo goes to IC, select any range and step through the source of every number in one pass',
+      ],
+    ]),
     quote: {
       text: '“Our associates basically stopped doing tie-outs. Click a number in the IC memo and it opens the right page of the CIM.”',
       who: 'Private Equity Fund',
