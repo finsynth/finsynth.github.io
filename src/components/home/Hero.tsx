@@ -123,7 +123,7 @@ function RotatingSegment() {
 function Hero() {
   return (
     <section className="hero-s2 hero-s2--photo">
-      <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
+      <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" />
       <span className="stat-pill" aria-hidden="true"></span>
       <div className="hero-s2-wrap">
         {/* ── ONE BIG CELL ── */}
