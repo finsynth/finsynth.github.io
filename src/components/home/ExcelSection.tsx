@@ -613,11 +613,9 @@ export default function ExcelSection({
       FinSynth for <span className="ttl-hl">Excel</span>
     </>
   ),
-  badge,
 }: {
   id?: string
   title?: ReactNode
-  badge?: ReactNode
 }) {
   const frameRef = useReveal<HTMLDivElement>({ threshold: 0.08 })
   const paneRef = useRef<HTMLDivElement>(null)
@@ -631,10 +629,7 @@ export default function ExcelSection({
         <div className="x4e-frame" ref={frameRef}>
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
-              <h2>
-                {title}
-                {badge && <span className="x4e-badge">{badge}</span>}
-              </h2>
+              <h2>{title}</h2>
             </div>
           </div>
 
