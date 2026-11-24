@@ -1,17 +1,8 @@
 /**
- * Isometric 3×3×3 assembly — seven pieces fly in from off-axis, hold, fade,
- * repeat. Ported from the Claude Design source (Enterprise Pricing Card), drawn
- * as white cubes outlined in the page accent so it sits on the paper.
- *
- * The projection is a plain isometric one: P() flattens a lattice point, and
- * each cell paints only the three faces a viewer can see (top, right, left).
- * Cells are drawn back-to-front by i+j+k so the near ones overlap correctly —
- * there is no z-buffer here, only paint order.
+ * Isometric 3×3×3 assembly. No z-buffer: cells are painted back-to-front by i+j+k so near ones overlap correctly.
  */
 
-// Seconds per full assemble → hold → fade cycle. Long, and most of it is the
-// hold: this sits beside sales copy, so the stack should be a thing that
-// settles and stays settled, glanced at rather than watched.
+// mostly hold: it sits beside sales copy, so it should settle and stay settled
 const CYCLE_SECONDS = 7
 const U = 95 // cube edge, in projection units
 const C = 1.5 * U // half the 3-cube, so the lattice centres on 0
@@ -21,16 +12,10 @@ type Point = [number, number]
 const P = (x: number, y: number, z: number): Point => [(x - y) * 0.866, (x + y) * 0.5 - z]
 const pt = (p: Point) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`
 
-/* t/r/l = top, right, left face. Every piece is the same white cube outlined in
-   the page accent (the stroke lives in .ent-viz-face), so the design's four
-   blue tints collapse to one recipe: the two shaded faces are barely off white
-   and only exist so a cube's own edges stay legible against its neighbours. */
+/* t/r/l = top, right, left face. The stroke lives in .ent-viz-face; the shaded faces are barely off white so each cube's edges stay legible. */
 const FACE = { t: '#FFFFFF', r: '#F6F8FE', l: '#ECF0FC' }
 
-/* Each piece names its cells and the offset it flies in from. The offsets are
-   short — a little under one cube edge — so a piece reads as easing into place
-   rather than flying across the panel; the direction is what says which way it
-   came from, and the distance past that is only travel. */
+/* Offsets are under one cube edge so a piece eases into place rather than flying across the panel. */
 type Vec3 = [number, number, number]
 
 const PIECES: { cells: Vec3[]; from: Vec3 }[] = [
@@ -103,13 +88,7 @@ const CELLS = PIECES.flatMap((piece, pi) =>
   piece.cells.map((c) => ({ c, pi, d: c[0] + c[1] + c[2] })),
 ).sort((a, b) => a.d - b.d)
 
-/* One keyframe track per piece: hold off-screen, slide in on a staggered beat,
-   hold assembled, then fade before the loop restarts. The reduced-motion rule
-   parks every piece assembled instead of removing it.
-
-   The stagger is packed into the first third of the cycle so the rest of it is
-   the stack standing still: the last piece lands around 41%, which leaves the
-   assembled form on screen for roughly 3.3 of the 7 seconds before the fade. */
+/* Per piece: off-screen, staggered slide-in, hold, fade. The stagger fits the first third (last piece lands ~41%), so the stack holds ~3.3s of 7. Reduced motion parks every piece assembled. */
 const KEYFRAMES =
   PIECES.map((p, pi) => {
     const [fx, fy, fz] = p.from

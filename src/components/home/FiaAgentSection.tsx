@@ -1,7 +1,3 @@
-
-// One claim per row, each a single clause: the rows sit beside the Excel
-// section's rail on the same page, so they read in the same register as its
-// pillars rather than as sentences.
 const CLAIMS = [
   {
     title: 'Agentic research',
@@ -23,7 +19,6 @@ function ChatWindow({ shot }: { shot: Shot }) {
   return (
     <div className="fiag-window">
       <div className="fiag-page">
-        {/* the page itself is the product shot */}
         <img
           className="fiag-shot"
           src={shot.src}
@@ -54,8 +49,7 @@ export default function FiaAgentSection({ id = 'fia-agent', shot }: { id?: strin
           </div>
 
           <div className="x4e-pane">
-            {/* claims, not navigation — the stage never changes, so these rows
-                are static and none of them wears the active marker */}
+            {/* static rows: the stage never changes, so none wears the active marker */}
             <ol className="x4e-rail">
               {CLAIMS.map((c) => (
                 <li key={c.title}>

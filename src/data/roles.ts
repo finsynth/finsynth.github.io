@@ -1,18 +1,7 @@
 import { EMAILS, SITE } from '@/config/site'
 import { ENV } from '@/config/env'
 
-/**
- * The open roles, in one place. The footer's Careers column, the navbar's
- * Careers menu, and the /careers page all read this list, so a role can't be
- * open in one and gone from another — the same reason the certification seals
- * are one array.
- *
- * Applications go to a Tally form (TALLY_FORM_ID below). Tally hosts the form
- * and the resume upload; the site only links to it, passing the role along as
- * a hidden field so one form serves every opening. Until the form ID is filled
- * in, applyHref falls back to the mailto the site always published, so the
- * Apply buttons never point at a dead URL.
- */
+/** Footer, navbar and /careers all read this list. Until TALLY_FORM_ID is set, applyHref falls back to the mailto. */
 export const CAREERS_EMAIL = EMAILS.support
 
 export const TALLY_FORM_ID = ENV.tallyFormId
@@ -153,19 +142,13 @@ export const ROLES: Role[] = [
   },
 ]
 
-// Location in brackets, so the role reads first and the city is the aside:
-// "Founding GTM Lead (NYC)". The footer column and the navbar menu render
-// this, and it is also the role value an application arrives under.
+// also the role value an application arrives under
 export const roleLabel = (r: Role) => `${r.title} (${r.place})`
 
-// Where the navbar/footer role links land: the posting on /careers. Hash ids
-// match `key`; the browser jumps to them natively.
+// /careers ids must match `key`
 export const roleHref = (r: Role) => `/careers#${r.key}`
 
-// Where "Apply" goes: the Tally form, with the role prefilled into a hidden
-// `role` field (create it in Tally with exactly that name). Falls back to the
-// mailto the site published before the form existed, so the button always
-// lands somewhere real.
+// The Tally form needs a hidden field named exactly `role`; falls back to mailto until the form id is set.
 export const applyHref = (r: Role) =>
   TALLY_FORM_ID
     ? `https://tally.so/r/${TALLY_FORM_ID}?role=${encodeURIComponent(roleLabel(r))}`

@@ -1,14 +1,6 @@
-/**
- * The per-desk solution pages (/solutions/<slug>). One entry per segment the
- * navbar's Solutions menu links to; a slug with no entry here falls back to
- * the home page. Copy only: the drawn product panels each `visual` names
- * live in pages/Solution.jsx. Five desks: hedge funds, asset managers, sell
- * side, family offices and private markets.
- */
+/** One entry per desk (/solutions/<slug>); a slug with no entry falls back to the home page. The `visual` names map to drawn panels in src/views/Solution.jsx. */
 
-// the eight pillars run in the same order on every page; only the wording
-// changes by audience, so each page lists [title, body] pairs and this maps
-// them onto the keys, visuals and timings HowStages expects
+// Pillars run in the same order on every page; each page lists [title, body] and this maps them onto HowStages' keys and visuals.
 type Pillar = [title: string, body: string]
 
 const PILLAR_SHAPE: [key: string, visual: string, ms: number][] = [
@@ -27,10 +19,7 @@ const howSteps = (pillars: Pillar[]) =>
     return { key, visual, ms, title, body }
   })
 
-// the worked example the three-stage layouts run (Crocs Q3 FY26 actuals into
-// a model): shared by every page, each renaming the file and the folder the
-// desk would actually keep. The sheet and the cited release lines stay as
-// they are, since the numbers are Crocs' either way
+// Shared by every page; each desk renames only the file and folder. The sheet and release lines stay Crocs' numbers.
 const CROCS_EXAMPLE = {
   sources: [
     { icon: 'doc', name: 'Q3 FY26 release', kind: 'Filing', meta: '24 pages' },
@@ -90,7 +79,6 @@ const CROCS_EXAMPLE = {
     ],
   },
 }
-// the example with the desk's own file name and folder swapped in
 interface ExampleOverrides {
   file: string
   kind?: string
@@ -124,8 +112,7 @@ const howFor = (example: ReturnType<typeof exampleFor>, pillars: Pillar[]) => ({
   steps: howSteps(pillars),
 })
 
-/* the private deal the family offices and private markets desks work through
-   on their drawn screens, under the codename a live deal would carry */
+/* shared by the family offices and private markets pages */
 const TIDE_BUSINESS = {
   h: 'Business',
   p: 'Regional specialty retailer, 64 stores across the Southwest and 31% of sales online; founder-led, raising growth capital',
@@ -152,8 +139,6 @@ const TIDE_ROOM = [
   ['Loan agreement', 'PDF'],
   ['Lease schedule', 'Excel'],
 ]
-/* the dataroom read as a thesis test: two findings that hold and the risk to
-   raise, each with the line in the room it came from */
 const TIDE_POINTS = [
   {
     tag: 'Supported',
@@ -189,9 +174,7 @@ const TIDE_POINTS = [
 ]
 
 export const SOLUTIONS = {
-  // Copy taken from the approved page outline canvas (Oct 2026). The hero lede
-  // is the sentence agents are meant to quote, so it stays word-for-word the
-  // same wherever hedge funds are described.
+  // Approved copy. The hero lede is the sentence AI assistants are meant to quote: keep it word-for-word wherever hedge funds are described.
   'hedge-funds': {
     name: 'Hedge Funds',
     title: 'Take your research from draft to decision',
@@ -199,13 +182,7 @@ export const SOLUTIONS = {
     strategiesLead: 'Built to work across strategies',
     strategies: ['Long/short', 'Value', 'Event-driven', 'Activist', 'Credit', 'Multi-strategy'],
     useCasesHead: { eyebrow: 'Use cases', title: 'Where FinSynth fits into hedge fund research' },
-    // the four stages of an idea's life, from the approved copy: each row is
-    // the use case's number, its name as the row's title, the outcome it
-    // delivers as the line under it, then its paragraph. The paragraph is
-    // split into scenes: each one names the screen that shows that part,
-    // and the stage plays the screens in turn while the copy lights the
-    // part being shown. The key is the row's anchor so the block can later
-    // lift into its own page
+    // Each row's paragraph is split into scenes; each scene names the screen that shows it. The key is the row's anchor.
     workflows: [
       {
         key: 'idea-generation',
@@ -282,21 +259,13 @@ export const SOLUTIONS = {
         ],
       },
     ],
-    // the line under the four rows
     useCasesMore: { lead: '+ Hundreds more', rest: 'research workflows, all in one agent' },
-    // The same rail + stage the home page's Excel section uses: five claims on
-    // the left, one visual on stage per claim. `ms` is how long each holds on
-    // the auto-step; the citation trace is a 9s loop and gets the longest turn.
     how: {
       title: 'Fast to draft. Faster to trust',
-      // the three-stage layouts (?how=columns|workspace|evidence) run one
-      // example through every stage: the documents brought in at stage one are
-      // the inputs at stage two, and the cell written there is the one verified
-      // at stage three. Only this example changes by audience; the stage labels
-      // and explanations live in src/components/shared/HowStages.tsx
+      // One example runs through every stage; only the example changes by audience. Stage labels live in src/components/shared/HowStages.tsx.
       eyebrow: 'How your team works with FinSynth',
       example: CROCS_EXAMPLE,
-      // the pillars as approved in the page outline, word for word (Enterprise ready dropped)
+      // approved copy, word for word
       steps: [
         {
           key: 'workflows',
@@ -356,8 +325,6 @@ export const SOLUTIONS = {
         },
       ],
     },
-    // the page’s own quote, shown in the home page’s Customers treatment under
-    // its default title, "Hear what the analysts have to say" (feedback)
     quote: {
       text: '“We’re seeing the actual leverage of an AI tool, the outputs aren’t just good-looking, they’re easily verifiable.”',
       who: 'L/S Portfolio Manager',
@@ -402,10 +369,7 @@ export const SOLUTIONS = {
       },
     ],
   },
-  // The four other desks, copy from the same approved outline canvas. The
-  // shape is hedge funds': five use cases here instead of four, the nine
-  // pillars through howFor, and the Crocs worked example renamed to the
-  // desk's own file.
+  // Other desks follow the hedge funds shape; copy from the same approved outline.
   'asset-managers': {
     name: 'Asset Managers',
     title: 'Take your research from draft to decision',

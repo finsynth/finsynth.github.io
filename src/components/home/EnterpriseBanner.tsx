@@ -13,8 +13,6 @@ export default function EnterpriseBanner() {
   return (
     <aside className="ent-panel">
       <div className="ent-copy">
-        {/* One sentence, no full stops — a mid-sentence stop split this into
-            two short lines that read as a heading plus a caption. */}
         <p className="ent-lede">Custom setup, custom terms, one conversation away</p>
 
         <ul className="ent-list">

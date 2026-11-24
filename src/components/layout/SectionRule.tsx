@@ -12,7 +12,6 @@ function SectionRule({ label }: { label?: string }) {
           <span className="sr-line" />
         )}
       </div>
-      {/* rounded-square guide nodes where the rule meets each vertical rail */}
       <span className="guide-node sr-node--l" />
       <span className="guide-node sr-node--r" />
       <span className="sr-box sr-box--solid sr-box--l1" />

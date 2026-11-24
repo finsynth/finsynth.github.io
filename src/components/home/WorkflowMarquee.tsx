@@ -1,15 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-/**
- * The self-completing workflow checklist — an auto-scrolling column that loops
- * seamlessly (a vertical marquee). Rows near the top of the masked window read
- * as "handled" — black text + a ticked box — while rows lower down stay grey
- * with an empty box. Each row's box ticks on (and off) as it crosses the
- * active line, so the checklist reads as continuously completing itself.
- *
- * Shared by WhatSection ("One agent, every workflow") and ExcelSection's
- * "Complex workflows" pillar visual — styling lives on the .what-* classes.
- */
+/** Self-completing checklist marquee, used by ExcelSection's Complex workflows visual. Styling lives on the .what-* classes. */
 const WORKFLOWS = [
   'Building models',
   'Earnings updates',

@@ -74,12 +74,7 @@ function RotatingSegment() {
     }
   }, [hovered])
 
-  // Hovering holds the carousel on the word under the pointer. The word is
-  // snapped whole first: the pointer can land mid-type or mid-delete, and
-  // freezing "Famil" or an empty cell is worse than not freezing at all. The
-  // scramble is played after, so it decodes the finished word — MatrixDecode
-  // reads its text off a ref every frame, so the state set just above is the
-  // value it picks up.
+  // Snap the whole word first: the pointer can land mid-type or mid-delete. MatrixDecode reads its text off a ref each frame, so it decodes the word set just above.
   const hold = () => {
     setHovered(true)
     setText(SEGMENTS[wordRef.current])
@@ -95,9 +90,6 @@ function RotatingSegment() {
         onMouseEnter={hold}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* hover anywhere on the word (incl. caret/frame) parks the carousel on
-            it and scrambles it matrix-style, then it decodes back left to
-            right; the cycle picks up again on the way out */}
         <MatrixDecode
           ref={decodeRef}
           as="em"
@@ -125,17 +117,9 @@ function Hero() {
     <section className="hero-s2 hero-s2--photo">
       <WallStreetPixelCanvas stageClassName="hero-s2-mosaic" />
       <div className="hero-s2-wrap">
-        {/* ── ONE BIG CELL ── */}
         <div className="hero-cell hero-cell--mosaic">
-          {/* Soft white radial wash behind the copy — lifts the text off the
-              photo without hiding it. Sized to the copy block (pill → trust
-              line) and clamped to the cell so it never spills past the hero. */}
           <div className="hero-glow" aria-hidden="true" />
 
-          {/* Backers — a glass pill leading the copy stack: "Backed by
-              [Accel]", the mark standing in for its own name. The alt text
-              carries the name for anyone who can't see the logo, so the line
-              still reads. */}
           <p className="hero-backers">
             <span className="hero-backers-label">Backed by</span>
             <img className="hero-backers-mark" src="/assets/img/accel-logo-brand.svg" alt="Accel" />

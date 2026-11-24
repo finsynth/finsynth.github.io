@@ -29,8 +29,6 @@ export default function Faq({
   id?: string
   openFirst?: boolean
 }) {
-  // openFirst starts with the first answer showing, so the list reads as
-  // questions with answers rather than a closed grey list
   const [open, setOpen] = useState(openFirst ? 0 : -1)
   const ref = useRef<HTMLElement>(null)
   const zoomRef = useZoom<HTMLDivElement>()
@@ -80,12 +78,8 @@ export default function Faq({
     const btn = btnRefs.current[open]
     const inner = innerRefs.current[open]
     if (!btn) return
-    // Compute the rail's resting position from intrinsic button heights rather
-    // than btn.offsetTop: the entrance animation (fill-mode: both) leaves an
-    // identity-matrix transform on each .faq-item, which makes the item its own
-    // offsetParent, so offsetTop is always 0. Summing button heights + item
-    // borders also lands the rail correctly while a sibling answer is still
-    // mid-collapse (its animated height would otherwise skew a live measurement).
+    // Sum button heights + borders instead of btn.offsetTop: the entrance animation leaves a transform on each
+    // .faq-item, making it its own offsetParent (offsetTop is always 0), and a collapsing sibling would skew a live read.
     const secondItem = btnRefs.current[1]?.parentElement
     const borderTop = secondItem ? parseFloat(getComputedStyle(secondItem).borderTopWidth) || 0 : 0
     let top = 0
@@ -125,8 +119,6 @@ export default function Faq({
           <div className="faq-contact">
             <span className="faq-contact-line" aria-hidden="true" />
             <div className={`faq-contact-chip${copied ? ' is-copied' : ''}`}>
-              {/* the address is a real mailto link (feedback: a click "is taking
-                  me nowhere"); Copy sits next to it as its own button */}
               {/* a mailto does nothing visible on a machine with no mail client,
                   so the click also copies the address and shows Copied */}
               <a

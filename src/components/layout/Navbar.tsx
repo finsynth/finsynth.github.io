@@ -26,11 +26,7 @@ interface NavItem {
 
 const PRODUCTS: NavItem[] = PRODUCT_LIST
 
-// Who FinSynth is for, by desk. The names are the hero headline's own
-// rotating segments (data/segments.ts) so the menu and the headline can't disagree.
-// Each desk links to its page in data/solutions.ts; a desk whose page is
-// keyed under another slug says so (`slug`), and one with no page lands on
-// the why-FinSynth section until it exists.
+// Names come from SEGMENTS (the hero's rotating words) so menu and headline match. A desk with no page in data/solutions.ts falls back to #why-finsynth.
 const SOLUTION_BLURBS: Record<string, { icon: LucideIcon; desc: string; slug?: string }> = {
   'Hedge Funds': { icon: Landmark, desc: 'Alpha generation and signal research' },
   'Asset Managers': { icon: Building2, desc: 'IC memos and portfolio monitoring' },
@@ -52,8 +48,6 @@ export const SOLUTIONS: NavItem[] = SEGMENTS.filter((name) => name in SOLUTION_B
   },
 )
 
-// The footer's Careers column, again up here. Same ROLES, so the two can't
-// disagree about what's open; each links to its posting on /careers.
 const CAREERS: NavItem[] = ROLES.map((r) => ({
   key: r.key,
   label: roleLabel(r),
@@ -61,17 +55,9 @@ const CAREERS: NavItem[] = ROLES.map((r) => ({
 }))
 
 /**
- * One nav dropdown. `id` is what the bar's single open-menu state holds, so
- * opening one closes the other instead of leaving two cards hanging open.
- *
- * `flat` is the phone form: inside the mobile sheet there is no hover and no
- * room to float a card, so the group is a disclosure row — the title sits at
- * the same rank as the plain links (Security, FAQ) and tapping it folds its
- * items out underneath. It is a separate render rather than a CSS override
- * because the desktop trigger's mouseenter, emulated on touch just before the
- * tap, would toggle the menu shut the moment it opened. Flat rows carry their
- * own boolean (`flatOpen`/`onToggle`) instead of the bar's single open-menu
- * id: in the sheet both groups can sit expanded at once.
+ * `id` is what the bar's single open-menu state holds, so opening one closes the other.
+ * `flat` (phone sheet) is a separate render, not a CSS override: touch emulates mouseenter just before the
+ * tap, which would toggle the desktop menu shut as it opens. Flat rows use their own flatOpen/onToggle.
  */
 type NavDropProps = {
   id: string
@@ -112,9 +98,6 @@ function NavDrop({
 }: NavDropProps) {
   const isOpen = flat ? flatOpen : open === id
 
-  // One entry. A plain item is a single line; one carrying `icon`/`desc`
-  // (the Solutions menu) is an icon beside a title with a one-line blurb under
-  // it. `soon` entries are listed but go nowhere.
   const renderItem = (it: NavItem, onClick?: () => void) => {
     if (it.soon) {
       return (
@@ -217,12 +200,8 @@ function NavDrop({
 
 export default function Navbar() {
   const [hidden, setHidden] = useState(false)
-  // which desktop menu is open, by id — 'product' | 'solutions' | 'careers' | null
   const [openMenu, setOpenMenu] = useState<string | null>(null)
-  // the sheet's disclosure rows are independent of each other, so a set rather
-  // than a single id — both groups can sit expanded at once. They start (and
-  // reopen) expanded: the links are what the sheet is opened for, so they
-  // shouldn't hide behind a second tap. A tap on the title still folds one away.
+  // A set, not one id: in the sheet both groups can be open. They start open on purpose — the links are why the sheet was opened.
   const allFlats = () => new Set(['product', 'solutions', 'careers'])
   const [openFlats, setOpenFlats] = useState(allFlats)
   const toggleFlat = (id: string) =>
@@ -232,8 +211,7 @@ export default function Navbar() {
       else next.add(id)
       return next
     })
-  // Below this width the link row doesn't fit next to the logo and the CTAs, so
-  // it moves behind a button. Same breakpoint as the CSS that lays out the sheet.
+  // same breakpoint as the CSS that lays out the sheet
   const compact = useMediaQuery('(max-width: 900px)')
   const [sheetOpen, setSheetOpen] = useState(false)
   const lastY = useRef(0)
@@ -245,10 +223,7 @@ export default function Navbar() {
   const navRef = useRef<HTMLElement>(null)
   // Whether the hero or footer is currently on screen — nav stays visible in either.
   const anchorVisible = useRef(true)
-  // Whether the dark footer is the thing currently passing under the bar. The
-  // bar is frosted glass everywhere else; over the footer the translucent fill
-  // picks up the dark ground and reads as a murky gradient, so it goes solid
-  // for exactly that stretch.
+  // Over the dark footer the frosted fill reads murky, so the bar goes solid for that stretch.
   const [onDark, setOnDark] = useState(false)
 
   useEffect(() => {
@@ -258,7 +233,6 @@ export default function Navbar() {
     const update = () => {
       const y = window.scrollY
       const goingDown = y > lastY.current
-      // Near the very top there's nothing to hide behind — keep it shown.
       const atTop = y < 80
 
       if (anchorVisible.current || atTop || !goingDown) {
@@ -325,9 +299,7 @@ export default function Navbar() {
     setOpenFlats(allFlats())
   }, [compact])
 
-  // Close the sheet on Escape or on a tap anywhere outside it, including the
-  // page behind — with the links stacked over content, the tap that dismisses
-  // is the one people reach for first.
+  // Escape or a tap anywhere outside (including the page behind) closes the sheet.
   useEffect(() => {
     if (!sheetOpen) return
     const onDown = (e: PointerEvent) => {
@@ -420,7 +392,6 @@ export default function Navbar() {
             <a className="nav-link" href="/#faq" onClick={closeSheet}>
               FAQ
             </a>
-            {/* last in the row: hiring is the least of what a visitor came for */}
             <NavDrop
               id="careers"
               label="Careers"
@@ -430,8 +401,6 @@ export default function Navbar() {
               onToggle={() => toggleFlat('careers')}
               onNavigate={closeSheet}
             />
-            {/* both actions come down here, stacked as buttons at the foot of
-                the panel — the bar itself keeps only the burger */}
             <div className="nav-sheet-actions">
               <a
                 className="nav-signin nav-sheet-btn"
@@ -460,7 +429,6 @@ export default function Navbar() {
               open={openMenu}
               setOpen={setOpenMenu}
             />
-            {/* two columns of desk + blurb, so it opens as a wide card rather than a list */}
             <NavDrop
               id="solutions"
               label="Solutions"
@@ -478,8 +446,7 @@ export default function Navbar() {
             <a className="nav-link" href="/#faq">
               FAQ
             </a>
-            {/* last in the row: hiring is the least of what a visitor came for,
-                and the menu has room to open inward from there */}
+            {/* last in the row so its menu has room to open inward */}
             <NavDrop
               id="careers"
               label="Careers"
