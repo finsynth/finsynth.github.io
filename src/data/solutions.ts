@@ -1,22 +1,21 @@
 /** One entry per desk (/solutions/<slug>); a slug with no entry falls back to the home page. The `visual` names map to drawn panels in src/views/Solution.jsx. */
 
-// Pillars run in the same order on every page; each page lists [title, body] and this maps them onto HowStages' keys and visuals.
+// Pillars run in the same order on every page; each page lists [title, body] and this maps them onto HowStages' keys.
 type Pillar = [title: string, body: string]
 
-const PILLAR_SHAPE: [key: string, visual: string, ms: number][] = [
-  ['workflows', 'workflows', 4800],
-  ['surfaces', 'surfaces', 4200],
-  ['cited', 'cited', 4200],
-  ['format', 'format', 4200],
-  ['skills', 'skills', 4200],
-  ['dataroom', 'dataroom', 4200],
-  ['mcp', 'sources', 5000],
-  ['review', 'trace', 9000],
+const PILLAR_KEYS = [
+  'workflows',
+  'surfaces',
+  'cited',
+  'format',
+  'skills',
+  'dataroom',
+  'mcp',
+  'review',
 ]
 const howSteps = (pillars: Pillar[]) =>
   pillars.map(([title, body], i) => {
-    const [key, visual, ms] = PILLAR_SHAPE[i]
-    return { key, visual, ms, title, body }
+    return { key: PILLAR_KEYS[i], title, body }
   })
 
 // Shared by every page; each desk renames only the file and folder. The sheet and release lines stay Crocs' numbers.
@@ -269,57 +268,41 @@ export const SOLUTIONS = {
       steps: [
         {
           key: 'workflows',
-          visual: 'workflows',
-          ms: 4800,
           title: 'Runs your research workflows',
           body: 'Screening and idea generation, getting up to speed, models and diligence, and monitoring and updates, all from one agent',
         },
         {
           key: 'surfaces',
-          visual: 'surfaces',
-          ms: 4200,
           title: 'Works in Excel and on the web',
           body: 'Use it as an Excel add-in inside your existing models, or in the web app for research and memos',
         },
         {
           key: 'cited',
-          visual: 'cited',
-          ms: 4200,
           title: 'Every output cited',
           body: 'Each number and claim links to the exact line in the filing, release, transcript or your own documents',
         },
         {
           key: 'format',
-          visual: 'format',
-          ms: 4200,
           title: 'Your house format',
           body: 'Models, comps and memos built in your templates, the way your fund already works',
         },
         {
           key: 'skills',
-          visual: 'skills',
-          ms: 4200,
           title: 'Skills for repeat workflows',
           body: 'Teach FinSynth your earnings update or comps routine once, then run it on every name in your book',
         },
         {
           key: 'dataroom',
-          visual: 'dataroom',
-          ms: 4200,
           title: 'Dataroom',
           body: 'Keep broker notes, expert call transcripts and internal research in folders, and attach them to any session',
         },
         {
           key: 'mcp',
-          visual: 'sources',
-          ms: 5000,
           title: 'MCP connectors',
           body: 'Connect FinSynth to your own data and tools, like Snowflake and Microsoft 365',
         },
         {
           key: 'review',
-          visual: 'trace',
-          ms: 9000,
           title: 'Review citations',
           body: 'Select a range of cells and step through the source of every number in one pass',
         },
