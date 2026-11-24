@@ -27,8 +27,8 @@ interface NavItem {
 const PRODUCTS: NavItem[] = PRODUCT_LIST
 
 // Who FinSynth is for, by desk. The names are the hero headline's own
-// rotating segments (data/segments.js) so the menu and the h1 can't disagree.
-// Each desk links to its page in data/solutions.js; a desk whose page is
+// rotating segments (data/segments.ts) so the menu and the headline can't disagree.
+// Each desk links to its page in data/solutions.ts; a desk whose page is
 // keyed under another slug says so (`slug`), and one with no page lands on
 // the why-FinSynth section until it exists.
 const SOLUTION_BLURBS: Record<string, { icon: LucideIcon; desc: string; slug?: string }> = {

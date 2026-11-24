@@ -141,18 +141,10 @@ function Hero() {
             <img className="hero-backers-mark" src="/assets/img/accel-logo-brand.svg" alt="Accel" />
           </p>
 
-          {/* Heading — two rows, breaking on the comma:
-              · the <br /> puts the clause break at the comma, so the rotating
-                segment rides the second row with "purpose-built for" rather
-                than taking a third row of its own.
-              · .hero-nounphrase glues "research infrastructure" so that when
-                row one does have to wrap (narrow laptops), it breaks after
-                "AI" instead of splitting the noun phrase. Phones relax it:
-                below 560px letting the phrase split is what lets the type
-                grow past ~20px at all (styles/global.css documents the numbers).
-              Below 1100px neither row fits and the headline runs to three rows;
-              .hero-s2-title reserves that height there so the rotating segment
-              can't shove the CTAs around mid-cycle. */}
+          {/* .hero-nounphrase keeps "research infrastructure" together when row
+              one wraps (relaxed below 560px, see global.css). Below 1100px
+              .hero-s2-title reserves three rows so the rotating word can't move
+              the CTAs. */}
           <h1 className="sr-only">
             Auditable AI research infrastructure, purpose-built for investment teams
           </h1>
@@ -172,12 +164,6 @@ function Hero() {
             Eliminate verification tax, take your research from drafts to decision-making
           </p>
 
-          {/* CTAs — the primary ask is the call; "Try for free" is the
-              self-serve path beside it, handing the visitor to sign-in rather
-              than to a demo modal. It names the price rather than the action,
-              which is the part a visitor weighing the two buttons wants. The
-              old "Explore" button and its Try It modal are in git history if
-              they're ever wanted back. */}
           <div className="hero-s2-ctas">
             <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
               Talk to Us
@@ -211,10 +197,6 @@ function Hero() {
             </a>
           </div>
 
-          {/* the trust line in full ink (.hero-s2-trust--ink): the 62%-grey base
-              was the faintest thing on the hero. Reviewed against a two-tone
-              version (claim in ink, lead-in grey), glass segment chips and a
-              tracked-caps eyebrow; all rejected 2026-09-11, all in git. */}
           <p className="hero-s2-trust hero-s2-trust--ink">Trusted by investors from global funds</p>
         </div>
       </div>

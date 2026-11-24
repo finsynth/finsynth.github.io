@@ -16,7 +16,7 @@ interface How {
 
 /* ── How it works on the solution pages ── the three stages of one research
  * workflow as columns, each holding the pillars (how.steps in
- * src/data/solutions.js) that belong to it as cards. */
+ * src/data/solutions.ts) that belong to it as cards. */
 
 export const HOW_STAGES = [
   {

@@ -23,27 +23,11 @@ const REVEAL_WINDOW = 0.16
 // after the last brick lands: beat of stillness, then the de-pixelate crossfade
 const HOLD_MS = 70
 const RESOLVE_MS = 150
-// Once the photo is sharp: an endless push-in that never pulls back. Two copies
-// of the plate run one ZOOM_RATIO step apart and both scale up together; the
-// nearer one fades out as it overruns the frame while the farther one takes
-// over, so after ZOOM_MS the pair is arranged exactly as it was a step earlier
-// and the loop closes on itself. Every feature on screen is always travelling
-// away from the anchor and never back toward it, which is the whole point — the
-// old triangle-wave zoom reversed every second and read as zooming in and out.
-//
-// The fade has to be linear. The blend's centre in log-scale is
-// (1-a)·u + a·(u+1) with a = 1-u, which is constant only while `a` falls at a
-// constant rate; ease it and the hand-off smuggles a stretch of reverse drift
-// back in. Cost of the trick is a permanent soft double image, and how far apart
-// the two copies sit is exactly ZOOM_RATIO. Drift speed is ZOOM_RATIO per
-// ZOOM_MS, though, so a small step on a short cycle buys the same motion for a
-// fraction of the ghost: at 4% the copies are close enough to pass for a faint
-// radial blur on a photo already sitting behind a scrim. A 1.22 step was tried
-// first and the hand-off was plainly a cross-dissolve.
-//
-// The first cycle runs single-layer, so the mosaic resolves into the photo at
-// its own 1:1 scale before the second copy joins. Anchored to the bottom edge so
-// the street level stays put and the zoom reads as leaning into the scene.
+// Endless push-in: two copies one ZOOM_RATIO step apart scale up together and
+// cross-fade, so the loop closes on itself without ever zooming back out.
+// The fade must stay linear: easing it reintroduces reverse drift at the
+// hand-off. Keep the step small: the copies sit ZOOM_RATIO apart as a soft
+// double image, and a 1.22 step read as a plain cross-dissolve.
 const ZOOM_MS = 2600
 const ZOOM_RATIO = 1.04
 // ease-out-back overshoot so each brick snaps in with a tiny bounce
@@ -225,11 +209,8 @@ const WallStreetPixelCanvas = ({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       if (!grays) return
 
-      // assemble the mosaic brick-by-brick: each tile fades, drops in from just
-      // above, and pops into its slot with a small overshoot on its own beat.
-      // Settled tiles sit flush (a hair of bleed kills seams) so the finished
-      // image fills the hero edge-to-edge. Skipped entirely once the photo has
-      // fully taken over — the blocks are underneath it and no longer visible.
+      // bleed overlaps settled tiles by a hair so no seams show; skipped once
+      // the sharp photo fully covers the mosaic
       const bleed = 0.75
       if (pR < 1) {
         for (let j = 0; j < rows; j++) {

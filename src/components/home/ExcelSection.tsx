@@ -4,22 +4,7 @@ import useMediaQuery from '@/hooks/useMediaQuery'
 import WorkflowMarquee from '@/components/home/WorkflowMarquee'
 import CertSeals from '@/components/home/CertSeals'
 
-/**
- * "FinSynth for Excel" — the Security section's bordered frame and headline.
- * All four claims sit in a rail on the left, always visible; only the visual
- * on the right swaps — scrubbed as the section scrolls past, and on a clock
- * while it sits still — and each rail row jumps the stage to it. See
- * useAutoStep for how the two hand off.
- *
- * The pane used to pin inside a scroll budget several screens deep, so the
- * section cost four screenfuls of scrolling to get past. It's an ordinary
- * block now that scrolls with the rest of the page; the scrubbing rides that
- * ordinary travel rather than buying screenfuls of its own.
- *
- * The visuals are drawn, not photographed — each depicts the claim beside it.
- * When product shots exist, swap a Visual for <img src="…" alt="" /> inside
- * .x4e-visual and the cell takes care of the rest.
- */
+/** The stage swaps visuals both on scroll scrub and on a clock; see useAutoStep for how the two hand off. */
 
 /* ── shared source badges ─────────────────────────────────────────────────
  * Each pill carries one of three badge kinds:
@@ -449,23 +434,9 @@ function VisualAudit() {
   )
 }
 
-/* 03 · Integrated — the shelf as a field rather than a list. Everything
- * FinSynth already reads is scattered across the ground at low contrast, and
- * the single thing left for the reader to do sits in the middle at full
- * strength. Two rows under a "Custom APIs" rule ran here before; the rule made
- * the named systems read as the boundary of what's supported, which is the
- * opposite of the claim. Held in the centre instead, "Add your custom MCP" is
- * the offer and the shelf behind it is the evidence.
- *
- * `y` is a percentage of the field and `r` a few degrees of tilt, hand-set
- * rather than generated. `s` says which edge the pill hangs off and `x` is
- * where that edge sits: labels are set in pixels while the field scales with
- * the stage, so anchoring the outer edge is the only way a long label like
- * "Earnings Transcripts" can never run off the card. It also keeps the two
- * flanks from ever reaching each other, which leaves the middle band clear
- * for the focal pill and means collisions can only happen down one flank.
- * The two flanks sit half a step out of phase so the field scatters rather
- * than pairing off into rows.
+/* `s` is the edge a pill hangs off and `x` where that edge sits. Labels are set
+ * in px while the field scales, so anchoring the outer edge is what keeps a long
+ * label from running off the card and keeps the middle clear for the focal pill.
  */
 const SHELF = [
   { label: 'Global Filings', glyph: 'sec', s: 'l', x: 4, y: 13, r: -2.5 },
@@ -539,18 +510,6 @@ function VisualIntegrated() {
   )
 }
 
-/* 04 · Enterprise ready — the certification seals, and nothing else.
- *
- * Two rounds of artwork ran here before: a ticked dial drawn in SVG, then a
- * supplied shield render (enterprise-shield-keyed.png, still on disk). Both
- * were pictures standing in for the claim; the seals are the claim's actual
- * evidence, so they hold the stage on their own now and get the whole cell to
- * be read in.
- *
- * The same seals also caption the Security section further down: this stage is
- * where the claim gets made in passing, that section is where it gets spelled
- * out, and the evidence belongs with both. They render from one component
- * (CertSeals) so the two can never disagree about what we hold. */
 function VisualEnterprise() {
   return (
     <div className="xvs">
@@ -562,13 +521,9 @@ function VisualEnterprise() {
   )
 }
 
-/* `ms` is how long the claim holds the stage, and it is set from its visual's
-   own animation rather than shared: a single interval short enough for the
-   still visuals cut the animated ones off part-way through, and one long enough
-   for the animated ones parked the still ones on screen with nothing happening.
-   The audit cascade is the constraint — it loops three beats over 9s (one per
-   source; see the .xvk-* keyframes in styles/global.css), and at the 4.2s every claim
-   used to get, the last two beats never played at all. */
+/* `ms` is per visual, not shared: one interval either cuts the animated visuals
+   short or parks the still ones. The audit cascade needs 9s (three beats, see
+   the .xvk-* keyframes in global.css). */
 const PILLARS = [
   {
     key: 'workflows',

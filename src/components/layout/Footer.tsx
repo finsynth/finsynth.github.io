@@ -3,20 +3,6 @@ import GridReveal from '@/components/visuals/GridReveal'
 import { LINKS } from '@/config/site'
 import { SOLUTIONS } from '@/components/layout/Navbar'
 
-/**
- * The prompt the "Ask your AI" menu hands off to an assistant.
- *
- * The question is the visitor's: what we are, and how we compare to the two
- * things they are already weighing us against — a general assistant and a
- * specialised research tool. That comparison is the FAQ's answer too ("How is
- * FinSynth different from a general AI assistant?"), so keep the two in step.
- *
- * The question is the whole prompt: it is what a visitor would actually type,
- * and it is short enough to read in the Copy item before sending it. It used to
- * carry a tail telling the model to treat finsynth.ai as the source of truth and
- * cite its pages — that is in git history, and worth reaching for again if
- * answers start coming back positioned off third-party write-ups.
- */
 const ASK_PROMPT =
   'What is FinSynth (finsynth.ai), and how does it compare to general AI assistants and specialized financial research tools?'
 const q = encodeURIComponent(ASK_PROMPT)
@@ -195,7 +181,7 @@ export default function Footer() {
                   Legal / Social), not by link type. Careers lives under Company and
                   points at /careers, which lists the postings; the navbar's
                   Careers menu still shows them one by one from
-                  src/data/roles.js. Socials are plain links, not icons. */}
+                  src/data/roles.ts. Socials are plain links, not icons. */}
               <div>
                 <h4>Product</h4>
                 <a href="/#excel">FinSynth for Excel</a>

@@ -158,8 +158,6 @@ img, video, svg, picture {
   flex-direction: column;
 }
 
-/* ── Announcement bar ── */
-
 /* ── Navbar ── */
 .navbar {
   width: 100%;
@@ -184,7 +182,7 @@ img, video, svg, picture {
 
 /* Over the footer only. Everything above it is a light ground the frosted fill
    sits nicely on; the footer is near-black, and the same translucency there
-   picks the dark up and reads as a murky gradient rather than glass. Navbar.jsx
+   picks the dark up and reads as a murky gradient rather than glass. Navbar.tsx
    adds this the moment the footer's top edge passes under the bar. */
 .navbar.nav-on-dark {
   background: #fff;
@@ -406,7 +404,7 @@ img, video, svg, picture {
 }
 
 /* ── Mobile navigation ──
-   Under 900px the link row is replaced (in Navbar.jsx, not hidden here) by a
+   Under 900px the link row is replaced (in Navbar.tsx, not hidden here) by a
    button and a sheet that drops out of the bar's bottom edge. The sheet borrows
    the bar's own glass so it reads as the bar growing taller rather than as a
    card floating over the page. */
@@ -571,8 +569,6 @@ img, video, svg, picture {
 @media (max-width: 900px) {
   /* the sheet hangs off this box, so it has to be the positioning context */
   .navbar-inner { position: relative }
-  /* .navbar-links used to be the flex child that pushed the actions right; with
-     the sheet taken out of flow, the margin does that job */
   .navbar-right { margin-left: auto }
   .nav-burger { display: inline-flex }
 }
@@ -682,7 +678,7 @@ img, video, svg, picture {
 .secx-eyebrow,
 .plans-eyebrow,
 .faq-eyebrow,
-.hw-head .sol-eyebrow { display: none !important; } /* the solutions pages' How it works head follows the same rule */
+.hw-head .sol-eyebrow { display: none !important; }
 
 /* ════════ FOOTER (new style) ════════ */
 .footer-new {
@@ -767,7 +763,6 @@ img, video, svg, picture {
   flex-shrink: 0;
 }
 .foot-lockup .foot-brand img { position: relative; top: 0 }
-/* RIGHT — nav columns above, Ask-AI below */
 /* takes the row's leftover width rather than sizing to the nav's content, so
    the grid below has a fixed measure to divide evenly */
 .foot-right {
@@ -1410,14 +1405,11 @@ img, video, svg, picture {
   font-family: var(--font-display); font-weight: 450;
   font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
   color: var(--ink); letter-spacing: var(--ls-display);
-  /* the 36px the removed .plans-sub used to hold off the card row — the title is
-     the whole header now, so the gap lives here */
   margin-bottom: 36px;
 }
 /* tighter x padding than the site default — the card row wants the width */
 .plans .wrap { padding: 0 16px }
 .plans-table { width: 100%; max-width: 1200px; text-align: left }
-/* the two Clerk tables share one row — individual left, organization right */
 /* groups size to their card count and the pair sits centered. Stretch, not
    center: balancing unequal groups around the row's middle put "Individual" and
    "Organization" on two different lines and left the two bordered boxes with
@@ -1786,7 +1778,6 @@ img, video, svg, picture {
   .foot-cta-actions .foot-askai-btn { width: 100%; height: 100%; justify-content: center; padding: 7px 12px; font-size: 13px; }
 }
 
-
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important }
 }
@@ -1829,7 +1820,6 @@ img, video, svg, picture {
   z-index: 1;
 }
 
-/* ── Outline hero variant — pixel-art bridge that assembles bottom-up ───── */
 /* the canvas paints its own sunset backdrop + top readability fade, so the
    stage sits at full opacity */
 .hero-s2-pixel-canvas { width: 100%; height: 100%; display: block }
@@ -1973,9 +1963,7 @@ img, video, svg, picture {
   padding: 8px 24px 96px;
   isolation: isolate;
 }
-/* once the pixel mosaic has settled, the trust line reads over it in solid ink */
 
-/* ── Heading ── */
 /* The whole copy stack — title, lede, CTAs, trust line — scales as one unit, type
    and rhythm together so the proportions hold at any size. Every value below is
    written as its launch figure times --hero-scale, so re-sizing the stack is a
@@ -2063,8 +2051,6 @@ img, video, svg, picture {
 @media (max-width: 1129px) {
   .hero-s2-title { min-height: 3.72em; } /* 3 rows × line-height 1.18, +5% */
 }
-
-/* Inline avatar cluster */
 
 /* Accent keyword — same weight, brand color */
 .hero-s2-accent {
@@ -2174,8 +2160,6 @@ img, video, svg, picture {
   }
 }
 
-/* ── Supporting paragraph ── */
-
 /* ── Secondary line under the headline (photo hero) ──
    Set in ink rather than the usual secondary grey: it sits over the pixelated
    photo, and at this size grey-on-mosaic loses the line. */
@@ -2223,7 +2207,7 @@ img, video, svg, picture {
   .hero-s2-title {
     /* the base rule is a bottom-packed column flexbox (its reservation trick),
        which blockifies the row spans — as flex items they can never flow
-       inline, so the paragraph flow below needs the h1 to be a plain block.
+       inline, so the paragraph flow below needs the heading to be a plain block.
        Bottom-packing loses nothing here: every cycle state is exactly three
        lines (see min-height below), so there is no surplus to pack. */
     display: block;
@@ -2231,7 +2215,7 @@ img, video, svg, picture {
     /* Every state of the cycle — full or mid-typing — measures exactly
        3 lines at this size ("for" never fits at the end of line two, so the
        third line exists even while the segment is empty). Flowing inline, the
-       lines take the h1's own 1.18 leading (the rows' 1.03 only sizes their
+       lines take the heading's own 1.18 leading (the rows' 1.03 only sizes their
        inline boxes, and the block strut is taller): 3 × 1.18 = 3.54em. The
        height is the same in every state, so this reservation is belt and
        braces, not load-bearing. */
@@ -2276,7 +2260,6 @@ img, video, svg, picture {
   /* less inset on the copy block, so the headline gets the width back */
   .hero-cell--mosaic { padding-left: 16px; padding-right: 16px; }
 }
-
 
 /* ── CTA button — embossed, brand color ── */
 .hero-s2-cta {
@@ -2426,12 +2409,6 @@ img, video, svg, picture {
   }
 }
 
-/* ── Trust line, in ink ──
-   The same sentence as the base rule above, a half step larger, at medium
-   weight, in the headline's ink rather than a 62% grey: the plain line's only
-   fault was its weight on the photo. Reviewed 2026-09-11 against a two-tone
-   version (claim in ink, lead-in grey), glass segment chips and a tracked-caps
-   eyebrow; all rejected and removed, git has them. Keeps the ::before wash. */
 .hero-s2-trust--ink {
   font-size: calc(15px * var(--hero-scale));
   font-weight: 500;
@@ -2662,7 +2639,6 @@ img, video, svg, picture {
   }
 }
 
-/* ── Dashboard interior ── */
 /* ════════════════════════════════════════════════
    HERO SPLIT — RESPONSIVE
    ════════════════════════════════════════════════ */
@@ -2876,19 +2852,14 @@ img, video, svg, picture {
   .testi-nav { display: none }
 }
 
-/* ════════════════════════════════════════════════
-   WHAT — infinite vertical focus carousel
-   ════════════════════════════════════════════════ */
-/* heading column sits parallel to the scrolling checklist */
-
-/* Section heading — "One agent, every workflow" (left-aligned) */
+/* ════════ WHAT — workflow checklist ════════ */
 
 /* the checklist sits on the right, beside the heading */
 .what-list-viewport { margin-left: auto; margin-right: 0; }
 
 /* Center checklist — an auto-scrolling column of workflows that loops on its
    own; the viewport is short and masked top/bottom so only a few rows show at
-   once (see WhatSection.jsx). */
+   once (see WorkflowMarquee.tsx). */
 .what-list-viewport {
   position: relative;
   height: clamp(420px, 62vh, 680px);
@@ -2983,103 +2954,7 @@ img, video, svg, picture {
   }
 }
 
-/* ── STEPS STACK — scroll-driven stacking step panels (Parker.ai replica) ──
-   Each panel is sticky at the same dock point; the next panel scrolls up and
-   covers the previous one. The tab band above each panel's dashed rule is
-   transparent, so earlier docked tabs stay visible while newer panels stack.
-   All motion is scrubbed by scroll — no keyframes, reduced-motion safe. */
-/* in-flow spacer (NOT padding — sticky panels release at the container's
-   content edge, so padding would unpin the stack before it was consumed) */
-
-/* media cards — black border + hard offset shadow, like the tabs */
-
-/* step 1 — research flow */
-
-/* step 2 — chat greeting + typewriter input */
-
-/* step 3 — document skeleton */
-
-/* ── BEFORE/AFTER STACK — the steps-stack docking mechanic, in the section's
-   own UI language. Full-page sticky panels dock below the navbar; each new
-   panel covers the previous while its tab pill clicks into the accumulating
-   rail. Scroll-scrubbed only — no keyframes, reduced-motion safe. */
-/* This section's opaque, full-width sliding panels sit above the global page
-   rails (z-5) and hide them, so the vertical content-edge separators go
-   missing here. Redraw them as a non-interactive overlay pinned above the
-   panels, matching the page rails exactly (1px --hair at --rail-x). */
-/* the heading scrolls away normally (not sticky); the panels dock just below
-   the navbar once the title has passed. */
-/* Extra top gap so there's a beat of empty scroll between the hero and this
-   title — you scroll a notch or two through open space, then the section slides
-   in (feedback: "increase the gap btw the hero section and this title text… 1-2
-   scroll and then the next section slides in"). */
-
-/* Once the last panel docks and the outro line ("None of this required
-   hiring…") has typed out, its lower edge dissolves into a soft blurred band
-   so the section doesn't hard-cut — the next section blends up through it. */
-
-/* zero-height, non-sticky flow marker before each panel — measured by goTo so
-   tab clicks dock the right panel from any scroll position */
-/* transparent band — earlier docked tabs stay visible through it; only the
-   tab itself takes pointer events */
-/* active tab reads as the primary CTA (matches the "Book a demo" button):
-   same blue gradient, hairline, inner highlight, and lifted glow */
-/* tabs whose panels haven't merged into the stack yet read as placeholders:
-   a dotted outline instead of the solid hairline */
-/* the sheet sits open on the page — no card box; a hairline rule with a
-   centered BEFORE/AFTER pill labels the split, and each half carries its
-   own glass-gradient canvas (per Figma reference). Per-tab tones
-   (.ba-tone--*) still flow through chips, hot cells, and highlights. */
-/* guide nodes cap both ends of the rule */
-
-/* ── Before → After comparison rows ──────────────────────────────────
-   Each panel is a short list of paired lines: the manual "Old way" on the
-   left, the FinSynth outcome on the right, split by a tone-coloured arrow.
-   Rows are centred in the docked panel and divided by hairlines. */
-/* one full-height separator between the old and new columns */
-/* guide nodes cap the vertical separator's ends */
-/* a node marks where each row divider crosses the vertical separator */
-/* bullets lead every line on the left */
-/* bullet marker leading each line */
-
-/* the two halves share a plain field with a hairline splitting the columns;
-   the dotted grid is confined to each visual's canvas (see .ba-canvas below),
-   so it sits behind the image area only — not the captions. */
-/* visual-first: the canvas caps each column, the caption reads underneath */
-
-/* the dotted grid lives here — behind the image area only, with drafting
-   crosshair ticks at the canvas corners; the visual floats on top, no box. */
-/* center the sketch cluster in the canvas — the stagger offsets still drift
-   each paper off-axis around the middle */
-
-/* ── Draft vs. built — the two sides speak different materials. The "before"
-   diagrams stay hand-drawn: dashed hairlines, drafting corner-ticks in the
-   old-way rust, papers sitting a few degrees off-axis, depth from flat
-   offset underlays. The "after" diagrams square up straight with solid
-   hairlines and soft shadows — the composed product, in the tab's accent.
-   Scoped to .bstk-sheet so the whywb section keeps its original cards. ── */
-
-/* the paper chain drifts off-axis and slides right as it grows */
-
-/* before surfaces: dashed hairlines + flat offset underlays (no soft blur) */
-
-/* drafting corner ticks — opposite-corner L brackets, old-way rust */
-
-/* the cost annotation under the sketch cluster */
-
-/* after side floats the built product on the glass canvas */
-/* translucent accent tints go muddy over the blue — back them with white */
 /* chips land in the white dissolve — frost them so they read either way */
-
-@media (max-width: 900px) {
-  /* flatten the scatter on small screens — the drift cramps narrow panels */
-}
-
-@media (max-width: 760px) {
-  /* narrow screens: plain scroll, tabs full-width above their panel */
-  /* stacked halves: the kicks come back to label each one */
-  /* comparison rows stack vertically; no room for the centre separator */
-}
 
 /* ── Floating next-section button — fixed bottom-right, button accent ── */
 .scroll-next {
@@ -3163,15 +3038,7 @@ img, video, svg, picture {
   .gridreveal__cells path { transition: none; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   WHY ANALYSTS CHOOSE FINSYNTH
-   The verifiable stats as a metrics band hung off the bottom of the Excel
-   section: same .wrap, so it lands exactly on that frame's edges, and no
-   border of its own on top — the frame's bottom hairline is the only line
-   between the two. Just the figures, left-aligned on the frame's text inset;
-   the claim and sub that sat over the row were dropped on request. Home.jsx
-   runs it with no <SectionRule /> on either side.
-   ══════════════════════════════════════════════════════════════════════ */
+/* ════════ WHY ANALYSTS CHOOSE FINSYNTH ════════ */
 
 /* the band and the frame have to touch, so the section above gives up its
    bottom padding when this one follows it. Only the first <ExcelSection />
@@ -3194,8 +3061,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
      doubling it would draw a 2px seam right where the two are meant to join */
   border: 1px solid var(--hair);
   border-top: 0;
-  /* White, matching the frame above — the band ran a pale blue wash before,
-     cleared on request; the hairline border is what marks it off now. */
   background: var(--surface);
   overflow: hidden;
 }
@@ -3216,7 +3081,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   position: relative;   /* lifts the figures over the dot grid */
   z-index: 1;
   display: grid;
-  /* --n comes from WhyAnalysts.jsx and is the length of its figures array, so
+  /* --n comes from WhyAnalysts.tsx and is the length of its figures array, so
      dropping a figure closes the row up instead of leaving an empty cell */
   grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
   margin: 0;
@@ -3249,10 +3114,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   font-variant-numeric: tabular-nums;
 }
 
-/* the site's mono caption, unmodified: --font-mono / --fs-mono / --ls-mono,
-   uppercase, --accent — same as .hiw-eyebrow and .setup-eyebrow. It used to
-   run a dimmed one-off accent, which read as a third type style on a page that
-   only has two caption treatments. */
 .wac-num-label {
   margin: 0;
   font-family: var(--font-mono);
@@ -3317,104 +3178,16 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   .wac-num-label { font-size: clamp(7px, 1.9vw, 8.5px); letter-spacing: .06em; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   DIFFERENTIATOR — "the difference", first informative section under the
-   hero. One job: stake the claim on auditability against the accuracy
-   claim everyone else leads with. Hairline spec-sheet language (same as
-   .secx / .wac), no stat row, no card grid.
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* ── head: the section title with its secondary line stacked under it ──
-   THE PAGE'S SECTION-HEAD FORMAT. Every section head follows this shape: title,
-   secondary line directly beneath it, both flush left, and no full stop on
-   either. Two earlier layouts are gone — a two-column grid (which parked the
-   secondary line in a right-hand column, so a short title left ~470px of white
-   between them and it read as an unrelated column) and a baseline row hugging
-   the title. Stacked is the format; it holds at every width, and it matches the
-   claim/detail pairs inside the sections below.
-   Shared by .dfx (#difference) and .dfx.vsx (#comparison). */
-
-/* the two sentences each own a line, so no balancing — it would re-break them */
-
-/* ── proof columns ──
-   Three abreast rather than stacked: the proofs are peers, not an ordered
-   sequence, so side by side they scan as one set. Vertical hairlines divide the
-   columns the way the row rules used to divide the rows. */
-
-/* takes the slack so the three diagrams sit on one line at the foot of the
-   columns however unevenly the claims above them wrap */
-
-/* ── row diagrams ──
-   Schematics, not screenshots: each states the mechanics of its claim. Colour
-   lives here rather than on the SVG attributes so the :root tokens stay the
-   single source, and so the whole set restyles from one place. */
-/* set on both the <g> wrappers and bare lines — stroke/fill inherit either way */
-
-/* the reference link reads dashed — it points at a source, it isn't a data flow */
-
-/* The outro line and its link out are gone, and with them .dfx-outro /
-   .dfx-outro-link — the section ends on the three proofs. */
-
 /* ── reveal staging ── */
-
-@media (max-width: 1000px) {
-  /* the head is already stacked; the title just narrows its measure */
-}
 
 /* Below this the three columns can't hold a readable measure — a 15px paragraph
    in a ~280px column sets to four ragged words a line — so they stack. */
-@media (max-width: 900px) {
-  /* stacked, the diagram no longer has to align across columns, so it holds a
-     sensible size instead of stretching the full width */
-}
-
-@media (max-width: 640px) {
-  /* the svg scales down with the column, so the micro-labels are bumped in user
-     units here to land back at a readable size on a phone */
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   COMPARISON — three-way: a generic copilot, Claude, and us. A duplicate
-   of the .dfx section: it reuses .dfx-head / .dfx-title / .dfx-lede /
-   .dfx-frame and only adds the table internals, so the pair reads as one
-   system.
-
-   Lanes, left to right: the two alternatives sit recessed on the page grey
-   as one group, ours comes forward on white. That grouping is the argument
-   — "whatever you already run" against "this" — and it also keeps the
-   table to two tones, so a third background never has to be invented.
-   ══════════════════════════════════════════════════════════════════════ */
-/* the category column gives up width to the third lane; the remaining three
-   split what's left evenly under table-layout: fixed */
-
-/* the row header reads as a label, not as a competing claim */
-
-/* ── the rating pills ──
-   Tier sets colour only. No traffic-light palette: the page is grey plus one
-   blue, so a weak rating recedes and a strong one comes forward instead. */
-/* nothing there yet — dashed, so the gap reads as absence rather than a score */
-
-/* ── reveal staging: rows rise in sequence once the frame is in view ── */
 
 /* Four columns need ~1100px to hold a pill and its line without three-word
    wraps, so the table collapses earlier than the two-lane version did: the
    category becomes a heading and its three ratings stack under it, each named
    by its own lane label. Stacked rather than three-up — a third of a tablet
    width is narrower than the pills themselves. */
-@media (max-width: 1100px) {
-
-  /* stays body type: the lane labels below it are already mono, and a second
-     mono line would read as competing micro-labels */
-  /* the lane label moves inline with the pill: three stacked rows each need
-     naming, and a label line above every one of them would treble the height */
-  /* the note sits under the pill, indented to the label's column so the three
-     ratings still line up as a comparison */
-}
-
-@media (max-width: 520px) {
-  /* a phone can't hold the label and the pill on one line, so the label goes
-     back above it and the note loses its indent */
-}
 
 /* ══ FinSynth for Excel — the Security section's bordered frame and headline.
       All four claims sit in a rail on the left, always visible; each rail row
@@ -3422,12 +3195,8 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
       to be pinned inside a multi-screen scroll budget; it's a plain block now,
       so the section reads the same short height as every other one ══ */
 .x4e-sec { background: var(--bg); padding: clamp(72px, 9vh, 104px) 0 }
-/* white inside the hairline, so the head and rail sit on the same ground as
-   the stage's white panel rather than the section's gray.
-   --x4e-pad-x is the one side inset the head band and every rail row share, so
-   the section title and the claim titles under it start on the same vertical
-   line. The rows used to carry their own clamp(22px, 2.6vw, 36px) and sat up to
-   24px inboard of the headline on desktop. */
+/* --x4e-pad-x is the one inset the head band and every rail row share, so the
+   section title and the claim titles start on the same vertical line. */
 .x4e-frame {
   position: relative; border: 1px solid var(--hair); background: #fff;
   --x4e-pad-x: clamp(32px, 3.8vw, 60px);
@@ -3472,7 +3241,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
   overflow: hidden;
 }
-/* pane with no rail — the stage takes the full frame width (Fia) */
 
 /* the rail — every claim is a row, and every row is the button that brings
    its visual on stage. Equal rows, so the four split the pane evenly. */
@@ -3504,10 +3272,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   opacity: 0;
   transition: opacity .35s cubic-bezier(.32,.72,0,1);
 }
-/* The active row used to draw its dwell as an accent hairline filling across
-   its foot. Dropped on request: the moving line pulled the eye down to the
-   rail's edge and away from the visual it was counting toward. The left-edge
-   marker above is the only thing that says which claim is on stage now. */
 
 .x4e-item:hover { background: #F7F8FA }
 .x4e-item.is-active { background: #F7F8FA }
@@ -3547,21 +3311,10 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
      content stays inside the card at every width instead of running to its
      edge. Change the SVG and this together. */
   --x4e-card-inset: 6%;
-  /* Grainy blue ground, white card floating on it. Four layers, top down:
-     the card (an SVG cut-out so it needs no element of its own — a
-     pseudo-element card would have to sit above the visuals or force a
-     stacking context on them), the grain,
-     a corner light, and the blue itself.
-
-     The grain is a repeating 320px tile rather than a stretched sheet: at this
-     stage's size a stretched noise smears into streaks, and the tile stitches
-     so the repeat leaves no grid. `overlay` is what makes it read as tooth in
-     the blue instead of grey confetti on top of it — it lightens the light end
-     and darkens the dark end of whatever is under it.
-
-     Two earlier grounds — x4e-stage-frame.svg (flat blue border, no grain) and
-     x4e-stage-mosaic.svg (the gradient cells) — are deleted; git history has
-     them if a plainer ground is ever wanted back. */
+  /* Layers, top down: card, grain, corner light, blue. The card is an SVG
+     cut-out because a pseudo-element card would have to sit above the visuals
+     or force a stacking context on them. The grain is a 320px tile: stretched
+     noise smears into streaks at this size. */
   background-color: #1B34A6;
   background-image:
     url('/assets/img/x4e-stage-card.svg'),
@@ -3631,18 +3384,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   to { opacity: 1; transform: none; }
 }
 
-/* 04 · Enterprise ready — a label over the row of certification seals, and
-   nothing else. A ticked SVG dial ran here first, then a supplied shield
-   render; both were pictures standing in for the claim, and the seals are the
-   claim's own evidence, so they hold the cell alone.
-
-   A column laid out in normal flow inside .x4e-visual's padding, like the drawn
-   visuals. It used to be absolute against the whole stage (inset: 0) because
-   the render carried its own near-black plate and any inset framed that plate
-   as a rectangle pasted onto the ground. With the art gone there is nothing
-   left to bleed — and in flow the visual contributes its own height, which is
-   what lets the stage grow for the seals on narrow screens where its min-height
-   is only 240px. */
 .xvs {
   display: flex;
   flex-direction: column;
@@ -3771,10 +3512,8 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   bottom: -11px; padding: 3px 9px; font-size: 9px;
 }
 
-/* small mono sub-line inside a chip (coverage counts, provider lists) */
-
 /* 01 · Complex workflows borrows the self-completing checklist marquee
-   (WorkflowMarquee.jsx, styled by the .what-* rules) — centred on the light
+   (WorkflowMarquee.tsx, styled by the .what-* rules) — centred on the light
    stage and scaled down from its full-section size. */
 .xv-marquee { display: flex; justify-content: center; }
 .xv-marquee .what-list-viewport {
@@ -3812,32 +3551,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .x4e-stage--inline .xv-marquee .what-list { gap: 2.1cqw; }
 .x4e-stage--inline .xv-marquee .what-check { border-width: max(1px, .33cqw); }
 
-/* 02 · Fully auditable — the cascade, with the rest of the source shelf
-   following as pills so "anything" reads as a real list. (An SVG trace
-   drawing shipped here before it; removed 2026-09-16, git has it.)
-
-   The scene sits on the stage's white card (a grained navy panel version ran
-   first and was dropped in review), and the files float on it as white
-   cards. The analyst's workbook sits on the
-   right and stays put. Three sources are dealt onto a stack on the left, one
-   per 3s beat of a 9s loop: the 10-K, the earnings call, the analyst's own
-   tracker. Each slides in, its page resolves as it is read, the passage that
-   carries the number lights up, and the cell it supports fills in the
-   workbook with the provenance printed under the grid. The pill above names
-   the step and turns its spinner into a check as each number lands. Each
-   newcomer pushes the source before it back a step — softer, a touch smaller —
-   so the eye always has the current file in front and the read ones behind.
-
-   Two clocks. Things that belong to one beat and are gone by the next (the
-   pill label, the page resolve, the passage, the cell ring) share one 9s
-   keyframe set and are offset by `animation-delay: calc(var(--i) * 3s)` —
-   before its delay an element sits on its 0% frame, which is always the hidden
-   one. Things that have to persist across beats (the cards themselves, the
-   filled cells, the provenance line) get a keyframe per index.
-
-   Everything inside is sized in cqw off the scene's width, so the picture
-   scales as one piece; the few max() floors keep the type legible when the
-   scene is a phone wide. Only transform, opacity and filter animate. */
 .xvc { width: 100%; }
 .xvk {
   container-type: inline-size;
@@ -4407,8 +4120,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   from { opacity: 0; translate: 0 10px }
   to { opacity: .78; translate: 0 0 }
 }
-/* the offer: same pill, held in the centre and lifted off the field. It lands
-   after the shelf has settled, so the field reads as the ground it arrives on */
 .xvi-field .xvi-pill--focal {
   position: absolute;
   left: 50%;
@@ -4654,12 +4365,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   .xvs-seal-pill::before { width: 5px; height: 5px }
 }
 
-/* ══ Fia — wears the same framed layout as "FinSynth for Excel" (.x4e-*):
-      hairline frame, head band, then a pane splitting the rail of three
-      capabilities from the stage. The window is drawn after the real Fin
-      Chat webapp (history sidebar + empty state + composer); swap the mock
-      for the real shot inside .x4e-visual when it exists ══ */
-/* one-liner riding under the headline in the frame's head band */
+/* ════════ FIA — reuses the .x4e-* frame ════════ */
 /* no max-width — the line is short enough to sit unbroken under the title */
 .fiag-sub {
   margin: 12px 0 0;
@@ -4709,15 +4415,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   background-blend-mode: overlay, normal, normal;
   min-height: clamp(285px, 41.8vh, 399px);
 }
-/* The window sits whole inside the stage. It used to run 942px wide and bleed
-   off the right, with the capture cropped to the sidebar and the empty-state
-   headline; feedback at 1698 wanted the full workspace instead: "the sidebar
-   part is fine, but the main empty chat screen needs to be enlarged, also the
-   bottom actions got cropped, keep it like this [the full capture]". So the
-   capture is the whole 2000x1398 window again (composer with its actions
-   included) and the window is sized to the stage rather than past it, centred
-   with even padding. Its height follows its width, so the stage grows with it
-   and the min-height floor below is just that, a floor. */
 .fiag-stage .x4e-visual {
   justify-content: center;
   padding: clamp(21px, 4.3%, 40px);
@@ -4739,18 +4436,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   .fiag-stage .x4e-visual > * { width: 112% }
 }
 
-/* ── the window ──────────────────────────────────────────────────────── */
-/* the frame is a plain window around the shot: a tinted border with the page
-   floating inset on its own surface — the shadow is the reference's soft,
-   wide falloff, not a card shadow. (It used to carry browser chrome — traffic
-   lights, a tab strip, a toolbar; all cut on request.)
-
-   The frame is the reference's dusty pink rather than the page's neutrals:
-   the stage behind it is our blue, and a pink window is the one tint that
-   reads as "someone's browser" instead of another FinSynth surface. Every
-   outline in here is a warm hairline off that same pink, so the frame and the
-   page inset belong together. Held as locals so the whole treatment retunes
-   from these three lines. */
 .fiag-window {
   --fiag-chrome: #E9D3D5;
   --fiag-line: #D9BEC2;      /* outlines: the chrome, a shade deeper */
@@ -4767,9 +4452,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
     0 56px 112px -32px rgba(74,38,43,.24);
   overflow: hidden;
 }
-/* the page — the screenshot inset in the frame with an even 8px margin; all
-   the browser dressing (chrome strip, toolbar) that used to sit above it was
-   cut on request */
 .fiag-page {
   margin: 8px; border-radius: 12px;
   background: var(--fiag-paper); border: 1px solid var(--fiag-line);
@@ -5136,7 +4818,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   display: flex; flex-direction: column; align-items: center; text-align: center;
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
-/* the eyebrow on the dark ground: the accent lifted so it holds its chroma */
 /* the eyebrow as a highlight (feedback): a frosted-glass pill in the home
    hero's Backed-by treatment, white capitals with an accent dot, so the
    page's name reads as a badge on the photo rather than a line lost in it.
@@ -5221,13 +4902,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   align-self: center; min-width: 0;
   padding: clamp(48px, 6vh, 80px) var(--x4e-pad-x);
 }
-/* the use case's name as the title (feedback: the name bold and title-like),
-   then one paragraph: the outcome as its first sentence, running straight
-   into the body in the same voice (feedback: the explainer line and the
-   paragraph clubbed together, no accent on the lead). The title is at the
-   home page's size for a title within a section (`.x4e-item-title`,
-   `.secx-point-title`), not a section head's. The row number that sat on
-   the eyebrow line is gone */
 .sol-work-copy h2 {
   margin: 0 0 10px;
   font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
@@ -5294,11 +4968,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-sheet table { width: 100%; border-collapse: collapse; font-size: .92em; font-variant-numeric: tabular-nums }
 .sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
 .sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
-/* no tab row at a sheet's foot (feedback: "remove this bar from all
-   screens"); the source a sheet is reading from sits in its title's tag */
-
-/* ── hedge funds page extras ── the strategies pills in the hero and the
-   parts the hedge fund visuals add to the shared stage */
 
 /* the strategies line: a mono lead in the accent, then the names as soft
    accent pills */
@@ -5604,7 +5273,7 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   HOW IT WORKS, THREE STAGES (src/components/HowStages.jsx)
+   HOW IT WORKS, THREE STAGES (src/components/shared/HowStages.tsx)
    The solution pages' How it works: the three stages as columns, each with
    its pillars as cards.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -5624,10 +5293,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 @keyframes hwClick { from { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 .3em color-mix(in srgb, var(--k-acc) 50%, transparent) } to { box-shadow: 0 0 0 2px var(--k-acc), 0 0 0 1.1em color-mix(in srgb, var(--k-acc) 0%, transparent) } }
 .hw-pico { grid-row: 1 / 3; width: 34px; height: 34px; padding: 8px; border-radius: 8px; background: var(--accent); color: #fff }
 
-/* grid · the pillars as cards in three stage columns, all on the page
-   at once with nothing to open. No scene: the use case rows above carry the
-   product pictures, and this section is the inventory (feedback: the scene
-   over the grid was dropped) */
 /* the columns share one set of rows (subgrid), so every card is the height
    of the tallest; Review's two cards keep that height and leave the third
    row empty rather than stretching to fill it (feedback) */

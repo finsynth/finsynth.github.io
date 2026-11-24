@@ -293,7 +293,7 @@ export const SOLUTIONS = {
       // example through every stage: the documents brought in at stage one are
       // the inputs at stage two, and the cell written there is the one verified
       // at stage three. Only this example changes by audience; the stage labels
-      // and explanations live in src/components/HowStages.jsx
+      // and explanations live in src/components/shared/HowStages.tsx
       eyebrow: 'How your team works with FinSynth',
       example: CROCS_EXAMPLE,
       // the pillars as approved in the page outline, word for word (Enterprise ready dropped)

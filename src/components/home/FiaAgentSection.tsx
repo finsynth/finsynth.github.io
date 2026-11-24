@@ -1,16 +1,3 @@
-/**
- * "Fia" — split out of ExcelSection into its own file so the Excel frame
- * stays untouched, but wearing the same framed layout: hairline frame with
- * a head band, then a pane splitting a rail of claims from the stage. Unlike
- * the Excel rail, the rows here are statements, not navigation — one window
- * sits on the stage the whole time, so nothing is interactive and no row
- * carries the active marker.
- *
- * The window is a plain frame around a real screenshot of the Fia workspace —
- * the browser dressing (chrome strip, toolbar) was cut on request. To refresh
- * the product view, drop a new capture at src/assets/img/fia-workspace.webp —
- * nothing here needs to change.
- */
 
 // One claim per row, each a single clause: the rows sit beside the Excel
 // section's rail on the same page, so they read in the same register as its

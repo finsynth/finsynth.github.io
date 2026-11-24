@@ -1208,11 +1208,6 @@ function FrameHead({ title }) {
   )
 }
 
-/* a use case row: its name as the title, then one paragraph of the scenes'
-   copy (the outcome no longer leads it; it stays in the data unused). The
-   stage runs through
-   the use case's scenes on its own clock; the copy no longer lights sentence
-   by sentence and the row number is gone from the eyebrow line */
 function Workflow({ w, flip }) {
   const ref = useReveal({ threshold: 0.12 })
   const stageRef = useRef(null)
