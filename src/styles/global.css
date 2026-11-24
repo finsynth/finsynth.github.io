@@ -2473,7 +2473,7 @@ img, video, svg, picture {
   width: 100%;
   height: 1px;
   margin: -1px 0;
-  z-index: 7; /* above the z-6 sections so corner tiles never get covered */
+  z-index: 7; /* above the z-6 sections so the guide nodes never get covered */
   pointer-events: none;
 }
 /* break lines run the full frame width so every section closes into a border box */
@@ -2485,24 +2485,11 @@ img, video, svg, picture {
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 18px;
 }
 .sr-line {
   flex: 1;
   height: 1px;
   background: var(--hair);
-}
-.sr-label {
-  background: var(--bg);
-  border: 1px solid var(--hair-strong);
-  border-radius: 999px;
-  padding: 7px 18px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
-  text-transform: uppercase;
-  color: var(--accent);
-  white-space: nowrap;
 }
 
 /* Guide nodes are filled with the page bg so the separator reads as passing under them. */
@@ -2523,56 +2510,6 @@ img, video, svg, picture {
 @media (max-width: 720px) {
   .sr-node--l { left: var(--rail-x); }
   .sr-node--r { right: var(--rail-x); }
-}
-
-:root {
-  --content-x: calc(var(--rail-x) + var(--rail-gap));
-}
-.sr-box {
-  /* corner pixel clusters are hidden site-wide */
-  display: none;
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-}
-.sr-box--solid {
-  background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, .16) 0 2px, transparent 2px 4px),
-    linear-gradient(135deg, #47A362 0%, #175A30 80%);
-}
-.sr-box--solid::after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: linear-gradient(135deg, #7CC98F 0%, #2E7D46 85%);
-}
-.sr-box--stripe {
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(52, 178, 134, .55) 0 2px,
-    rgba(214, 244, 232, 1) 2px 4px
-  );
-  border: 1px solid rgba(52, 178, 134, .45);
-}
-.sr-box--l1 { left: var(--content-x); top: 4px; }
-.sr-box--l1::after { right: -10px; bottom: -10px; }
-.sr-box--l2 { left: calc(var(--content-x) + 28px); top: 12px; width: 12px; height: 12px; }
-.sr-box--r1 { right: var(--content-x); top: -22px; }
-.sr-box--r1::after { left: -10px; top: -10px; }
-.sr-box--r2 { right: calc(var(--content-x) + 28px); top: -14px; width: 12px; height: 12px; }
-.section-rule:nth-of-type(even) .sr-box--l1 { top: -22px; }
-.section-rule:nth-of-type(even) .sr-box--l1::after { bottom: auto; top: -10px; }
-.section-rule:nth-of-type(even) .sr-box--l2 { top: -14px; }
-.section-rule:nth-of-type(even) .sr-box--r1 { top: 4px; }
-.section-rule:nth-of-type(even) .sr-box--r1::after { top: auto; bottom: -10px; }
-.section-rule:nth-of-type(even) .sr-box--r2 { top: 12px; }
-.section-rule:nth-of-type(3n) .sr-box--l2,
-.section-rule:nth-of-type(3n) .sr-box--r2 { display: none; }
-
-@media (max-width: 720px) {
-  .sr-box { display: none; }
 }
 
 /* Scroll-reveal entrances (`is-in` from useReveal). Cards use keyframes, not transitions, so the reveal never fights their hover translate. Reduced motion is honoured below. */
