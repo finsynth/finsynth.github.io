@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
-import BayBridgePixelCanvas from '@/components/visuals/BayBridgePixelCanvas'
+import WallStreetPixelCanvas from '@/components/visuals/WallStreetPixelCanvas'
 import { MatrixDecode } from '@/components/visuals/matrix-decode'
 import { SEGMENTS } from '@/data/segments'
 
@@ -123,7 +123,7 @@ function RotatingSegment() {
 function Hero() {
   return (
     <section className="hero-s2 hero-s2--photo">
-      <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" />
+      <WallStreetPixelCanvas stageClassName="hero-s2-mosaic" />
       <span className="stat-pill" aria-hidden="true"></span>
       <div className="hero-s2-wrap">
         {/* ── ONE BIG CELL ── */}

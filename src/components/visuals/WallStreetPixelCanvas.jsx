@@ -60,7 +60,7 @@ const seed = (i, j) => {
  *   focusY?: number, duration?: number, delay?: number, paused?: boolean,
  *   onRevealDone?: () => void }} props
  */
-const PixelBayBridge = ({
+const WallStreetPixelCanvas = ({
   stageClassName = 'hero-s2-mosaic',
   tile = 10, // approximate pixel size of one chunky tile (css px)
   // Horizontal anchor of the crop (0 = left edge of the photo, 1 = right).
@@ -404,4 +404,4 @@ const PixelBayBridge = ({
   )
 }
 
-export default PixelBayBridge
+export default WallStreetPixelCanvas
