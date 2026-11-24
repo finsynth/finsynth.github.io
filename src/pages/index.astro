@@ -16,14 +16,14 @@ import Footer from '@/components/layout/Footer'
 import ScrollNextButton from '@/components/layout/ScrollNextButton'
 import JsonLd from '@/components/seo/JsonLd.astro'
 import { FAQS } from '@/data/faq'
-import { faqPage, website } from '@/lib/schema'
+import { faqPage, softwareApplication, website } from '@/lib/schema'
 import fiaWorkspace from '@/assets/img/fia-workspace.webp'
 
 const fiaShot = await getImage({ src: fiaWorkspace, format: 'webp', quality: 80, widths: [640, 960, 1280, 1800, 2000] })
 ---
 
 <BaseLayout>
-  <JsonLd slot="head" data={[website(), faqPage(FAQS)]} />
+  <JsonLd slot="head" data={[website(), softwareApplication(), faqPage(FAQS)]} />
   <div class="mainContainer">
     <div class="page-rails" aria-hidden="true">
       <span class="rail rail-left"></span>

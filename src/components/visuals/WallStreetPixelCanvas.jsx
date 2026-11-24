@@ -56,13 +56,12 @@ const seed = (i, j) => {
 }
 
 /**
- * @param {{ stageClassName?: string, ariaLabel?: string, tile?: number, focusX?: number,
+ * @param {{ stageClassName?: string, tile?: number, focusX?: number,
  *   focusY?: number, duration?: number, delay?: number, paused?: boolean,
  *   onRevealDone?: () => void }} props
  */
-const PixelBayBridge = ({
+const WallStreetPixelCanvas = ({
   stageClassName = 'hero-s2-mosaic',
-  ariaLabel = '',
   tile = 10, // approximate pixel size of one chunky tile (css px)
   // Horizontal anchor of the crop (0 = left edge of the photo, 1 = right).
   focusX = 0.5,
@@ -400,9 +399,9 @@ const PixelBayBridge = ({
 
   return (
     <div className={stageClassName} ref={stageRef} aria-hidden="true">
-      <canvas ref={canvasRef} className="hero-s2-pixel-canvas" role="img" aria-label={ariaLabel} />
+      <canvas ref={canvasRef} className="hero-s2-pixel-canvas" />
     </div>
   )
 }
 
-export default PixelBayBridge
+export default WallStreetPixelCanvas

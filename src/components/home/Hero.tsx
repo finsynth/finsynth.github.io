@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
-import BayBridgePixelCanvas from '@/components/visuals/BayBridgePixelCanvas'
+import WallStreetPixelCanvas from '@/components/visuals/WallStreetPixelCanvas'
 import { MatrixDecode } from '@/components/visuals/matrix-decode'
 import { SEGMENTS } from '@/data/segments'
 
@@ -89,12 +89,9 @@ function RotatingSegment() {
 
   return (
     <>
-      {/* static copy for screen readers; the animated span is decorative */}
-      <span className="sr-only">{SEGMENTS[0]}</span>
       <span
         ref={rootRef}
         className={`hero-rotate ${phase}${hl ? ' is-hl' : ''}`}
-        aria-hidden="true"
         onMouseEnter={hold}
         onMouseLeave={() => setHovered(false)}
       >
@@ -126,7 +123,7 @@ function RotatingSegment() {
 function Hero() {
   return (
     <section className="hero-s2 hero-s2--photo">
-      <BayBridgePixelCanvas stageClassName="hero-s2-mosaic" ariaLabel="" />
+      <WallStreetPixelCanvas stageClassName="hero-s2-mosaic" />
       <span className="stat-pill" aria-hidden="true"></span>
       <div className="hero-s2-wrap">
         {/* ── ONE BIG CELL ── */}
@@ -157,7 +154,10 @@ function Hero() {
               Below 1100px neither row fits and the headline runs to three rows;
               .hero-s2-title reserves that height there so the rotating segment
               can't shove the CTAs around mid-cycle. */}
-          <h1 className="hero-s2-title">
+          <h1 className="sr-only">
+            Auditable AI research infrastructure, purpose-built for investment teams
+          </h1>
+          <p className="hero-s2-title" aria-hidden="true">
             {/* each row is its own block with the leading moved into a margin,
                 so text selection paints two separate white strips instead of
                 one merged slab (margins aren't covered by ::selection) */}
@@ -167,7 +167,7 @@ function Hero() {
             <span className="hero-title-row">
               <span className="hero-nobreak">purpose-built</span> for <RotatingSegment />
             </span>
-          </h1>
+          </p>
 
           <p className="hero-s2-lede">
             Eliminate verification tax, take your research from drafts to decision-making

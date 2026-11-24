@@ -6,7 +6,7 @@
 export const SEGMENTS = [
   'Hedge Funds',
   'Asset Managers',
-  'Private Equity',
+  'Private Markets',
   'Family Offices',
   'Sell Side',
 ]

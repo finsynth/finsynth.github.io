@@ -34,13 +34,7 @@ const PRODUCTS: NavItem[] = PRODUCT_LIST
 const SOLUTION_BLURBS: Record<string, { icon: LucideIcon; desc: string; slug?: string }> = {
   'Hedge Funds': { icon: Landmark, desc: 'Alpha generation and signal research' },
   'Asset Managers': { icon: Building2, desc: 'IC memos and portfolio monitoring' },
-  // the page covers buyout, growth equity and private credit, so it is
-  // /solutions/private-markets, broader than the desk's name in the hero
-  'Private Equity': {
-    icon: ChartCandlestick,
-    desc: 'Deal screening, diligence and IC memos',
-    slug: 'private-markets',
-  },
+  'Private Markets': { icon: ChartCandlestick, desc: 'Deal screening, diligence and IC memos' },
   'Family Offices': { icon: House, desc: 'Public holdings and private deals' },
   'Sell Side': { icon: Briefcase, desc: 'Initiations, earnings notes and sector reports' },
 }

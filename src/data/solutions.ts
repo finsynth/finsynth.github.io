@@ -3,7 +3,7 @@
  * navbar's Solutions menu links to; a slug with no entry here falls back to
  * the home page. Copy only: the drawn product panels each `visual` names
  * live in pages/Solution.jsx. Five desks: hedge funds, asset managers, sell
- * side, family offices and private markets (the menu's Private Equity).
+ * side, family offices and private markets.
  */
 
 // the eight pillars run in the same order on every page; only the wording
@@ -1041,8 +1041,6 @@ export const SOLUTIONS = {
     ],
   },
 
-  // the Private Equity entry in the navbar's menu: the page covers buyout,
-  // growth equity and private credit, so its slug and name are broader
   'private-markets': {
     name: 'Private Markets',
     title: 'Take your diligence from dataroom to IC memo',

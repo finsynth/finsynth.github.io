@@ -31,6 +31,19 @@ export function website(): Thing {
   }
 }
 
+export function softwareApplication(): Thing {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: SITE.name,
+    url: LINKS.app,
+    description: SITE.description,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    publisher: { '@id': ORG_ID },
+  }
+}
+
 export function faqPage(items: { q: string; a: string }[]): Thing {
   return {
     '@context': 'https://schema.org',

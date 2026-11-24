@@ -1,14 +1,11 @@
 import { useEffect, useRef } from 'react'
 
-/* Grid Reveal — hover-fill perspective grid (tars.pro hero backdrop).
-   The exact curved-horizon cell geometry is lifted from tars.pro (52 warped
-   quadrilaterals fanning up into a dome). tars fills the whole grid on a
-   single hover; here the fill follows the cursor as a soft spotlight — cells
-   near the pointer fade in (blue gradient) and trail off as it moves away —
-   which reads better in a standalone section. A slow ambient drift keeps the
-   grid alive when untouched; reduced-motion visitors get one static frame.
-   Fill opacity is driven per-cell in a rAF loop; the CSS opacity transition
-   adds the trailing softness. viewBox is tars's original 1350x610. */
+/* Grid Reveal — hover-fill perspective grid: 52 warped quadrilaterals fanning
+   up into a dome. The fill follows the cursor as a soft spotlight — cells
+   near the pointer fade in (blue gradient) and trail off as it moves away.
+   A slow ambient drift keeps the grid alive when untouched; reduced-motion
+   visitors get one static frame. Fill opacity is driven per-cell in a rAF
+   loop; the CSS opacity transition adds the trailing softness. */
 
 // warped-quadrilateral cells — fill in on proximity
 const CELLS = [
