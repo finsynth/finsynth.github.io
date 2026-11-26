@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { APP_HREF, ADDIN_URL } from '@/components/layout/AskParts'
+import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
 import WallStreetPixelCanvas from '@/components/visuals/WallStreetPixelCanvas'
 import { MatrixDecode } from '@/components/visuals/matrix-decode'
 import { SEGMENTS } from '@/data/segments'
@@ -148,42 +148,20 @@ function Hero() {
             Eliminate verification tax, take your research from drafts to decision-making
           </p>
 
-          {/* one primary, one secondary: Try for free, and Add to Excel linking to the AppSource listing */}
           <div className="hero-s2-ctas">
-            <a className="hero-s2-cta" href={APP_HREF} target="_blank" rel="noopener noreferrer">
-              Try for free
+            <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
+              Talk to Us
             </a>
             <a
               className="hero-s2-cta hero-s2-cta--ghost"
-              href={ADDIN_URL}
+              href={APP_HREF}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {/* drawn inline in Excel's greens since the repo has no Office
-                  logo asset */}
-              <svg
-                className="hero-s2-cta-excel"
-                viewBox="0 0 32 32"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path fill="#33C481" d="M10 2h18a2 2 0 0 1 2 2v5H10z" />
-                <path fill="#21A366" d="M10 9h20v7H10z" />
-                <path fill="#107C41" d="M10 16h20v7H10z" />
-                <path fill="#185C37" d="M10 23h20v5a2 2 0 0 1-2 2H10z" />
-                <rect x="2" y="8" width="16" height="16" rx="2" fill="#107C41" />
-                <path
-                  d="M6.5 12.5 13.5 19.5M13.5 12.5 6.5 19.5"
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-              Add to Excel
+              Try for free
               {/* the arrow only shows on hover, but its slot is always in the
                   layout (see .hero-s2-cta-arrow) — the button can't change
-                  width under the pointer without shoving the primary sideways,
+                  width under the pointer without shoving "Talk to Us" sideways,
                   since the row is centred */}
               <svg
                 className="hero-s2-cta-arrow"
