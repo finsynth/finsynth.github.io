@@ -2098,7 +2098,7 @@ img, video, svg, picture {
   transform: translateY(-1px);
 }
 
-/* secondary ("Add to Excel") — outline on white, so the blue primary keeps the
+/* secondary ("Try for free") — outline on white, so the blue primary keeps the
    weight and the self-serve path still reads as a button rather than a link */
 .hero-s2-cta.hero-s2-cta--ghost {
   background: #fff;
@@ -2133,17 +2133,6 @@ img, video, svg, picture {
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-s2-cta-arrow { transition: none; transform: none; }
-}
-
-/* the Excel mark in front of the "Add to Excel" label: always shown (unlike the hover
-   arrow), sized to the cap height of the 18px label and scaled with the rest
-   of the hero; a touch more room after it than the 6px flex gap so the mark
-   doesn't crowd the "U" */
-.hero-s2-cta-excel {
-  flex: none;
-  width: calc(18px * var(--hero-scale));
-  height: calc(18px * var(--hero-scale));
-  margin-right: calc(3px * var(--hero-scale));
 }
 
 /* CTA row — primary + secondary side by side; wraps if the pair no longer
@@ -2853,6 +2842,26 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   padding: clamp(38px, 5vh, 54px) var(--x4e-pad-x) clamp(34px, 4.5vh, 48px);
 }
 .x4e-head-copy { min-width: 0; text-align: left }
+/* the install button at the head's right: the outlined secondary, with the
+   Excel mark leading its label */
+.x4e-head-cta {
+  flex: none; display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 11px; background: #fff; border: 1px solid rgba(14, 26, 46, .22);
+  font-size: 16px; font-weight: 500; color: var(--ink); text-decoration: none; white-space: nowrap;
+  transition: border-color .15s;
+}
+.x4e-head-cta:hover { border-color: rgba(14, 26, 46, .4) }
+.x4e-head-cta svg { flex: none; width: 20px; height: 20px }
+/* placement trials for the install button, beside the shipped head-right one
+   (?cta=1|2|3 on the home page):
+   1 under the title, 2 closing the rail, 3 a foot row under the pane */
+.x4e-frame--cta1 .x4e-head { flex-direction: column; align-items: flex-start; gap: 26px }
+.x4e-rail-cta { display: flex; align-items: center; padding: 26px var(--x4e-pad-x) }
+.x4e-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px 32px; flex-wrap: wrap;
+  padding: 22px var(--x4e-pad-x); border-top: 1px solid var(--hair);
+}
+.x4e-foot-note { font-family: var(--font-body); font-size: 15px; color: var(--body-gray) }
 .x4e-head h2 {
   font-family: var(--font-display); font-weight: 450;
   font-size: clamp(32px, 4vw, 52px); line-height: 1.08;
@@ -4960,10 +4969,22 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 /* hero: on the page's own ground, the title on the left and the lede and
    buttons on the right, sharing a baseline */
 .sol3-hero { padding-top: clamp(56px, 7vw, 96px) }
-.sol3-hero .sol-eyebrow { margin: 0 }
-.sol3-hero-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px 72px; margin-top: 28px }
+/* the page's subject, so it reads as a badge and sits close on the title
+   (feedback: too far, not visible): a white pill, ink label, accent dot */
+.sol3-hero .sol-eyebrow {
+  display: inline-flex; align-items: center; gap: .7em; margin: 0; padding: 8px 16px 8px 13px;
+  border-radius: 999px; background: rgba(255, 255, 255, .86); border: 1px solid rgba(53, 80, 200, .22);
+  box-shadow: 0 1px 2px rgba(17, 24, 39, .05), 0 8px 20px -12px rgba(53, 80, 200, .35);
+  font-size: 12.5px; font-weight: 500; line-height: 1.2; color: var(--ink);
+}
+.sol3-hero .sol-eyebrow::before {
+  content: ''; flex: none; width: .55em; height: .55em; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 .3em rgba(53, 80, 200, .16);
+}
+.sol3-hero-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px 72px }
+.sol3-hero-head { flex: 1.5 1 520px; min-width: 0 }
 .sol3-hero-title {
-  flex: 1.5 1 520px; min-width: 0; margin: 0;
+  margin: 22px 0 0;
   font-family: var(--font-display); font-weight: 450; letter-spacing: -.04em;
   /* sized so the title holds two lines beside the lede on a desktop */
   font-size: clamp(40px, 4.2vw, 60px); line-height: 1.02; color: var(--ink); text-wrap: balance;
@@ -5029,7 +5050,6 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
     linear-gradient(90deg, rgba(247, 247, 247, .82) 0%, rgba(247, 247, 247, .5) 55%, rgba(247, 247, 247, .28) 100%),
     #DCE9F5 url('/assets/img/stages/blue-wave-PLACEHOLDER-third-party.png') 35% 0 / auto 230% no-repeat;
 }
-.sol3-hero--wave .sol3-hero-in > .sol-eyebrow + .sol3-hero-row { margin-top: 28px }
 /* a touch smaller inside the panel, so the title still holds two lines on a desktop */
 @media (min-width: 561px) { .sol3-hero--wave .sol3-hero-title { font-size: clamp(38px, 3.9vw, 58px) } }
 .sol3-hero--wave .sol3-hero-body { color: rgba(17, 24, 39, .82) }
@@ -5037,6 +5057,10 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol3-hero--wave .sol3-strats-lead { color: rgba(17, 24, 39, .7) }
 /* use cases: a centred head, then the cards two across */
 .sol3-cases { padding-top: clamp(72px, 9vw, 120px); padding-bottom: clamp(72px, 9vw, 120px) }
+/* the rows frame sits straight on the section rule (feedback: remove this
+   space); the rule is its top edge, so the frame drops its own */
+.sol3-cases:has(> .sol3-rows) { padding-top: 0 }
+.sol3-cases > .sol3-rows { border-top: 0 }
 .sol3-cases-head { max-width: 780px; margin: 0 auto clamp(36px, 4.5vw, 56px); text-align: center }
 .sol3-cases-head .sol-eyebrow { margin: 0 }
 .sol3-cases-head h2 {
@@ -5104,6 +5128,22 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
     padding-left: calc(var(--wrap-pad) + var(--rail-gap, 10px)); padding-right: calc(var(--wrap-pad) + var(--rail-gap, 10px));
   }
 }
+/* the default (?fold=off drops it): the first screen under the sticky navbar
+   holds the glass, the strategies strip and the use cases title band
+   (feedback: want this and above visible in the hero). --sol3-peek is the
+   height the title band needs below the hero: the band's own padding and one
+   line of its title (the use cases' top padding is gone). The glass takes what is left,
+   with the copy centred in it */
+.sol3-hero.sol3-hero--fold {
+  --sol3-peek: calc(clamp(60px, 8vh, 84px) + clamp(54px, 7vh, 76px) + clamp(28px, 2.8vw, 51px) * 1.08 + 4px);
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - var(--navbar-height) - var(--sol3-peek));
+  min-height: calc(100svh - var(--navbar-height) - var(--sol3-peek));
+}
+.sol3-hero--fold .sol3-hero-in { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center }
+/* the fold sets the glass's height, so its own padding drops to a floor that
+   only short screens reach */
+.sol3-hero.sol3-hero--fold .sol3-hero-in { padding-top: 48px; padding-bottom: 48px }
 /* with the page's lines the section rule closes the strip */
 .sol-lines .sol3-hero--bg.sol3-hero--wave > .sol3-strats { border-bottom: 0 }
 

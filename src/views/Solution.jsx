@@ -1311,7 +1311,7 @@ function UseCaseCard({ w }) {
   )
 }
 
-function LightTop({ sol, lines, stage, panel, cards, heroParam, heroSrc }) {
+function LightTop({ sol, lines, stage, panel, cards, heroParam, fold, heroSrc }) {
   /* the use cases as split rows that alternate sides, the first with its
      animation on the left (feedback: right and left format), on the building
      blue ground; ?stage=city is the building photo behind blurred glass panels; ?cases=cards is the card grid */
@@ -1332,6 +1332,10 @@ function LightTop({ sol, lines, stage, panel, cards, heroParam, heroSrc }) {
      on their own strip under it (feedback: use the animation in the bg, a
      separate strip for the strategies); ?hero=panel is the boxed panel */
   const heroBg = heroGlass && heroParam !== 'panel'
+  /* the first screen under the navbar holds the glass, the strategies strip
+     and the use cases title band (feedback: want this and above visible in
+     the hero); ?fold=off is the hero only as tall as its copy */
+  const heroFold = heroBg && fold
   const strats = sol.strategies && (
     <div className="sol3-strats">
       <span className="sol3-strats-lead">{sol.strategiesLead}</span>
@@ -1345,13 +1349,17 @@ function LightTop({ sol, lines, stage, panel, cards, heroParam, heroSrc }) {
   return (
     <>
       <header
-        className={`sol3-hero wrap${heroWave ? ' sol3-hero--wave' : ''}${heroGlass ? ' sol3-hero--glass' : ''}${heroBg ? ' sol3-hero--bg' : ''}`}
+        className={`sol3-hero wrap${heroWave ? ' sol3-hero--wave' : ''}${heroGlass ? ' sol3-hero--glass' : ''}${heroBg ? ' sol3-hero--bg' : ''}${heroFold ? ' sol3-hero--fold' : ''}`}
       >
         <div className="sol3-hero-in">
           {heroGlass && <FlutedGlass />}
-          <p className="sol-eyebrow">FinSynth for {sol.name}</p>
           <div className="sol3-hero-row">
-            <h1 className="sol3-hero-title">{sol.title}</h1>
+            {/* the badge rides in the title's column, so it stays on the title
+                however tall the lede beside it runs */}
+            <div className="sol3-hero-head">
+              <p className="sol-eyebrow">FinSynth for {sol.name}</p>
+              <h1 className="sol3-hero-title">{sol.title}</h1>
+            </div>
             <div className="sol3-hero-side">
               <p className="sol3-hero-body">{sol.lede}</p>
               {/* the shipped page's pair: Talk to Us solid, Try for free outlined */}
@@ -1416,7 +1424,9 @@ function LightTop({ sol, lines, stage, panel, cards, heroParam, heroSrc }) {
       {lines && <SectionRule />}
 
       <section className="wrap sol3-cases" id="use-cases">
-        {sol.useCasesHead && (
+        {/* the card grid keeps its centred head above; the rows carry theirs
+            inside the frame, as the landing page's sections do */}
+        {cards && sol.useCasesHead && (
           <div className="sol3-cases-head">
             <p className="sol-eyebrow">{sol.useCasesHead.eyebrow}</p>
             <h2>{sol.useCasesHead.title}</h2>
@@ -1437,6 +1447,7 @@ function LightTop({ sol, lines, stage, panel, cards, heroParam, heroSrc }) {
           </>
         ) : (
           <div className="x4e-frame sol-works sol3-rows" ref={worksRef}>
+            {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => (
               <Workflow
                 key={w.key}
@@ -1514,6 +1525,7 @@ export default function Solution({ slug, heroSrc }) {
             panel={panel}
             cards={q.get('cases') === 'cards'}
             heroParam={q.get('hero')}
+            fold={q.get('fold') !== 'off'}
             heroSrc={heroSrc}
           />
         ) : (

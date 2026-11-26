@@ -3,6 +3,8 @@ import useReveal from '@/hooks/useReveal'
 import useMediaQuery from '@/hooks/useMediaQuery'
 import WorkflowMarquee from '@/components/home/WorkflowMarquee'
 import CertSeals from '@/components/home/CertSeals'
+import ExcelMark from '@/components/visuals/ExcelMark'
+import { ADDIN_URL } from '@/components/layout/AskParts'
 
 /** The stage swaps visuals both on scroll scrub and on a clock; see useAutoStep for how the two hand off. */
 
@@ -622,15 +624,29 @@ export default function ExcelSection({
   const stacked = useMediaQuery('(max-width: 900px)')
   // and the stack takes no scroll scrub — see useAutoStep
   const { step, goTo, hold, release } = useAutoStep(DWELL, paneRef, { scrub: !stacked })
+  // where the install button sits. The shipped place is the head's right; ?cta=1|2|3
+  // tries the others beside it: 1 under the title, 2 closing the rail, 3 a foot row
+  const [ctaAt, setCtaAt] = useState('')
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get('cta') ?? ''
+    if (['1', '2', '3'].includes(v)) setCtaAt(v)
+  }, [])
+  const cta = (
+    <a className="x4e-head-cta" href={ADDIN_URL} target="_blank" rel="noopener noreferrer">
+      <ExcelMark />
+      Install add-in
+    </a>
+  )
 
   return (
     <section className="x4e-sec" id={id}>
       <div className="wrap">
-        <div className="x4e-frame" ref={frameRef}>
+        <div className={`x4e-frame${ctaAt ? ` x4e-frame--cta${ctaAt}` : ''}`} ref={frameRef}>
           <div className="x4e-head x4e-reveal">
             <div className="x4e-head-copy">
               <h2>{title}</h2>
             </div>
+            {(ctaAt === '' || ctaAt === '1') && cta}
           </div>
 
           {/* no x4e-reveal here: that rule animates transform and filter, and
@@ -643,7 +659,14 @@ export default function ExcelSection({
             onFocusCapture={hold}
             onBlurCapture={release}
           >
-            <ol className="x4e-rail">
+            <ol
+              className="x4e-rail"
+              style={
+                ctaAt === '2' && !stacked
+                  ? { gridTemplateRows: `repeat(${PILLARS.length}, 1fr) auto` }
+                  : undefined
+              }
+            >
               {PILLARS.map((p, i) => {
                 const { Visual } = p
                 return (
@@ -670,6 +693,7 @@ export default function ExcelSection({
                   </li>
                 )
               })}
+              {ctaAt === '2' && <li className="x4e-rail-cta">{cta}</li>}
             </ol>
             {!stacked && (
               <div className="x4e-stage">
@@ -688,6 +712,12 @@ export default function ExcelSection({
               </div>
             )}
           </div>
+          {ctaAt === '3' && (
+            <div className="x4e-foot">
+              <span className="x4e-foot-note">Install from Microsoft Marketplace</span>
+              {cta}
+            </div>
+          )}
         </div>
       </div>
     </section>
