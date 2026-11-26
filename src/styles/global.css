@@ -2098,7 +2098,7 @@ img, video, svg, picture {
   transform: translateY(-1px);
 }
 
-/* secondary ("Try for free") — outline on white, so the blue primary keeps the
+/* secondary ("Add to Excel") — outline on white, so the blue primary keeps the
    weight and the self-serve path still reads as a button rather than a link */
 .hero-s2-cta.hero-s2-cta--ghost {
   background: #fff;
@@ -2135,8 +2135,22 @@ img, video, svg, picture {
   .hero-s2-cta-arrow { transition: none; transform: none; }
 }
 
+/* the Excel mark in front of the "Add to Excel" label: always shown (unlike the hover
+   arrow), sized to the cap height of the 18px label and scaled with the rest
+   of the hero; a touch more room after it than the 6px flex gap so the mark
+   doesn't crowd the "U" */
+.hero-s2-cta-excel {
+  flex: none;
+  width: calc(18px * var(--hero-scale));
+  height: calc(18px * var(--hero-scale));
+  margin-right: calc(3px * var(--hero-scale));
+}
+
+/* CTA row — primary + secondary side by side; wraps if the pair no longer
+   fits the copy column, before the 480px stack kicks in */
 .hero-s2-ctas {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: calc(14px * var(--hero-scale));
@@ -4303,13 +4317,31 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
     linear-gradient(to bottom, rgba(8, 13, 28, .62) 0%, rgba(8, 13, 28, .48) 50%, rgba(8, 13, 28, .74) 100%),
     radial-gradient(60% 55% at 50% 50%, rgba(8, 13, 28, .3), rgba(8, 13, 28, 0) 100%);
 }
+/* the brown tint (feedback: brown instead of blue): the stone keeps more of
+   its own warmth and the wash over it is a dark umber rather than navy */
+.sol-hero--brown { background: #150E09 }
+.sol-hero--brown .sol-hero-bg img { filter: saturate(.85) sepia(.18) contrast(1.06) }
+.sol-hero--brown .sol-hero-bg::after {
+  background:
+    linear-gradient(to bottom, rgba(24, 15, 9, .62) 0%, rgba(24, 15, 9, .48) 50%, rgba(24, 15, 9, .74) 100%),
+    radial-gradient(60% 55% at 50% 50%, rgba(24, 15, 9, .3), rgba(24, 15, 9, 0) 100%);
+}
 .sol-hero-copy {
   position: relative; width: 100%;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   animation: sectionRise .7s cubic-bezier(.32,.72,0,1) both;
 }
+/* the eyebrow on the dark ground: the accent lifted so it holds its chroma */
+/* the eyebrow as a highlight (feedback): a frosted-glass pill in the home
+   hero's Backed-by treatment, white capitals with an accent dot, so the
+   page's name reads as a badge on the photo rather than a line lost in it.
+   Brighter than the home one (feedback again): more white in the glass, a
+   stronger edge, a faint halo and a slightly larger setting.
+   The copy's rhythm opened up (feedback: space it out): 34 under the badge,
+   30 under the title, 42 under the lede and 52 over the strategy pills, on
+   every desk, so the block breathes inside the full-screen hero */
 .sol-hero .sol-eyebrow {
-  display: inline-flex; align-items: center; gap: .75em; margin: 0 0 22px; padding: 10px 19px 10px 15px;
+  display: inline-flex; align-items: center; gap: .75em; margin: 0 0 34px; padding: 10px 19px 10px 15px;
   border-radius: 999px; color: #fff; font-size: calc(var(--fs-mono) * 1.1); font-weight: 500;
   background: linear-gradient(170deg, rgba(255, 255, 255, .4) 0%, rgba(255, 255, 255, .2) 46%, rgba(255, 255, 255, .3) 100%);
   border: 1px solid rgba(255, 255, 255, .7);
@@ -4324,13 +4356,13 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
   box-shadow: 0 0 0 .34em rgba(214, 224, 255, .34), 0 0 .9em rgba(214, 224, 255, .8);
 }
 .sol-hero-title {
-  margin: 0 0 22px; max-width: 18ch;
+  margin: 0 0 30px; max-width: 18ch;
   font-family: var(--font-body); font-weight: 500; line-height: 1.12;
   font-size: clamp(36px, 3.8vw, 60px); letter-spacing: var(--ls-display); color: #fff;
   text-wrap: balance;
 }
 .sol-hero-lede {
-  margin: 0 auto 30px; max-width: 54ch;
+  margin: 0 auto 42px; max-width: 54ch;
   font-size: clamp(16px, 1.2vw, 19px); line-height: 1.5; color: rgba(255, 255, 255, .78);
   text-wrap: pretty;
 }
@@ -4348,6 +4380,12 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-how .x4e-head, .sol-works .x4e-head {
   padding: clamp(60px, 8vh, 84px) var(--x4e-pad-x) clamp(54px, 7vh, 76px);
 }
+/* the use cases title runs on one line (feedback): the longest of the five,
+   "Where FinSynth fits into asset management research", wrapped at the
+   homepage recipe's 52px, so these heads size with the frame instead, 2.8vw
+   of the viewport, which holds that title on one line from 1024px up and
+   caps just under the homepage size on wide screens */
+.sol-how .x4e-head h2, .sol-works .x4e-head h2 { font-size: clamp(28px, 2.8vw, 51px) }
 .sol-works .x4e-head { border-bottom: 1px solid var(--hair) }
 @media (max-width: 900px) {
   .sol-how .x4e-head, .sol-works .x4e-head { padding: 48px var(--x4e-pad-x) 48px }
@@ -4385,6 +4423,112 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-scene { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; animation: solSceneIn .7s ease both }
 @keyframes solSceneIn { from { opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .sol-scene { animation: none } }
+/* the photo variants of the stage: a texture photo fills the stage, a soft blur
+   lies over its top and bottom bands and fades out toward the middle, and the
+   screens sit above both. The stage's own blue ground steps aside */
+.sol-scenes--photo { position: relative; isolation: isolate; overflow: hidden; background: #0B1120 }
+.sol-scenes-bg { position: absolute; inset: 0; z-index: 0 }
+.sol-scenes-bg img { width: 100%; height: 100%; object-fit: cover; display: block }
+.sol-scenes-bg::before, .sol-scenes-bg::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 36%;
+  -webkit-backdrop-filter: blur(26px) saturate(1.1); backdrop-filter: blur(26px) saturate(1.1);
+}
+.sol-scenes-bg::before {
+  top: 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+}
+.sol-scenes-bg::after {
+  bottom: 0;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 30%, transparent 100%);
+}
+.sol-scenes--photo .sol-scene { position: relative; z-index: 1 }
+.sol-scenes--photo .sol-stage { background: none }
+/* the cream variant: a pale warm ground with a soft blurred haze along its top
+   and bottom bands. The haze lies behind the screens, which stay crisp above it */
+.sol-scenes--cream {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: linear-gradient(160deg, #F6F4F0 0%, #EFECE7 45%, #E9E5DF 100%);
+}
+.sol-scenes--cream .sol-stage { background: none }
+.sol-scenes--cream .sol-scene { position: relative; z-index: 1 }
+.sol-scenes--cream::before, .sol-scenes--cream::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 30%; z-index: 0; pointer-events: none;
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+}
+.sol-scenes--cream::before {
+  top: 0; background: linear-gradient(to bottom, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
+}
+.sol-scenes--cream::after {
+  bottom: 0; background: linear-gradient(to top, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0));
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 35%, transparent 100%);
+}
+/* the glass variant of the screens (?panel=glass): each panel is a frosted
+   shell that blurs the ground behind it, with a bright hairline rim; its title
+   sits on the glass and its content on a white card set inside the shell. On
+   the dark grounds the glass is thin and its type white; on the pale ones it
+   is milkier and the type stays ink. Without the variant the inner card is
+   not a box at all, so the solid panels lay out as they always have */
+.sol-panel-in { display: contents }
+.sol-scenes--glass {
+  --g-fill: rgba(255, 255, 255, .32); --g-rim: rgba(255, 255, 255, .8); --g-ink: var(--ink); --g-muted: var(--secondary);
+  --g-card: rgba(255, 255, 255, .84); --g-shadow: rgba(30, 42, 80, .2);
+}
+.sol-scenes--glass.sol-scenes--dark {
+  --g-fill: rgba(255, 255, 255, .09); --g-rim: rgba(255, 255, 255, .3); --g-ink: #fff; --g-muted: rgba(255, 255, 255, .72);
+  --g-card: rgba(255, 255, 255, .94); --g-shadow: rgba(0, 0, 0, .4);
+}
+.sol-scenes--glass .sol-panel, .sol-scenes--glass.sol-scenes .sol-aside {
+  padding: 1.1em; border-radius: 1.7em; background: var(--g-fill);
+  -webkit-backdrop-filter: blur(2.8em) saturate(1.4); backdrop-filter: blur(2.8em) saturate(1.4);
+  box-shadow: inset 0 0 0 1px var(--g-rim), inset 0 1px 0 rgba(255, 255, 255, .35), 0 1.4em 3.2em var(--g-shadow);
+}
+/* the wide glass margin is taken from the stage's own margin, not from the
+   content: the panels grow outward so the cards inside keep their size */
+.sol-scenes--glass .sol-stage { --stage-pad: 1.5em }
+.sol-scenes--glass .sol-stage--build { gap: .6em }
+.sol-scenes--glass .sol-win .sol-dcf { font-size: .93em }
+.sol-scenes--glass .sol-stage--focus { --stage-pad: 1.25em; --aside-w: calc(29% + 1.3em) }
+.sol-scenes--glass .sol-stage--focus .sol-main { right: calc(var(--stage-pad) + var(--aside-w) + .6em) }
+.sol-scenes--glass .sol-panel-in {
+  display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; overflow: hidden;
+  background: var(--g-card); border-radius: .8em; box-shadow: 0 .15em .7em rgba(20, 30, 60, .08);
+}
+.sol-scenes--glass ul.sol-panel-in { flex: none }
+.sol-scenes--glass .sol-aside > .sol-panel-in { padding: .85em .95em }
+.sol-scenes--glass .sol-sheet-title, .sol-scenes--glass .sol-pane-ask, .sol-scenes--glass .sol-aside-head {
+  flex: none; margin: 0; padding: 1em 1em 1.15em; border-bottom: 0; color: var(--g-ink);
+}
+.sol-scenes--glass .sol-aside-head { padding: .75em .75em .9em; color: var(--g-muted) }
+.sol-scenes--glass .sol-aside-head b, .sol-scenes--glass .sol-pane-ask p { color: var(--g-ink) }
+.sol-scenes--dark .sol-sheet-tag:not(.sol-sheet-tag--warn) { color: #fff; background: rgba(255, 255, 255, .16) }
+/* a cited excerpt is the larger card on the glass: it may sit over the main
+   screen's corner, and its source is named in the head beside a document
+   glyph, in the glass's own ink, not on a chip */
+.sol-src-ico { display: none }
+.sol-scenes--glass .sol-stage--focus .sol-excerpt--cite { width: calc(var(--aside-w) * 1.5); font-size: 1.08em; z-index: 3 }
+.sol-scenes--glass .sol-aside-head .sol-src--doc {
+  display: inline-flex; align-items: center; gap: .45em; padding: 0; background: none;
+  color: var(--g-ink); font-family: var(--font-body); font-size: 1em; font-weight: 500; letter-spacing: 0;
+}
+.sol-scenes--glass .sol-src-ico { display: block; width: 1.2em; height: 1.2em; flex: none; color: var(--g-ink) }
+.sol-scenes--glass .sol-pane-dot { box-shadow: 0 0 0 .3em rgba(255, 255, 255, .5) }
+.sol-scenes--glass .sol-status {
+  background: rgba(255, 255, 255, .9);
+  -webkit-backdrop-filter: blur(1.2em) saturate(1.4); backdrop-filter: blur(1.2em) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .85), 0 .5em 1.4em rgba(6, 12, 40, .26);
+}
+/* a fading parent would cut the glass off from the ground it blurs, so here
+   the scene swaps at once and its panels fade in themselves */
+.sol-scenes--glass .sol-scene { animation: none }
+.sol-scenes--glass .sol-panel, .sol-scenes--glass .sol-status { animation: solSceneIn .7s ease both }
+@media (prefers-reduced-motion: reduce) {
+  .sol-scenes--glass .sol-panel, .sol-scenes--glass .sol-status { animation: none }
+}
 .sol-reveal { opacity: 0 }
 .sol-work.is-in .sol-reveal { animation: sectionRise .7s cubic-bezier(.32,.72,0,1) var(--d, 0s) both }
 @media (prefers-reduced-motion: reduce) {
@@ -4429,7 +4573,9 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 .sol-sheet th, .sol-sheet td { padding: .55em .7em; text-align: left; border-bottom: 1px solid #EEF0F3; white-space: nowrap }
 .sol-sheet th { font-family: var(--font-mono); font-weight: 400; font-size: .85em; letter-spacing: .04em; color: var(--muted); background: #FAFAFA }
 
-.sol-chips { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 12px }
+/* the strategies line: a mono lead in the accent, then the names as soft
+   accent pills */
+.sol-chips { margin-top: 52px; display: flex; flex-direction: column; align-items: center; gap: 12px }
 .sol-chips-lead {
   font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
   text-transform: uppercase; color: #9DB2FF;
@@ -4757,3 +4903,207 @@ astro-island:has(+ .wac-sec) > .x4e-sec { padding-bottom: 0 }
 @media (max-width: 900px) {
   .hw-head { flex-direction: column; align-items: flex-start }
 }
+
+/* ── the stage's 'places' ground (?stage=places, the default): each use case
+   has its own building behind its screens, cropped by --bg-pos and --bg-zoom
+   and pulled to the hero's warm dark stone so the four read as one set ── */
+.sol-scenes--places { background: #150E09 }
+.sol-scenes--places .sol-scenes-bg img {
+  object-position: var(--bg-pos, center); transform: scale(var(--bg-zoom, 1)); transform-origin: var(--bg-pos, center);
+  filter: grayscale(1) sepia(.34) saturate(.9) brightness(.6) contrast(1.08);
+}
+/* ── the solution page's quieter dress (.sol-v2, the default; ?v=1 is the
+   earlier one) ── */
+/* one frame: the section frames carry the page, so the outer rails and the
+   nodes where the rules met them step aside */
+.sol-v2:not(.sol-lines) .page-rails, .sol-v2:not(.sol-lines) .section-rule .guide-node { display: none }
+/* with the landing page's lines (.sol-lines) the hero closes onto a rule, so
+   it carries its own space underneath */
+.sol-lines .sol3-hero { padding-bottom: clamp(56px, 7vw, 96px) }
+/* the light dress centres the how it works title in its band (feedback) */
+.sol-v3 .sol-how .x4e-head { justify-content: center; align-items: center }
+.sol-v3 .sol-how .x4e-head-copy { text-align: center }
+/* one accent heading: the use cases keep the blue last word, the rest are ink */
+.sol-v2 .ttl-hl { color: inherit }
+.sol-v2 .sol-works .ttl-hl { color: var(--accent) }
+/* the hero's second button is a true outline on the photo, so the blue one is
+   the only solid; the lede runs wider and sets in three lines */
+.sol-v2 .sol-hero-ctas .hero-s2-cta.hero-s2-cta--ghost {
+  background: transparent; border-color: rgba(255, 255, 255, .72); color: #fff;
+}
+.sol-v2 .sol-hero-ctas .hero-s2-cta.hero-s2-cta--ghost:hover { background: rgba(255, 255, 255, .1); border-color: #fff }
+.sol-v2 .sol-hero-lede { max-width: 70ch }
+/* how it works without the eight identical icon tiles: title and line only */
+/* (the light dress keeps the icons: feedback, restore them) */
+.sol-v2:not(.sol-v3) .hw-card { display: block }
+.sol-v2:not(.sol-v3) .hw-card .hw-pico { display: none }
+.sol-v2:not(.sol-v3) .hw-card h4 { margin-top: 0 }
+/* and without the hole: the short column's two cards share its full height,
+   and the frame closes on all four sides again */
+@media (min-width: 901px) {
+  .sol-v2 .hw-grid-col:last-child .hw-cards:has(> li:nth-child(2):last-child) { grid-template-rows: 1fr 1fr }
+  .sol-v2 .hw-cards > li:nth-child(2):last-child { border-bottom: 0 }
+  .sol-v2 .hw--grid .x4e-frame { border-right: 1px solid var(--hair); border-bottom: 1px solid var(--hair) }
+  .sol-v2 .hw--grid .x4e-head { border-right: 0 }
+  .sol-v2 .hw--grid .hw-grid-col:not(:last-child) { border-bottom: 0 }
+  .sol-v2 .hw--grid .hw-grid-col:last-child .hw-grid-head,
+  .sol-v2 .hw--grid .hw-grid-col:last-child .hw-cards > li { border-right: 0 }
+}
+/* the footer on these pages: no sparkle on Ask your AI, and the ghost wordmark
+   and bloom turned down so the links carry it */
+.sol-v2 .foot-askai-btn-icon { display: none }
+.sol-v2 .footer-new::before { opacity: .45 }
+.sol-v2 .foot-wordmark > span { font-size: 9vw; filter: opacity(.6) }
+
+/* ── the solution page's light dress (.sol-v3, the default; ?v=2 is the photo
+   hero with the split rows, ?v=1 the one before it) ── */
+/* hero: on the page's own ground, the title on the left and the lede and
+   buttons on the right, sharing a baseline */
+.sol3-hero { padding-top: clamp(56px, 7vw, 96px) }
+.sol3-hero .sol-eyebrow { margin: 0 }
+.sol3-hero-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px 72px; margin-top: 28px }
+.sol3-hero-title {
+  flex: 1.5 1 520px; min-width: 0; margin: 0;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: -.04em;
+  /* sized so the title holds two lines beside the lede on a desktop */
+  font-size: clamp(40px, 4.2vw, 60px); line-height: 1.02; color: var(--ink); text-wrap: balance;
+}
+.sol3-hero-side { flex: 1 1 340px; min-width: 0 }
+.sol3-hero-lead {
+  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: -.02em;
+  font-size: clamp(20px, 1.75vw, 25px); line-height: 1.3; color: var(--ink);
+}
+.sol3-hero-body { margin: 14px 0 0; font-size: 15px; line-height: 1.7; color: var(--secondary) }
+.sol3-ctas { --hero-scale: 1; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px }
+.sol3-ctas .hero-s2-cta { margin: 0; padding: 12px 24px; font-size: 16px; border-radius: 11px }
+/* the product panel: a rounded image ground with the live screen centred on
+   it. The screen sizes in em off its own width (see .sol-stage), so it scales
+   down on a phone rather than re-flowing */
+.sol3-show {
+  margin-top: clamp(40px, 5vw, 64px); overflow: hidden;
+  border: 1px solid var(--hair); border-radius: 10px;
+  /* PLACEHOLDER image: third-party artwork, to be replaced before this ships */
+  background: #DCE9F5 url('/assets/img/stages/blue-wave-PLACEHOLDER-third-party.png') center / cover no-repeat;
+  padding: clamp(20px, 5vw, 72px) clamp(16px, 5vw, 72px);
+}
+/* the band: the image alone, cut from its top third at every width so the
+   mark in the middle of the placeholder never shows */
+.sol3-show--band { padding: 0; aspect-ratio: 4 / 1; background-position: center top }
+.sol3-show-in {
+  container-type: inline-size; max-width: 780px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0, 1fr);
+}
+/* (the cards keep the shipped page's blue stage; only the hero screen sits bare) */
+.sol3-show .sol-scenes { background: none }
+.sol3-show .sol-stage { background: none }
+.sol3-show .sol-stage { --stage-pad: .4em }
+/* the hero screen keeps growing with its panel, past the cap the rows use, so
+   the sheet fills its frame at full width */
+.sol3-show .sol-stage--focus { font-size: clamp(7px, 2.25cqw, 18px); aspect-ratio: 16 / 9 }
+/* the strategies as a plain row between two hairlines */
+.sol3-strats {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px 32px;
+  margin-top: clamp(32px, 4vw, 48px); padding: 20px 0;
+  border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
+}
+.sol3-strats-lead {
+  font-family: var(--font-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  text-transform: uppercase; color: var(--secondary);
+}
+.sol3-strats ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none }
+/* the names as pills, as on the shipped page */
+.sol3-strats li {
+  padding: 7px 14px; border-radius: 99px; background: rgba(255, 255, 255, .72); border: 1px solid var(--hair);
+  font-size: 14px; line-height: 1.3; font-weight: 450; color: var(--ink);
+}
+.sol3-strats { align-items: center }
+/* the wave as the hero's ground: the copy sits on a rounded panel of it. The
+   image is sized off the panel's height and hung from its top, so only its
+   upper two fifths ever show and the mark in the middle of the placeholder
+   stays out; a pale wash from the left keeps the copy readable */
+.sol3-hero--wave .sol3-hero-in {
+  border: 1px solid var(--hair); border-radius: 10px; overflow: hidden;
+  padding: clamp(24px, 4.5vw, 64px) clamp(24px, 3.4vw, 56px);
+  /* PLACEHOLDER image: third-party artwork, to be replaced before this ships */
+  background:
+    linear-gradient(90deg, rgba(247, 247, 247, .82) 0%, rgba(247, 247, 247, .5) 55%, rgba(247, 247, 247, .28) 100%),
+    #DCE9F5 url('/assets/img/stages/blue-wave-PLACEHOLDER-third-party.png') 35% 0 / auto 230% no-repeat;
+}
+.sol3-hero--wave .sol3-hero-in > .sol-eyebrow + .sol3-hero-row { margin-top: 28px }
+/* a touch smaller inside the panel, so the title still holds two lines on a desktop */
+@media (min-width: 561px) { .sol3-hero--wave .sol3-hero-title { font-size: clamp(38px, 3.9vw, 58px) } }
+.sol3-hero--wave .sol3-hero-body { color: rgba(17, 24, 39, .82) }
+.sol3-hero--wave .sol3-strats { border: 0; padding: 0; justify-content: flex-start; margin-top: clamp(36px, 5vw, 64px) }
+.sol3-hero--wave .sol3-strats-lead { color: rgba(17, 24, 39, .7) }
+/* use cases: a centred head, then the cards two across */
+.sol3-cases { padding-top: clamp(72px, 9vw, 120px); padding-bottom: clamp(72px, 9vw, 120px) }
+.sol3-cases-head { max-width: 780px; margin: 0 auto clamp(36px, 4.5vw, 56px); text-align: center }
+.sol3-cases-head .sol-eyebrow { margin: 0 }
+.sol3-cases-head h2 {
+  margin: 14px 0 0; font-family: var(--font-display); font-weight: 450; letter-spacing: -.035em;
+  font-size: clamp(30px, 3.6vw, 48px); line-height: 1.08; color: var(--ink); text-wrap: balance;
+}
+.sol3-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 20px }
+.sol3-card {
+  display: flex; flex-direction: column; min-width: 0; overflow: hidden;
+  background: #fff; border: 1px solid var(--hair); border-radius: 10px;
+}
+.sol3-stage {
+  container-type: inline-size; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr);
+  background: linear-gradient(180deg, #EEF2F9 0%, #E3EAF6 100%); border-bottom: 1px solid var(--hair);
+}
+.sol3-card-copy { padding: clamp(20px, 3vw, 36px) }
+.sol3-card-copy h3 {
+  margin: 0; font-family: var(--font-display); font-weight: 450; letter-spacing: -.03em;
+  font-size: clamp(22px, 2vw, 26px); line-height: 1.18; color: var(--ink);
+}
+.sol3-card-body { margin: 14px 0 0; font-size: 15px; line-height: 1.7; color: var(--secondary) }
+.sol3-more {
+  margin: clamp(36px, 4.5vw, 56px) 0 0; text-align: center;
+  font-family: var(--font-display); font-weight: 450; letter-spacing: var(--ls-display);
+  font-size: clamp(20px, 1.9vw, 26px); line-height: 1.3; color: var(--ink);
+}
+.sol3-more span { color: var(--accent) }
+@media (max-width: 560px) {
+  .sol3-hero-title { font-size: clamp(34px, 10vw, 44px) }
+  .sol3-ctas .hero-s2-cta { flex: 1 1 100%; justify-content: center }
+}
+/* the hero panel on fluted glass drawn live (FlutedGlass) in place of the wave
+   image: the canvas fills the panel behind the copy, and the same pale wash
+   from the left keeps the copy readable. ?hero=wave puts the image back */
+.sol3-hero--glass .sol3-hero-in { position: relative; background: #EFF0F2 }
+.sol3-hero--glass .sol3-hero-in > .fluted-glass { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s cubic-bezier(.32, .72, 0, 1) }
+.sol3-hero--glass .sol3-hero-in > .fluted-glass.on { opacity: 1 }
+.sol3-hero--glass .sol3-hero-in > :not(.fluted-glass) { position: relative; z-index: 2 }
+/* on a phone the glass keeps the desktop panel's proportions and scales down
+   (feedback: adapt the height, don't wash it out): a band along the foot of the
+   panel, its top edge faded into the ground */
+@media (max-width: 640px) {
+  .sol3-hero--glass .sol3-hero-in > .fluted-glass {
+    inset: auto 0 0 0; height: auto; aspect-ratio: 1278 / 493;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%);
+    mask-image: linear-gradient(to bottom, transparent, #000 40%);
+  }
+}
+/* the glass as the hero's whole ground (.sol3-hero--bg, the default): no box,
+   the canvas runs rail to rail from the navbar down, and the strategies sit
+   on their own strip under it. ?hero=panel is the boxed panel */
+.sol3-hero.sol3-hero--bg { padding: 0 }
+.sol3-hero--bg .sol3-hero-in {
+  border: 0; border-radius: 0;
+  padding: clamp(72px, 9vw, 128px) var(--wrap-pad) clamp(64px, 8vw, 112px);
+}
+.sol3-hero--bg.sol3-hero--wave > .sol3-strats {
+  margin-top: 0; padding: 20px var(--wrap-pad); justify-content: space-between;
+  border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair);
+}
+/* out to the rails, which stand 10px outside the wrap */
+@media (min-width: 900px) {
+  .sol3-hero--bg .sol3-hero-in, .sol3-hero--bg.sol3-hero--wave > .sol3-strats {
+    margin-left: calc(-1 * var(--rail-gap, 10px)); margin-right: calc(-1 * var(--rail-gap, 10px));
+    padding-left: calc(var(--wrap-pad) + var(--rail-gap, 10px)); padding-right: calc(var(--wrap-pad) + var(--rail-gap, 10px));
+  }
+}
+/* with the page's lines the section rule closes the strip */
+.sol-lines .sol3-hero--bg.sol3-hero--wave > .sol3-strats { border-bottom: 0 }
+
