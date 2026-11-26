@@ -11,6 +11,7 @@ export const SITE = {
 export const LINKS = {
   app: 'https://webapp.finsynth.ai/agent',
   bookCall: 'https://calendly.com/kartik-finsynth/intro',
+  excelAddin: 'https://marketplace.microsoft.com/en-us/product/WA200012802',
   createOrg: 'https://accounts.finsynth.ai/create-organization',
   supportForm: 'https://forms.office.com/r/kD0Y2Fmexb',
   privacyPolicy: 'https://nj5uoj11j293i3fb-help.finsynth.ai/legal/privacy-policy.pdf',
