@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import SectionRule from '@/components/layout/SectionRule'
@@ -8,6 +8,7 @@ import useReveal from '../hooks/useReveal'
 import { BOOK_URL, APP_HREF } from '@/components/layout/AskParts'
 import { SOLUTIONS } from '../data/solutions'
 import HowStages, { Cursor } from '@/components/shared/HowStages'
+import FlutedGlass from '@/components/visuals/FlutedGlass'
 
 /* Visuals are sized in em off the stage so they scale down on a phone instead of re-flowing. */
 
@@ -26,14 +27,42 @@ function Tick() {
   )
 }
 
-function Src({ children }) {
-  return <span className="sol-src">{children}</span>
+/* `icon` leads the name with a document glyph, for the head of a cited
+   excerpt; the glyph shows on the glass panels only */
+function Src({ children, icon = false }) {
+  return (
+    <span className={`sol-src${icon ? ' sol-src--doc' : ''}`}>
+      {icon && (
+        <svg
+          className="sol-src-ico"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M9.5 1.75H4.25a1 1 0 0 0-1 1v10.5a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5L9.5 1.75Z" />
+          <path d="M9.5 1.75V5h3.25M5.75 8.25h4.5M5.75 10.75h3" />
+        </svg>
+      )}
+      {children}
+    </span>
+  )
 }
 
 /* a tick clock that starts once the stage is in view; reduced motion holds
    the last tick (the finished state) */
+/* a use case's first screen rests on its finished state until the stage is in
+   view, so a fast scroll past never meets an empty mock; once in view the loop
+   starts over and builds. Later screens of the same stage are being watched,
+   so they build from the start. The stage sets this for the screens inside it */
+const RestCtx = createContext(false)
+const REST_DWELL = 2600
+
 function useTicks(total, ms, ref, paused = false) {
-  const [t, setT] = useState(0)
+  const rest = useContext(RestCtx)
+  const [t, setT] = useState(rest ? total - 1 : 0)
   useEffect(() => {
     const el = ref.current
     if (!el || paused) return
@@ -42,10 +71,20 @@ function useTicks(total, ms, ref, paused = false) {
       return
     }
     let id
+    let wait
+    /* a resting screen holds its finished state for a beat after it comes into
+       view before the loop starts over, so the reader lands on a filled mock
+       rather than on the first empty tick */
+    let dwell = rest ? REST_DWELL : 0
     const io = new IntersectionObserver(
       ([e]) => {
         clearInterval(id)
-        if (e.isIntersecting) id = setInterval(() => setT((v) => (v + 1) % total), ms)
+        clearTimeout(wait)
+        if (!e.isIntersecting) return
+        wait = setTimeout(() => {
+          dwell = 0
+          id = setInterval(() => setT((v) => (v + 1) % total), ms)
+        }, dwell)
       },
       { threshold: 0.35 },
     )
@@ -53,7 +92,9 @@ function useTicks(total, ms, ref, paused = false) {
     return () => {
       io.disconnect()
       clearInterval(id)
+      clearTimeout(wait)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total, ms, ref, paused])
   return t
 }
@@ -114,13 +155,21 @@ function useWire(ref, t, chipSel) {
       const a = chip.getBoundingClientRect()
       const d = card.getBoundingClientRect()
       const b = mark.getClientRects()[0] || mark.getBoundingClientRect()
+      /* a card that sits under the chip (the larger card on the glass) takes
+         the wire on its top edge, just right of the chip, so the line drops
+         down the panel's margin and not across the chips below; a card
+         beside the chip takes it on its left edge, level with the lit line */
+      const over = d.left < a.right
       setGeo({
         w: w.width,
         h: w.height,
+        over,
         x1: a.right - w.left,
         y1: a.top + a.height / 2 - w.top,
-        x2: d.left - w.left,
-        y2: Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8) - w.top,
+        x2: (over ? Math.min(a.right + a.height * 0.9, d.right - a.height) : d.left) - w.left,
+        y2:
+          (over ? d.top : Math.min(Math.max(b.top + b.height / 2, d.top + 8), d.bottom - 8)) -
+          w.top,
         cx: a.left + a.width * 0.62 - w.left,
         cy: a.top + a.height * 0.45 - w.top,
       })
@@ -137,6 +186,9 @@ function useWire(ref, t, chipSel) {
 function Wire({ geo, tick }) {
   if (!geo) return null
   const dx = (geo.x2 - geo.x1) * 0.5
+  const d = geo.over
+    ? `M${geo.x1} ${geo.y1} C${geo.x2} ${geo.y1}, ${geo.x2} ${geo.y1}, ${geo.x2} ${geo.y1 + (geo.x2 - geo.x1)} L${geo.x2} ${geo.y2}`
+    : `M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`
   return (
     <>
       <svg
@@ -147,10 +199,7 @@ function Wire({ geo, tick }) {
         aria-hidden="true"
         key={`w${tick}`}
       >
-        <path
-          d={`M${geo.x1} ${geo.y1} C${geo.x1 + dx} ${geo.y1}, ${geo.x2 - dx} ${geo.y2}, ${geo.x2} ${geo.y2}`}
-          pathLength="1"
-        />
+        <path d={d} pathLength="1" />
         <circle cx={geo.x2} cy={geo.y2} r="3" />
       </svg>
       <Cursor x={geo.cx} y={geo.cy} />
@@ -255,40 +304,42 @@ function ScreenVisual({
             <span className="sol-pane-dot" />
             <p>{prompt}</p>
           </div>
-          <div className="sol-pane-body">
-            <p
-              className={`sol-pane-say sol-pane-say--status${done ? ' is-done' : ''}`}
-              key={done ? 'done' : 'live'}
-            >
-              {statusIco}
-              <span>{done ? say : status[0]}</span>
-            </p>
-            {out ? (
-              <div className="sol-sheet sol-pane-out">{shortlist}</div>
-            ) : (
-              <div className="sol-run sol-pane-calls">
-                <ol>
-                  {SCREEN_CALLS.map((call, i) => (
-                    <li
-                      key={call.fn}
-                      className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}
-                    >
-                      <span className="sol-run-ico">
-                        <span className="sol-run-spin" />
-                        <Tick />
-                      </span>
-                      <code>{call.fn}</code>
-                      <span className="sol-run-arg">{call.arg}</span>
-                      <em>{call.n} names</em>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-          </div>
-          <div className="sol-pane-in">
-            <span>Ask FinSynth</span>
-            <b>Send ↵</b>
+          <div className="sol-panel-in">
+            <div className="sol-pane-body">
+              <p
+                className={`sol-pane-say sol-pane-say--status${done ? ' is-done' : ''}`}
+                key={done ? 'done' : 'live'}
+              >
+                {statusIco}
+                <span>{done ? say : status[0]}</span>
+              </p>
+              {out ? (
+                <div className="sol-sheet sol-pane-out">{shortlist}</div>
+              ) : (
+                <div className="sol-run sol-pane-calls">
+                  <ol>
+                    {SCREEN_CALLS.map((call, i) => (
+                      <li
+                        key={call.fn}
+                        className={t >= 2 + i * 2 ? 'is-done' : t >= 1 + i * 2 ? 'is-live' : ''}
+                      >
+                        <span className="sol-run-ico">
+                          <span className="sol-run-spin" />
+                          <Tick />
+                        </span>
+                        <code>{call.fn}</code>
+                        <span className="sol-run-arg">{call.arg}</span>
+                        <em>{call.n} names</em>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </div>
+            <div className="sol-pane-in">
+              <span>Ask FinSynth</span>
+              <b>Send ↵</b>
+            </div>
           </div>
         </div>
       ) : (
@@ -297,20 +348,22 @@ function ScreenVisual({
             {title}
             <em className="sol-sheet-tag">{tag}</em>
           </div>
-          {shortlist}
+          <div className="sol-panel-in">{shortlist}</div>
         </div>
       )}
       {c ? (
         <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
           <div className="sol-aside-head">
-            <Src>{c.doc}</Src>
+            <Src icon>{c.doc}</Src>
             <span>{c.where}</span>
           </div>
-          <p>
-            {c.before}
-            <mark className="is-on">{c.mark}</mark>
-            {c.after}
-          </p>
+          <div className="sol-panel-in">
+            <p>
+              {c.before}
+              <mark className="is-on">{c.mark}</mark>
+              {c.after}
+            </p>
+          </div>
         </div>
       ) : run ? (
         <div className="sol-panel sol-aside sol-stack sol-run-sum">
@@ -318,7 +371,7 @@ function ScreenVisual({
             <span>Tool calls</span>
             <b>{SCREEN_CALLS.length}</b>
           </div>
-          <ul>
+          <ul className="sol-panel-in">
             {SCREEN_CALLS.map((call) => (
               <li key={call.fn} className="is-on">
                 <Tick />
@@ -336,7 +389,7 @@ function ScreenVisual({
               {Math.min(rows, SCREEN_ROWS.length)} / {SCREEN_ROWS.length}
             </b>
           </div>
-          <ul>
+          <ul className="sol-panel-in">
             {criteria.map((cr, i) => (
               <li key={cr} className={i < crit ? 'is-on' : ''}>
                 <Tick />
@@ -386,41 +439,43 @@ function EarningsVisual() {
         <div className="sol-sheet-title">
           Crocs · model<em className="sol-sheet-tag">Your layout</em>
         </div>
-        <table className="sol-upd">
-          <thead>
-            <tr>
-              <th>USD m</th>
-              <th>Q3 FY25A</th>
-              <th className="is-col">Q3 FY26A</th>
-            </tr>
-          </thead>
-          <tbody>
-            {EARN_ROWS.map((r) => {
-              if (r.fx) {
+        <div className="sol-panel-in">
+          <table className="sol-upd">
+            <thead>
+              <tr>
+                <th>USD m</th>
+                <th>Q3 FY25A</th>
+                <th className="is-col">Q3 FY26A</th>
+              </tr>
+            </thead>
+            <tbody>
+              {EARN_ROWS.map((r) => {
+                if (r.fx) {
+                  return (
+                    <tr key={r.label} className="is-derived">
+                      <td>{r.label}</td>
+                      <td>{r.prior}</td>
+                      <td className={`sol-upd-cell${filled(r.after) ? ' is-filled' : ''}`}>
+                        <span>{r.now}</span>
+                      </td>
+                    </tr>
+                  )
+                }
+                k += 1
+                const i = k
                 return (
-                  <tr key={r.label} className="is-derived">
+                  <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
                     <td>{r.label}</td>
                     <td>{r.prior}</td>
-                    <td className={`sol-upd-cell${filled(r.after) ? ' is-filled' : ''}`}>
+                    <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}>
                       <span>{r.now}</span>
                     </td>
                   </tr>
                 )
-              }
-              k += 1
-              const i = k
-              return (
-                <tr key={r.label} className={cur === i && !filled(i) ? 'is-lit' : ''}>
-                  <td>{r.label}</td>
-                  <td>{r.prior}</td>
-                  <td className={`sol-upd-cell${filled(i) ? ' is-filled' : ''}`}>
-                    <span>{r.now}</span>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
@@ -505,7 +560,7 @@ function SourceStack({ head, sources, on = false }) {
         <span>{head[0]}</span>
         <b>{head[1]}</b>
       </div>
-      <ul>
+      <ul className="sol-panel-in">
         {sources.map(([name, kind]) => (
           <li key={name} className={on ? 'is-on' : ''}>
             <Tick />
@@ -532,7 +587,7 @@ function OverviewVisual({
           {title}
           <em className="sol-sheet-tag">{tag}</em>
         </div>
-        <div className="sol-brief-body">
+        <div className="sol-brief-body sol-panel-in">
           {sections.map((s) => (
             <BriefSection key={s.h} s={s} />
           ))}
@@ -593,7 +648,7 @@ function MemoVisual({
           {title}
           <em className="sol-sheet-tag">{tag}</em>
         </div>
-        <div className="sol-brief-body">
+        <div className="sol-brief-body sol-panel-in">
           {sections.map((s, i) => (
             <BriefSection key={s.h} s={s} className={i < on ? 'is-on' : ''} />
           ))}
@@ -666,62 +721,64 @@ function ModelBuildVisual() {
             Crocs · {dcf ? 'DCF' : 'model'}
             <em className="sol-sheet-tag">{dcf ? 'WACC 8.6% · g 2.5%' : BUILD_PAGES[srcCol]}</em>
           </div>
-          {dcf ? (
-            <table className="sol-upd sol-dcf sol-dcf-out">
-              <thead>
-                <tr>
-                  <th>USD m</th>
-                  <th className="is-col">Base</th>
-                </tr>
-              </thead>
-              <tbody>
-                {DCF_OUT.map((r, i) => (
-                  <tr key={r[0]} className={i === DCF_OUT.length - 1 ? 'is-total' : ''}>
-                    <td>{r[0]}</td>
-                    <td className="sol-upd-cell is-filled">
-                      <span>{r[1]}</span>
+          <div className="sol-panel-in">
+            {dcf ? (
+              <table className="sol-upd sol-dcf sol-dcf-out">
+                <thead>
+                  <tr>
+                    <th>USD m</th>
+                    <th className="is-col">Base</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {DCF_OUT.map((r, i) => (
+                    <tr key={r[0]} className={i === DCF_OUT.length - 1 ? 'is-total' : ''}>
+                      <td>{r[0]}</td>
+                      <td className="sol-upd-cell is-filled">
+                        <span>{r[1]}</span>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="is-up">
+                    <td>Upside to {DCF_PRICE}</td>
+                    <td>
+                      <span className="sol-dcf-up">{DCF_UPSIDE}</span>
                     </td>
                   </tr>
-                ))}
-                <tr className="is-up">
-                  <td>Upside to {DCF_PRICE}</td>
-                  <td>
-                    <span className="sol-dcf-up">{DCF_UPSIDE}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <table className="sol-upd sol-dcf">
-              <thead>
-                <tr>
-                  <th>USD m</th>
-                  {BUILD_YEARS.map((y) => (
-                    <th key={y}>{y}</th>
-                  ))}
-                  <th className="is-col">FY26E</th>
-                  <th className="is-col">FY27E</th>
-                </tr>
-              </thead>
-              <tbody>
-                {BUILD_ROWS.map((r, i) => (
-                  <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
-                    <td>{r[0]}</td>
-                    {r.slice(1).map((v, c) => (
-                      <td
-                        key={c}
-                        className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}
-                      >
-                        <span>{v}</span>
-                      </td>
+                </tbody>
+              </table>
+            ) : (
+              <table className="sol-upd sol-dcf">
+                <thead>
+                  <tr>
+                    <th>USD m</th>
+                    {BUILD_YEARS.map((y) => (
+                      <th key={y}>{y}</th>
                     ))}
-                    <td className="is-fc" />
-                    <td className="is-fc" />
+                    <th className="is-col">FY26E</th>
+                    <th className="is-col">FY27E</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {BUILD_ROWS.map((r, i) => (
+                    <tr key={r[0]} className={i === BUILD_ROWS.length - 1 ? 'is-total' : ''}>
+                      <td>{r[0]}</td>
+                      {r.slice(1).map((v, c) => (
+                        <td
+                          key={c}
+                          className={`sol-upd-cell${filled(c) ? ' is-filled' : cur === c ? ' is-lit' : ''}`}
+                        >
+                          <span>{v}</span>
+                        </td>
+                      ))}
+                      <td className="is-fc" />
+                      <td className="is-fc" />
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
         <div className={`sol-status${done ? ' is-done' : ''}`}>
           <span className="sol-status-ico">
@@ -750,32 +807,35 @@ function ModelBuildVisual() {
           <span className="sol-pane-dot" />
           <p>Build the model and DCF in our template from the last three 10-Ks</p>
         </div>
-        <div className="sol-pane-body">
-          <p className="sol-pane-say" key={done ? 'done' : 'run'}>
-            {done
-              ? 'History ties out across the three years. The forecast columns are yours'
-              : 'Spreading the historicals into your template, each figure linked to its filing page'}
-          </p>
-          <ul className="sol-pane-steps">
-            <li className={years ? 'is-on' : ''}>
-              <span>Historicals spread</span>
-              <em>
-                {years} / {BUILD_YEARS.length} yrs
-              </em>
-            </li>
-            <li className={recast ? 'is-on' : ''}>
-              <span>Segment recast</span>
-              <em>{recast ? 'Applied' : 'Pending'}</em>
-            </li>
-            <li className={done ? 'is-on' : ''}>
-              <span>DCF</span>
-              <em>{done ? 'Built' : 'Pending'}</em>
-            </li>
-          </ul>
-        </div>
-        <div className="sol-pane-in">
-          <span>Ask FinSynth</span>
-          <b>Send ↵</b>
+        <div className="sol-panel-in">
+          <div className="sol-pane-body">
+            {/* the agent's running line, which its result replaces once the build is done */}
+            <p className="sol-pane-say" key={done ? 'done' : 'run'}>
+              {done
+                ? 'History ties out across the three years. The forecast columns are yours'
+                : 'Spreading the historicals into your template, each figure linked to its filing page'}
+            </p>
+            <ul className="sol-pane-steps">
+              <li className={years ? 'is-on' : ''}>
+                <span>Historicals spread</span>
+                <em>
+                  {years} / {BUILD_YEARS.length} yrs
+                </em>
+              </li>
+              <li className={recast ? 'is-on' : ''}>
+                <span>Segment recast</span>
+                <em>{recast ? 'Applied' : 'Pending'}</em>
+              </li>
+              <li className={done ? 'is-on' : ''}>
+                <span>DCF</span>
+                <em>{done ? 'Built' : 'Pending'}</em>
+              </li>
+            </ul>
+          </div>
+          <div className="sol-pane-in">
+            <span>Ask FinSynth</span>
+            <b>Send ↵</b>
+          </div>
         </div>
       </div>
     </div>
@@ -794,8 +854,11 @@ const COMPS_PEERS = COMPS.filter((p) => !p.self && !p.fx)
 
 function CompsVisual() {
   const ref = useRef(null)
-  const HOLD = 8
-  const t = useTicks(COMPS_PEERS.length * 2 + HOLD, 620, ref)
+  /* a quicker fill (feedback: the result can come sooner); the hold stretches
+     so the motion still plays once per scene rather than looping inside it */
+  const TICK = 340
+  const HOLD = Math.max(8, Math.ceil(SCENE_MS / TICK) + 1 - COMPS_PEERS.length * 2)
+  const t = useTicks(COMPS_PEERS.length * 2 + HOLD, TICK, ref)
   const cur = Math.floor(t / 2)
   const filled = (k) => t >= k * 2 + 1
   const done = filled(COMPS_PEERS.length - 1)
@@ -806,47 +869,52 @@ function CompsVisual() {
         <div className="sol-sheet-title">
           Crocs · comps<em className="sol-sheet-tag">Calendarised to December</em>
         </div>
-        <table className="sol-upd">
-          <thead>
-            <tr>
-              <th>NTM</th>
-              <th className="is-col">EV/EBITDA</th>
-              <th className="is-col">P/E</th>
-              <th className="is-col">EV/Sales</th>
-            </tr>
-          </thead>
-          <tbody>
-            {COMPS.map((r) => {
-              if (r.self) {
+        <div className="sol-panel-in">
+          <table className="sol-upd">
+            <thead>
+              <tr>
+                <th>NTM</th>
+                <th className="is-col">EV/EBITDA</th>
+                <th className="is-col">P/E</th>
+                <th className="is-col">EV/Sales</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPS.map((r) => {
+                if (r.self) {
+                  return (
+                    <tr key={r.name} className="is-self">
+                      <td>{r.name}</td>
+                      <td>{r.ev}</td>
+                      <td>{r.pe}</td>
+                      <td>{r.evs}</td>
+                    </tr>
+                  )
+                }
+                const on = r.fx ? done : filled((k += 1))
+                const i = k
+                const cell = `sol-upd-cell${on ? ' is-filled' : ''}`
                 return (
-                  <tr key={r.name} className="is-self">
+                  <tr
+                    key={r.name}
+                    className={r.fx ? 'is-derived' : cur === i && !on ? 'is-lit' : ''}
+                  >
                     <td>{r.name}</td>
-                    <td>{r.ev}</td>
-                    <td>{r.pe}</td>
-                    <td>{r.evs}</td>
+                    <td className={cell}>
+                      <span>{r.ev}</span>
+                    </td>
+                    <td className={cell}>
+                      <span>{r.pe}</span>
+                    </td>
+                    <td className={cell}>
+                      <span>{r.evs}</span>
+                    </td>
                   </tr>
                 )
-              }
-              const on = r.fx ? done : filled((k += 1))
-              const i = k
-              const cell = `sol-upd-cell${on ? ' is-filled' : ''}`
-              return (
-                <tr key={r.name} className={r.fx ? 'is-derived' : cur === i && !on ? 'is-lit' : ''}>
-                  <td>{r.name}</td>
-                  <td className={cell}>
-                    <span>{r.ev}</span>
-                  </td>
-                  <td className={cell}>
-                    <span>{r.pe}</span>
-                  </td>
-                  <td className={cell}>
-                    <span>{r.evs}</span>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className={`sol-status${done ? ' is-done' : ''}`}>
         <span className="sol-status-ico">
@@ -922,38 +990,42 @@ function ThesisVisual({
           <span className="sol-pane-dot" />
           <p>{ask}</p>
         </div>
-        <div className="sol-pane-body">
-          <p className="sol-pane-say">{say}</p>
-          <ul className="sol-evidence">
-            {points.map((p, i) => (
-              <li
-                key={p.src}
-                className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}
-              >
-                <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>
-                  {p.tag}
-                </span>
-                <span>{p.text}</span>
-                <Src>{p.src}</Src>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="sol-pane-in">
-          <span>Ask FinSynth</span>
-          <b>Send ↵</b>
+        <div className="sol-panel-in">
+          <div className="sol-pane-body">
+            <p className="sol-pane-say">{say}</p>
+            <ul className="sol-evidence">
+              {points.map((p, i) => (
+                <li
+                  key={p.src}
+                  className={`${p.counter ? 'sol-evidence--counter' : ''}${i === t ? ' is-sel' : ''}`}
+                >
+                  <span className={`sol-tag ${p.counter ? 'sol-tag--risk' : 'sol-tag--supported'}`}>
+                    {p.tag}
+                  </span>
+                  <span>{p.text}</span>
+                  <Src>{p.src}</Src>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="sol-pane-in">
+            <span>Ask FinSynth</span>
+            <b>Send ↵</b>
+          </div>
         </div>
       </div>
       <div className="sol-panel sol-aside sol-excerpt sol-excerpt--cite" key={t}>
         <div className="sol-aside-head">
-          <Src>{pt.doc}</Src>
+          <Src icon>{pt.doc}</Src>
           <span>{pt.where}</span>
         </div>
-        <p>
-          {pt.before}
-          <mark className="is-on">{pt.mark}</mark>
-          {pt.after}
-        </p>
+        <div className="sol-panel-in">
+          <p>
+            {pt.before}
+            <mark className="is-on">{pt.mark}</mark>
+            {pt.after}
+          </p>
+        </div>
       </div>
       <Wire geo={geo} tick={t} />
     </div>
@@ -1013,47 +1085,49 @@ function AuditVisual() {
         <div className="sol-sheet-title">
           inherited_model.xlsx · audit<em className="sol-sheet-tag sol-sheet-tag--warn">3 open</em>
         </div>
-        <div className="sol-sheet-fx">
-          <span>{f.cell}</span>
-          <span>fx</span>
-          <span>{f.fx}</span>
-        </div>
-        <table className="sol-grid">
-          <thead>
-            <tr>
-              <th />
-              <th>C</th>
-              <th>D</th>
-              <th>E</th>
-            </tr>
-          </thead>
-          <tbody>
-            {AUDIT_ROWS.map((r) => (
-              <tr key={r[0]}>
-                <td className="sol-grid-n">{r[0]}</td>
-                {r.slice(1).map((v, i) => {
-                  const id = `${cols[i]}${r[0]}`
-                  const bad = FINDINGS.some((x) => x.cell === id)
-                  return (
-                    <td
-                      key={id}
-                      className={`${bad ? 'sol-grid-bad' : ''}${f.cell === id ? ' is-sel' : ''}`}
-                    >
-                      <span>{v}</span>
-                    </td>
-                  )
-                })}
+        <div className="sol-panel-in">
+          <div className="sol-sheet-fx">
+            <span>{f.cell}</span>
+            <span>fx</span>
+            <span>{f.fx}</span>
+          </div>
+          <table className="sol-grid">
+            <thead>
+              <tr>
+                <th />
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {AUDIT_ROWS.map((r) => (
+                <tr key={r[0]}>
+                  <td className="sol-grid-n">{r[0]}</td>
+                  {r.slice(1).map((v, i) => {
+                    const id = `${cols[i]}${r[0]}`
+                    const bad = FINDINGS.some((x) => x.cell === id)
+                    return (
+                      <td
+                        key={id}
+                        className={`${bad ? 'sol-grid-bad' : ''}${f.cell === id ? ' is-sel' : ''}`}
+                      >
+                        <span>{v}</span>
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="sol-panel sol-aside sol-findings">
         <div className="sol-aside-head">
           <span>Audit findings</span>
           <span>3</span>
         </div>
-        <ul>
+        <ul className="sol-panel-in">
           {FINDINGS.map((x, i) => (
             <li key={x.cell} className={i === sel ? 'is-sel' : ''}>
               <b>{x.cell}</b>
@@ -1119,10 +1193,58 @@ function FrameHead({ title }) {
   )
 }
 
-function Workflow({ w, flip }) {
+/* a use case row: its name as the title, then one paragraph of the scenes'
+   copy (the outcome no longer leads it; it stays in the data unused). The
+   stage runs through
+   the use case's scenes on its own clock; the copy no longer lights sentence
+   by sentence and the row number is gone from the eyebrow line */
+/* The stage ground behind each use case's screens, as switchable variants.
+   'city' sets a city street view behind the screens. Its file is still a 698px
+   pasted preview: swap in the full size download from its source before shipping.
+   'stone' sets a near-black stone texture behind the screens and 'light' a soft
+   blue light, both photos with their top and bottom softly blurred (Unsplash
+   License, files in /assets/img/stages); 'cream' is a pale warm ground; 'blue'
+   is the earlier gradient. Preview with ?stage=city, stone, light, cream or blue */
+/* 'places' gives every use case its own ground instead of one photo repeated:
+   real buildings in the hero's stone family (the Wall Street canyon, the
+   exchange's columns, the hero's capital, a stone facade), all pulled to one
+   warm dark tone so the four read as a set. They are crops of two files already
+   in the repo; a full size original per use case would be sharper */
+/* the blue ground is the default again (feedback: restore the bg blue);
+   ?stage=city is the blurred building photo */
+const STAGE_DEFAULT = 'blue'
+const STAGES = ['places', 'city', 'stone', 'light', 'cream', 'blue']
+const WALL = '/assets/img/wall-street-bw.webp'
+const STAGE_PLACES = [
+  { src: WALL, pos: '50% 50%', zoom: 1 },
+  { src: WALL, pos: '88% 62%', zoom: 1.9 },
+  { src: 'hero', pos: '30% 50%', zoom: 1 },
+  { src: WALL, pos: '8% 38%', zoom: 1.9 },
+]
+const STAGE_PHOTOS = {
+  city: '/assets/img/stages/city-street-LOWRES-PREVIEW.png',
+  stone: '/assets/img/stages/stone-black.jpg',
+  light: '/assets/img/stages/blue-light.jpg',
+}
+
+/* The screens on the stage, as switchable variants. 'glass' is frosted glass:
+   each panel a translucent shell that blurs the ground behind it, its title on
+   the glass and its content on a white card set inside; 'solid' is the earlier
+   white panel. Preview with ?panel=glass or solid */
+/* the blue ground carries the white panel, the photos the glass one */
+const panelDefault = (stage) => (stage === 'blue' ? 'solid' : 'glass')
+const PANELS = ['glass', 'solid']
+/* the grounds dark enough that the glass carries white type */
+const STAGE_DARK = ['places', 'stone', 'light']
+
+function Workflow({ w, flip, stage, panel, index = 0, heroSrc }) {
+  const place = stage === 'places' ? STAGE_PLACES[index % STAGE_PLACES.length] : null
+  const photo = place ? (place.src === 'hero' ? heroSrc : place.src) : STAGE_PHOTOS[stage]
+  const cycled = useRef(false)
   const ref = useReveal({ threshold: 0.12 })
   const stageRef = useRef(null)
   const t = useTicks(w.scenes.length, SCENE_MS, stageRef)
+  if (t !== 0) cycled.current = true
   const scene = w.scenes[t]
   const Visual = VISUALS[scene.visual]
   return (
@@ -1132,86 +1254,210 @@ function Workflow({ w, flip }) {
         <p className="sol-work-body">{w.scenes.map((s) => s.copy).join(' ')}</p>
       </div>
       <div className="sol-work-visual sol-reveal" style={{ '--d': '.12s' }}>
-        <div className="sol-scenes" ref={stageRef}>
-          <div className="sol-scene" key={t}>
-            <Visual {...scene.props} />
-          </div>
+        <div
+          className={`sol-scenes${place ? ' sol-scenes--places' : ''}${photo ? ' sol-scenes--photo' : stage === 'cream' ? ' sol-scenes--cream' : ''}${panel === 'glass' ? ` sol-scenes--glass${STAGE_DARK.includes(stage) ? ' sol-scenes--dark' : ''}` : ''}`}
+          ref={stageRef}
+        >
+          {photo && (
+            <div className="sol-scenes-bg" aria-hidden="true">
+              <img
+                src={photo}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style={place ? { '--bg-pos': place.pos, '--bg-zoom': place.zoom } : undefined}
+              />
+            </div>
+          )}
+          <RestCtx.Provider value={!cycled.current}>
+            <div className="sol-scene" key={t}>
+              <Visual {...scene.props} />
+            </div>
+          </RestCtx.Provider>
         </div>
       </div>
     </section>
   )
 }
 
-export default function Solution({ slug, heroSrc }) {
-  const sol = SOLUTIONS[slug]
-  const worksRef = useReveal({ threshold: 0.05 })
-
-  if (!sol) return null
-
+/* ── the light dress (.sol-v3, the default; ?v=2 and ?v=1 are the earlier
+   ones) ── a split hero on the page's own ground (title left, lede and buttons
+   right), the product on a rounded image panel under it, then the use cases as
+   a grid of cards, each with its live screens on top and the copy below */
+function UseCaseCard({ w }) {
+  const cycled = useRef(false)
+  const stageRef = useRef(null)
+  const t = useTicks(w.scenes.length, SCENE_MS, stageRef)
+  if (t !== 0) cycled.current = true
+  const scene = w.scenes[t]
+  const Visual = VISUALS[scene.visual]
   return (
-    <div className="mainContainer">
-      <div className="page-rails" aria-hidden="true">
-        <span className="rail rail-left" />
-        <span className="rail rail-right" />
-      </div>
-      <Navbar />
-      <main className="sol-page">
-        <header className="sol-hero sol-hero--photo">
-          <div className="sol-hero-bg" aria-hidden="true">
-            <img src={heroSrc} alt="" loading="eager" fetchpriority="high" />
-          </div>
-          <div className="sol-hero-copy wrap">
-            <p className="sol-eyebrow">{sol.name}</p>
-            <h1 className="sol-hero-title">{sol.title}</h1>
-            <p className="sol-hero-lede">{sol.lede}</p>
-            <div className="sol-hero-ctas">
-              <a className="hero-s2-cta" href={BOOK_URL} target="_blank" rel="noopener noreferrer">
-                Talk to Us
-              </a>
-              <a
-                className="hero-s2-cta hero-s2-cta--ghost"
-                href={APP_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Try for free
-                <svg
-                  className="hero-s2-cta-arrow"
-                  viewBox="0 0 16 16"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M2.5 8h10M9 4.5 12.5 8 9 11.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </a>
+    <article className="sol3-card" id={w.key}>
+      <div className="sol3-stage">
+        <div className="sol-scenes" ref={stageRef}>
+          <RestCtx.Provider value={!cycled.current}>
+            <div className="sol-scene" key={t}>
+              <Visual {...scene.props} />
             </div>
-            {sol.strategies && (
-              <div className="sol-chips">
-                <span className="sol-chips-lead">{sol.strategiesLead}</span>
-                <ul>
-                  {sol.strategies.map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </header>
-        {/* no rule under the hero: the dark block's own edge is the rule, and
-            the rule's guide nodes would straddle the photo */}
+          </RestCtx.Provider>
+        </div>
+      </div>
+      <div className="sol3-card-copy">
+        {/* one heading and one text, as on the shipped page */}
+        <h3>{w.name}</h3>
+        <p className="sol3-card-body">{w.scenes.map((s) => s.copy).join(' ')}</p>
+      </div>
+    </article>
+  )
+}
 
-        <section className="wrap sol-works-wrap" id="use-cases">
-          <div className="x4e-frame sol-works" ref={worksRef}>
+function LightTop({ sol, lines, stage, panel, cards, heroParam, fold, heroSrc }) {
+  /* the use cases as split rows that alternate sides, the first with its
+     animation on the left (feedback: right and left format), on the building
+     blue ground; ?stage=city is the building photo behind blurred glass panels; ?cases=cards is the card grid */
+  const worksRef = useReveal({ threshold: 0.05 })
+  /* the hero shows the model update where the page has one, else its first screen */
+  const scenes = sol.workflows.flatMap((w) => w.scenes)
+  const heroScene = scenes.find((s) => s.visual === 'earnings') || scenes[0]
+  const HeroVisual = VISUALS[heroScene.visual]
+  /* the wave image is the hero's own ground (feedback: should this be the bg
+     of the hero); ?hero=band keeps it as a slim band under the copy, and
+     ?hero=screen puts the screen back on it */
+  const heroScreen = heroParam === 'screen'
+  const heroWave = heroParam !== 'screen' && heroParam !== 'band'
+  /* the panel's ground is fluted glass drawn live (feedback: use these dial
+     values for this bg); ?hero=wave keeps the wave image */
+  const heroGlass = heroWave && heroParam !== 'wave'
+  /* the glass is the hero's whole ground, rail to rail, with the strategies
+     on their own strip under it (feedback: use the animation in the bg, a
+     separate strip for the strategies); ?hero=panel is the boxed panel */
+  const heroBg = heroGlass && heroParam !== 'panel'
+  /* the first screen under the navbar holds the glass, the strategies strip
+     and the use cases title band (feedback: want this and above visible in
+     the hero); ?fold=off is the hero only as tall as its copy */
+  const heroFold = heroBg && fold
+  const strats = sol.strategies && (
+    <div className="sol3-strats">
+      <span className="sol3-strats-lead">{sol.strategiesLead}</span>
+      <ul>
+        {sol.strategies.map((name) => (
+          <li key={name}>{name}</li>
+        ))}
+      </ul>
+    </div>
+  )
+  return (
+    <>
+      <header
+        className={`sol3-hero wrap${heroWave ? ' sol3-hero--wave' : ''}${heroGlass ? ' sol3-hero--glass' : ''}${heroBg ? ' sol3-hero--bg' : ''}${heroFold ? ' sol3-hero--fold' : ''}`}
+      >
+        <div className="sol3-hero-in">
+          {heroGlass && <FlutedGlass />}
+          <div className="sol3-hero-row">
+            {/* the badge rides in the title's column, so it stays on the title
+                however tall the lede beside it runs */}
+            <div className="sol3-hero-head">
+              <p className="sol-eyebrow">FinSynth for {sol.name}</p>
+              <h1 className="sol3-hero-title">{sol.title}</h1>
+            </div>
+            <div className="sol3-hero-side">
+              <p className="sol3-hero-body">{sol.lede}</p>
+              {/* the shipped page's pair: Talk to Us solid, Try for free outlined */}
+              <div className="sol3-ctas">
+                <a
+                  className="hero-s2-cta"
+                  href={BOOK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Talk to Us
+                </a>
+                <a
+                  className="hero-s2-cta hero-s2-cta--ghost"
+                  href={APP_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Try for free
+                  <svg
+                    className="hero-s2-cta-arrow"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M2.5 8h10M9 4.5 12.5 8 9 11.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          {heroWave && !heroBg && strats}
+        </div>
+        {heroScreen && (
+          <div className="sol3-show">
+            <div className="sol3-show-in">
+              <div className="sol-scenes">
+                <RestCtx.Provider value>
+                  <div className="sol-scene">
+                    <HeroVisual {...heroScene.props} />
+                  </div>
+                </RestCtx.Provider>
+              </div>
+            </div>
+          </div>
+        )}
+        {!heroScreen && !heroWave && (
+          <div className="sol3-show sol3-show--band" aria-hidden="true" />
+        )}
+        {(!heroWave || heroBg) && strats}
+      </header>
+
+      {/* the landing page's section break: a full-width rule with a node on
+          each rail */}
+      {lines && <SectionRule />}
+
+      <section className="wrap sol3-cases" id="use-cases">
+        {/* the card grid keeps its centred head above; the rows carry theirs
+            inside the frame, as the landing page's sections do */}
+        {cards && sol.useCasesHead && (
+          <div className="sol3-cases-head">
+            <p className="sol-eyebrow">{sol.useCasesHead.eyebrow}</p>
+            <h2>{sol.useCasesHead.title}</h2>
+          </div>
+        )}
+        {cards ? (
+          <>
+            <div className="sol3-grid">
+              {sol.workflows.map((w) => (
+                <UseCaseCard key={w.key} w={w} />
+              ))}
+            </div>
+            {sol.useCasesMore && (
+              <p className="sol3-more">
+                <span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="x4e-frame sol-works sol3-rows" ref={worksRef}>
             {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
             {sol.workflows.map((w, i) => (
-              <Workflow key={w.key} w={w} flip={i % 2 === 1} />
+              <Workflow
+                key={w.key}
+                w={w}
+                flip={i % 2 === 0}
+                stage={stage}
+                panel={panel}
+                index={i}
+                heroSrc={heroSrc}
+              />
             ))}
             {sol.useCasesMore && (
               <p className="sol-works-more">
@@ -1219,7 +1465,163 @@ export default function Solution({ slug, heroSrc }) {
               </p>
             )}
           </div>
-        </section>
+        )}
+      </section>
+    </>
+  )
+}
+
+/* The dress switches are read from the URL after hydration, so the server
+   render and the first client render are both the default dress */
+const NO_QUERY = new URLSearchParams()
+function useQuery() {
+  const [q, setQ] = useState(NO_QUERY)
+  useEffect(() => {
+    setQ(new URLSearchParams(window.location.search))
+  }, [])
+  return q
+}
+
+export default function Solution({ slug, heroSrc }) {
+  const sol = SOLUTIONS[slug]
+  const q = useQuery()
+  const stageParam = q.get('stage')
+  const stage = STAGES.includes(stageParam) ? stageParam : STAGE_DEFAULT
+  /* the hero photo's wash: 'brown' is a warm dark brown tint (feedback: brown
+     instead of blue); 'blue' is the earlier navy one. Preview with ?tint=blue */
+  const tint = q.get('tint') === 'blue' ? 'blue' : 'brown'
+  const panelParam = q.get('panel')
+  const panel = PANELS.includes(panelParam) ? panelParam : panelDefault(stage)
+  /* the page's quieter dress (one frame, one accent heading, an outlined
+     second button, how it works without icon tiles); ?v=1 is the earlier one */
+  const vParam = q.get('v')
+  const v2 = vParam !== '1'
+  /* the light dress on top of it (split hero on the page ground, use cases as
+     split rows); ?v=2 is the photo hero with the split rows */
+  const v3 = vParam !== '1' && vParam !== '2'
+  /* the landing page's section lines on the light dress: the two page rails,
+     a rule between every section and a node where they meet; ?lines=off is the
+     dress without them */
+  const lines = v3 && q.get('lines') !== 'off'
+  const worksRef = useReveal({ threshold: 0.05 })
+
+  if (!sol) return null
+
+  return (
+    <div
+      className={`mainContainer${v2 ? ' sol-v2' : ''}${v3 ? ' sol-v3' : ''}${lines ? ' sol-lines' : ''}`}
+    >
+      <div className="page-rails" aria-hidden="true">
+        <span className="rail rail-left" />
+        <span className="rail rail-right" />
+      </div>
+      <Navbar />
+      <main className="sol-page">
+        {v3 ? (
+          <LightTop
+            sol={sol}
+            lines={lines}
+            stage={stage}
+            panel={panel}
+            cards={q.get('cases') === 'cards'}
+            heroParam={q.get('hero')}
+            fold={q.get('fold') !== 'off'}
+            heroSrc={heroSrc}
+          />
+        ) : (
+          <>
+            {/* the hero as a full-bleed photo of a stone capital, darkened, with
+            the copy centred on it like the home hero's cell. No Excel grid behind it:
+            the solutions heroes stay plain */}
+            <header
+              className={`sol-hero sol-hero--photo${tint === 'brown' ? ' sol-hero--brown' : ''}`}
+            >
+              <div className="sol-hero-bg" aria-hidden="true">
+                <img src={heroSrc} alt="" loading="eager" fetchpriority="high" />
+              </div>
+              <div className="sol-hero-copy wrap">
+                <p className="sol-eyebrow">{sol.name}</p>
+                <h1 className="sol-hero-title">{sol.title}</h1>
+                <p className="sol-hero-lede">{sol.lede}</p>
+                <div className="sol-hero-ctas">
+                  <a
+                    className="hero-s2-cta"
+                    href={BOOK_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Talk to Us
+                  </a>
+                  {/* the home hero's second button, word for word: the self-serve
+                  path names the price, and the arrow only shows on hover */}
+                  <a
+                    className="hero-s2-cta hero-s2-cta--ghost"
+                    href={APP_HREF}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Try for free
+                    <svg
+                      className="hero-s2-cta-arrow"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        d="M2.5 8h10M9 4.5 12.5 8 9 11.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </a>
+                </div>
+                {/* the strategies the page serves, as pills under the buttons */}
+                {sol.strategies && (
+                  <div className="sol-chips">
+                    <span className="sol-chips-lead">{sol.strategiesLead}</span>
+                    <ul>
+                      {sol.strategies.map((name) => (
+                        <li key={name}>{name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </header>
+            {/* no rule under the hero: the dark block's own edge is the rule, and
+            the rule's guide nodes would straddle the photo */}
+
+            {/* the use cases in one hairline frame on the page's grey ground, head
+            band on top, then the rows split down the middle like the home
+            page's Excel pane: copy on one side, the stage filling the other */}
+            <section className="wrap sol-works-wrap" id="use-cases">
+              <div className="x4e-frame sol-works" ref={worksRef}>
+                {sol.useCasesHead && <FrameHead title={sol.useCasesHead.title} />}
+                {sol.workflows.map((w, i) => (
+                  <Workflow
+                    key={w.key}
+                    w={w}
+                    flip={i % 2 === 1}
+                    stage={stage}
+                    panel={panel}
+                    index={i}
+                    heroSrc={heroSrc}
+                  />
+                ))}
+                {/* the line under the rows: the four are the shape of the work,
+                not the whole of it */}
+                {sol.useCasesMore && (
+                  <p className="sol-works-more">
+                    <span>{sol.useCasesMore.lead}</span> {sol.useCasesMore.rest}
+                  </p>
+                )}
+              </div>
+            </section>
+          </>
+        )}
 
         {sol.how && <SectionRule />}
         {sol.how && (

@@ -3,3 +3,4 @@ import { LINKS } from '@/config/site'
 
 export const BOOK_URL = LINKS.bookCall
 export const APP_HREF = LINKS.app
+export const ADDIN_URL = LINKS.excelAddin

@@ -4,6 +4,7 @@ import { Font } from 'astro:assets'
 import Seo from '@/components/seo/Seo.astro'
 import JsonLd from '@/components/seo/JsonLd.astro'
 import { organization } from '@/lib/schema'
+import DevAgentation from '@/components/dev/DevAgentation'
 import '@/styles/global.css'
 
 type Props = ComponentProps<typeof Seo>
@@ -23,6 +24,7 @@ type Props = ComponentProps<typeof Seo>
   </head>
   <body>
     <slot />
+    {import.meta.env.DEV && <DevAgentation client:only="react" />}
     <script>
       import { bindScrollEffects } from '@/lib/scroll-effects'
       bindScrollEffects()
